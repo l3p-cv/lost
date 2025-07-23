@@ -1,19 +1,6 @@
-import { CRow } from '@coreui/react'
+import { CCardBody, CCardGroup, CRow, CCol, CCard, CButton, CForm, CInputGroup, CInputGroupText, CFormInput, CContainer } from '@coreui/react'
 import { useState } from 'react'
 import { FaLock, FaUser } from 'react-icons/fa'
-import {
-    Button,
-    Card,
-    CardBody,
-    CardGroup,
-    Col,
-    Container,
-    Form,
-    Input,
-    InputGroup,
-    InputGroupText,
-    Row,
-} from 'reactstrap'
 import { useLogin } from '../../actions/auth'
 import Loading from '../../components/Loading'
 
@@ -33,8 +20,8 @@ const Login = () => {
 
     return (
         <div className="app flex-row align-items-center">
-            <Container>
-                <Row
+            <CContainer>
+                <CRow
                     style={{ margin: '10% 0% 5% 0%' }}
                     className="justify-content-center"
                 >
@@ -43,22 +30,22 @@ const Login = () => {
                         alt="lost-logo"
                         style={{ width: '500px' }}
                     />
-                </Row>
-                <Row className="justify-content-center">
-                    <Col md="4">
-                        <CardGroup>
-                            <Card className="p-4">
-                                <CardBody>
-                                    <Form onSubmit={submit}>
+                </CRow>
+                <CRow className="justify-content-center">
+                    <CCol md="4">
+                        <CCardGroup>
+                            <CCard className="p-4">
+                                <CCardBody>
+                                    <CForm onSubmit={submit}>
                                         <h1>Login</h1>
                                         <p className="text-muted">
                                             Sign in to your account
                                         </p>
-                                        <InputGroup className="mb-3">
-                                            <InputGroupText>
+                                        <CInputGroup className="mb-3">
+                                            <CInputGroupText>
                                                 <FaUser />
-                                            </InputGroupText>
-                                            <Input
+                                            </CInputGroupText>
+                                            <CFormInput
                                                 onChange={(e) =>
                                                     setUsername(e.currentTarget.value)
                                                 }
@@ -67,12 +54,12 @@ const Login = () => {
                                                 placeholder="Username"
                                                 autoComplete="userName"
                                             />
-                                        </InputGroup>
-                                        <InputGroup className="mb-4">
-                                            <InputGroupText>
+                                        </CInputGroup>
+                                        <CInputGroup className="mb-4">
+                                            <CInputGroupText>
                                                 <FaLock />
-                                            </InputGroupText>
-                                            <Input
+                                            </CInputGroupText>
+                                            <CFormInput
                                                 onChange={(e) =>
                                                     setPassword(e.currentTarget.value)
                                                 }
@@ -81,7 +68,7 @@ const Login = () => {
                                                 placeholder="Password"
                                                 autoComplete="current-password"
                                             />
-                                        </InputGroup>
+                                        </CInputGroup>
                                         {loginStatus === 'loading' ? (
                                             <CRow className="justify-content-center">
                                                 <Loading size="3x"></Loading>
@@ -89,20 +76,20 @@ const Login = () => {
                                         ) : (
                                             ''
                                         )}
-                                        <Row>
-                                            <Col xs="6">
-                                                <Button color="primary" className="px-4">
+                                        <CRow>
+                                            <CCol xs="6">
+                                                <CButton color="primary" type='submit' className="px-4">
                                                     Login
-                                                </Button>
-                                            </Col>
-                                        </Row>
-                                    </Form>
-                                </CardBody>
-                            </Card>
-                        </CardGroup>
-                    </Col>
-                </Row>
-            </Container>
+                                                </CButton>
+                                            </CCol>
+                                        </CRow>
+                                    </CForm>
+                                </CCardBody>
+                            </CCard>
+                        </CCardGroup>
+                    </CCol>
+                </CRow>
+            </CContainer>
         </div>
     )
 }

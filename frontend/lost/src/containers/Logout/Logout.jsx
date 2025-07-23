@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Button, Card, CardBody, CardGroup, Container, Row } from 'reactstrap'
 import { useLogout } from '../../actions/auth'
+import { CButton, CCard, CCardBody, CCardGroup, CContainer, CRow } from '@coreui/react'
 
 const Logout = () => {
     const navigate = useNavigate()
@@ -18,17 +18,17 @@ const Logout = () => {
 
     return (
         <div className="app flex-row align-items-center">
-            <Container>
-                <Row
+            <CContainer>
+                <CRow
                     style={{ margin: '10% 0% 5% 0%' }}
                     className="justify-content-center"
                 >
                     <img src="/assets/lost_logo.png" alt="" style={{ width: '500px' }} />
-                </Row>
-                <Row className="justify-content-center">
-                    <CardGroup>
-                        <Card className="p-4">
-                            <CardBody>
+                </CRow>
+                <CRow className="justify-content-center">
+                    <CCardGroup>
+                        <CCard className="p-4">
+                            <CCardBody>
                                 {isError ? (
                                     <div> An error occurred while logging out. </div>
                                 ) : isLoading ? (
@@ -48,20 +48,20 @@ const Logout = () => {
                                         alignItems: 'center',
                                     }}
                                 >
-                                    <Button
+                                    <CButton
                                         disabled={isLoading}
                                         style={{ marginTop: '5%' }}
                                         color="primary"
                                         onClick={() => navigate('/login')}
                                     >
                                         Back to login page!
-                                    </Button>
+                                    </CButton>
                                 </div>
-                            </CardBody>
-                        </Card>
-                    </CardGroup>
-                </Row>
-            </Container>
+                            </CCardBody>
+                        </CCard>
+                    </CCardGroup>
+                </CRow>
+            </CContainer>
         </div>
     )
 }
