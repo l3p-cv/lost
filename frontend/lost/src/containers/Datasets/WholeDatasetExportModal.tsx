@@ -1,17 +1,7 @@
 import { useState } from 'react'
-import {
-    Button,
-    Form,
-    FormGroup,
-    Input,
-    Label,
-    Modal,
-    ModalBody,
-    ModalFooter,
-    ModalHeader,
-} from 'reactstrap'
 import { useExportDataset } from '../../actions/dataset/dataset-export-api'
 import { DatasetExportsTable } from './DatasetExportsTable'
+import { CButton, CForm, CFormCheck, CModal, CModalBody, CModalFooter, CModalHeader, CRow } from '@coreui/react'
 
 interface WholeDatasetExportModalProps {
     isOpen: boolean
@@ -36,33 +26,31 @@ export const WholeDatasetExportModal = ({
     }
 
     return (
-        <Modal isOpen={isOpen} toggle={toggle} size="xl">
-            <ModalHeader toggle={toggle}>Exports for dataset: {datasetName}</ModalHeader>
-            <ModalBody>
-                <Form>
-                    <FormGroup check>
-                        <Label check>
-                            <Input
-                                type="checkbox"
-                                checked={annotatedOnly}
-                                onChange={(e) => setAnnotatedOnly(e.target.checked)}
-                            />
-                            Annotated Only
-                        </Label>
-                    </FormGroup>
-                    <Button color="primary" onClick={handleSubmit} className="mt-2">
+        <CModal visible={isOpen} size="xl">
+            <CModalHeader>Exports for dataset: {datasetName}</CModalHeader>
+            <CModalBody>
+                <CForm>
+                    <CRow>
+                        <CFormCheck
+                            type="checkbox"
+                            label="Annotated Only"
+                            checked={annotatedOnly}
+                            onChange={(e) => setAnnotatedOnly(e.target.checked)}
+                        />
+                    </CRow>
+                    <CButton color="primary" onClick={handleSubmit} className="mt-2">
                         Generate Export
-                    </Button>
-                </Form>
+                    </CButton>
+                </CForm>
 
                 <h4 className="text-center">Dataset Exports </h4>
                 <DatasetExportsTable datasetId={datasetId} />
-            </ModalBody>
-            <ModalFooter>
-                <Button color="secondary" onClick={toggle}>
+            </CModalBody>
+            <CModalFooter>
+                <CButton color="secondary" onClick={toggle}>
                     Cancel
-                </Button>
-            </ModalFooter>
-        </Modal>
+                </CButton>
+            </CModalFooter>
+        </CModal>
     )
 }

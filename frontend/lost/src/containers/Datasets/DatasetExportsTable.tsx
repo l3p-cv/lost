@@ -1,6 +1,5 @@
 import { faDownload, faTrash } from '@fortawesome/free-solid-svg-icons'
 import ReactTable from 'react-table'
-import { Progress } from 'reactstrap'
 import {
     useAvailableDatasetExports,
     useDeleteDatasetExport,
@@ -8,6 +7,7 @@ import {
 } from '../../actions/dataset/dataset-export-api'
 import IconButton from '../../components/IconButton'
 import * as Notification from '../../components/Notification'
+import { CProgress } from '@coreui/react'
 
 const getFilename = (filePath: string) => {
     return filePath.split('/').pop() || 'dataset_export'
@@ -63,19 +63,19 @@ export const DatasetExportsTable = ({ datasetId }: DatasetExportsTableProps) => 
                             return (
                                 <>
                                     <div className="clearfix">
-                                        <Progress
+                                        <CProgress
                                             className="progress-xs rt-progress"
                                             color={progress < 100 ? 'info' : 'success'}
                                             value={100}
                                             animated={progress < 100}
-                                            striped={progress < 100}
+                                            // striped={progress < 100}
                                         >
                                             <strong>
                                                 {progress < 100
                                                     ? 'In progress'
                                                     : 'Completed'}
                                             </strong>
-                                        </Progress>
+                                        </CProgress>
                                     </div>
                                 </>
                             )
