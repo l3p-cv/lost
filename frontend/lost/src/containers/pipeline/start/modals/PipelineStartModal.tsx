@@ -53,7 +53,11 @@ export const PipelineStartModal = ({
     }
 
     return (
-        <CModal visible={isOpen}>
+        <CModal visible={isOpen} onClose={() => {
+                    if (isOpen){
+                        toggle();
+                    }
+            }}>
             <CModalHeader>Start Pipeline</CModalHeader>
             {!isPipelineValid && (
                 <CModalBody>

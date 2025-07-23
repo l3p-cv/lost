@@ -58,7 +58,14 @@ export const AnnoTaskModal = ({
 
     return (
             //TODO: make sure it opens with the first click all the time
-            <CModal size="lg" onShow={verifyNode} visible={isOpen} onClose={verifyNode}>
+            <CModal size="lg" onShow={verifyNode} visible={isOpen} 
+                onClose={() => {
+                    if (isOpen){
+                        toggle();
+                    }
+                    verifyNode();
+                }}
+            >
                 <CModalHeader>Annotation Task</CModalHeader>
                     <CModalBody>
                         <AnnoTaskStepper

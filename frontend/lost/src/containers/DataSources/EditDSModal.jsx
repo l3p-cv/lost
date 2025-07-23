@@ -1,4 +1,4 @@
-import { CCol, CRow } from '@coreui/react'
+import { CButton, CCol, CForm, CFormInput, CFormLabel, CFormSelect, CFormText, CInputGroup, CRow } from '@coreui/react'
 import { faAws, faMicrosoft } from '@fortawesome/free-brands-svg-icons'
 import {
     faFile,
@@ -7,16 +7,6 @@ import {
     faTimes,
 } from '@fortawesome/free-solid-svg-icons'
 import { useEffect, useState } from 'react'
-import {
-    Button,
-    Form,
-    FormFeedback,
-    FormGroup,
-    FormText,
-    Input,
-    InputGroup,
-    Label,
-} from 'reactstrap'
 import * as fbAPI from '../../actions/fb/fb_api'
 import { useOwnUser } from '../../actions/user/user_api'
 import BaseModal from '../../components/BaseModal'
@@ -294,10 +284,10 @@ const EditDSModal = ({
                     }
                 >
                     {renderDsTypeButtons()}
-                    <Form>
-                        <FormGroup>
-                            <Label for="name">Datasource name</Label>
-                            <Input
+                    <CForm>
+                        <CFormLabel htmlFor="name">Datasource name</CFormLabel>
+                        <CInputGroup>
+                            <CFormInput
                                 id="name"
                                 // valid={false}
                                 // invalid={false}
@@ -308,13 +298,13 @@ const EditDSModal = ({
                                 }}
                                 value={fs.name}
                             />
-                            <FormFeedback>You will not be able to see this</FormFeedback>
-                            <FormText>Name of the datasource</FormText>
-                        </FormGroup>
-                        <FormGroup>
-                            <Label for="rootPath">Root path</Label>
-                            <InputGroup>
-                                <Input
+                            <CFormText>Name of the datasource</CFormText>
+                            {/* <CFormFeedback tooltip={true}>You will not be able to see this</CFormFeedback> */}
+                            
+                        </CInputGroup>
+                        <CFormLabel htmlFor="rootPath">Root Path</CFormLabel>
+                        <CInputGroup>
+                                <CFormInput
                                     id="rootPath"
                                     valid={false}
                                     invalid={false}
@@ -325,21 +315,21 @@ const EditDSModal = ({
                                     }}
                                     value={fs.rootPath}
                                 />
-                                <Button
+                                <CButton
+                                    style={{ height: '100%' }}
                                     color="primary"
                                     onClick={() => {
                                         setBrowseOpen(true)
                                     }}
                                 >
                                     Test
-                                </Button>
-                            </InputGroup>
-                            <FormFeedback>You will not be able to see this</FormFeedback>
-                            <FormText>Example help text that remains unchanged.</FormText>
-                        </FormGroup>
-                        <FormGroup>
-                            <Label for="dsType">Datasource type</Label>
-                            <Input
+                                </CButton>
+                            {/* <CFormText>Example help text that remains unchanged.</CFormText> */}
+                            {/* <FormFeedback>You will not be able to see this</FormFeedback> */}
+                        </CInputGroup>
+                        <CFormLabel htmlFor="name">Datasource Type</CFormLabel>
+                        <CInputGroup>
+                            <CFormSelect
                                 type="select"
                                 name="dsType"
                                 id="dsType"
@@ -355,13 +345,13 @@ const EditDSModal = ({
                                         return <option key={el}>{el}</option>
                                     })
                                 })()}
-                            </Input>
-                            <FormFeedback>You will not be able to see this</FormFeedback>
-                            <FormText>Example help text that remains unchanged.</FormText>
-                        </FormGroup>
-                        <FormGroup>
-                            <Label for="connection">Connection String</Label>
-                            <Input
+                            </CFormSelect>
+                            {/* <FormFeedback>You will not be able to see this</FormFeedback> */}
+                        </CInputGroup>
+                        {/* <CFormText>Example help text that remains unchanged.</CFormText> */}
+                        <CFormLabel htmlFor="name">Connection String</CFormLabel>
+                        <CInputGroup>
+                            <CFormInput
                                 type="textarea"
                                 name="connection"
                                 id="connection"
@@ -372,8 +362,8 @@ const EditDSModal = ({
                                 value={fs.connection}
                                 placeholder={fs.connection}
                             />
-                        </FormGroup>
-                    </Form>
+                        </CInputGroup>
+                    </CForm>
                 </BaseModal>
                 {renderBrowseModal()}
             </div>

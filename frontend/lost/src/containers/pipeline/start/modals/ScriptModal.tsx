@@ -46,7 +46,14 @@ export const ScriptModal = ({ script, nodeId, isOpen, toggle }: ScriptModalProps
     return (
         // TODO: make sure it opens with one click...
         <>
-            <CModal size="lg" visible={isOpen} onShow={verifyNode} onClose={verifyNode}>
+            <CModal size="lg" visible={isOpen} onShow={verifyNode}
+                onClose={() => {
+                    if (isOpen){
+                        toggle();
+                    }
+                    verifyNode();
+                }}
+            >
                 <CModalHeader>Script</CModalHeader>
                 <CModalBody>
                     <Table

@@ -137,7 +137,14 @@ export const DatasourceModal = ({
     return (
         //TODO: make sure it opens with the first click every time
         <> 
-            <CModal size="lg" onShow={verifyNode} visible={isOpen} onClose={verifyNode} id="datasource-modal">
+            <CModal size="lg" onShow={verifyNode} visible={isOpen} id="datasource-modal" 
+                onClose={() => {
+                    if (isOpen){
+                    toggle();
+                    }
+                    verifyNode();
+                }}
+            >
                 <CModalHeader>Datasource</CModalHeader>
                 <CModalBody>
                     <div>
