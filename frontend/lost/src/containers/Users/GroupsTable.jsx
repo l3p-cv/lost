@@ -2,13 +2,13 @@ import { useState } from 'react'
 // import Datatable from '../../components/Datatable'
 
 import { faL, faPlus } from '@fortawesome/free-solid-svg-icons'
-import { Input, InputGroup } from 'reactstrap'
 import { useCreateGroup, useDeleteGroup, useGroups } from '../../actions/group/group-api'
 import IconButton from '../../components/IconButton'
 import * as Notification from '../../components/Notification'
 import { createColumnHelper } from '@tanstack/react-table'
 import CoreDataTable from '../../components/CoreDataTable'
 import BaseContainer from '../../components/BaseContainer'
+import { CFormInput, CInputGroup } from '@coreui/react'
 
 export const Groups = () => {
     const [newGroup, setNewGroup] = useState('')
@@ -53,14 +53,14 @@ export const Groups = () => {
     return (
         groupsData && (
             <div>
-                <InputGroup style={{ marginBottom: 20 }}>
-                    <Input
+                <CInputGroup style={{ marginBottom: 20 }}>
+                    <CFormInput
                         placeholder="groupname"
                         value={newGroup}
                         onChange={(e) => setNewGroup(e.currentTarget.value)}
                     />
-                    <IconButton color="primary" icon={faPlus} onClick={addGroup} />
-                </InputGroup>
+                    <IconButton color="primary" type='submit' icon={faPlus} onClick={addGroup} />
+                </CInputGroup>
                 {/* TODO: make pagination-buttons smaller */}
                 <BaseContainer>
                     <CoreDataTable
@@ -70,41 +70,6 @@ export const Groups = () => {
                         paginationLarge={false}
                         />
                 </BaseContainer>
-                {/* <Datatable
-                    data={groupsData.groups}
-                    columns={[
-                        {
-                            Header: 'Group',
-                            accessor: 'name',
-                            Cell: ({ original }) => (
-                                <>
-                                    <b>{original.name}</b>
-                                    <div className="small text-muted">
-                                        {`ID: ${original.idx}`}
-                                    </div>
-                                </>
-                            ),
-                        },
-                        // Note: commented this out temporarily since it allows you to delete groups assigned to users
-                        // The backend api needs to be fixed before re-enabling this feature
-                        // {
-                        //     Header: '',
-                        //     width: 50,
-                        //     Cell: function customCell(row) {
-                        //         return (
-                        //             <IconButton
-                        //                 disabled
-                        //                 icon={faTrash}
-                        //                 color="danger"
-                        //                 onClick={() => {
-                        //                     deleteGroup(row.original.idx)
-                        //                 }}
-                        //             />
-                        //         )
-                        //     },
-                        // },
-                    ]}
-                /> */}
             </div>
         )
     )

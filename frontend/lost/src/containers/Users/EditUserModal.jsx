@@ -1,12 +1,12 @@
 import { faSave, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { useState } from 'react'
-import { Input, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap'
 import validator from 'validator'
 import { useGroups } from '../../actions/group/group-api'
 import { useCreateUser, useUpdateUser } from '../../actions/user/user_api'
 import Datatable from '../../components/Datatable'
-import IconButton from '../../components/IconButton'
 import { useLostConfig } from '../../hooks/useLostConfig'
+import { CFormInput, CModal, CModalBody, CModalFooter, CModalHeader } from '@coreui/react'
+import CoreIconButton from '../../components/CoreIconButton'
 
 const CenteredCell = ({ children, key }) => {
     return (
@@ -52,7 +52,7 @@ const EditUserModal = (props) => {
         return (
             <>
                 <CenteredCell>
-                    <Input
+                    <CFormInput
                         autoFocus={focusedField === 0}
                         placeholder="Username"
                         disabled={!props.isNewUser}
@@ -74,7 +74,7 @@ const EditUserModal = (props) => {
     const emailField = () => (
         <>
             <CenteredCell>
-                <Input
+                <CFormInput
                     autoFocus={focusedField === 1}
                     placeholder="example@example.com"
                     defaultValue={user.email}
@@ -93,7 +93,7 @@ const EditUserModal = (props) => {
     const passwordField = () => (
         <>
             <CenteredCell>
-                <Input
+                <CFormInput
                     autoFocus={focusedField === 2}
                     placeholder="*******"
                     type="password"
@@ -113,7 +113,7 @@ const EditUserModal = (props) => {
     const confirmPasswordField = () => (
         <>
             <CenteredCell>
-                <Input
+                <CFormInput
                     autoFocus={focusedField === 3}
                     placeholder="*******"
                     type="password"
@@ -180,6 +180,7 @@ const EditUserModal = (props) => {
         let isError = false
         if (!validator.isEmail(user.email)) {
             setEmailError(true)
+            console.log("Email-Error")
             isError = true
         } else {
             setEmailError(false)
@@ -187,6 +188,7 @@ const EditUserModal = (props) => {
 
         if (props.isNewUser && user.user_name.length < 2) {
             setUsernameError('Min 2 character')
+            console.log("Username error, min 2 characters")
             isError = true
         } else {
             setUsernameError(false)
@@ -196,11 +198,13 @@ const EditUserModal = (props) => {
             if (user.password.length < 5) {
                 isError = true
                 setPasswordError('Min 5 character')
+                console.log("Password error, min 5 characters")
             } else {
                 setPasswordError(false)
             }
             if (user.password !== user.confirmPassword) {
                 setPasswordConfirmError(true)
+                console.log("Password confirmation error")
                 isError = true
             } else {
                 setPasswordConfirmError(false)
@@ -235,14 +239,19 @@ const EditUserModal = (props) => {
 
     return (
         groupsData && (
-            <Modal
+            <CModal
                 size="xl"
-                isOpen={props.isOpen}
-                toggle={props.closeModal}
-                onClosed={props.onClosed}
+                visible={props.isOpen}
+                // toggle={props.closeModal}
+                onClose={ () => {
+                    props.onClosed()
+                    if (props.isOpen){
+                        props.closeModal()
+                        
+                }}}
             >
-                <ModalHeader toggle={props.closeModal}>{'Edit User'}</ModalHeader>
-                <ModalBody>
+                <CModalHeader>{'Edit User'}</CModalHeader>
+                <CModalBody>
                     <Datatable
                         noText={true}
                         pageSize={1}
@@ -280,24 +289,25 @@ const EditUserModal = (props) => {
                             },
                         ]}
                     />
-                </ModalBody>
-                <ModalFooter>
-                    <IconButton
+                </CModalBody>
+                <CModalFooter>
+                    <CoreIconButton
+                        type='submit'
                         isOutline={false}
                         icon={faSave}
                         color="success"
                         text="Save"
                         onClick={save}
                     />
-                    <IconButton
+                    <CoreIconButton
                         isOutline={false}
                         color="secondary"
                         icon={faTimes}
                         text="Close"
                         onClick={cancel}
-                    ></IconButton>
-                </ModalFooter>
-            </Modal>
+                    />
+                </CModalFooter>
+            </CModal>
         )
     )
 }

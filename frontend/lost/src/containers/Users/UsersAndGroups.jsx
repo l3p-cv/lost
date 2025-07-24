@@ -1,16 +1,16 @@
-import { Col, Row } from 'reactstrap'
 import GroupTable from './GroupsTable'
 import UserTable from './UsersTable'
+import { CCol, CRow } from '@coreui/react'
 
 const UsersAndGroups = () => (
-    <Row>
-        <Col xs="3">
+    <CRow>
+        <CCol xs="3">
             <GroupTable />
-        </Col>
-        <Col xs="9">
+        </CCol>
+        <CCol xs="9">
             <UserTable />
-        </Col>
-    </Row>
+        </CCol>
+    </CRow>
 )
 
 export default UsersAndGroups
