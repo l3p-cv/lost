@@ -1,10 +1,9 @@
 import { faEdit, faEye, faFileExport } from '@fortawesome/free-solid-svg-icons'
 import { useEffect, useState } from 'react'
 
-import { CAlert, CBadge } from '@coreui/react'
+import { CAlert, CBadge, CCard, CCardBody } from '@coreui/react'
 import { ReactFlowProvider } from '@xyflow/react'
 import { FaInfoCircle } from 'react-icons/fa'
-import { Card, CardBody } from 'reactstrap'
 import { useExportLabelTree } from '../../actions/label/label-api'
 import BaseModal from '../../components/BaseModal'
 import HelpButton from '../../components/HelpButton'
@@ -181,8 +180,8 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
                 isShowCancelButton={false}
             >
                 <ReactFlowProvider>
-                    <Card>
-                        <CardBody>
+                    <CCard>
+                        <CCardBody>
                             {!readonly && (
                                 <CAlert color="secondary" dismissible>
                                     <div className="d-flex align-items-center">
@@ -202,8 +201,8 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
                                 visLevel={visLevel}
                                 readonly={readonly}
                             />
-                        </CardBody>
-                    </Card>
+                        </CCardBody>
+                    </CCard>
                 </ReactFlowProvider>
             </BaseModal>
 
