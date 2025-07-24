@@ -1,4 +1,3 @@
-import { Badge, Table } from 'reactstrap'
 import { useWorkers } from '../../actions/worker/worker-api'
 import { CenteredSpinner } from '../../components/CenteredSpinner'
 import { createColumnHelper } from '@tanstack/react-table'
