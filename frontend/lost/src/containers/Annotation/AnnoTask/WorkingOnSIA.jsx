@@ -1,17 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { connect } from 'react-redux'
-import {
-    Button,
-    Col,
-    Progress,
-    Row,
-} from 'reactstrap'
 import actions from '../../../actions'
 import { getColor } from './utils'
 import { useGetInstructions } from '../../../containers/Instruction/instruction_api' // Import API hook
 import ViewInstruction from '../../../containers/Instruction/ViewInstruction' // Import ViewInstruction component
 import { showDecision } from '../../../components/Notification' // Import showDecision function
 import { useGetCurrentInstruction } from '../../../actions/annoTask/anno_task_api'
+import { CRow, CCol, CProgress } from '@coreui/react'
+import CoreIconButton from '../../../components/CoreIconButton'
+import { faEye } from '@fortawesome/free-solid-svg-icons'
 
 const { siaLayoutUpdate } = actions
 
@@ -79,22 +76,22 @@ const WorkingOnSIA = ({ annoTask, siaLayoutUpdate }) => {
 
     return (
         <div ref={myRef} style={{ position: 'relative' }}>
-            <Row>
-                <Col xs="2" md="2" xl="2">
+            <CRow>
+                <CCol xs="2" md="2" xl="2">
                     <div className="callout callout-danger">
                         <small className="text-muted">Working on</small>
                         <br />
                         <strong>{annoTask.name}</strong>
                     </div>
-                </Col>
-                <Col xs="2" md="2" xl="2">
+                </CCol>
+                <CCol xs="2" md="2" xl="2">
                     <div className="callout callout-info">
                         <small className="text-muted">Pipeline</small>
                         <br />
                         <strong>{annoTask.pipelineName}</strong>
                     </div>
-                </Col>
-                <Col xs="2" md="2" xl="2">
+                </CCol>
+                <CCol xs="2" md="2" xl="2">
                     <div className="callout callout-warning">
                         <small className="text-muted">Annotations</small>
                         <br />
@@ -102,8 +99,8 @@ const WorkingOnSIA = ({ annoTask, siaLayoutUpdate }) => {
                             {annoTask.finished}/{annoTask.size}
                         </strong>
                     </div>
-                </Col>
-                <Col xs="2" md="2" xl="2">
+                </CCol>
+                <CCol xs="2" md="2" xl="2">
                     <div className="callout callout-success">
                         <small className="text-muted">Seconds/Annotation</small>
                         <br />
@@ -111,17 +108,17 @@ const WorkingOnSIA = ({ annoTask, siaLayoutUpdate }) => {
                             &#8709; {annoTask.statistic.secondsPerAnno}
                         </strong>
                     </div>
-                </Col>
-                <Col xs="2" md="2" xl="2">
-                    <Button
+                </CCol>
+                <CCol xs="2" md="2" xl="2">
+                    <CoreIconButton
                         color="primary"
                         style={{ marginTop: '25px' }}
                         onClick={handleViewInstruction}
-                    >
-                        <i className="fa fa-eye"></i> Show Instructions
-                    </Button>
-                </Col>
-            </Row>
+                        text={"Show Instructions"}
+                        icon={faEye}
+                    />
+                </CCol>
+            </CRow>
             <div className="clearfix">
                 <div className="float-left">
                     <strong>{progress}%</strong>
@@ -132,7 +129,7 @@ const WorkingOnSIA = ({ annoTask, siaLayoutUpdate }) => {
                     </small>
                 </div>
             </div>
-            <Progress
+            <CProgress
                 className="progress-xs"
                 color={getColor(progress)}
                 value={progress}

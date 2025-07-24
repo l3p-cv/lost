@@ -1,4 +1,4 @@
-import { CButtonToolbar, CCol, CFormInput, CRow } from '@coreui/react'
+import { CButtonToolbar, CCard, CCardBody, CCardHeader, CCol, CFormInput, CModal, CProgress, CRow } from '@coreui/react'
 import { faChartBar, faCheck, faPencil, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { createColumnHelper } from '@tanstack/react-table'
 import { useCallback, useEffect, useState, useMemo } from 'react'
@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next'
 import { FaFilter, FaTrashAlt } from 'react-icons/fa'
 import { useDispatch, useSelector } from 'react-redux'
 import 'react-table/react-table.css'
-import { Card, CardBody, CardHeader, Col, Modal, Pagination, Progress, Row } from 'reactstrap'
 import IconButton from '../../../components/IconButton'
 import AmountPerLabel from './AmountPerLabel'
 import { getColor } from './utils'
@@ -166,22 +165,22 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
         if (specificAnnoTaskStatistic) {
             return (
                 <div>
-                    <Row>
-                        <Col xs="3" md="3" xl="3">
+                    <CRow>
+                        <CCol xs="3" md="3" xl="3">
                             <div className="callout callout-danger">
                                 <small className="text-muted">Working on</small>
                                 <br />
                                 <strong>{specificAnnoTaskStatistic.name}</strong>
                             </div>
-                        </Col>
-                        <Col xs="3" md="3" xl="3">
+                        </CCol>
+                        <CCol xs="3" md="3" xl="3">
                             <div className="callout callout-info">
                                 <small className="text-muted">Pipeline</small>
                                 <br />
                                 <strong>{specificAnnoTaskStatistic.pipelineName}</strong>
                             </div>
-                        </Col>
-                        <Col xs="3" md="3" xl="3">
+                        </CCol>
+                        <CCol xs="3" md="3" xl="3">
                             <div className="callout callout-warning">
                                 <small className="text-muted">Annotations</small>
                                 <br />
@@ -190,8 +189,8 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
                                     {specificAnnoTaskStatistic.size}
                                 </strong>
                             </div>
-                        </Col>
-                        <Col xs="3" md="3" xl="3">
+                        </CCol>
+                        <CCol xs="3" md="3" xl="3">
                             <div className="callout callout-success">
                                 <small className="text-muted">Seconds/Annotation</small>
                                 <br />
@@ -200,8 +199,8 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
                                     {specificAnnoTaskStatistic.statistic.secondsPerAnno}
                                 </strong>
                             </div>
-                        </Col>
-                    </Row>
+                        </CCol>
+                    </CRow>
                     <AmountPerLabel
                         stats={specificAnnoTaskStatistic.statistic.amountPerLabel}
                     />
@@ -213,28 +212,36 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
     }
 
     const renderStatisticModal = () => (
-        <Modal
-            isOpen={modalIsOpen}
-            onRequestClose={closeModal}
+        <CModal
+            visible={modalIsOpen}
+            onClose={() => {
+                if (modalIsOpen){
+                    closeModal()
+                }
+            }}
             ariaHideApp={false}
             contentLabel="Logfile"
         >
-            <Card style={{ height: '90%' }}>
-                <CardHeader>
+            <CCard style={{ height: '90%' }}>
+                <CCardHeader>
                     <i className="icon-chart"></i> Statistics
-                </CardHeader>
-                <CardBody style={{ height: '100%' }}>{renderStatistic()}</CardBody>
-            </Card>
+                </CCardHeader>
+                <CCardBody style={{ height: '100%' }}>{renderStatistic()}</CCardBody>
+            </CCard>
             <CRow className="justify-content-end" style={{ marginRight: '5px' }}>
                 <IconButton
                     isOutline={false}
                     color="secondary"
                     icon={faTimes}
                     text="Close"
-                    onClick={closeModal}
+                    onClick={() => {
+                        if (modalIsOpen){
+                            closeModal()
+                        }
+                    }}
                 />
             </CRow>
-        </Modal>
+        </CModal>
     )
 
     const defineColumns = () => {
@@ -290,7 +297,7 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
                                     </small>
                                 </div>
                             </div>
-                            <Progress
+                            <CProgress
                                 className="progress-xs"
                                 color={getColor(progress)}
                                 value={progress}
