@@ -1,6 +1,6 @@
 import { useNodesData, useReactFlow } from '@xyflow/react'
 import { useCallback } from 'react'
-import { Input, Modal, ModalBody, ModalHeader } from 'reactstrap'
+import { CFormInput, CModal, CModalBody, CModalHeader } from '@coreui/react'
 import Table from '../../globalComponents/modals/Table'
 import { LoopNodeData } from '../nodes'
 
@@ -30,16 +30,21 @@ export const LoopModal = ({ nodeId, isOpen, toggle }: LoopModalProps) => {
 
     return (
         <>
-            <Modal size="lg" isOpen={isOpen} toggle={toggle}>
-                <ModalHeader toggle={toggle}>Loop</ModalHeader>
-                <ModalBody>
+            <CModal size="lg" visible={isOpen} onClose={() => {
+                    if (isOpen){
+                        toggle();
+                    }
+                }}
+            >
+                <CModalHeader>Loop</CModalHeader>
+                <CModalBody>
                     <Table
                         data={[
                             {
                                 key: 'Max Iteration',
                                 value:
                                     typeof loopNodeData.maxIteration === 'number' ? (
-                                        <Input
+                                        <CFormInput
                                             min={-1}
                                             onInput={onInput}
                                             defaultValue={loopNodeData.maxIteration}
@@ -53,8 +58,8 @@ export const LoopModal = ({ nodeId, isOpen, toggle }: LoopModalProps) => {
                             },
                         ]}
                     />
-                </ModalBody>
-            </Modal>
+                </CModalBody>
+            </CModal>
         </>
     )
 }

@@ -1,11 +1,11 @@
 import { faCheck, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { useNodesData, useReactFlow } from '@xyflow/react'
 import { isEmpty } from 'lodash'
-import { Input, InputGroup } from 'reactstrap'
 import { useDeleteLabel, useUpdateLabel } from '../../../actions/label/label-api'
 import IconButton from '../../../components/IconButton'
 import { getContrastColor } from '../../../utils/color-util'
 import { LabelEditorNodeData } from './LabelEditorNode'
+import { CFormInput, CInputGroup } from '@coreui/react'
 
 export interface LabelEditorControlsProps {
   nodeId: string
@@ -53,8 +53,8 @@ const LabelEditorControls = ({
   return !isEmpty(nodeId) ? (
     <>
       <b>Edit Label</b>
-      <InputGroup>
-        <Input
+      <CInputGroup>
+        <CFormInput
           className="edit-label-name"
           type="text"
           name="name"
@@ -64,7 +64,7 @@ const LabelEditorControls = ({
             updateNodeData(nodeId, { name: e.target.value })
           }}
         />
-        <Input
+        <CFormInput
           className="edit-label-description"
           type="text"
           name="description"
@@ -74,7 +74,7 @@ const LabelEditorControls = ({
             updateNodeData(nodeId, { description: e.target.value })
           }}
         />
-        <Input
+        <CFormInput
           type="text"
           name="abbreviation"
           placeholder="abbreviation"
@@ -83,7 +83,7 @@ const LabelEditorControls = ({
             updateNodeData(nodeId, { abbreviation: e.target.value })
           }}
         />
-        <Input
+        <CFormInput
           type="text"
           name="extID"
           placeholder="external ID"
@@ -92,15 +92,15 @@ const LabelEditorControls = ({
             updateNodeData(nodeId, { externalId: e.target.value })
           }}
         />
-        <Input
+        <CFormInput
           type="text"
           value={`ID: ${nodeId}`}
           disabled
         />
-        <Input
+        <CFormInput
           type="color"
           className="edit-label-color"
-          value={labelData.color || '#ffffff'}
+          value={labelData.color || '#ffffffff'}
           onChange={(e) => {
             updateNodeData(nodeId, {
               color: e.target.value || '#fff',
@@ -122,7 +122,7 @@ const LabelEditorControls = ({
           text="Delete"
           disabled={getEdges().some((edge) => edge.source === nodeId)}
         />
-      </InputGroup>
+      </CInputGroup>
     </>
   ) : null
 }
