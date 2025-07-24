@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
-import { Badge } from 'reactstrap';
+import { CBadge } from '@coreui/react';
 import './datatable.css';
 
 const Datatable = ({
@@ -100,9 +100,9 @@ const smallText = (text) => <p className="small text-muted">{text}</p>
 
 const RenderBadge = ({ text, color, onClick }) => (
     <div>
-        <Badge color={color} onClick={onClick || null}>
+        <CBadge color={color} onClick={onClick || null}>
             {text}
-        </Badge>
+        </CBadge>
     </div>
 )
 
@@ -123,7 +123,7 @@ const RenderStatus = ({ lastActive }) => {
     }
     return (
         <div>
-            <Badge color={status === 'Online' ? 'success' : 'danger'}>{status}</Badge>
+            <CBadge color={status === 'Online' ? 'success' : 'danger'}>{status}</CBadge>
             {smallText(`Last Active: ${lastActive.toLocaleString()}`)}
         </div>
     )
