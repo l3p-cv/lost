@@ -1,8 +1,7 @@
-import { CContainer, CButton, CTooltip } from '@coreui/react'
+import { CContainer, CButton, CTooltip, CProgress } from '@coreui/react'
 import { faEye, faPlay, faPause, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
 import 'react-table/react-table.css'
-import { Progress } from 'reactstrap'
 import {
     usePipelinesPaged, useTemplates,
     usePausePipeline, usePlayPipeline, useDeletePipeline
@@ -172,7 +171,7 @@ export const RunningPipelines = () => {
                     if (props.row.original.progress === 'ERROR') return <div>ERROR</div>
                     if (props.row.original.progress === 'PAUSED') return <div>PAUSED</div>
                     return (
-                        <Progress
+                        <CProgress
                             className="progress-xs rt-progress"
                             color={getColor(progress)}
                             value={progress}

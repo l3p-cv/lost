@@ -1,5 +1,5 @@
-import { Input, Modal, ModalBody, ModalHeader } from 'reactstrap'
 import { usePipelineLogs } from '../../../actions/pipeline/pipeline_api'
+import { CFormTextarea, CModal, CModalBody, CModalHeader } from '@coreui/react'
 
 interface PipelineLogModalProps {
     pipelineId: string
@@ -14,22 +14,26 @@ export const PipelineLogModal = ({
     const { data: logs, isLoading, isError } = usePipelineLogs(pipelineId, isOpen)
 
     return (
-        <Modal isOpen={isOpen} toggle={toggle} size="xl">
-            <ModalHeader toggle={toggle}>Pipeline Logs</ModalHeader>
-            <ModalBody>
+        <CModal visible={isOpen} onClose={ () => {
+            if (isOpen){
+                    toggle()
+            }
+        }}   
+        size="xl">
+            <CModalHeader>Pipeline Logs</CModalHeader>
+            <CModalBody>
                 {isLoading ? (
-                    <Input type="textarea" value="Loading logs..." readOnly rows={10} />
+                    <CFormTextarea value="Loading logs..." readOnly rows={10} />
                 ) : isError ? (
-                    <Input
-                        type="textarea"
+                    <CFormTextarea
                         value="Error fetching logs."
                         readOnly
                         rows={10}
                     />
                 ) : (
-                    <Input type="textarea" value={logs} readOnly rows={10} />
+                    <CFormTextarea value={logs} readOnly rows={10} />
                 )}
-            </ModalBody>
-        </Modal>
+            </CModalBody>
+        </CModal>
     )
 }
