@@ -15,7 +15,7 @@ import {
     transform,
 } from 'lost-sia'
 import { useNavigate } from 'react-router-dom'
-import { Badge, Button } from 'reactstrap'
+import { CBadge, CButton } from '@coreui/react'
 import {
     INFERENCE_MODEL_TYPE,
     useTritonInference,
@@ -691,11 +691,11 @@ const SiaWrapper = (props) => {
                             gap: '10px',
                         }}
                     >
-                        <Badge color="dark">
+                        <CBadge color="dark">
                             Inference Model:
                             {' ' + props.canvasConfig.inferenceModel.displayName}
-                        </Badge>
-                        <Button
+                        </CBadge>
+                        <CButton
                             onClick={handleAddAnnotation}
                             disabled={
                                 isInferenceLoading ||
@@ -706,7 +706,7 @@ const SiaWrapper = (props) => {
                             }
                         >
                             Infer Annotation
-                        </Button>
+                        </CButton>
                     </div>
                 )}
             <div>

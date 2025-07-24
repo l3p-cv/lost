@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import actions from '../../../actions'
 import MIAImage from './NewMIAImage'
 
-import { Alert, Button } from 'reactstrap'
+import { CAlert, CButton } from '@coreui/react'
 import './Cluster.scss'
 
 const { getMiaAnnos, getWorkingOnAnnoTask, getMiaLabel, finishMia } = actions
@@ -46,11 +46,11 @@ const Cluster = () => {
                 return (
                     <div style={{ display: 'flex', justifyContent: 'center' }}>
                         <div>
-                            <Alert color="success">
+                            <CAlert color="success">
                                 No more images available. Please press finish in order to
                                 continue the pipeline.
-                            </Alert>
-                            <Button
+                            </CAlert>
+                            <CButton
                                 color="primary"
                                 size="lg"
                                 onClick={() =>
@@ -63,7 +63,7 @@ const Cluster = () => {
                                 }
                             >
                                 <i className="fa fa-check"></i> Finish Task
-                            </Button>{' '}
+                            </CButton>{' '}
                         </div>
                     </div>
                 )
