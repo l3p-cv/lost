@@ -1,10 +1,10 @@
 import React from 'react'
 
-import { Card, CardBody } from 'reactstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCode } from '@fortawesome/free-solid-svg-icons'
 
 import vanStripes from '/assets/background.svg'
+import { CCard, CCardBody } from '@coreui/react'
 
 const TabJupyterLab = (props) => {
     const onCardClick = () =>
@@ -21,12 +21,12 @@ const TabJupyterLab = (props) => {
 
     if (props.jupyterLabUrl !== '') {
         return (
-            <Card
+            <CCard
                 onClick={() => onCardClick()}
                 className="text-white"
                 style={{ backgroundImage: `url(${vanStripes})`, cursor: 'pointer' }}
             >
-                <CardBody className="pb-0 " style={{ height: '175px' }}>
+                <CCardBody className="pb-0 " style={{ height: '175px' }}>
                     <div style={{ fontSize: '2em' }}>JupyterLab</div>
                     <div
                         style={{
@@ -40,8 +40,8 @@ const TabJupyterLab = (props) => {
                     >
                         <FontAwesomeIcon outline size="lg" icon={faCode} />
                     </div>
-                </CardBody>
-            </Card>
+                </CCardBody>
+            </CCard>
         )
     } else {
         return (

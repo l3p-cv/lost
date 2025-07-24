@@ -2,7 +2,6 @@ import { faEdit, faPlus, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 import { useState } from 'react'
 import ReactTable from 'react-table'
 import { useToggle } from 'react-use'
-import { Badge } from 'reactstrap'
 import {
     INFERENCE_MODEL_TASK_TYPE,
     INFERENCE_MODEL_TYPE,
@@ -14,6 +13,7 @@ import HelpButton from '../../components/HelpButton'
 import IconButton from '../../components/IconButton'
 import * as Notification from '../../components/Notification'
 import { InferenceModalConfigModal } from './InferenceModelConfigModal'
+import { CBadge } from '@coreui/react'
 
 export const TabInferenceModels = () => {
     const { data, isLoading, error } = useModels()
@@ -91,7 +91,7 @@ export const TabInferenceModels = () => {
                         accessor: 'modelType',
                         Cell: (row) => {
                             return (
-                                <Badge
+                                <CBadge
                                     color={
                                         row.original.modelType ==
                                         INFERENCE_MODEL_TYPE.YOLO
@@ -100,7 +100,7 @@ export const TabInferenceModels = () => {
                                     }
                                 >
                                     {row.original.modelType}
-                                </Badge>
+                                </CBadge>
                             )
                         },
                     },
@@ -110,7 +110,7 @@ export const TabInferenceModels = () => {
                         accessor: 'taskType',
                         Cell: (row) => {
                             return (
-                                <Badge
+                                <CBadge
                                     color={
                                         row.original.taskType ==
                                         INFERENCE_MODEL_TASK_TYPE.DETECTION
@@ -128,7 +128,7 @@ export const TabInferenceModels = () => {
                                             INFERENCE_MODEL_TASK_TYPE.SEGMENTATION
                                           ? 'SEGMENTATION'
                                           : 'UNKNOWN'}
-                                </Badge>
+                                </CBadge>
                             )
                         },
                     },

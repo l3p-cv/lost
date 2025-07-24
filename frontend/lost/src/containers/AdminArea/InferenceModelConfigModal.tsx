@@ -1,17 +1,5 @@
 import { isEmpty } from 'lodash'
 import React, { useEffect, useState } from 'react'
-import Select from 'react-select'
-import {
-    Button,
-    Form,
-    FormGroup,
-    Input,
-    Label,
-    Modal,
-    ModalBody,
-    ModalFooter,
-    ModalHeader,
-} from 'reactstrap'
 import {
     CreateInferenceModelRequest,
     INFERENCE_MODEL_TASK_TYPE,
@@ -21,6 +9,8 @@ import {
     useTritonModels,
     useUpdateInferenceModel,
 } from '../../actions/inference-model/model-api'
+import { CButton, CCol, CForm, CFormInput, CFormLabel, CFormSelect, CInputGroup, CModal, CModalBody, CModalFooter, CModalHeader, CRow } from '@coreui/react'
+import CoreIconButton from '../../components/CoreIconButton'
 
 type ModelModalProps = {
     isOpen: boolean
@@ -148,41 +138,48 @@ export const InferenceModalConfigModal: React.FC<ModelModalProps> = ({
     const submitting = createMutation.isLoading || updateMutation.isLoading
 
     return (
-        <Modal isOpen={isOpen} toggle={toggle}>
-            <ModalHeader toggle={toggle}>
+        <CModal visible={isOpen} onClose={ () =>{
+            if (isOpen){
+                toggle()
+            }}}>
+            <CModalHeader>
                 {isEditMode ? 'Edit Inference Model' : 'Add Inference Model'}
-            </ModalHeader>
-            <Form onSubmit={handleSubmit}>
-                <ModalBody>
-                    <FormGroup>
-                        <Label for="serverUrl">Triton Server URL (gRPC)</Label>
-                        <Input
+            </CModalHeader>
+            <CForm onSubmit={handleSubmit}>
+                <CModalBody>
+                    <CFormLabel>Triton Server URL (gRPC)</CFormLabel>
+                    <CInputGroup>
+                        <CFormInput
                             name="serverUrl"
                             value={formData.serverUrl}
                             onChange={handleInputChange}
                             placeholder="gRPC URL"
                             required
                         />
-                        {!isValidGrpcUrl(formData.serverUrl) && (
-                            <small className="text-danger">Enter a valid gRPC URL</small>
-                        )}
+                        
 
                         {isValidGrpcUrl(formData.serverUrl) && (
-                            <Button
-                                size="sm"
-                                className="mt-2"
+                            <CButton
                                 onClick={handleFetchModels}
                                 disabled={isFetching}
+                                style={{ height: '100%' }}
+                                color='primary'
                             >
                                 {isFetching ? 'Fetching...' : 'Fetch Models'}
-                            </Button>
+                            </CButton>
                         )}
-                    </FormGroup>
+                    </CInputGroup>
+                    <CRow>
+                    {!isValidGrpcUrl(formData.serverUrl) && (
+                            <small className="text-danger">Enter a valid gRPC URL</small>
+                    )}
+                    </CRow>
 
                     {modelsFetched && modelOptions.length > 0 && (
-                        <FormGroup>
-                            <Label>Model</Label>
-                            <Select
+                    <>
+                        <CFormLabel>Model</CFormLabel>
+                        <CInputGroup>
+                            <CFormSelect
                                 options={modelOptions}
                                 // @ts-expect-error using custom form data
                                 onChange={handleModelSelect}
@@ -191,22 +188,21 @@ export const InferenceModalConfigModal: React.FC<ModelModalProps> = ({
                                 )}
                                 placeholder="Select a model"
                             />
-                        </FormGroup>
+                        </CInputGroup>
+                    </>
                     )}
-
-                    <FormGroup>
-                        <Label for="displayName">Display Name</Label>
-                        <Input
+                    <CFormLabel>Display Name</CFormLabel>
+                    <CInputGroup>
+                        <CFormInput
                             name="displayName"
                             value={formData.displayName}
                             onChange={handleInputChange}
                             placeholder="Display Name"
                         />
-                    </FormGroup>
-
-                    <FormGroup>
-                        <Label>Task Type</Label>
-                        <Select
+                    </CInputGroup>
+                    <CFormLabel>Task Type</CFormLabel>
+                    <CInputGroup>
+                        <CFormSelect
                             options={taskTypeOptions}
                             value={taskTypeOptions.find(
                                 (opt) => opt.value === formData.taskType,
@@ -214,11 +210,10 @@ export const InferenceModalConfigModal: React.FC<ModelModalProps> = ({
                             // @ts-expect-error using custom form data
                             onChange={handleSelectChange<number>('taskType')}
                         />
-                    </FormGroup>
-
-                    <FormGroup>
-                        <Label>Model Type</Label>
-                        <Select
+                    </CInputGroup>
+                    <CFormLabel>Model Type</CFormLabel>              
+                    <CInputGroup>
+                        <CFormSelect
                             options={modelTypeOptions}
                             value={modelTypeOptions.find(
                                 (opt) => opt.value === formData.modelType,
@@ -226,32 +221,30 @@ export const InferenceModalConfigModal: React.FC<ModelModalProps> = ({
                             // @ts-expect-error using custom form data
                             onChange={handleSelectChange<string>('modelType')}
                         />
-                    </FormGroup>
+                    </CInputGroup>
 
-                    <FormGroup>
-                        <Label for="description">Description</Label>
-                        <Input
+                    <CFormLabel>Description</CFormLabel>                        
+                    <CInputGroup>
+                        <CFormInput
                             type="textarea"
                             name="description"
                             value={formData.description}
                             onChange={handleInputChange}
                         />
-                    </FormGroup>
-                </ModalBody>
+                    </CInputGroup>
+                </CModalBody>
 
-                <ModalFooter>
-                    <Button color="secondary" onClick={toggle} disabled={submitting}>
-                        Cancel
-                    </Button>
-                    <Button
+                <CModalFooter>
+                    <CoreIconButton color="primary" onClick={toggle} disabled={submitting} text={"Cancel"}/>
+                    <CButton
                         color="primary"
                         type="submit"
-                        disabled={submitting || !isFormValid()}
+                        // disabled={submitting || !isFormValid()}
                     >
                         {submitting ? 'Saving...' : isEditMode ? 'Update' : 'Create'}
-                    </Button>
-                </ModalFooter>
-            </Form>
-        </Modal>
+                    </CButton>
+                </CModalFooter>
+            </CForm>
+        </CModal>
     )
 }
