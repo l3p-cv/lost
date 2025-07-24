@@ -1,11 +1,11 @@
+import { CButton, CCollapse } from '@coreui/react'
 import { faAngleDown, faAngleUp, faInfo } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useState } from 'react'
-import { Button, Collapse } from 'reactstrap'
 
 const CollapseCustom = ({
     initOpen = false,
-    btnOutline = false,
+    btnOutline = '',
     btnColor = 'secondary',
     icon = faInfo,
     iconColor = '#00294B',
@@ -18,13 +18,12 @@ const CollapseCustom = ({
 
     return (
         <>
-            <Button
-                block
-                outline={btnOutline}
+            <CButton
+                variant={btnOutline}
                 className="text-left m-1 p-2"
                 color={btnColor}
                 onClick={toggle}
-                style={{ marginTop: 30, marginRight: 10, marginBottom: '1rem' }}
+                style={{ marginTop: 30, marginRight: 10, marginBottom: '1rem', width:"100%"}}
             >
                 <h5 className="m-0 p-0">
                     <FontAwesomeIcon icon={icon} color={iconColor} size="1x" />
@@ -38,18 +37,18 @@ const CollapseCustom = ({
                         />
                     </div>
                 </h5>
-            </Button>
-            <Collapse
+            </CButton>
+            <CCollapse
                 style={{
                     marginTop: '15px',
                     marginBottom: '5px',
                     marginLeft: '5px',
                     marginRight: '5px',
                 }}
-                isOpen={collapse}
+                visible={collapse}
             >
                 {children}
-            </Collapse>
+            </CCollapse>
         </>
     )
 }

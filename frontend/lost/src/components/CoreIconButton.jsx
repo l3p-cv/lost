@@ -5,7 +5,7 @@ import { CButton, CTooltip } from '@coreui/react'
 
 const CoreIconButton = ({
     isBack,
-    loadingSize = '2x',
+    loadingSize = '1x',
     isLoading = false,
     isForward,
     margin,
@@ -14,6 +14,7 @@ const CoreIconButton = ({
     size,
     isTextLeft,
     style,
+    id=undefined,
     type = 'button',
     disabled,
     onClick,
@@ -50,7 +51,7 @@ const CoreIconButton = ({
             )
         }
         const ic = iconButtonIcon ? (
-            <FontAwesomeIcon key="icon" icon={iconButtonIcon} />
+            <FontAwesomeIcon key="icon" icon={iconButtonIcon} size={loadingSize || '2x'} />
         ) : (
             ''
         )
@@ -70,6 +71,7 @@ const CoreIconButton = ({
         return (
             <CTooltip content={toolTip} placement={tTipPlacement}>
                 <CButton
+                    id={id}
                     size={size}
                     // type={type}
                     className={className}

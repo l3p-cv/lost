@@ -1,7 +1,7 @@
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import PropTypes from 'prop-types'
-import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap'
 import IconButton from './IconButton'
+import { CModal, CModalBody, CModalFooter, CModalHeader } from '@coreui/react'
 
 const BaseModal = ({
     key,
@@ -20,23 +20,28 @@ const BaseModal = ({
     const renderTitle = () => {
         if (title) {
             return (
-                <ModalHeader toggle={toggle}>
+                <CModalHeader onClick={ () => {
+                if (isOpen){
+                    toggle()
+                    onClosed()
+                }
+            }}>
                     <p style={{ fontSize: 18 }}>{title}</p>
-                </ModalHeader>
+                </CModalHeader>
             )
         }
         return null
     }
     const renderBody = () => {
         if (children) {
-            return <ModalBody>{children}</ModalBody>
+            return <CModalBody>{children}</CModalBody>
         }
         return null
     }
     const renderFooter = () => {
         return (
             isShowCancelButton && (
-                <ModalFooter>
+                <CModalFooter>
                     {[
                         footer || null,
                         isShowCancelButton ? (
@@ -50,25 +55,46 @@ const BaseModal = ({
                             ></IconButton>
                         ) : null,
                     ]}
-                </ModalFooter>
+                </CModalFooter>
             )
         )
     }
     return (
-        <Modal
+        // TODO: fix this as CModal... does not want to work...
+        // <Modal
+        //     key={key}
+        //     size={size}
+        //     isOpen={isOpen}
+        //     onClosed={onClosed}
+        //     toggle={toggle}
+        //     className={className}
+        //     style={style}
+        //     fullscreen={fullscreen}
+        // >
+        //     {renderTitle()}
+        //     {renderBody()}
+        //     {renderFooter()}
+        // </Modal>
+
+        <CModal
             key={key}
             size={size}
-            isOpen={isOpen}
-            onClosed={onClosed}
-            toggle={toggle}
-            className={className}
-            style={style}
-            fullscreen={fullscreen}
-        >
+            visible={isOpen}
+            // onClose={toggle}
+            onClose={ () => {
+                if (isOpen){
+                    toggle()
+                    onClosed()
+                }
+            }}
+            // className={className}
+            // style={style}
+            // fullscreen={fullscreen}
+        >     
             {renderTitle()}
             {renderBody()}
             {renderFooter()}
-        </Modal>
+        </CModal>
     )
 }
 

@@ -7,20 +7,8 @@ import {
     faTimes,
     faTrash,
 } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import saveAs from 'file-saver'
 import { useState } from 'react'
-import {
-    Button,
-    Form,
-    FormGroup,
-    Input,
-    Label,
-    Modal,
-    ModalBody,
-    ModalFooter,
-    ModalHeader,
-} from 'reactstrap'
 import {
     useCreateAndStartPipeline,
     useDeletePipeline,
@@ -32,7 +20,8 @@ import IconButton from '../../../components/IconButton'
 import GrayLine from '../globalComponents/GrayLine'
 import { alertDeletePipeline } from '../globalComponents/Sweetalert'
 import { PipelineLogModal } from './PipelineLogModal'
-import ToolbarTooltip from './ToolbarTooltip'
+import CoreIconButton from '../../../components/CoreIconButton'
+import { CForm, CFormInput, CFormLabel, CInputGroup, CModal, CModalBody, CModalFooter, CModalHeader } from '@coreui/react'
 
 const downloadJSON = (obj, fileName = 'data.json') => {
     const jsonString = JSON.stringify(obj, null, 2)
@@ -84,7 +73,8 @@ const Toolbar = (props) => {
                 toggle={toggleLogfileModal}
                 pipelineId={props.data?.id}
             />
-            <Button
+            {/* TODO: add tooltips */}
+            <CoreIconButton
                 className="pipeline-running-toolbar-button"
                 id="pipeline-button-download-start-definition"
                 onClick={() => {
@@ -95,31 +85,37 @@ const Toolbar = (props) => {
                 }}
                 color="info"
                 outline={true}
-            >
-                <FontAwesomeIcon icon={faFileDownload} size="2x" />
-            </Button>
+                icon={faFileDownload}
+                size='lg'
+                loadingSize='2x'
+                toolTip='Download Start Definition'
+            />
             {props.data && (
                 <>
-                    <Button
+                    <CoreIconButton
                         className="pipeline-running-toolbar-button"
                         id="pipeline-button-download-logfile"
                         onClick={toggleLogfileModal}
                         color="info"
                         outline={true}
-                    >
-                        <FontAwesomeIcon icon={faStickyNote} size="2x" />
-                    </Button>
-                    <Button
+                        size='lg'
+                        icon={faStickyNote}
+                        loadingSize='2x'
+                        toolTip='Show Logs'
+                    />
+                    <CoreIconButton
                         className="pipeline-running-toolbar-button"
                         id="pipeline-button-regenerate"
                         onClick={toggleModal}
                         color="success"
                         outline={true}
-                    >
-                        <FontAwesomeIcon icon={faRedo} size="2x" />
-                    </Button>
+                        size='lg'
+                        icon={faRedo}
+                        loadingSize='2x'
+                        toolTip='Regenerate'
+                    />
 
-                    <Button
+                    <CoreIconButton
                         className="pipeline-running-toolbar-button"
                         id="pipeline-button-play-pause"
                         onClick={
@@ -132,85 +128,70 @@ const Toolbar = (props) => {
                             : "warning"
                         }
                         outline={true}
-                    >
-                        {props.data.progress === 'PAUSED' ? (
-                            <FontAwesomeIcon icon={faPlay} size="2x" />
+                        size='lg'
+                        icon={props.data.progress === 'PAUSED' ? (
+                            faPlay 
                         ) : (
-                            <FontAwesomeIcon icon={faPause} size="2x" />
+                            faPause
                         )}
-                    </Button>
-                    <Button
+                        loadingSize='2x'
+                        toolTip={props.data.progress === 'PAUSED' ? 'Play Pipeline' : 'Pause Pipeline'}
+                    />
+                    <CoreIconButton
                         className="pipeline-running-toolbar-button"
                         id="pipeline-button-delete-pipeline"
                         onClick={deletePipelineHandler}
                         color="danger"
                         outline={true}
-                    >
-                        <FontAwesomeIcon icon={faTrash} size="2x" />
-                    </Button>
+                        size='lg'
+                        icon={faTrash}
+                        loadingSize='2x'
+                        toolTip='Delete Pipeline'
+                    />
                     <GrayLine />
-
-                    <ToolbarTooltip
-                        target="pipeline-button-delete-pipeline"
-                        text="Delete Pipeline"
-                    />
-                    <ToolbarTooltip
-                        target="pipeline-button-download-logfile"
-                        text="Show Logs"
-                    />
-                    <ToolbarTooltip
-                        target="pipeline-button-play-pause"
-                        text={props.data.progress === 'PAUSED' ? 'Play' : 'Pause'}
-                    />
-                    <ToolbarTooltip
-                        target="pipeline-button-regenerate"
-                        text="Regenerate"
-                    />
-                    <ToolbarTooltip
-                        target="pipeline-button-download-start-definition"
-                        text="Download Start Definition"
-                    />
-                    <Modal
-                        isOpen={modal}
-                        toggle={toggleModal}
+                    <CModal
+                        visible={modal}
+                        onClose={toggleModal}
                         className={props.className}
                     >
-                        <ModalHeader toggle={toggleModal}>
+                        <CModalHeader>
                             Regenerate Pipeline
-                        </ModalHeader>
-                        <ModalBody>
-                            <Form>
-                                <FormGroup>
-                                    <Label for="name">Pipeline Name</Label>
+                        </CModalHeader>
+                        <CModalBody>
+                            <CForm>
+                                <CFormLabel>Pipeline Name</CFormLabel>
+                                    &nbsp;
                                     <HelpButton
                                         id={'pipeline-start-name'}
                                         text={
                                             'Give your pipeline a name so that you can identify it later.'
                                         }
                                     />
-                                    <Input
+                                <CInputGroup>
+                                    <CFormInput
                                         defaultValue={name}
                                         onChange={(e) => setName(e.target.value)}
                                         type="text"
                                     />
-                                </FormGroup>
-                                <FormGroup>
-                                    <Label for="instruction">Pipeline Description</Label>
-                                    <HelpButton
+                                </CInputGroup>
+                                <CFormLabel>Pipeline Description</CFormLabel>
+                                &nbsp;
+                                <HelpButton
                                         id={'pipeline-start-desc'}
                                         text={
                                             'Give your pipeline a description so that you still know later what you started it for.'
                                         }
                                     />
-                                    <Input
+                                <CInputGroup>                                    
+                                    <CFormInput
                                         defaultValue={description}
                                         onChange={(e) => setDescription(e.target.value)}
                                         type="text"
                                     />
-                                </FormGroup>
-                            </Form>
-                        </ModalBody>
-                        <ModalFooter>
+                                </CInputGroup>
+                            </CForm>
+                        </CModalBody>
+                        <CModalFooter>
                             <IconButton
                                 isOutline={false}
                                 color="primary"
@@ -219,15 +200,8 @@ const Toolbar = (props) => {
                                 text="Regenerate"
                                 onClick={regeneratePipelineHandler}
                             ></IconButton>
-                            <IconButton
-                                isOutline={false}
-                                color="secondary"
-                                icon={faTimes}
-                                text="Close"
-                                onClick={toggleModal}
-                            ></IconButton>
-                        </ModalFooter>
-                    </Modal>
+                        </CModalFooter>
+                    </CModal>
                 </>
             )}
         </div>

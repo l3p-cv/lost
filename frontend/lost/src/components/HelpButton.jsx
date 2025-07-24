@@ -14,6 +14,7 @@ const HelpButton = ({ text, id, disabled }) => {
                     id={id}
                     disabled={disabled}
                     size="sm"
+                    loadingSize='1x'
                     style={{
                         borderRadius: "50%", //not needed???
                         width: "23px",

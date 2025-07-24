@@ -1,6 +1,5 @@
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { connect } from 'react-redux'
-import { Modal, ModalFooter } from 'reactstrap'
 import actionsAll from '../../../../actions'
 import IconButton from '../../../../components/IconButton'
 import AnnoTaskModal from './types/AnnoTaskModal'
@@ -8,6 +7,7 @@ import DataExportModal from './types/DataExportModal'
 import DatasourceModal from './types/DatasourceModal'
 import LoopModal from './types/LoopModal'
 import ScriptModal from './types/ScriptModal'
+import { CModal, CModalFooter } from '@coreui/react'
 
 const { siaReviewSetElement, chooseAnnoTask, forceAnnotationRelease, changeUser } =
     actionsAll
@@ -39,9 +39,13 @@ const BaseModal = (props) => {
 
     const renderModals = () => {
         return (
-            <Modal size="lg" isOpen={props.modalOpened} toggle={props.toggleModal}>
+            <CModal size="lg" visible={props.modalOpened} onClose={() => {
+                    if (props.modalOpened){
+                        props.toggleModal()
+                    }
+                }}>
                 {selectModal()}
-                <ModalFooter>
+                <CModalFooter>
                     <IconButton
                         color="secondary"
                         isOutline={false}
@@ -49,8 +53,8 @@ const BaseModal = (props) => {
                         text="Close"
                         onClick={props.toggleModal}
                     />
-                </ModalFooter>
-            </Modal>
+                </CModalFooter>
+            </CModal>
         )
     }
 
