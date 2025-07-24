@@ -1,7 +1,7 @@
 # Tech Stack
 
 ## Frontend
-1. React, Redux, Reactstrap + CORE UI
+1. React, Redux, CORE UI
 
 ## Backend
 1. FLASK, SQLAlchemy, RESTplus
