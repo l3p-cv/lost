@@ -1,9 +1,9 @@
 import { faPencilAlt } from '@fortawesome/free-solid-svg-icons'
 import { Handle, Node, NodeProps, Position } from '@xyflow/react'
-import { Progress } from 'reactstrap'
 import NodeBody from '../../globalComponents/node-structure/NodeBody'
 import NodeFooter from '../../globalComponents/node-structure/NodeFooter'
 import NodeHeader from '../../globalComponents/node-structure/NodeHeader'
+import { CProgress } from '@coreui/react'
 
 export type LiveAnnoTaskNode = Node<
     {
@@ -14,6 +14,7 @@ export type LiveAnnoTaskNode = Node<
     'liveAnnoTask'
 >
 
+// alert('old-lib.js loaded on ' + window.location.pathname);
 export const LiveAnnoTaskNode = (props: NodeProps<LiveAnnoTaskNode>) => {
     return (
         <>
@@ -28,9 +29,9 @@ export const LiveAnnoTaskNode = (props: NodeProps<LiveAnnoTaskNode>) => {
                         },
                     ]}
                 >
-                    <Progress value={props.data.progress}>
+                    <CProgress value={props.data.progress}>
                         {props.data.progress}%
-                    </Progress>
+                    </CProgress>
                 </NodeBody>
                 <NodeFooter footer={props.data.state}></NodeFooter>
             </div>
