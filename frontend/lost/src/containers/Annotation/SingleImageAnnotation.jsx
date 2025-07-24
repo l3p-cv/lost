@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
-import { Col, Row } from 'reactstrap'
+import { CCol, CRow } from '@coreui/react'
 
 import WorkingOnSIA from './AnnoTask/WorkingOnSIA'
 import SiaWrapper from './SIA/SiaWrapper'
@@ -47,10 +47,10 @@ const SingleImageAnnotation = (props) => {
         }
     }
     return (
-        <Row>
-            <Col>
-                <Row>
-                    <Col xs="12">
+        <CRow>
+            <CCol>
+                <CRow>
+                    <CCol xs="12">
                         <WorkingOnSIA annoTask={props.workingOnAnnoTask} />
                         <SiaWrapper
                             exampleImg={exampleImg}
@@ -58,10 +58,10 @@ const SingleImageAnnotation = (props) => {
                                 handleGetAnnoExample(exampleArgs)
                             }
                         />
-                    </Col>
-                </Row>
-            </Col>
-        </Row>
+                    </CCol>
+                </CRow>
+            </CCol>
+        </CRow>
     )
 }
 

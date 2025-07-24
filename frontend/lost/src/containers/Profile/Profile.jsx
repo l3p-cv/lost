@@ -1,12 +1,12 @@
 import { faDotCircle } from '@fortawesome/free-regular-svg-icons'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Col, Form, FormGroup, FormText, Input, Label } from 'reactstrap'
 import { useOwnUser, useUpdateOwnUser } from '../../actions/user/user_api'
 import BaseContainer from '../../components/BaseContainer'
 import { CenteredSpinner } from '../../components/CenteredSpinner'
 import IconButton from '../../components/IconButton'
 import * as Notification from '../../components/Notification'
+import { CCol, CForm, CFormInput, CFormLabel, CFormText, CInputGroup } from '@coreui/react'
 
 const Profile = () => {
     const { t } = useTranslation()
@@ -73,45 +73,45 @@ const Profile = () => {
     return (
         user && (
             <BaseContainer>
-                <Col xs="12" md="12" lg="12">
-                    <Form onSubmit={submit}>
-                        <FormGroup row>
-                            <Col md="3">
-                                <Label htmlFor="myprofile-userName">
+                <CCol xs="12" md="12" lg="12">
+                    <CForm onSubmit={submit}>
+                        <CInputGroup>
+                            <CCol md="3">
+                                <CFormLabel htmlFor="myprofile-userName">
                                     {t('myProfile.user')}
-                                </Label>
-                            </Col>
-                            <Col xs="12" md="5">
-                                <Input
+                                </CFormLabel>
+                            </CCol>
+                            <CCol xs="12" md="5">
+                                <CFormInput
                                     disabled
                                     defaultValue={user.user_name}
                                     type="text"
                                     name="myprofile-userName"
                                     placeholder=""
                                 />
-                                <FormText className="help-block">
+                                <CFormText className="help-block">
                                     {t('myProfile.usernameIsNotEditable')}
-                                </FormText>
-                            </Col>
-                            <Col xs="12" md="4">
-                                <Input
+                                </CFormText>
+                            </CCol>
+                            <CCol xs="12" md="4">
+                                <CFormInput
                                     disabled
                                     defaultValue={user.idx}
                                     type="text"
                                     name="myprofile-idx"
                                     placeholder=""
                                 />
-                                <FormText className="help-block">
+                                <CFormText className="help-block">
                                     {t('myProfile.userIdIsNotEditable')}
-                                </FormText>
-                            </Col>
-                        </FormGroup>
-                        <FormGroup row>
-                            <Col md="3">
-                                <Label htmlFor="myprofile-email">Email</Label>
-                            </Col>
-                            <Col xs="12" md="9">
-                                <Input
+                                </CFormText>
+                            </CCol>
+                        </CInputGroup>
+                        <CInputGroup>
+                            <CCol md="3">
+                                <CFormLabel htmlFor="myprofile-email">Email</CFormLabel>
+                            </CCol>
+                            <CCol xs="12" md="9">
+                                <CFormInput
                                     disabled={user.is_external}
                                     defaultValue={email}
                                     onChange={handleEmailChange}
@@ -121,17 +121,17 @@ const Profile = () => {
                                     placeholder="Enter email..."
                                     autoComplete="email"
                                 />
-                                <FormText className="help-block">
+                                <CFormText className="help-block">
                                     {t('myProfile.pleaseEnterYourEmail')}
-                                </FormText>
-                            </Col>
-                        </FormGroup>
-                        <FormGroup row>
-                            <Col md="3">
-                                <Label htmlFor="myprofile-name">Name</Label>
-                            </Col>
-                            <Col xs="12" md="5">
-                                <Input
+                                </CFormText>
+                            </CCol>
+                        </CInputGroup>
+                        <CInputGroup>
+                            <CCol md="3">
+                                <CFormLabel htmlFor="myprofile-name">Name</CFormLabel>
+                            </CCol>
+                            <CCol xs="12" md="5">
+                                <CFormInput
                                     disabled={user.is_external}
                                     defaultValue={firstName}
                                     onChange={handleFirstNameChange}
@@ -141,12 +141,12 @@ const Profile = () => {
                                     placeholder={t('myProfile.firstName')}
                                     autoComplete="firstName"
                                 />
-                                <FormText className="help-block">
+                                <CFormText className="help-block">
                                     {t('myProfile.pleaseEnterYourFirstName')}
-                                </FormText>
-                            </Col>
-                            <Col xs="12" md="4">
-                                <Input
+                                </CFormText>
+                            </CCol>
+                            <CCol xs="12" md="4">
+                                <CFormInput
                                     disabled={user.is_external}
                                     defaultValue={lastName}
                                     onChange={handleLastNameChange}
@@ -156,19 +156,19 @@ const Profile = () => {
                                     placeholder={t('myProfile.lastName')}
                                     autoComplete="lastName"
                                 />
-                                <FormText className="help-block">
+                                <CFormText className="help-block">
                                     {t('myProfile.pleaseEnterYourLastName')}
-                                </FormText>
-                            </Col>
-                        </FormGroup>
-                        <FormGroup row>
-                            <Col md="3">
-                                <Label htmlFor="myprofile-password">
+                                </CFormText>
+                            </CCol>
+                        </CInputGroup>
+                        <CInputGroup>
+                            <CCol md="3">
+                                <CFormLabel htmlFor="myprofile-password">
                                     {t('myProfile.password')}
-                                </Label>
-                            </Col>
-                            <Col xs="12" md="9">
-                                <Input
+                                </CFormLabel>
+                            </CCol>
+                            <CCol xs="12" md="9">
+                                <CFormInput
                                     disabled={user.is_external}
                                     defaultValue={password}
                                     onChange={handlePasswordChange}
@@ -178,19 +178,19 @@ const Profile = () => {
                                     placeholder={t('myProfile.password')}
                                     autoComplete="current-password"
                                 />
-                                <FormText className="help-block">
+                                <CFormText className="help-block">
                                     {t('myProfile.pleaseEnterNewPassword')}
-                                </FormText>
-                            </Col>
-                        </FormGroup>
-                        <FormGroup row>
-                            <Col md="3">
-                                <Label htmlFor="myprofile-confirm-password">
+                                </CFormText>
+                            </CCol>
+                        </CInputGroup>
+                        <CInputGroup>
+                            <CCol md="3">
+                                <CFormLabel htmlFor="myprofile-confirm-password">
                                     {t('myProfile.confirmPassword')}
-                                </Label>
-                            </Col>
-                            <Col xs="12" md="9">
-                                <Input
+                                </CFormLabel>
+                            </CCol>
+                            <CCol xs="12" md="9">
+                                <CFormInput
                                     defaultValue={confirmPassword}
                                     onChange={handleConfirmPasswordChange}
                                     type="password"
@@ -199,19 +199,19 @@ const Profile = () => {
                                     placeholder={t('myProfile.password')}
                                     autoComplete="current-password"
                                 />
-                                <FormText className="help-block">
+                                <CFormText className="help-block">
                                     {t('myProfile.pleaseConfirmNewPassword')}
-                                </FormText>
-                            </Col>
-                        </FormGroup>
+                                </CFormText>
+                            </CCol>
+                        </CInputGroup>
                         <IconButton
                             type="submit"
                             color="primary"
                             icon={faDotCircle}
                             text={t('myProfile.submit')}
                         />
-                    </Form>
-                </Col>
+                    </CForm>
+                </CCol>
             </BaseContainer>
         )
     )

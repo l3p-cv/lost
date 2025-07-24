@@ -1,12 +1,13 @@
 import React, { useEffect } from 'react'
 import { connect } from 'react-redux'
 
-import { Col, Row } from 'reactstrap'
+import { CCol, CRow } from '@coreui/react'
 // import MIA from './MIA/MIA'
 import SIAReview from './SIAReview/SIAReview'
 // import WorkingOnMIA from './AnnoTask/WorkingOnMIA'
 
 import actions from '../../actions'
+
 const { getWorkingOnAnnoTask } = actions
 
 const SiaReviewComponent = ({}) => {
@@ -15,16 +16,16 @@ const SiaReviewComponent = ({}) => {
     }, [getWorkingOnAnnoTask])
 
     return (
-        <Row>
-            <Col>
-                <Row>
-                    <Col xs="12" sm="12" lg="12">
+        <CRow>
+            <CCol>
+                <CRow>
+                    <CCol xs="12" sm="12" lg="12">
                         {/* <WorkingOnMIA annoTask={this.props.workingOnAnnoTask}></WorkingOnMIA> */}
                         <SIAReview />
-                    </Col>
-                </Row>
-            </Col>
-        </Row>
+                    </CCol>
+                </CRow>
+            </CCol>
+        </CRow>
     )
 }
 
