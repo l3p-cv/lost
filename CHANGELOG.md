@@ -12,10 +12,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Wrote db_patch for instruction data
 - A tourguide for lost onboarding using Joyride
 - Add support for model assisted image annotation, model management UI
-- Your stuff here
+- CoreIconButton has more options regarding shape and tooltip-placement
 ### Fixed
 - Removed centered spinner of CoreDataTable, when faced with empty data, to not block the rest of the page
 - Fixed execution of DBPatcher at wrong place on start up
+### Changed
+- Removed all instances of reactstrap library
+###
+- Removed IconButton2 from components
+- Removed unused Config from containers
+- Removed unused Iconbutton from globalComponents
+- Removed unused BaseModal from globalComponents
+- Removed ToolbarTooltip from containers/pipeline/running (replaced with CoreUI functionality)
 
 ## [2.7.0] - 2025-06-12 
 ### Added

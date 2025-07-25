@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import { useRef } from 'react'
-import { FaUpload } from 'react-icons/fa'
-import IconButton from './IconButton2'
+import CoreIconButton from './CoreIconButton'
+import { faUpload } from '@fortawesome/free-solid-svg-icons'
 
 const SelectFileButton = ({ text, className, accept, onSelect, disabled = false, color = "primary" }) => {
     const inputRef = useRef()
@@ -28,10 +28,12 @@ const SelectFileButton = ({ text, className, accept, onSelect, disabled = false,
                 onInput={onFileChange}
                 style={{ display: 'none' }}
             />
-            <IconButton
+            <CoreIconButton
                 disabled={disabled}
-                left={<FaUpload />}
-                right={text}
+                // left={<FaUpload />}
+                icon={faUpload}
+                // right={text}
+                text={text}
                 className={className}
                 onClick={() => {
                     selectVideoFaker()
