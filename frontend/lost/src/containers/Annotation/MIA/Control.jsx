@@ -1,21 +1,12 @@
 import { Component } from 'react'
 import Autocomplete from 'react-autocomplete'
 import { connect } from 'react-redux'
-import {
-    Button,
-    ButtonDropdown,
-    ButtonGroup,
-    Col,
-    DropdownItem,
-    DropdownMenu,
-    DropdownToggle,
-    InputGroup,
-    Row,
-} from 'reactstrap'
-import { Icon, Label } from 'semantic-ui-react'
+import { CButtonGroup, CCol, CDropdown, CDropdownItem, CDropdownMenu, CDropdownToggle, CInputGroup, CRow } from '@coreui/react'
+import { faArrowLeft, faArrowRight, faArrowsAltH, faSearchMinus, faSearchPlus } from '@fortawesome/free-solid-svg-icons'
+import CoreIconButton from '../../../components/CoreIconButton'
+import TagLabel from '../../../components/TagLabel'
 import actions from '../../../actions'
 
-import { FaArrowsAltH, FaSearchMinus, FaSearchPlus } from 'react-icons/fa'
 import UndoRedo from '../../../libs/hist'
 import './Tag.scss'
 
@@ -137,33 +128,19 @@ class Control extends Component {
     renderSelectedLabel() {
         if (this.props.selectedLabel) {
             return (
-                <Label
-                    as="a"
-                    tag
-                    style={{
-                        background: this.props.selectedLabel.color,
-                        marginLeft: 30,
-                        opacity: 1,
-                        cursor: 'default',
-                    }}
-                >
-                    {this.props.selectedLabel.label}
-                </Label>
-                // <div className="mia-tag">
-                //     <div>{this.props.selectedLabel.label}</div>
-                // </div>
+                <TagLabel label={this.props.selectedLabel.label} color={this.props.selectedLabel.color} />
             )
         }
     }
     render() {
         return (
-            <Row
+            <CRow
                 style={{
                     padding: '0 0 25px 0',
                 }}
             >
-                <Col xs="6" sm="6" lg="6">
-                    <InputGroup style={{ zIndex: 5 }}>
+                <CCol xs="6" sm="6" lg="6">
+                    <CInputGroup style={{ zIndex: 5 }}>
                         <Autocomplete
                             items={this.props.labels}
                             shouldItemRender={(item, value) =>
@@ -198,72 +175,81 @@ class Control extends Component {
                         />
 
                         {this.renderSelectedLabel()}
-                    </InputGroup>
-                </Col>
-                <Col xs="3" sm="3" lg="3">
-                    <ButtonGroup className="float-left">
-                        <Button
+                    </CInputGroup>
+                </CCol>
+                <CCol xs="3" sm="3" lg="3">
+                    <CButtonGroup className="float-left">
+                        <CoreIconButton
+                            icon={faArrowLeft}
+                            isOutline={false}
                             disabled={this.hist.isEmpty()}
-                            className="btn-info"
+                            // className="btn-info"
+                            color='info'
                             onClick={this.handleUndo}
-                        >
-                            <Icon name="arrow left" />
-                        </Button>
-                        <Button
+                        />
+                        <CoreIconButton
+                            icon={faArrowRight}
+                            isOutline={false}
                             disabled={this.props.selectedLabel ? false : true}
-                            className="btn-info"
+                            // className="btn-info"
+                            color='info'
                             onClick={this.handleSubmit}
-                        >
-                            <Icon name="arrow right" />
-                        </Button>
-                    </ButtonGroup>
-                </Col>
-                <Col xs="3" sm="3" lg="3">
-                    <ButtonGroup className="float-right">
-                        <Button className="btn-default" onClick={this.handleReverse}>
-                            <FaArrowsAltH /> Reverse
-                        </Button>
-                        <Button className="btn-default" onClick={this.handleZoomIn}>
-                            <FaSearchPlus />
-                        </Button>
-                        <Button className="btn-default" onClick={this.handleZoomOut}>
-                            <FaSearchMinus />
-                        </Button>
-                        <ButtonDropdown
-                            isOpen={this.state.dropdownOpen}
-                            toggle={this.toggle}
-                        >
-                            <DropdownToggle caret>Amount</DropdownToggle>
-                            <DropdownMenu>
-                                <DropdownItem onClick={this.handleMaxAmount}>
+                        />
+                    </CButtonGroup>
+                </CCol>
+                <CCol xs="3" sm="3" lg="3">
+                    <CButtonGroup className="float-right">
+                        <CoreIconButton 
+                            onClick={this.handleReverse}
+                            color='secondary'
+                            icon={faArrowsAltH}
+                            text="Reverse"
+                            isOutline={false}
+                        />
+                        <CoreIconButton 
+                            onClick={this.handleZoomIn}
+                            color='secondary'
+                            icon={faSearchPlus}
+                            isOutline={false}
+                        />
+                        <CoreIconButton 
+                            onClick={this.handleZoomOut}
+                            color='secondary'
+                            icon={faSearchMinus}
+                            isOutline={false}
+                        />
+                        <CDropdown>
+                            <CDropdownToggle color='secondary' caret>Amount</CDropdownToggle>
+                            <CDropdownMenu>
+                                <CDropdownItem onClick={this.handleMaxAmount}>
                                     1
-                                </DropdownItem>
-                                <DropdownItem onClick={this.handleMaxAmount}>
+                                </CDropdownItem>
+                                <CDropdownItem onClick={this.handleMaxAmount}>
                                     5
-                                </DropdownItem>
-                                <DropdownItem onClick={this.handleMaxAmount}>
+                                </CDropdownItem>
+                                <CDropdownItem onClick={this.handleMaxAmount}>
                                     10
-                                </DropdownItem>
-                                <DropdownItem onClick={this.handleMaxAmount}>
+                                </CDropdownItem>
+                                <CDropdownItem onClick={this.handleMaxAmount}>
                                     20
-                                </DropdownItem>
-                                <DropdownItem onClick={this.handleMaxAmount}>
+                                </CDropdownItem>
+                                <CDropdownItem onClick={this.handleMaxAmount}>
                                     50
-                                </DropdownItem>
-                                <DropdownItem onClick={this.handleMaxAmount}>
+                                </CDropdownItem>
+                                <CDropdownItem onClick={this.handleMaxAmount}>
                                     100
-                                </DropdownItem>
-                                <DropdownItem onClick={this.handleMaxAmount}>
+                                </CDropdownItem>
+                                <CDropdownItem onClick={this.handleMaxAmount}>
                                     150
-                                </DropdownItem>
-                                <DropdownItem onClick={this.handleMaxAmount}>
+                                </CDropdownItem>
+                                <CDropdownItem onClick={this.handleMaxAmount}>
                                     200
-                                </DropdownItem>
-                            </DropdownMenu>
-                        </ButtonDropdown>
-                    </ButtonGroup>
-                </Col>
-            </Row>
+                                </CDropdownItem>
+                            </CDropdownMenu>
+                        </CDropdown>
+                    </CButtonGroup>
+                </CCol>
+            </CRow>
         )
     }
 }

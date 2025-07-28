@@ -32,7 +32,7 @@ import {
     faSquare,
     faSquareCheck,
 } from '@fortawesome/free-regular-svg-icons'
-import { Label } from 'semantic-ui-react'
+import TagLabel from '../../components/TagLabel'
 import * as datasetReviewApi from '../../actions/dataset/dataset_review_api'
 
 const SIAImageSearchModal = ({
@@ -170,37 +170,26 @@ const SIAImageSearchModal = ({
     }
 
     const renderPossibleLabels = () => {
-        if (possibleImageLabels === undefined) return ''
-        const html = []
-        possibleImageLabels.forEach((label) => {
+        if (!possibleImageLabels) return null
 
-            // set a default label color in case the label has no color assigned
-            if(label.color === null) label.color = '#50b897'
+        return possibleImageLabels.map((label) => {
+            const color = label.color || '#50b897'
+            const labelColor = selectedFilterLabels.includes(label.id) ? color : '#95a5a6'
 
-            const labelColor = selectedFilterLabels.includes(label.id) ? label.color : '#95a5a6'
-
-            html.push(
-                <Label
-                    as="div"
-                    tag
-                    key={label.id}
-                    style={{
-                        marginTop: 5,
-                        marginLeft: 30,
-                        opacity: 1,
-                        cursor: 'pointer',
-                        color: getContrastColor(labelColor),
-                        background: labelColor,
-                        userSelect: 'none',
-                    }}
-                    onClick={() => toggleSelectLabel(label.id)}
-                >
-                    {label.name}
-                </Label>,
+            return (
+            <TagLabel
+                key={label.id}
+                label={label.name}
+                color={labelColor}
+                onClick={() => toggleSelectLabel(label.id)}
+                style={{
+                marginTop: 5,
+                marginLeft: 30,
+                // color: getContrastColor(labelColor),
+                }}
+            />
             )
         })
-
-        return html
     }
 
     const renderFoundAnnotations = () => {
