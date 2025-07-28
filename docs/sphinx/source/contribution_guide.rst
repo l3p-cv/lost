@@ -51,7 +51,7 @@ If you want to adjust backend code and test your changes please perform the foll
 
 How to do frontend development?
 ===============================
-The Frontend is developed with React, Redux, CoreUI and reactstrap
+The Frontend is developed with React, Redux, CoreUI
 
 1. To start developing frontend follow the :ref:`LOST QuickSetup <quick-setup>` instruction.
 2. Change directory to the frontend folder and install npm packages
