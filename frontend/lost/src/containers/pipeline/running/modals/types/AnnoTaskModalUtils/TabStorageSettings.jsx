@@ -1,7 +1,6 @@
-import { CCol, CContainer, CRow } from '@coreui/react'
+import { CCol, CContainer, CFormSelect, CRow } from '@coreui/react'
 import { faBoxesPacking } from '@fortawesome/free-solid-svg-icons'
 import { useEffect, useState } from 'react'
-import { Dropdown } from 'semantic-ui-react'
 import * as annoTaskApi from '../../../../../../actions/annoTask/anno_task_api'
 import * as datasetApi from '../../../../../../actions/dataset/dataset_api'
 import HelpButton from '../../../../../../components/HelpButton'
@@ -89,6 +88,7 @@ const TabStorageSettings = ({ annotaskId }) => {
     }, [updateStorageSettingsResponse])
 
     const updateSelectedDatasetID = (datasetId) => {
+        console.log("UPDATE with data: ", datasetId)
         const data = {
             annotaskId,
             datasetId: datasetId,
@@ -137,18 +137,27 @@ const TabStorageSettings = ({ annotaskId }) => {
                                 </h4>
                                 <CRow>
                                     <CCol>
-                                        <Dropdown
+                                        <CFormSelect
                                             placeholder="Select Dataset"
-                                            fluid
-                                            search
-                                            selection
-                                            multiple={false}
-                                            options={datasetDropdownOptions}
+                                            options={[
+                                                { label: 'Select an option', value: '', disabled: true },
+                                                ...datasetDropdownOptions.map((opt) => ({
+                                                label: opt.text,
+                                                value: opt.value,
+                                                })),
+                                            ]}
                                             value={selectedDatasetID}
-                                            onChange={(_, data) => {
-                                                updateSelectedDatasetID(data.value)
+                                            onChange={(data) => {
+                                                updateSelectedDatasetID(data.target.value)
                                             }}
-                                        />
+                                            // defaultValue={
+                                            //     datasetDropdownOptions.length == null
+                                            //         ? datasetDropdownOptions[0]
+                                            //         : ""
+                                                    
+                                            // }
+                                        >
+                                        </CFormSelect>
                                     </CCol>
                                 </CRow>
                                 <CRow>
