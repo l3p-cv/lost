@@ -13,12 +13,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - A tourguide for lost onboarding using Joyride
 - Add support for model assisted image annotation, model management UI
 - CoreIconButton has more options regarding shape and tooltip-placement
+- Component TagLabel to replace semantic-ui's Label
+### Changed
+- Replaced all usages of reactstrap and semantic-ui with CoreUI components and/or generic solutions 
 ### Fixed
 - Removed centered spinner of CoreDataTable, when faced with empty data, to not block the rest of the page
 - Fixed execution of DBPatcher at wrong place on start up
-### Changed
+### Removed
 - Removed all instances of reactstrap library
-###
+- Removed all instances of semantic-ui library
 - Removed IconButton2 from components
 - Removed unused Config from containers
 - Removed unused Iconbutton from globalComponents
