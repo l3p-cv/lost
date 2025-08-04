@@ -1,5 +1,4 @@
 db.sqlite
 lost.sock
 logs
-wsgi.ini
 dask-worker-space

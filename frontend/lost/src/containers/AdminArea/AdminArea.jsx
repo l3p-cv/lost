@@ -208,6 +208,7 @@ const AdminArea = () => {
                                 visible={active === 4}
                                 style={{ marginTop: 30 }}
                             >
+                                <WorkersTable />
                             </CTabPane>
 
                             <CTabPane

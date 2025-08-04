@@ -57,7 +57,6 @@ fi
 if [ ${LOST_DEBUG_MODE} = "True" ]; then
   # start flask dev server
   python3 /code/lost/app.py
-  #endpoint="sleep 999999"
 else
   # start uswgi production server
   cd /code/lost
