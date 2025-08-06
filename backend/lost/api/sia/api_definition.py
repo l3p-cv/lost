@@ -182,7 +182,7 @@ label_leaf = api.model('Label Leaf',{
     'label': fields.String(description='Name if the Label'),
     'nameAndClass': fields.String(description='Combination of name and class'),
     'color': fields.String(description='Color in Hex-Format of that label leaf.'),
-    'externalId': fields.Integer(description='External id of that label leaf.')
+    'externalId': fields.String(description='External id of that label leaf.')
 })
 
 labels = api.model('Labels', {
