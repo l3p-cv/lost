@@ -14,11 +14,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add support for model assisted image annotation, model management UI
 - CoreIconButton has more options regarding shape and tooltip-placement
 - Component TagLabel to replace semantic-ui's Label
+- ImageSearchActive in review, so that one can easily switch between images in the image-search 
 ### Changed
 - Replaced all usages of reactstrap and semantic-ui with CoreUI components and/or generic solutions 
 ### Fixed
 - Removed centered spinner of CoreDataTable, when faced with empty data, to not block the rest of the page
 - Fixed execution of DBPatcher at wrong place on start up
+- Show annotations when choosing current image per image-search in SIA-review (by not reloading the image)
+- Fixed instruction selection on anno-pipeline-creation
+- Fixed SIA crashing (when doing anything referencing labels)
 ### Removed
 - Removed all instances of reactstrap library
 - Removed all instances of semantic-ui library
