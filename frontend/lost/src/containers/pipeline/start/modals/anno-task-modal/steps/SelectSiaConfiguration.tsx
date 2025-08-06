@@ -295,7 +295,6 @@ export const SelectSiaConfiguration = ({ nodeId }: SelectSiaConfigurationProps) 
                                             size="xl"
                                             className={'mx-1'}
                                             color={'primary'}
-                                            defaultChecked
                                             checked={configuration.annos.multilabels}
                                             onChange={() =>
                                                 changeValue(
