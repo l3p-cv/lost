@@ -42,6 +42,7 @@ const SIAImageSearchModal = ({
     setIsVisible,
     onChooseImage,
     possibleAnnotaskLabels,
+    onSearchResult = () => {}
 }) => {
     const { data: possibleDatasetLabels,
         refetch: reloadPossibleDatasetLabels
@@ -84,6 +85,9 @@ const SIAImageSearchModal = ({
     useEffect(() => {
         if(searchResults === undefined) return
         setTableData(searchResults)
+        const imageIdList = searchResults.map(result => result.imageId)
+        onSearchResult(imageIdList)
+
     }, [searchResults])
 
     const columnHelper = createColumnHelper()

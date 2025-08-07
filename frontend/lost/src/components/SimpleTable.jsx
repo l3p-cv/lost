@@ -1,6 +1,6 @@
 import React from 'react'
 
-const SimpleTable = ({ elements, className, showLines }) => {
+const SimpleTable = ({ elements=[], className=true, showLines='' }) => {
     return elements.map((el, i) => {
         return (
             <div
@@ -41,10 +41,5 @@ const SimpleTable = ({ elements, className, showLines }) => {
     })
 }
 
-SimpleTable.defaultProps = {
-    showLines: true,
-    className: '',
-    elements: [],
-}
 
 export default SimpleTable

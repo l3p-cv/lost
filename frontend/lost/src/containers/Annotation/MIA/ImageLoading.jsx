@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSync } from '@fortawesome/free-solid-svg-icons'
 import PropTypes from 'prop-types'
 
-const Loading = ({ size }) => (
+const Loading = ({ size='lg' }) => (
     <div
         className="flex justify-center items-center h-full"
         style={{ margin: '10px', display: 'inline' }}
@@ -16,12 +16,12 @@ const Loading = ({ size }) => (
 
 Loading.propTypes = {
     size: PropTypes.string,
-    marginTop: PropTypes.number,
+    // marginTop: PropTypes.number,
 }
 
-Loading.defaultProps = {
-    size: 'lg',
-    marginTop: 20,
-}
+// Loading.defaultProps = {
+//     size: 'lg',
+//     marginTop: 20,
+// }
 
 export default Loading

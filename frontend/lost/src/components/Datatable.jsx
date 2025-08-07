@@ -6,14 +6,14 @@ import './datatable.css';
 
 const Datatable = ({
     key,
-    noText,
-    pageSize,
-    data,
-    columns,
-    onRowClick,
+    noText = true,
+    pageSize = 10,
+    data = [],
+    columns = [],
+    onRowClick = () => {},
     height = undefined,
-    manual,
-    isLoading,
+    manual = false,
+    isLoading = false,
     onFetchData,
     pages,
     getTrProps,   
@@ -74,23 +74,6 @@ const Datatable = ({
     onRowClick: PropTypes.func,
     height: PropTypes.any, 
     getTrProps: PropTypes.func, 
-    };
-
-    Datatable.defaultProps = {
-    onFetchData: undefined,
-    isLoading: false,
-    manual: false,
-    key: undefined,
-    noText: true,
-    // showPageSizeOptions: false,
-    pageSize: 10,
-    // showPagination: true,
-    data: [],
-    pages: undefined,
-    columns: [],
-    onRowClick: () => {},
-    height: undefined,
-    getTrProps: undefined, 
     };
 
 const smallText = (text) => <p className="small text-muted">{text}</p>

@@ -33,10 +33,5 @@ HelpButton.propTypes = {
     text: PropTypes.string,
     disabled: PropTypes.bool,
 }
-HelpButton.defaultProps = {
-    id: undefined,
-    text: undefined,
-    disabled: undefined,
-}
 
 export default HelpButton

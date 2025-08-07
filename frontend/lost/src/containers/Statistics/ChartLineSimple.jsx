@@ -3,16 +3,15 @@ import PropTypes from 'prop-types'
 import { getColor, deepObjectsMerge } from '@coreui/utils'
 import { CChartLine } from '@coreui/react-chartjs'
 
-const ChartLineSimple = (props) => {
-    const {
-        borderColor,
-        backgroundColor,
-        pointHoverBackgroundColor,
-        dataPoints,
-        label,
-        pointed,
-        ...attributes
-    } = props
+const ChartLineSimple = ({
+    borderColor='rgba(255,255,255,.55)',
+    backgroundColor='transparent',
+    pointHoverBackgroundColor,
+    dataPoints=[10, 22, 34, 46, 58, 70, 46, 23, 45, 78, 34, 12],
+    label='Sales',
+    pointed,
+    ...attributes
+}) => {
 
     const pointHoverColor = (() => {
         if (pointHoverBackgroundColor) {
@@ -145,11 +144,5 @@ ChartLineSimple.propTypes = {
     pointed: PropTypes.bool,
 }
 
-ChartLineSimple.defaultProps = {
-    borderColor: 'rgba(255,255,255,.55)',
-    backgroundColor: 'transparent',
-    dataPoints: [10, 22, 34, 46, 58, 70, 46, 23, 45, 78, 34, 12],
-    label: 'Sales',
-}
 
 export default ChartLineSimple
