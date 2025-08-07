@@ -111,15 +111,4 @@ BaseModal.propTypes = {
     isShowCancelButton: PropTypes.bool,
 }
 
-BaseModal.defaultProps = {
-    key: undefined,
-    size: 'xl',
-    onClosed: () => {},
-    toggle: undefined,
-    title: undefined,
-    footer: undefined,
-    className: undefined,
-    isShowCancelButton: false,
-}
-
 export default BaseModal

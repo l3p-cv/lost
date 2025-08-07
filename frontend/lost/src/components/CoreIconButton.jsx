@@ -4,19 +4,19 @@ import PropTypes from 'prop-types'
 import { CButton, CTooltip } from '@coreui/react'
 
 const CoreIconButton = ({
-    isBack,
+    isBack = false,
     loadingSize = '1x',
     isLoading = false,
-    isForward,
-    margin,
-    icon,
-    text,
+    isForward = false,
+    margin = 5,
+    icon = null,
+    text = "",
     size,
-    isTextLeft,
-    style,
+    isTextLeft = false,
+    style = null,
     id=undefined,
     type = 'button',
-    disabled,
+    disabled = false,
     onClick,
     className = '',
     color = 'primary',
@@ -125,19 +125,6 @@ CoreIconButton.propTypes = {
     isForward: PropTypes.bool,
     isTextLeft: PropTypes.bool,
     size: PropTypes.string,
-}
-CoreIconButton.defaultProps = {
-    style: null,
-    disabled: false,
-    color: 'primary',
-    icon: null,
-    isOutline: true,
-    margin: 5,
-    text: '',
-    isBack: false,
-    isForward: false,
-    isTextLeft: false,
-    size: undefined,
 }
 
 export default CoreIconButton

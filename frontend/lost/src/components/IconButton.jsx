@@ -4,18 +4,18 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import PropTypes from 'prop-types'
 
 const IconButton = ({
-    isBack,
+    isBack = false,
     loadingSize = '2x',
     isLoading = false,
-    isForward,
-    margin,
-    icon,
-    text,
+    isForward = false,
+    margin = 5,
+    icon = null,
+    text = "",
     size,
-    isTextLeft,
-    style,
+    isTextLeft = false,
+    style = null,
     type = 'button',
-    disabled,
+    disabled = false,
     onClick,
     className = '',
     color = 'primary',
@@ -66,7 +66,7 @@ const IconButton = ({
             type={type}
             className={className}
             style={style}
-            outline={isOutline}
+            outline={isOutline ? "outline" : ""}
             disabled={disabled || isLoading}
             onClick={onClick}
             color={color}
@@ -89,19 +89,6 @@ IconButton.propTypes = {
     isForward: PropTypes.bool,
     isTextLeft: PropTypes.bool,
     size: PropTypes.string,
-}
-IconButton.defaultProps = {
-    style: null,
-    disabled: false,
-    color: 'primary',
-    icon: null,
-    isOutline: true,
-    margin: 5,
-    text: '',
-    isBack: false,
-    isForward: false,
-    isTextLeft: false,
-    size: undefined,
 }
 
 export default IconButton
