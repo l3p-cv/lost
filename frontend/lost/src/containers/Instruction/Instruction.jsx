@@ -27,11 +27,27 @@ const Instruction = ({ visLevel }) => {
   const editInstructionMutation = useEditInstruction();
   const { data: ownUser } = useOwnUser();
 
-  const handleDelete = (id) => {
+  const deleteSelectedInstruction = (id) => {
     deleteInstructionMutation.mutate(id, {
       onSuccess: () => Notification.showSuccess('Instruction deleted successfully'),
       onError: () => Notification.showError('Failed to delete instruction'),
     });
+  }
+
+  const handleDelete = (id) => {
+    Notification.showDecision({
+                title: 'Do you really want to delete datasource?',
+                option1: {
+                    text: 'YES',
+                    callback: () => {
+                        deleteSelectedInstruction(id)
+                    },
+                },
+                option2: {
+                    text: 'NO!',
+                    callback: () => { },
+                },
+            })
   };
 
   const handleAddInstruction = () => {

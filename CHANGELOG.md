@@ -15,9 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CoreIconButton has more options regarding shape and tooltip-placement
 - Component TagLabel to replace semantic-ui's Label
 - ImageSearchActive in review, so that one can easily switch between images in the image-search 
+- Ask for confirmation when deleting Instructions
+- Ask for filling content of Instructions, when creating/editing one
 ### Changed
 - Replaced all usages of reactstrap and semantic-ui with CoreUI components and/or generic solutions 
 - Ask for content when creating/editing instructions
+- replaced all defaultProps with default values in component-definition (for future compatibility)
 ### Fixed
 - Removed centered spinner of CoreDataTable, when faced with empty data, to not block the rest of the page
 - Fixed execution of DBPatcher at wrong place on start up
