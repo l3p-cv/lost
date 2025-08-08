@@ -146,9 +146,12 @@ const DatasetTable = ({
                 },
             }),
             columnHelper.display({
-                id: 'review',
-                header: () => 'Review',
+                id: 'options',
+                header: () => 'Options',
                 cell: ({ row }) => {
+
+                    const rowData = row.original
+
                     // reviewing metadatasets is impossible
                     if (row.original.isMetaDataset) return ''
 
@@ -157,11 +160,15 @@ const DatasetTable = ({
                         row.original.isAnnotask || row.original.isReviewable
                     )
 
+                    const isRegularDataset = !(rowData.isAnnotask || rowData.isMetaDataset) 
+
                     return (
+                        <>
                         <CoreIconButton
                             icon={faEye}
                             color="info"
                             isOutline={true}
+                            style={{ marginRight: '5px' }}
                             onClick={() => {
                                 const rowData = row.original
                                 const isAnnotask = rowData.isAnnotask === true
@@ -170,27 +177,11 @@ const DatasetTable = ({
                             disabled={isDisabled}
                             toolTip="Review Dataset/Task"
                         />
-                    )
-                },
-            }),
-            columnHelper.display({
-                id: 'showExport',
-                header: () => 'Export',
-                cell: (props) => {
-                    const rowData = props.row.original
-
-                    if (rowData.idx == '-1') return ''
-
-                    // disable the review button on datasets without children
-                    const isDisabled = !(
-                        props.row.original.isAnnotask || props.row.original.isReviewable
-                    )
-
-                    return (
                         <CoreIconButton
                             icon={faDownload}
                             color="info"
                             isOutline={true}
+                            style={{ marginRight: '5px' }}
                             onClick={() => {
                                 const datasetID = rowData.idx
                                 const isAnnotask = rowData.isAnnotask === true
@@ -206,29 +197,19 @@ const DatasetTable = ({
                             disabled={isDisabled}
                             toolTip="Export Dataset"
                         />
-                    )
-                },
-            }),
-            columnHelper.display({
-                id: 'showEdit',
-                header: () => 'Edit',
-                cell: (props) => {
-                    const rowData = props.row.original
 
-                    // only show edit icon for datasets
-                    if (rowData.isAnnotask || rowData.isMetaDataset) return ''
-
-                    return (
-                        <CoreIconButton
+                        {isRegularDataset && <CoreIconButton
                             icon={faPen}
+                            style={{ marginRight: '5px' }}
                             color="warning"
                             isOutline={true}
                             onClick={() => {
-                                onEditButtonClicked(props.row.original)
+                                onEditButtonClicked(row.original)
                             }}
                             disabled={false}
                             toolTip="Edit Dataset"
-                        />
+                        />}
+                        </>
                     )
                 },
             }),

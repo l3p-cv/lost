@@ -1,16 +1,15 @@
 import { CCol, CFormInput, CInputGroup, CRow } from '@coreui/react'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { useRef, useState } from 'react'
-import { useCreateLabel, useImportLabelTree } from '../../actions/label/label-api'
-import IconButton from '../../components/IconButton'
-import SelectFileButton from '../../components/SelectFileButton'
+import { useCreateLabel } from '../../actions/label/label-api'
+import CoreIconButton from '../../components/CoreIconButton'
 
 const CreateLabelTree = ({ visLevel }) => {
     const [createLabelName, setCreateLabelName] = useState('')
     const [createLabelDescription, setCreateLabelDescription] = useState('')
     const enableNotify = useRef(true)
     const { mutate: createLabelTree } = useCreateLabel()
-    const { mutate: createLabelTreeFromFile } = useImportLabelTree()
+    // const { mutate: createLabelTreeFromFile } = useImportLabelTree()
 
     const handleCreateLabelName = (e) => {
         setCreateLabelName(e.target.value)
@@ -53,9 +52,9 @@ const CreateLabelTree = ({ visLevel }) => {
                             onChange={handleCreateLabelDescription}
                             className='treeDesc'
                         />
-                        <IconButton
+                        <CoreIconButton
                             isOutline={true}
-                            color="success"
+                            color="primary"
                             onClick={handleCreateSave}
                             disabled={
                                 createLabelName === '' || createLabelDescription === ''
@@ -67,7 +66,7 @@ const CreateLabelTree = ({ visLevel }) => {
                     </CInputGroup>
                 </CCol>
             </CRow>
-            <CRow>
+            {/* <CRow>
                 <CCol className="justify-content-start d-flex">
                     <SelectFileButton
                         accept=".csv"
@@ -79,7 +78,7 @@ const CreateLabelTree = ({ visLevel }) => {
                         color='primary'
                     />
                 </CCol>
-            </CRow>
+            </CRow> */}
         </>
     )
 }

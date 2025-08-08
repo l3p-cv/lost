@@ -18,6 +18,7 @@ import BaseContainer from '../../components/BaseContainer'
 import { FaFontAwesome } from 'react-icons/fa'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { alertDeletion } from '../pipeline/globalComponents/Sweetalert'
+import CoreIconButton from '../../components/CoreIconButton'
 
 const RenderBadge = ({ key, text, color }) => (
     <div>
@@ -205,14 +206,15 @@ export const UsersTable = () => {
                     onClosed={onClosedModal}
                 />
             )}
-
-            <IconButton
-                color="primary"
-                icon={faUserPlus}
-                text="Add User"
-                onClick={createNewUser}
-                style={{ marginBottom: 20 }}
-            />
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <CoreIconButton
+                    color="primary"
+                    icon={faUserPlus}
+                    text="Add User"
+                    onClick={createNewUser}
+                    style={{ marginBottom: 20}}
+                />
+            </div>
             <BaseContainer>
                 <CoreDataTable columns={columns} tableData={usersData.users} />
             </BaseContainer>

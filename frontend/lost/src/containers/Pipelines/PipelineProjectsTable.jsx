@@ -2,8 +2,6 @@ import { CBadge } from '@coreui/react'
 import { faFileExport, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { saveAs } from 'file-saver'
 import { useEffect, useState } from 'react'
-import Datatable from '../../components/Datatable'
-import IconButton from '../../components/IconButton'
 import * as Notification from '../../components/Notification'
 import { API_URL } from '../../lost_settings'
 
@@ -12,6 +10,7 @@ import AddPipelineProject from './AddPipelineProject'
 import { createColumnHelper } from '@tanstack/react-table'
 import CoreDataTable from '../../components/CoreDataTable'
 import BaseContainer from '../../components/BaseContainer'
+import CoreIconButton from '../../components/CoreIconButton'
 
 const PTTable = ({ visLevel }) => {
     const [tableData, setTableData] = useState([])
@@ -100,9 +99,9 @@ const PTTable = ({ visLevel }) => {
             id: "export",
             cell: (props) => {
                 return (
-                    <IconButton
+                    <CoreIconButton
                         icon={faFileExport}
-                        text="Export"
+                        toolTip="Export Pipeline Project"
                         color="info"
                         isOutline={true}
                         onClick={() =>
@@ -117,9 +116,9 @@ const PTTable = ({ visLevel }) => {
             id: "delete",
             cell: (props) => {
                 return (
-                    <IconButton
+                    <CoreIconButton
                         icon={faTrash}
-                        text="Delete"
+                        toolTip="Delete Pipeline Project"
                         color="danger"
                         disabled={props.row.original.pipelineCount > 0}
                         onClick={() =>

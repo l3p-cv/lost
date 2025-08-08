@@ -16,6 +16,7 @@ import { alertDeletePipeline } from '../globalComponents/Sweetalert'
 import { useState, useEffect } from 'react';
 import CoreDataTable from '../../../components/CoreDataTable'
 import { createColumnHelper } from '@tanstack/react-table'
+import TableHeader from '../../../components/TableHeader'
 
 export const RunningPipelines = () => {
     const navigate = useNavigate()
@@ -231,9 +232,13 @@ export const RunningPipelines = () => {
 
     return (
         <CContainer style={{ marginTop: '15px' }}>
-            <h3 className="card-title mb-3" style={{ textAlign: 'center' }}>
-                Pipelines
-            </h3>
+            <TableHeader
+                headline="Pipelines"
+                buttonStyle={{ marginTop: 15, marginBottom: 20 }}
+                icon={faPlay}
+                buttonText='Start new Pipeline'
+                // onClick={handleAddInstruction} // TODO: what is this button supposed to do???
+            />
             <BaseContainer>
                 <div className="pipeline-running-1">{renderDatatable()}</div>
             </BaseContainer>

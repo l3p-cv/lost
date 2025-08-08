@@ -4,12 +4,12 @@ import { useNavigate } from 'react-router-dom'
 import { useTemplates } from '../../../actions/pipeline/pipeline_api'
 import BaseContainer from '../../../components/BaseContainer'
 import { CenteredSpinner } from '../../../components/CenteredSpinner'
-import Datatable from '../../../components/Datatable'
 import HelpButton from '../../../components/HelpButton'
 import IconButton from '../../../components/IconButton'
 import { useEffect, useState } from 'react'
 import CoreDataTable from '../../../components/CoreDataTable'
 import { createColumnHelper } from '@tanstack/react-table'
+import TableHeader from '../../../components/TableHeader'
 
 export const PipelineTemplatesTable = () => {
     const navigate = useNavigate()
@@ -107,9 +107,14 @@ export const PipelineTemplatesTable = () => {
 
     return (
         <CContainer style={{ marginTop: '15px' }}>
-            <h3 className="card-title mb-3" style={{ textAlign: 'center' }}>
+            {/* <h3 className="card-title mb-3" style={{ textAlign: 'center' }}>
                 Pipeline Templates
-            </h3>
+            </h3> */}
+            <TableHeader
+                headline="Pipeline Templates"
+                buttonStyle={{ marginTop: 15, marginBottom: 20, visibility: "hidden" }}
+                buttonText='Add Instruction'
+            />
             <BaseContainer>
                 <div className="pipeline-start-1">{renderDatatable()}</div>
             </BaseContainer>

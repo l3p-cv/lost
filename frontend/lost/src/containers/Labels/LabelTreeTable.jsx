@@ -7,11 +7,16 @@ import { FaInfoCircle } from 'react-icons/fa'
 import { useExportLabelTree } from '../../actions/label/label-api'
 import BaseModal from '../../components/BaseModal'
 import HelpButton from '../../components/HelpButton'
-import IconButton from '../../components/IconButton'
 import { LabelTreeEditor } from './LabelTreeEditor/LabelTreeEditor'
 import { convertLabelTreeToReactFlow } from './LabelTreeEditor/label-tree-util'
 import CoreDataTable from '../../components/CoreDataTable'
 import { createColumnHelper } from '@tanstack/react-table'
+import CoreIconButton from '../../components/CoreIconButton'
+import TableHeader from '../../components/TableHeader'
+import BaseContainer from '../../components/BaseContainer'
+import { useImportLabelTree } from '../../actions/label/label-api'
+import CreateLabelTree from './CreateLabelTree'
+
 
 let amountOfLabels = 0
 
@@ -21,6 +26,7 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
     const [selectedTree, setSelectedTree] = useState({ nodes: [], edges: [] })
     const [readonly, setReadonly] = useState(false)
     const [highlightLatestRow, setHighlightLatestRow] = useState(false)
+    const { mutate: createLabelTreeFromFile } = useImportLabelTree()
 
     const newlyCreatedTreeId = Number(localStorage.getItem('newlyCreatedLabelTreeId'))
 
@@ -108,12 +114,14 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
                         <CBadge color="primary">Global</CBadge>
                     ),
             }),
-            columnHelper.accessor('edit', {
-                header: 'Edit',
+            columnHelper.accessor('options', {
+                header: 'Options',
                 cell: (props) => {
                     const isNewlyCreated = props.row.original.idx === newlyCreatedTreeId
                     return (
-                        <IconButton
+                        <>
+                        <CoreIconButton
+                            toolTip='Edit/Show Label Tree'
                             icon={
                                 props.row.original.group_id === null
                                     ? visLevel !== 'global'
@@ -121,13 +129,14 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
                                         : faEdit
                                     : faEdit
                             }
-                            text={
-                                props.row.original.group_id === null
-                                    ? visLevel !== 'global'
-                                        ? 'Show'
-                                        : 'Edit'
-                                    : 'Edit'
-                            }
+                            // text={
+                            //     props.row.original.group_id === null
+                            //         ? visLevel !== 'global'
+                            //             ? 'Show'
+                            //             : 'Edit'
+                            //         : 'Edit'
+                            // }
+                            style={{'margin-right': '5px'}}
                             color="warning"
                             className={isNewlyCreated ? 'latest-edit-button' : ''}
                             onClick={() => {
@@ -150,20 +159,17 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
                                 setIsEditModalOpen(true)
                             }}
                         />
+                        <CoreIconButton
+                            style={{'margin-right': '5px'}}
+                            icon={faFileExport}
+                            toolTip="Export Labels"
+                            color="info"
+                            isOutline={true}
+                            onClick={() => exportLabelTree(props.row.original.idx)}
+                        />
+                        </>
                     )
                 },
-            }),
-            columnHelper.accessor('export', {
-                header: 'Export',
-                cell: (props) => (
-                    <IconButton
-                        icon={faFileExport}
-                        text="Export"
-                        color="info"
-                        isOutline={true}
-                        onClick={() => exportLabelTree(props.row.original.idx)}
-                    />
-                ),
             }),
         ]
     }
@@ -205,12 +211,26 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
                     </CCard>
                 </ReactFlowProvider>
             </BaseModal>
-
-            <CoreDataTable 
-                columns={defineColumns()} 
-                tableData={labelTrees} 
-                getRowClassName={getRowClassName}
+            <TableHeader
+                headline="Label Trees"
+                buttonStyle={{ marginTop: 15, marginBottom: 20 }}
+                accept=".csv"
+                onClick={(file) => {
+                    createLabelTreeFromFile({ file, visLevel })
+                }}
+                buttonText="Import Label Tree"
+                className="mb-3"
+                color='primary'
+                selectFileButton={true}
             />
+            <CreateLabelTree visLevel={visLevel} />
+            <BaseContainer>
+                <CoreDataTable 
+                    columns={defineColumns()} 
+                    tableData={labelTrees} 
+                    getRowClassName={getRowClassName}
+                />
+            </BaseContainer>
         </>
     )
 }
