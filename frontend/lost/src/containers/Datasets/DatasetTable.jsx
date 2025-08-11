@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router-dom'
 import CoreDataTable from '../../components/CoreDataTable'
 import CoreIconButton from '../../components/CoreIconButton'
 import HelpButton from '../../components/HelpButton'
+import { CTooltip } from '@coreui/react'
 
 const DatasetTable = ({
     datasetList,
@@ -105,11 +106,12 @@ const DatasetTable = ({
                     }
                     return (
                         <>
-                            <b>{row.original.name}</b>
-                            <HelpButton
-                                id={row.original.idx}
-                                text={row.original.description}
-                            />
+                            <CTooltip 
+                                content={row.original.description}
+                                placement="top"
+                            >
+                                <b style={{ textDecoration: 'grey dotted underline'}}>{row.original.name}</b>
+                            </CTooltip>
                             <div className="small text-muted">
                                 {`ID: ${row.original.idx}`}
                             </div>

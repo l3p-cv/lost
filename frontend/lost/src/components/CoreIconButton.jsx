@@ -79,7 +79,7 @@ const CoreIconButton = ({
                     variant={buttonVariant}
                     disabled={disabled || isLoading}
                     onClick={onClick}
-                    color={color}
+                    color={disabled || isLoading ? 'secondary' : color}
                     shape={shape}
                 >
                     {renderContent()}
@@ -101,7 +101,7 @@ const CoreIconButton = ({
             variant={buttonVariant}
             disabled={disabled || isLoading}
             onClick={onClick}
-            color={color}
+            color={disabled || isLoading ? 'secondary' : color}
         >
             {renderContent()}
             {/* { props.text && (

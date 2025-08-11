@@ -1,4 +1,4 @@
-import { CContainer } from '@coreui/react'
+import { CContainer, CTooltip } from '@coreui/react'
 import { faPlay } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
 import { useTemplates } from '../../../actions/pipeline/pipeline_api'
@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react'
 import CoreDataTable from '../../../components/CoreDataTable'
 import { createColumnHelper } from '@tanstack/react-table'
 import TableHeader from '../../../components/TableHeader'
+import CoreIconButton from '../../../components/CoreIconButton'
 
 export const PipelineTemplatesTable = () => {
     const navigate = useNavigate()
@@ -41,16 +42,15 @@ export const PipelineTemplatesTable = () => {
                 cell: (props) => {
                     return (
                         <>
-                            <>
-                                <b>{props.row.original.name.split('.')[1]}</b>
-                                <HelpButton
-                                    id={props.row.original.id}
-                                    text={props.row.original.description}
-                                />
-                                <div className="small text-muted">
-                                    {`${props.row.original.name.split('.')[0]}`}
-                                </div>
-                            </>
+                            <CTooltip 
+                                content={props.row.original.description}
+                                placement="top"
+                            >
+                                <b style={{ textDecoration: 'grey dotted underline'}}>{props.row.original.name.split('.')[1]}</b>
+                            </CTooltip>
+                            <div className="small text-muted">
+                                {`${props.row.original.name.split('.')[0]}`}
+                            </div>                        
                         </>)
                 }
             }),
@@ -59,10 +59,10 @@ export const PipelineTemplatesTable = () => {
                 header: 'Start',
                 cell: (props) => {
                     return (
-                        <IconButton
+                        <CoreIconButton
                           color="primary"
-                          size="m"
-                          isOutline={false}
+                        //   size="m"
+                        toolTip='Start new Pipeline with this template'
                           className={
                               props.row.original.name === 'found.sia'
                                   ? 'sia-start-button'
@@ -74,7 +74,7 @@ export const PipelineTemplatesTable = () => {
                               navigate(`/pipeline-template/${props.row.original.id}`)
                           }
                           icon={faPlay}
-                          text="Start"
+                        //   text="Start"
                       />
                     )
                 }

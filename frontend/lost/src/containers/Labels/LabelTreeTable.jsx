@@ -1,7 +1,7 @@
 import { faEdit, faEye, faFileExport } from '@fortawesome/free-solid-svg-icons'
 import { useEffect, useState } from 'react'
 
-import { CAlert, CBadge, CCard, CCardBody } from '@coreui/react'
+import { CAlert, CBadge, CCard, CCardBody, CTooltip } from '@coreui/react'
 import { ReactFlowProvider } from '@xyflow/react'
 import { FaInfoCircle } from 'react-icons/fa'
 import { useExportLabelTree } from '../../actions/label/label-api'
@@ -86,11 +86,12 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
                                     : undefined
                             }
                         >
-                            <b>{props.row.original.name}</b>
-                            <HelpButton
-                                id={props.row.original.idx}
-                                text={props.row.original.description}
-                            />
+                            <CTooltip
+                                content={props.row.original.description}
+                                placement="top"
+                            >
+                                <b style={{ textDecoration: 'grey dotted underline'}}>{props.row.original.name}</b>
+                            </CTooltip>
                             <div className="small text-muted">
                                 {`ID: ${props.row.original.idx}`}
                             </div>

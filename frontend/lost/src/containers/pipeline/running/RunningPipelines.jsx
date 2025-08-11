@@ -1,4 +1,4 @@
-import { CContainer, CButton, CTooltip, CProgress } from '@coreui/react'
+import { CContainer, CTooltip, CProgress } from '@coreui/react'
 import { faEye, faPlay, faPause, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
 import 'react-table/react-table.css'
@@ -8,15 +8,14 @@ import {
 } from '../../../actions/pipeline/pipeline_api'
 import BaseContainer from '../../../components/BaseContainer'
 import { CenteredSpinner } from '../../../components/CenteredSpinner'
-import HelpButton from '../../../components/HelpButton'
 import { getColor } from '../../Annotation/AnnoTask/utils'
 import '../globalComponents/pipeline.scss'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { alertDeletePipeline } from '../globalComponents/Sweetalert'
 import { useState, useEffect } from 'react';
 import CoreDataTable from '../../../components/CoreDataTable'
 import { createColumnHelper } from '@tanstack/react-table'
 import TableHeader from '../../../components/TableHeader'
+import CoreIconButton from '../../../components/CoreIconButton'
 
 export const RunningPipelines = () => {
     const navigate = useNavigate()
@@ -79,8 +78,8 @@ export const RunningPipelines = () => {
     }, [datatableInfo])
 
     const UnPauseButton = ({ original }) => (
-        <CTooltip placement="top" content={original.progress === 'PAUSED' ? "Activate Pipeline" : "Pause Pipeline"}>
-            <CButton
+            <CoreIconButton
+                toolTip={original.progress === 'PAUSED' ? "Activate Pipeline" : "Pause Pipeline"}
                 color={original.progress === 'PAUSED' ? "success" : "warning"}
                 variant='outline'
                 disabled={original.progress === 'ERROR' || original.progress === '100%'}
@@ -90,45 +89,43 @@ export const RunningPipelines = () => {
                         ? playPipelineHandler(original)
                         : pausePipelineHandler(original)
                 }
-            >
-                <FontAwesomeIcon icon={original.progress === 'PAUSED' ? faPlay : faPause} />
-            </CButton>
-        </CTooltip>
+                icon={original.progress === 'PAUSED' ? faPlay : faPause}
+            />
     )
 
     const DeleteButton = ({ original }) => (
-        <CTooltip content="Delete Pipeline" placement="top">
-            <CButton
+            <CoreIconButton
+                toolTip='Delete Pipeline'
                 color="danger"
                 variant='outline'
                 onClick={() => deletePipelineHandler(original)}
-            >
-                <FontAwesomeIcon icon={faTrash} />
-            </CButton>
-        </CTooltip>
+                icon={faTrash}
+            />
     )
 
     const OpenIcon = ({ original }) => (
-        <CTooltip content="Inspect Pipeline" placement="top">
-            <CButton
+            <CoreIconButton
+                toolTip='Inspect Pipeline'
                 color="info"
                 variant='outline'
                 style={{ marginRight: '5px' }}
                 onClick={() => navigate(`/pipeline/${original.id}`)}
                 className={original.id === latestPipelineId ? 'latest-pipeline-open-button' : ''}
-            >
-                <FontAwesomeIcon icon={faEye} />
-            </CButton>
-        </CTooltip>
+                icon={faEye}
+            />
     )
 
-    const TemplateDescButton = ({ templates, templName, pipeID }) => {
-        const match = templates.find(t => t.name === templName)
-        return <HelpButton id={`${pipeID}_${match?.id}`} text={match?.description} />
+    const getTemplateDescription = ({ templates, templName }) => {
+        const match = templates?.find(t => t.name === templName)
+        return match?.description
     }
 
     const getRowClassName = (original) => {
         return original.id === latestPipelineId ? 'latest-pipeline-row' : ''
+    }
+   
+    const navigateToTemplates = () => {
+        navigate('/pipeline-templates')
     }
     
     const defineColumns = () => {
@@ -138,11 +135,9 @@ export const RunningPipelines = () => {
                 header: 'Name',
                 cell: (props) => (
                     <div>
-                        <b>{props.row.original.name}</b>
-                        <HelpButton
-                            id={props.row.original.id}
-                            text={props.row.original.description}
-                        />
+                        <CTooltip content={props.row.original.description} placement="top">
+                            <b style={{ textDecoration: 'grey dotted underline'}}>{props.row.original.name}</b>
+                        </CTooltip>
                         <div className="small text-muted">
                             {`ID: ${props.row.original.id}`}
                         </div>
@@ -151,19 +146,22 @@ export const RunningPipelines = () => {
             }),
             columnHelper.accessor('description', {
                 header: 'Template',
-                cell: (props) => (
+                cell: (props) => {
+                    return (
                     <>
-                        <b>{props.row.original.templateName.split('.')[1]}</b>
-                        <TemplateDescButton
-                            templName={props.row.original.templateName}
-                            templates={templateData.templates}
-                            pipeID={props.row.original.id}
-                        />
+                        <CTooltip 
+                            content={getTemplateDescription({
+                                templates: templateData.templates,
+                                templName: props.row.original.templateName})}
+                            placement="top"
+                        >
+                            <b style={{ textDecoration: 'grey dotted underline'}}>{props.row.original.templateName.split('.')[1]}</b>
+                        </CTooltip>
                         <div className="small text-muted">
                             {props.row.original.templateName.split('.')[0]}
                         </div>
                     </>
-                )
+                )}
             }),
             columnHelper.accessor('progress', {
                 header: 'Progress',
@@ -237,7 +235,7 @@ export const RunningPipelines = () => {
                 buttonStyle={{ marginTop: 15, marginBottom: 20 }}
                 icon={faPlay}
                 buttonText='Start new Pipeline'
-                // onClick={handleAddInstruction} // TODO: what is this button supposed to do???
+                onClick={navigateToTemplates} // TODO: what is this button supposed to do???
             />
             <BaseContainer>
                 <div className="pipeline-running-1">{renderDatatable()}</div>

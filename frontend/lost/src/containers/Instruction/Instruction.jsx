@@ -12,6 +12,8 @@ import { useOwnUser } from '../../actions/user/user_api';
 import { faUserPlus, faPen, faTrash, faEye } from '@fortawesome/free-solid-svg-icons';
 import CoreDataTable from '../../components/CoreDataTable';
 import { createColumnHelper } from '@tanstack/react-table';
+import CoreIconButton from '../../components/CoreIconButton';
+import TableHeader from '../../components/TableHeader';
 
 const canEdit = (visLevel, instruction) => visLevel === 'global' || (visLevel === 'all' && instruction.group_id);
 const canView = (visLevel, instruction) => visLevel === 'all' && !instruction.group_id;
@@ -110,14 +112,28 @@ const Instruction = ({ visLevel }) => {
     const columnHelper = createColumnHelper();
     
     return [
-      columnHelper.accessor('option', {
+      columnHelper.display({
+        id: "option",
         header: 'Annotation Option',
-        cell: ({ getValue }) => getValue(),
+        // cell: ({ getValue }) => getValue(),
+        cell: ({row}) => (
+          <>
+            <CTooltip
+                content={row.original.description}
+                placement="top"
+            >
+                <b style={{ textDecoration: 'grey dotted underline'}}>{row.original.option}</b>
+            </CTooltip>
+            <div className="small text-muted">
+                {`ID: ${row.original.id}`}
+            </div>
+          </>
+        ),
       }),
-      columnHelper.accessor('description', {
-        header: 'Description',
-        cell: ({ getValue }) => getValue(),
-      }),
+      // columnHelper.accessor('description', {
+      //   header: 'Description',
+      //   cell: ({ getValue }) => getValue(),
+      // }),
       columnHelper.accessor('group_id', {
         header: 'Global',
         cell: ({ row }) => (
@@ -127,56 +143,50 @@ const Instruction = ({ visLevel }) => {
         ),
       }),
       columnHelper.display({
-        id: 'edit',
-        header: 'Edit',
-        cell: ({ row }) => {
-          const original = row.original;
-          if (canEdit(visLevel, original)) {
-            return (
-              <IconButton 
-                icon={faPen} 
-                color="warning" 
-                text="Edit"
-                onClick={() => handleEditClick(original)}
-                className={original.isLastRow ? 'edit-instruction-button' : ''}
-              />
-            );
-          }
-          if (canView(visLevel, original)) {
-            return (
-              <IconButton 
-                icon={faEye} 
-                color="primary" 
-                text="Show" 
-                onClick={() => handleViewClick(original)} 
-              />
-            );
-          }
-          return null;
-        },
-      }),
-      columnHelper.display({
-        id: 'delete',
-        header: 'Delete',
+        id: 'options',
+        header: 'Options',
         cell: ({ row }) => {
           const original = row.original;
           const disabled = !canDelete(visLevel, original);
           return (
-            <div>
-              {disabled ? (
-                <CTooltip content="Deletion is restricted to admins only.">
-                  <span>
-                    <IconButton icon={faTrash} color="secondary" disabled />
-                  </span>
-                </CTooltip>
-              ) : (
-                <IconButton 
-                  icon={faTrash} 
-                  color="danger" 
-                  onClick={() => handleDelete(original.id)} 
+            <>
+              {(canEdit(visLevel, original)) && (
+                <CoreIconButton 
+                  icon={faPen} 
+                  style={{"margin-right": 5}} 
+                  color="warning" 
+                  onClick={() => handleEditClick(original)}
+                  className={original.isLastRow ? 'edit-instruction-button' : ''}
+                  toolTip='Edit Instruction'
                 />
               )}
-            </div>
+              {(canView(visLevel, original) && !canEdit(visLevel, original)) && (
+                <CoreIconButton
+                  style={{"margin-right": 5}}
+                  icon={faEye}
+                  color="info"
+                  onClick={() => handleViewClick(original)}
+                  toolTip='View Instruction'
+                />
+              )}
+              {/* {disabled ? ( */}
+                {/* <CoreIconButton 
+                  icon={faTrash}
+                  color="secondary"
+                  disabled={true} 
+                  toolTip='Deletion is restricted to admins only' 
+                /> */}
+              {/* ) : ( */}
+                <CoreIconButton
+                  style={{"margin-right": 5}} 
+                  icon={faTrash}
+                  disabled={disabled}
+                  color="danger" 
+                  onClick={() => handleDelete(original.id)}
+                  toolTip='Delete Instruction'
+                />
+              {/* )} */}
+            </>
           );
         },
       }),
@@ -185,22 +195,17 @@ const Instruction = ({ visLevel }) => {
 
   return (
     <CContainer style={{ marginTop: '15px' }}>
-      <h3 className="card-title mb-3" style={{ textAlign: 'center' }}>
-        Instructions
-      </h3>
       <CRow>
-        <CCol sm="auto">
-          <IconButton
-            className="add-instruction-button"
-            icon={faUserPlus}
-            color="primary"
-            text="Add Instruction"
-            onClick={handleAddInstruction}
-            style={{ marginTop: '15px', marginBottom: '20px' }}
+        <CCol>
+          <TableHeader
+              headline="Instructions"
+              buttonStyle={{ marginTop: 15, marginBottom: 20 }}
+              icon={faUserPlus}
+              buttonText='Add Instruction'
+              onClick={handleAddInstruction}
           />
         </CCol>
       </CRow>
-
       <CRow>
         <CCol>
           <BaseContainer>
