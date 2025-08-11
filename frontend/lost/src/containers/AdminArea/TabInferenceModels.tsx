@@ -1,6 +1,5 @@
 import { faEdit, faPlus, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
-import { useState } from 'react'
-import ReactTable from 'react-table'
+import { useState, useMemo } from 'react'
 import { useToggle } from 'react-use'
 import {
     INFERENCE_MODEL_TASK_TYPE,
@@ -9,11 +8,14 @@ import {
     useDeleteInferenceModel,
     useModels,
 } from '../../actions/inference-model/model-api'
-import HelpButton from '../../components/HelpButton'
-import IconButton from '../../components/IconButton'
 import * as Notification from '../../components/Notification'
 import { InferenceModalConfigModal } from './InferenceModelConfigModal'
-import { CBadge } from '@coreui/react'
+import { CBadge, CTooltip } from '@coreui/react'
+import CoreIconButton from '../../components/CoreIconButton'
+import TableHeader from '../../components/TableHeader'
+import CoreDataTable from '../../components/CoreDataTable'
+import { createColumnHelper } from '@tanstack/react-table'
+import BaseContainer from '../../components/BaseContainer'
 
 export const TabInferenceModels = () => {
     const { data, isLoading, error } = useModels()
@@ -39,17 +41,117 @@ export const TabInferenceModels = () => {
         })
     }
 
+    const columns = useMemo(() => {
+        const columnHelper = createColumnHelper()
+        return [
+            columnHelper.display({
+                id: 'name',
+                header: 'Name / Id',
+                cell: ({row}) => {
+                    return(
+                    <>
+                        <CTooltip 
+                            content={row.original.description}
+                            placement="top"
+                        >
+                            <b style={{ textDecoration: 'grey dotted underline'}}>{row.original.displayName}</b>
+                        </CTooltip>
+                        <div className="small text-muted">
+                            {`ID: ${row.original.id}`}
+                        </div>
+                    </>
+                )},
+            }),
+            columnHelper.display({
+                id: 'modelType',
+                header: 'Model Type',
+                cell: ({row}) => (
+                    <CBadge
+                        color={
+                            row.original.modelType === INFERENCE_MODEL_TYPE.YOLO
+                                ? 'primary'
+                                : 'dark'
+                        }
+                    >
+                        {row.original.modelType}
+                    </CBadge>
+                ),
+            }),
+            columnHelper.display({
+                id: 'taskType',
+                header: 'Task Type',
+                cell: ({row}) => (
+                    <CBadge
+                        color={
+                            row.original.taskType === INFERENCE_MODEL_TASK_TYPE.DETECTION
+                                ? 'success'
+                                : row.original.taskType === INFERENCE_MODEL_TASK_TYPE.SEGMENTATION
+                                ? 'info'
+                                : 'warning'
+                        }
+                    >
+                        {row.original.taskType === INFERENCE_MODEL_TASK_TYPE.DETECTION
+                            ? 'DETECTION'
+                            : row.original.taskType === INFERENCE_MODEL_TASK_TYPE.SEGMENTATION
+                            ? 'SEGMENTATION'
+                            : 'UNKNOWN'}
+                    </CBadge>
+                ),
+            }),
+            columnHelper.display({
+                id: 'serverUrl',
+                header: 'Triton Server URL',
+                cell: ({row}) => <pre>{row.original.serverUrl}</pre>,
+            }),
+            columnHelper.display({
+                id: 'name',
+                header: 'Triton Model Name',
+                cell: ({row}) => <p>{row.original.name}</p>,
+            }),
+            columnHelper.display({
+                id: 'options',
+                header: 'Options',
+                cell: ({row}) => (
+                    <>
+                        <CoreIconButton
+                            icon={faEdit}
+                            style={{ marginRight: '5px' }}
+                            color='warning'
+                            toolTip={'Edit Inference Model'}
+                            onClick={() => {
+                                setSelectedModelData(row.original)
+                                toggleModal()
+                            }}
+                        />
+                        <CoreIconButton
+                            color="danger"
+                            icon={faTrashAlt}
+                            style={{ marginRight: '5px' }}
+                            toolTip={'Delete Inference Model'}
+                            onClick={() => {
+                                handleInferenceModelDelete(row.original.id)
+                            }}
+                        />
+                    </>
+                ),
+            }),
+        ]
+    }, [])
+
+    const tableData = useMemo(() => data?.models ?? [], [data?.models])
+
     return (
         <>
-            <IconButton
+            <TableHeader
+                headline={"Inference Models"}
+                buttonText='Add Inference Model'
                 color="primary"
                 icon={faPlus}
-                text="Add Inference Model"
                 onClick={() => {
                     setSelectedModelData(undefined)
                     toggleModal()
                 }}
-                style={{ marginBottom: 20 }}
+                buttonStyle={{ marginBottom: 20 }}
             />
 
             <InferenceModalConfigModal
@@ -58,131 +160,12 @@ export const TabInferenceModels = () => {
                 modelData={selectedModelData}
             ></InferenceModalConfigModal>
 
-            <ReactTable
-                loading={isLoading}
-                noDataText={error ? 'Failed to load data' : 'No models available'}
-                columns={[
-                    {
-                        Header: 'Name / Id',
-                        accessor: 'displayName',
-                        Cell: (row) => {
-                            return (
-                                <>
-                                    <b>{row.original.displayName}</b>
-                                    <div className="small text-muted">
-                                        Id: {row.original.id}
-                                    </div>
-                                </>
-                            )
-                        },
-                    },
-                    {
-                        Header: 'Description',
-                        accessor: 'description',
-                        Cell: (row) => (
-                            <HelpButton
-                                id={row.original.id}
-                                text={row.original.description}
-                            />
-                        ),
-                    },
-                    {
-                        Header: 'Model Type',
-                        accessor: 'modelType',
-                        Cell: (row) => {
-                            return (
-                                <CBadge
-                                    color={
-                                        row.original.modelType ==
-                                        INFERENCE_MODEL_TYPE.YOLO
-                                            ? 'primary'
-                                            : 'dark'
-                                    }
-                                >
-                                    {row.original.modelType}
-                                </CBadge>
-                            )
-                        },
-                    },
-
-                    {
-                        Header: 'Task Type',
-                        accessor: 'taskType',
-                        Cell: (row) => {
-                            return (
-                                <CBadge
-                                    color={
-                                        row.original.taskType ==
-                                        INFERENCE_MODEL_TASK_TYPE.DETECTION
-                                            ? 'success'
-                                            : row.original.taskType ==
-                                                INFERENCE_MODEL_TASK_TYPE.SEGMENTATION
-                                              ? 'info'
-                                              : 'warning'
-                                    }
-                                >
-                                    {row.original.taskType ==
-                                    INFERENCE_MODEL_TASK_TYPE.DETECTION
-                                        ? 'DETECTION'
-                                        : row.original.taskType ==
-                                            INFERENCE_MODEL_TASK_TYPE.SEGMENTATION
-                                          ? 'SEGMENTATION'
-                                          : 'UNKNOWN'}
-                                </CBadge>
-                            )
-                        },
-                    },
-                    {
-                        Header: 'Triton Server URL',
-                        accessor: 'serverUrl',
-                        Cell: (row) => {
-                            return <pre>{row.original.serverUrl}</pre>
-                        },
-                    },
-                    {
-                        Header: 'Triton Model Name',
-                        accessor: 'name',
-                        Cell: (row) => {
-                            return <p>{row.original.name}</p>
-                        },
-                    },
-                    {
-                        Header: 'Edit',
-                        id: 'edit',
-                        Cell: (row) => {
-                            return (
-                                <IconButton
-                                    icon={faEdit}
-                                    text={'Edit'}
-                                    onClick={() => {
-                                        setSelectedModelData(row.original)
-                                        toggleModal()
-                                    }}
-                                />
-                            )
-                        },
-                    },
-                    {
-                        Header: 'Delete',
-                        id: 'delete',
-                        Cell: (row) => {
-                            return (
-                                <IconButton
-                                    color="danger"
-                                    icon={faTrashAlt}
-                                    text={'Delete'}
-                                    onClick={() => {
-                                        handleInferenceModelDelete(row.original.id)
-                                    }}
-                                />
-                            )
-                        },
-                    },
-                ]}
-                data={data?.models}
-                defaultPageSize={10}
-                className="-striped -highlight"
-            />
+            <BaseContainer>
+                <CoreDataTable
+                    tableData={tableData}
+                    columns={columns}
+                />
+            </BaseContainer>
         </>
     )
 }
