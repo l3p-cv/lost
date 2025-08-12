@@ -12,7 +12,7 @@ const TableHeader = ({
     buttonText="",
     buttonColor="primary",
     selectFileButton=false,
-    headerClassname="card-title mb-3",
+    headerClassname="card-title mb-2",
     accept,
 }) =>{
 

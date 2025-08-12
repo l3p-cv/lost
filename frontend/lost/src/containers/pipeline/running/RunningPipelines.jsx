@@ -1,4 +1,4 @@
-import { CContainer, CTooltip, CProgress } from '@coreui/react'
+import { CContainer, CTooltip, CProgress, CBadge } from '@coreui/react'
 import { faEye, faPlay, faPause, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
 import 'react-table/react-table.css'
@@ -167,8 +167,8 @@ export const RunningPipelines = () => {
                 header: 'Progress',
                 cell: (props) => {
                     const progress = parseInt(props.row.original.progress)
-                    if (props.row.original.progress === 'ERROR') return <div>ERROR</div>
-                    if (props.row.original.progress === 'PAUSED') return <div>PAUSED</div>
+                    if (props.row.original.progress === 'ERROR') return <CBadge color='danger'>ERROR</CBadge>
+                    if (props.row.original.progress === 'PAUSED') return <CBadge color='warning'>PAUSED</CBadge>
                     return (
                         <CProgress
                             className="progress-xs rt-progress"

@@ -129,14 +129,14 @@ const AdminArea = () => {
                                 </CTooltip>
                             </CNavItem>
                             <CNavItem>
-                                <CTooltip content="Worker" placement="top">
+                                <CTooltip content="Workers" placement="top">
                                     <CNavLink active={active === 4} onClick={() => setActive(4)}>
                                         <FontAwesomeIcon
                                             color="#092F38"
                                             size="1x"
                                             icon={faCubes}
                                         />
-                                        {active === 4 && ' Worker'}
+                                        {active === 4 && ' Workers'}
                                     </CNavLink>
                                 </CTooltip>
                             </CNavItem>

@@ -329,15 +329,15 @@ const AddPipelineProject = ({ visLevel, projectNames = [], refetch }) => {
                     </CCol>
                 </CRow>
             </BaseModal>
-            <div className="mt-3 d-flex justify-content-between align-items-center">
-                <h3 className={"card-title mb-3"}>
+            <div className="mt-3 d-flex align-items-center">
+                <h3 className={"card-title mb-2"}>
                     {"Pipeline Projects"}
                 </h3>
                 <CoreIconButton
                     icon={faPlus}
                     text="Import pipeline project"
                     onClick={() => setIsModalOpen(true)}
-                    style={{ marginBottom: 20 }}
+                    style={{ marginBottom: 20, marginTop: 15}}
                     color="primary"
                 />
             </div>
