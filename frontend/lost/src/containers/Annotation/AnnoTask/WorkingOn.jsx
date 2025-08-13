@@ -5,6 +5,7 @@ import IconButton from '../../../components/IconButton'
 import { useNavigate } from 'react-router-dom'
 import { faFastForward } from '@fortawesome/free-solid-svg-icons'
 import { CCol, CProgress, CRow } from '@coreui/react'
+import CoreIconButton from '../../../components/CoreIconButton'
 
 const WorkingOn = ({ annoTask }) => {
     const navigate = useNavigate()
@@ -75,7 +76,7 @@ const WorkingOn = ({ annoTask }) => {
 
             <CRow>
                 <CCol className="mt-5">
-                    <IconButton
+                    <CoreIconButton
                         onClick={() => handleContinue(annoTask.type)}
                         color="primary"
                         isOutline={true}

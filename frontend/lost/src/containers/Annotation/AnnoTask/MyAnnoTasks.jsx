@@ -334,52 +334,51 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
                 ),
             }),
             columnHelper.display({
-                id: 'statistic',
-                header: 'Statistic',
+                id: 'actions',
+                header: 'Actions',
                 cell: ({ row }) => {
                     const progress = Math.floor(
                         (row.original.finished / row.original.size) * 100,
                     )
                     return (
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            whiteSpace: 'nowrap'
+                        }}>
                         <CoreIconButton
                             onClick={() => handleStatisticsClick(row.original)}
                             color="info"
+                            style={{marginRight: 5}}
                             disabled={progress > 0 ? false : true}
-                            text="Statistic"
+                            // text="Statistic"
+                            toolTip='Show Statistics'
                             isOutline={true}
                             icon={faChartBar}
                         />
-                    )
-                },
-            }),
-            columnHelper.display({
-                id: 'annotate',
-                header: 'Annotate',
-                cell: ({ row }) => {
-                    const progress = Math.floor(
-                        (row.original.finished / row.original.size) * 100,
-                    )
-                    return (
-                        <>
-                            {row.original.status === 'inProgress' ? (
-                                <CoreIconButton
-                                    onClick={() => handleRowClick(row.original)}
-                                    color="primary"
-                                    text="Annotate"
-                                    isOutline={true}
-                                    icon={faPencil}
-                                />
-                            ) : (
-                                <CoreIconButton
-                                    onClick={() => handleRowClick(row.original)}
-                                    color="primary"
-                                    isOutline={false}
-                                    disabled
-                                    text="Finished"
-                                    icon={faCheck}
-                                />
-                            )}
-                        </>
+                        {row.original.status === 'inProgress' ? (
+                            <CoreIconButton
+                                style={{marginRight: 5}}
+                                onClick={() => handleRowClick(row.original)}
+                                color="primary"
+                                text="Annotate"
+                                toolTip='Annotate this Task'
+                                isOutline={true}
+                                icon={faPencil}
+                            />
+                        ) : (
+                            <CoreIconButton
+                                style={{marginRight: 5}}
+                                onClick={() => handleRowClick(row.original)}
+                                color="primary"
+                                isOutline={false}
+                                disabled
+                                text="Finished"
+                                icon={faCheck}
+                            />
+                        )}
+                        </div>
                     )
                 },
             }),
@@ -483,7 +482,7 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
         <>
             {renderStatisticModal()}
             <CCol sm="12">{filterLabels && renderFilter()}</CCol>
-            <BaseContainer>
+                <hr />
                 <CoreDataTable
                     columns={columns}
                     tableData={aTData}
@@ -503,24 +502,6 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
                     wholeData={false}
                     getRowClassName={getRowClassName}
                 />
-            </BaseContainer>
-            {/* Below: old DataTable */}
-            {/* <DataTable
-                className="mt-3"
-                data={aTData}
-                columns={defineColumns()}
-                onPaginationChange={(table) => {
-                    setATData([])
-                    const tableState = table.getState()
-                    setDatatableInfo({
-                        pageSize: tableState.pagination.pageSize,
-                        page: tableState.pagination.pageIndex,
-                        sorted: tableState.sorting,
-                        filtered: tableState.columnFilters,
-                    })
-                }}
-                pageCount={pages}
-            /> */}
         </>
     )
 }

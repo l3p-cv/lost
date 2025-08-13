@@ -109,8 +109,8 @@ export const TabInferenceModels = () => {
                 cell: ({row}) => <p>{row.original.name}</p>,
             }),
             columnHelper.display({
-                id: 'options',
-                header: 'Options',
+                id: 'actions',
+                header: 'Actions',
                 cell: ({row}) => (
                     <>
                         <CoreIconButton

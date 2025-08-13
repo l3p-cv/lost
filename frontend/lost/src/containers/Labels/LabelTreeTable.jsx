@@ -115,12 +115,20 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
                         <CBadge color="primary">Global</CBadge>
                     ),
             }),
-            columnHelper.accessor('options', {
-                header: 'Options',
+            columnHelper.accessor('actions', {
+                header: 'Actions',
                 cell: (props) => {
                     const isNewlyCreated = props.row.original.idx === newlyCreatedTreeId
                     return (
                         <>
+                        <CoreIconButton
+                            style={{'margin-right': '5px'}}
+                            icon={faFileExport}
+                            toolTip="Export Labels"
+                            color="info"
+                            isOutline={true}
+                            onClick={() => exportLabelTree(props.row.original.idx)}
+                        />
                         <CoreIconButton
                             toolTip='Edit/Show Label Tree'
                             icon={
@@ -159,14 +167,6 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
                                 })
                                 setIsEditModalOpen(true)
                             }}
-                        />
-                        <CoreIconButton
-                            style={{'margin-right': '5px'}}
-                            icon={faFileExport}
-                            toolTip="Export Labels"
-                            color="info"
-                            isOutline={true}
-                            onClick={() => exportLabelTree(props.row.original.idx)}
                         />
                         </>
                     )
@@ -224,8 +224,9 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
                 color='primary'
                 selectFileButton={true}
             />
-            <CreateLabelTree visLevel={visLevel} />
             <BaseContainer>
+                <CreateLabelTree visLevel={visLevel} />
+                <hr />
                 <CoreDataTable 
                     columns={defineColumns()} 
                     tableData={labelTrees} 

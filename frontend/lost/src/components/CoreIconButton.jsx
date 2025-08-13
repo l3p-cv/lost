@@ -50,11 +50,9 @@ const CoreIconButton = ({
                 </div>
             )
         }
-        const ic = iconButtonIcon ? (
-            <FontAwesomeIcon key="icon" icon={iconButtonIcon} size={loadingSize || '2x'} />
-        ) : (
-            ''
-        )
+        const ic = (iconButtonIcon && iconButtonIcon.iconName && iconButtonIcon.prefix)
+            ? <FontAwesomeIcon key="icon" icon={iconButtonIcon} size={loadingSize || '2x'} />
+            : null
         const iconButtonText = text ? (
             <span key="text" style={{ marginLeft: margin, marginRight: margin }}>
                 {text}

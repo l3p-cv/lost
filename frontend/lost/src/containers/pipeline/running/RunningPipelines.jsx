@@ -183,8 +183,8 @@ export const RunningPipelines = () => {
                 cell: ({ row }) => new Date(row.original.date).toLocaleString(),
             }),
             columnHelper.display({
-                id: 'options',
-                header: 'Options',
+                id: 'actions',
+                header: 'Actions',
                 cell: ({ row }) => (
                     <>
                         <OpenIcon original={row.original} />

@@ -95,8 +95,8 @@ const PTTable = ({ visLevel }) => {
             },
         }),
         columnHelper.display({
-            header: 'Options',
-            id: "options",
+            header: 'Actions',
+            id: "action",
             cell: (props) => {
                 return (
                     <>

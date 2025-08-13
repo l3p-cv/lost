@@ -15,6 +15,7 @@ import * as Notification from '../../components/Notification'
 import HelpButton from '../../components/HelpButton'
 import CollapseCard from '../../containers/pipeline/globalComponents/modals/CollapseCard'
 import CoreIconButton from '../../components/CoreIconButton'
+import TableHeader from '../../components/TableHeader'
 const AddPipelineProject = ({ visLevel, projectNames = [], refetch }) => {
     const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -329,18 +330,14 @@ const AddPipelineProject = ({ visLevel, projectNames = [], refetch }) => {
                     </CCol>
                 </CRow>
             </BaseModal>
-            <div className="mt-3 d-flex align-items-center">
-                <h3 className={"card-title mb-2"}>
-                    {"Pipeline Projects"}
-                </h3>
-                <CoreIconButton
-                    icon={faPlus}
-                    text="Import pipeline project"
-                    onClick={() => setIsModalOpen(true)}
-                    style={{ marginBottom: 20, marginTop: 15}}
-                    color="primary"
-                />
-            </div>
+            <TableHeader
+                headline={"Pipeline Projects"}
+                buttonStyle={{ marginBottom: 20, marginTop: 15}}
+                onClick={() => setIsModalOpen(true)}
+                icon={faPlus}
+                buttonText='Import pipeline project'
+
+            />
         </>
     )
 }

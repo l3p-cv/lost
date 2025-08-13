@@ -58,6 +58,8 @@ const PageSizeNavigator = ({
                     <span className="text-muted small">Page</span>
                     <CForm onSubmit={jumpToPage} className="d-flex align-items-center gap-2">
                         <CFormInput
+                            max={totalPages}
+                            min={1}
                             type="number"
                             value={targetPage}
                             onInput={handleInput}

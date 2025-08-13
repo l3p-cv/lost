@@ -148,8 +148,8 @@ const DatasetTable = ({
                 },
             }),
             columnHelper.display({
-                id: 'options',
-                header: () => 'Options',
+                id: 'actions',
+                header: () => 'Actions',
                 cell: ({ row }) => {
 
                     const rowData = row.original

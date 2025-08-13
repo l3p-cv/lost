@@ -21,6 +21,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Replaced all usages of reactstrap and semantic-ui with CoreUI components and/or generic solutions 
 - Ask for content when creating/editing instructions
 - replaced all defaultProps with default values in component-definition (for future compatibility)
+- Move table headlines and craete-buttons to new component TableHeader
+- Reworked InferenceModelTable (to make it like all the other tables)
+- Changed not working colors for sweetalarm to black/grey
+- Buttons (CoreIconButton) are now grey (secondary) when disabled
+- Reworked TablePagination (and split it into one more component, "PageSizeNavigator")
+- Put buttons into general column "Actions" for most datatables
+- changed color of standard color 'info'
 ### Fixed
 - Removed centered spinner of CoreDataTable, when faced with empty data, to not block the rest of the page
 - Fixed execution of DBPatcher at wrong place on start up
@@ -28,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed instruction selection on anno-pipeline-creation
 - Fixed SIA crashing (when doing anything referencing labels)
 - Saving instructions no longer leads to a blank page
+- CoreIconButton no longer raises warnings when loading for the first time
 ### Removed
 - Removed all instances of reactstrap library
 - Removed all instances of semantic-ui library

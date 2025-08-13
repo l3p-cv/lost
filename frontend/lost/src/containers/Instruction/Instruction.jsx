@@ -143,8 +143,8 @@ const Instruction = ({ visLevel }) => {
         ),
       }),
       columnHelper.display({
-        id: 'options',
-        header: 'Options',
+        id: 'actions',
+        header: 'Actions',
         cell: ({ row }) => {
           const original = row.original;
           const disabled = !canDelete(visLevel, original);

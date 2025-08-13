@@ -8,6 +8,7 @@ import WorkingOn from './AnnoTask/WorkingOn'
 import actions from '../../actions'
 import { useNavigate } from 'react-router-dom'
 import { CCard, CCardBody, CCardHeader, CCol, CContainer, CRow } from '@coreui/react'
+import TableHeader from '../../components/TableHeader'
 
 const { getAnnoTasks, getWorkingOnAnnoTask, chooseAnnoTask } = actions
 
@@ -46,10 +47,14 @@ const AnnotatorDashboard = () => {
                     </h3>
                     <CRow>
                         <CCol className="mt-3">
+                            <TableHeader
+                                headline="Working on"
+                                buttonStyle={{ marginTop: 15, marginBottom: 20, visibility: 'hidden'}}
+                            />
                             <CCard>
-                                <CCardHeader>
+                                {/* <CCardHeader>
                                     <h4>Working on</h4>
-                                </CCardHeader>
+                                </CCardHeader> */}
                                 <CCardBody>
                                     <CRow>
                                         <CCol xs="12" md="6" xl="6">
@@ -82,10 +87,14 @@ const AnnotatorDashboard = () => {
             {renderWorkingOn()}
             <CRow>
                 <CCol className="mt-3">
+                    <TableHeader
+                        headline="My Annotation Tasks"
+                        buttonStyle={{ marginTop: 15, marginBottom: 20, visibility: 'hidden'}}
+                    />
                     <CCard>
-                        <CCardHeader>
+                        {/* <CCardHeader>
                             <h4>My Annotation Tasks</h4>
-                        </CCardHeader>
+                        </CCardHeader> */}
                         <CCardBody>
                             <MyAnnoTasks
                                 annoTasks={annoTasks}

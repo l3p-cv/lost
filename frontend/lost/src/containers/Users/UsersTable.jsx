@@ -130,8 +130,8 @@ export const UsersTable = () => {
                 ))
             },
         }),
-        columnHelper.accessor('options', {
-            header: 'Options',
+        columnHelper.accessor('actions', {
+            header: 'Actions',
             cell: (props) => {
                     const user_row = props.row
                     return (

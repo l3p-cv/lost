@@ -209,8 +209,8 @@ export const DSTable = ({ visLevel, headline="Datasources" }) => {
                 },
             }),
             columnHelper.display({
-                id: 'options',
-                header: () => 'Options',
+                id: 'actions',
+                header: () => 'Actions',
                 cell: (props) => {
                     return (
                         <>
