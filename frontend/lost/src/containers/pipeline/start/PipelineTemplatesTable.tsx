@@ -61,6 +61,7 @@ export const PipelineTemplatesTable = () => {
                     return (
                         <CoreIconButton
                           color="primary"
+                          text=' Start Pipeline'
                         //   size="m"
                         toolTip='Start new Pipeline with this template'
                           className={
