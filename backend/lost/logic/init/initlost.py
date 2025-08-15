@@ -24,14 +24,16 @@ from lost.db.db_patches.patches import patch_dict
 
 def main():
     lostconfig = config.LOSTConfig()
-    # Create Tables
-    dbm = access.DBMan(lostconfig)
     try:
-        perfrom_all_patches = check_if_all_patches_should_be_applied(dbm)
-        DBPatcher(dbm=dbm, patch_map=patch_dict).check_and_update(perfrom_all_patches)
+        tempdbm = access.DBMan(lostconfig)
+        perfrom_all_patches = check_if_all_patches_should_be_applied(tempdbm)
+        tempdbm.close_session()
+        DBPatcher(patch_map=patch_dict).check_and_update(perfrom_all_patches)
     except:
+        print("Error while patching database:")
         print(traceback.format_exc())
-    dbm.create_database()
+        
+    dbm = access.DBMan(lostconfig)
     create_roles(dbm)
     user, group = create_first_user(dbm)
     if user and group:
@@ -50,6 +52,23 @@ def check_if_all_patches_should_be_applied(dbm:access.DBMan):
     deal with a lost version that prior to db_patcher and we can apply all db
     patches.
     '''
+    
+    try:
+        # check is db tables are created
+        sql = """
+            SELECT COUNT(table_schema)
+            FROM information_schema.tables
+            WHERE table_schema = 'lost'
+            AND table_name = 'version';
+        """
+        res = dbm.session.execute(text(sql))
+        row = res.fetchone()
+        if row[0] == 0:
+            return False
+    except:
+        print(traceback.format_exc())
+        return False
+    
     try:
         sql = """
             SELECT 1 
@@ -73,6 +92,7 @@ def check_if_all_patches_should_be_applied(dbm:access.DBMan):
         return False
     except:
         print(traceback.format_exc())
+        return False
 
 def release_all_pipe_locks(dbm:access.DBMan):
     try:
