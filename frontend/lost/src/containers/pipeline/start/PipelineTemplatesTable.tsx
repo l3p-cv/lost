@@ -36,7 +36,6 @@ export const PipelineTemplatesTable = () => {
         const columnHelper = createColumnHelper()
         let columns = []
         columns = [
-            ...columns,
             columnHelper.accessor('name', {
                 header: 'Name/Project',
                 cell: (props) => {
@@ -57,26 +56,25 @@ export const PipelineTemplatesTable = () => {
             columnHelper.display({
                 id: 'start',
                 header: 'Start',
-                cell: (props) => {
+                cell: ({row}) => {
                     return (
-                        <CoreIconButton
-                          color="primary"
-                          text=' Start Pipeline'
-                        //   size="m"
-                        toolTip='Start new Pipeline with this template'
-                          className={
-                              props.row.original.name === 'found.sia'
-                                  ? 'sia-start-button'
-                                  : props.row.original.name === 'found.mia'
-                                  ? 'mia-start-button'
-                                  : ''
-                          }
-                          onClick={() =>
-                              navigate(`/pipeline-template/${props.row.original.id}`)
-                          }
-                          icon={faPlay}
-                        //   text="Start"
-                      />
+                        <>
+                            <CoreIconButton
+                            color="primary"
+                            text=' Start Pipeline'
+                            //   className={
+                            //       row.original.name === 'found.sia'
+                            //           ? 'sia-start-button'
+                            //           : row.original.name === 'found.mia'
+                            //           ? 'mia-start-button'
+                            //           : ''
+                            //   }
+                            onClick={() =>
+                                navigate(`/pipeline-template/${row.original.id}`)
+                            }
+                            icon={faPlay}
+                        />
+                      </>
                     )
                 }
             })
