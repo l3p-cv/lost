@@ -11,6 +11,7 @@ import { createColumnHelper } from '@tanstack/react-table'
 import CoreDataTable from '../../components/CoreDataTable'
 import BaseContainer from '../../components/BaseContainer'
 import CoreIconButton from '../../components/CoreIconButton'
+import ErrorBoundary from '../../components/ErrorBoundary'
 
 const PTTable = ({ visLevel }) => {
     const [tableData, setTableData] = useState([])
@@ -138,7 +139,9 @@ const PTTable = ({ visLevel }) => {
             {/* </CRow> */}
             {tableData.length > 0 ? (
                 <BaseContainer>
+                    <ErrorBoundary>
                     <CoreDataTable columns={columns} tableData={tableData} />
+                    </ErrorBoundary>
                 </BaseContainer>
             ) : (
                 ''

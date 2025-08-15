@@ -19,6 +19,7 @@ import BaseContainer from '../../components/BaseContainer'
 import CoreDataTable from '../../components/CoreDataTable'
 import CoreIconButton from '../../components/CoreIconButton'
 import TableHeader from '../../components/TableHeader'
+import ErrorBoundary from '../../components/ErrorBoundary'
 
 export const DSTable = ({ visLevel, headline="Datasources" }) => {
     const [isNewDS, setIsNewDS] = useState(false)
@@ -288,7 +289,9 @@ export const DSTable = ({ visLevel, headline="Datasources" }) => {
                 onClick={createNewDS}
             />
             <BaseContainer>
+                <ErrorBoundary>
                 <CoreDataTable columns={defineColumns()} tableData={tableData} />
+                </ErrorBoundary>
             </BaseContainer>
         </>
     )

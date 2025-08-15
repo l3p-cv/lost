@@ -16,6 +16,7 @@ import CoreDataTable from '../../../components/CoreDataTable'
 import { createColumnHelper } from '@tanstack/react-table'
 import TableHeader from '../../../components/TableHeader'
 import CoreIconButton from '../../../components/CoreIconButton'
+import ErrorBoundary from '../../../components/ErrorBoundary'
 
 export const RunningPipelines = () => {
     const navigate = useNavigate()
@@ -206,6 +207,7 @@ export const RunningPipelines = () => {
                 return <div className="pipeline-error-message">{data.pipelines.error}</div>
             }
             return (
+                <ErrorBoundary>
                 <CoreDataTable
                     columns={columns}
                     tableData={pipelineData}
@@ -225,6 +227,7 @@ export const RunningPipelines = () => {
                     wholeData={false}
                     getRowClassName={getRowClassName}
                 />
+                </ErrorBoundary>
             )
         }
     }

@@ -16,6 +16,7 @@ import TableHeader from '../../components/TableHeader'
 import BaseContainer from '../../components/BaseContainer'
 import { useImportLabelTree } from '../../actions/label/label-api'
 import CreateLabelTree from './CreateLabelTree'
+import ErrorBoundary from '../../components/ErrorBoundary'
 
 
 let amountOfLabels = 0
@@ -227,11 +228,13 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
             <BaseContainer>
                 <CreateLabelTree visLevel={visLevel} />
                 <hr />
+                <ErrorBoundary>
                 <CoreDataTable 
                     columns={defineColumns()} 
                     tableData={labelTrees} 
                     getRowClassName={getRowClassName}
                 />
+                </ErrorBoundary>
             </BaseContainer>
         </>
     )

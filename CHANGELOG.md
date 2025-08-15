@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ImageSearchActive in review, so that one can easily switch between images in the image-search 
 - Ask for confirmation when deleting Instructions
 - Ask for filling content of Instructions, when creating/editing one
+- Added error boundaries around all datatables
 ### Changed
 - Replaced all usages of reactstrap and semantic-ui with CoreUI components and/or generic solutions 
 - Ask for content when creating/editing instructions

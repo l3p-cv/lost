@@ -11,6 +11,7 @@ import CoreDataTable from '../../../components/CoreDataTable'
 import { createColumnHelper } from '@tanstack/react-table'
 import TableHeader from '../../../components/TableHeader'
 import CoreIconButton from '../../../components/CoreIconButton'
+import ErrorBoundary from '../../../components/ErrorBoundary'
 
 export const PipelineTemplatesTable = () => {
     const navigate = useNavigate()
@@ -99,7 +100,9 @@ export const PipelineTemplatesTable = () => {
             const templateData = data.templates
 
             return (
+                <ErrorBoundary>
                 <CoreDataTable columns={defineColumns()} tableData={templateData} />
+                </ErrorBoundary>
             )
         }
     }

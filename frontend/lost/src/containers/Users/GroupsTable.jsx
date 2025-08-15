@@ -10,6 +10,7 @@ import CoreDataTable from '../../components/CoreDataTable'
 import BaseContainer from '../../components/BaseContainer'
 import { CFormInput, CInputGroup } from '@coreui/react'
 import CoreIconButton from '../../components/CoreIconButton'
+import ErrorBoundary from '../../components/ErrorBoundary'
 
 export const Groups = () => {
     const [newGroup, setNewGroup] = useState('')
@@ -62,14 +63,15 @@ export const Groups = () => {
                     />
                     <CoreIconButton color="primary" type='submit' icon={faPlus} onClick={addGroup} />
                 </CInputGroup>
-                {/* TODO: make pagination-buttons smaller */}
                 <BaseContainer>
+                    <ErrorBoundary>
                     <CoreDataTable
                         columns={columns}
                         tableData={groupsData.groups}
                         usePagination={needPages}
                         paginationLarge={false}
                         />
+                    </ErrorBoundary>
                 </BaseContainer>
             </div>
         )

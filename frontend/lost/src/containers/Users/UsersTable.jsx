@@ -15,6 +15,7 @@ import { CBadge } from '@coreui/react'
 import BaseContainer from '../../components/BaseContainer'
 import { alertDeletion } from '../pipeline/globalComponents/Sweetalert'
 import CoreIconButton from '../../components/CoreIconButton'
+import ErrorBoundary from '../../components/ErrorBoundary'
 
 const RenderBadge = ({ key, text, color }) => (
     <div>
@@ -195,7 +196,9 @@ export const UsersTable = () => {
                 />
             </div>
             <BaseContainer>
+                <ErrorBoundary>
                 <CoreDataTable columns={columns} tableData={usersData.users} />
+                </ErrorBoundary>
             </BaseContainer>
         </div>
     ) : (

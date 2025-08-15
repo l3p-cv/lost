@@ -14,6 +14,7 @@ import CoreDataTable from '../../components/CoreDataTable';
 import { createColumnHelper } from '@tanstack/react-table';
 import CoreIconButton from '../../components/CoreIconButton';
 import TableHeader from '../../components/TableHeader';
+import ErrorBoundary from '../../components/ErrorBoundary';
 
 const canEdit = (visLevel, instruction) => visLevel === 'global' || (visLevel === 'all' && instruction.group_id);
 const canView = (visLevel, instruction) => visLevel === 'all' && !instruction.group_id;
@@ -209,6 +210,7 @@ const Instruction = ({ visLevel }) => {
       <CRow>
         <CCol>
           <BaseContainer>
+          <ErrorBoundary>
             {filteredInstructions.length === 0 && !isLoading && (
               <p>No instructions available.</p>
             )}
@@ -224,6 +226,7 @@ const Instruction = ({ visLevel }) => {
                 wholeData={true}
               />
             </div>
+          </ErrorBoundary>
           </BaseContainer>
         </CCol>
       </CRow>

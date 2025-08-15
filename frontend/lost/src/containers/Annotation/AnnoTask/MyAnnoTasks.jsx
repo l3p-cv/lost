@@ -16,6 +16,7 @@ import DropdownInput from '../../../components/DropdownInput'
 import CoreDataTable from '../../../components/CoreDataTable'
 import BaseContainer from '../../../components/BaseContainer'
 import CoreIconButton from '../../../components/CoreIconButton'
+import ErrorBoundary from '../../../components/ErrorBoundary'
 
 const { getAnnoTaskStatistic } = actions
 
@@ -406,6 +407,7 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
             <>
                 {filterLabels && (
                     <>
+                    <ErrorBoundary>
                         <CCol>
                             <CButtonToolbar
                                 // className="justify-left"
@@ -470,6 +472,7 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
                                 <CCol className="justify-content-end d-flex"></CCol>
                             </CButtonToolbar>
                         </CCol>
+                    </ErrorBoundary>
                     </>
                 )}
             </>
@@ -483,6 +486,7 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
             {renderStatisticModal()}
             <CCol sm="12">{filterLabels && renderFilter()}</CCol>
                 <hr />
+                <ErrorBoundary>
                 <CoreDataTable
                     columns={columns}
                     tableData={aTData}
@@ -502,6 +506,7 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
                     wholeData={false}
                     getRowClassName={getRowClassName}
                 />
+                </ErrorBoundary>
         </>
     )
 }

@@ -9,6 +9,7 @@ import actions from '../../actions'
 import { useNavigate } from 'react-router-dom'
 import { CCard, CCardBody, CCardHeader, CCol, CContainer, CRow } from '@coreui/react'
 import TableHeader from '../../components/TableHeader'
+import ErrorBoundary from '../../components/ErrorBoundary'
 
 const { getAnnoTasks, getWorkingOnAnnoTask, chooseAnnoTask } = actions
 
@@ -51,6 +52,7 @@ const AnnotatorDashboard = () => {
                                 headline="Working on"
                                 buttonStyle={{ marginTop: 15, marginBottom: 20, visibility: 'hidden'}}
                             />
+                            <ErrorBoundary>
                             <CCard>
                                 {/* <CCardHeader>
                                     <h4>Working on</h4>
@@ -74,6 +76,7 @@ const AnnotatorDashboard = () => {
                                     </CRow>
                                 </CCardBody>
                             </CCard>
+                            </ErrorBoundary>
                         </CCol>
                     </CRow>
                 </CContainer>

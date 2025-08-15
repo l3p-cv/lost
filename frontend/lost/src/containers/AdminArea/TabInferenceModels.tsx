@@ -16,6 +16,7 @@ import TableHeader from '../../components/TableHeader'
 import CoreDataTable from '../../components/CoreDataTable'
 import { createColumnHelper } from '@tanstack/react-table'
 import BaseContainer from '../../components/BaseContainer'
+import ErrorBoundary from '../../components/ErrorBoundary'
 
 export const TabInferenceModels = () => {
     const { data, isLoading, error } = useModels()
@@ -161,10 +162,12 @@ export const TabInferenceModels = () => {
             ></InferenceModalConfigModal>
 
             <BaseContainer>
+                <ErrorBoundary>
                 <CoreDataTable
                     tableData={tableData}
                     columns={columns}
                 />
+                </ErrorBoundary>
             </BaseContainer>
         </>
     )

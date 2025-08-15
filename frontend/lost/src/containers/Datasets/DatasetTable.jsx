@@ -14,6 +14,7 @@ import CoreDataTable from '../../components/CoreDataTable'
 import CoreIconButton from '../../components/CoreIconButton'
 import HelpButton from '../../components/HelpButton'
 import { CTooltip } from '@coreui/react'
+import ErrorBoundary from '../../components/ErrorBoundary'
 
 const DatasetTable = ({
     datasetList,
@@ -222,6 +223,7 @@ const DatasetTable = ({
     const columns = useMemo(() => defineColumns(), [tableData])
 
     return (
+        <ErrorBoundary>
         <CoreDataTable
             columns={columns}
             tableData={tableData}
@@ -243,6 +245,7 @@ const DatasetTable = ({
             expanded={expanded}
             setExpanded={setExpanded}
         />
+        </ErrorBoundary>
     )
 }
 
