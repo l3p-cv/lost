@@ -236,7 +236,7 @@ export const RunningPipelines = () => {
                 buttonStyle={{ marginTop: 15, marginBottom: 20 }}
                 icon={faPlay}
                 buttonText='Start new Pipeline'
-                onClick={navigateToTemplates} // TODO: what is this button supposed to do???
+                onClick={navigateToTemplates}
             />
             <BaseContainer>
                 <div className="pipeline-running-1">{renderDatatable()}</div>

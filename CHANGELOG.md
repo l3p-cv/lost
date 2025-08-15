@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Reworked TablePagination (and split it into one more component, "PageSizeNavigator")
 - Put buttons into general column "Actions" for most datatables
 - changed color of standard color 'info'
+- load Datatable columns with useMemo (Pipelines, Datastes)
 ### Fixed
 - Removed centered spinner of CoreDataTable, when faced with empty data, to not block the rest of the page
 - Fixed execution of DBPatcher at wrong place on start up
