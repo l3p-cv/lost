@@ -8,7 +8,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { createColumnHelper } from '@tanstack/react-table'
-import React, { Fragment, useEffect, useState } from 'react'
+import React, { Fragment, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import CoreDataTable from '../../components/CoreDataTable'
 import CoreIconButton from '../../components/CoreIconButton'
@@ -219,9 +219,11 @@ const DatasetTable = ({
         return columns
     }
 
+    const columns = useMemo(() => defineColumns(), [tableData])
+
     return (
         <CoreDataTable
-            columns={defineColumns()}
+            columns={columns}
             tableData={tableData}
             onPaginationChange={(table) => {
                 setExpanded({})

@@ -11,7 +11,7 @@ import { CenteredSpinner } from '../../../components/CenteredSpinner'
 import { getColor } from '../../Annotation/AnnoTask/utils'
 import '../globalComponents/pipeline.scss'
 import { alertDeletePipeline } from '../globalComponents/Sweetalert'
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import CoreDataTable from '../../../components/CoreDataTable'
 import { createColumnHelper } from '@tanstack/react-table'
 import TableHeader from '../../../components/TableHeader'
@@ -116,7 +116,7 @@ export const RunningPipelines = () => {
     )
 
     const getTemplateDescription = ({ templates, templName }) => {
-        const match = templates?.find(t => t.name === templName)
+        const match = templates?.find(t => t?.name === templName)
         return match?.description
     }
 
@@ -151,7 +151,7 @@ export const RunningPipelines = () => {
                     <>
                         <CTooltip 
                             content={getTemplateDescription({
-                                templates: templateData.templates,
+                                templates: templateData?.templates,
                                 templName: props.row.original.templateName})}
                             placement="top"
                         >
@@ -196,6 +196,8 @@ export const RunningPipelines = () => {
         ]
     }
 
+    const columns = useMemo(() => defineColumns(), [pipelineData, templateData])
+
     const renderDatatable = () => {
         if ((isLoading || templateIsLoading) && !pipelineData) return <CenteredSpinner />
         if (isError || templateIsError) return <div className="pipeline-error-message">Error loading data</div>
@@ -203,10 +205,9 @@ export const RunningPipelines = () => {
             if ((data && templateData) && (data.pipelines.error || templateData.error)) {
                 return <div className="pipeline-error-message">{data.pipelines.error}</div>
             }
-            // TODO: handle data?.pipelines not loading quick enough
             return (
                 <CoreDataTable
-                    columns={defineColumns()}
+                    columns={columns}
                     tableData={pipelineData}
                     onPaginationChange={(table) => {
                         const nextPage = table.getState().pagination.pageIndex
