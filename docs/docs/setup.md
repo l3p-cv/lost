@@ -4,7 +4,7 @@ sidebar_position: 7
 
 # Setup
 
-# Default Setup with Docker {#quick-setup-standard}
+## Default Setup with Docker {#quick-setup-standard}
 
 LOST provides a [quick_setup](https://github.com/l3p-cv/lost/tree/master/docker/quick_setup) script, that will configure LOST and instruct you how to start LOST. We designed this script for Linux environments, but it will also work on Windows host machines.
 

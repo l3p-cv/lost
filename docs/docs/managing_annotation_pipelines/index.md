@@ -5,26 +5,26 @@ sidebar_position: 2
 
 # Managing Annotation Pipelines
 
-# Datasources
+## Datasources
 
-# TODO Datasources
+## TODO Datasources
 
-# Label Trees
+## Label Trees
 
-# Start Pipeline
+## Start Pipeline
 
 ## Choose Datasource
 
-# TODO
+## TODO
 
 ## Configure AnnotationTask
 
 ## Configure Script arguments
 
-# Running Pipelines
+## Running Pipelines
 
-# Instant Annotation Export
+## Instant Annotation Export
 
-# Review Annotations
+## Review Annotations
 
-# Designer Statistics
+## Designer Statistics

@@ -8,11 +8,8 @@ sidebar_position: 3
 
 ### Your Dashboard
 
-<figure>
-<img src="../images/annotator-dashboard.*"
-alt="../images/annotator-dashboard.*" />
-<figcaption>Figure 1: The annotator dashboard.</figcaption>
-</figure>
+![sia-example](/img/annotator-dashboard.png)
+Figure 1: The annotator dashboard.
 
 In Figure 1 you can see an example of the annotator dashboard. At the
 top, the progress and some statistics of the current selected
@@ -52,6 +49,7 @@ annotate. The last information is the label that was given to the whole
 image, if provided.
 
 ![toolbar](/img/sia-toolbar.png)
+
 Figure 5: The toolbar provides a control to assign a label
 to the whole image. The navigation between images. Buttons to select the
 annotation tool. A button to toggle the SIA fullscreen mode. A junk
@@ -75,7 +73,7 @@ Please note that not all tools may be available for all tasks. The
 designer of a pipeline can decide to allow only specific tools.
 :::
 
-# Meet MIA - A Multi Image Annotation Tool {#annotators-mia}
+### Meet MIA - A Multi Image Annotation Tool {#annotators-mia}
 
 **MIA** was designed to annotate clusters of similar objects or images.
 The idea here is to speed up the annotation process by assigning a class
@@ -91,18 +89,15 @@ and selected **Aeroplane** as label for the remaining images. Now the
 annotator needs to click on the **Submit** button to complete this
 annotation step.
 
-<figure>
-<img src="../images/mia-example.*" alt="../images/mia-example.*" />
-<figcaption>Figure 7: An example of MIA.</figcaption>
-</figure>
+![sia-example](/img/mia-example.png)
+Figure 7: An example of MIA.
 
 Figure 8 shows the left part of the MIA control panel. You can see the
 **label input field** and the current **selected label** in a red box.
 
-<figure>
-<img src="../images/mia-controls1.*" alt="../images/mia-controls1.*" />
-<figcaption>Figure 8: Left part of the MIA control panel.</figcaption>
-</figure>
+![sia-example](/img/mia-controls1.png)
+
+Figure 8: Left part of the MIA control panel.
 
 In Figure 9 the right part of the MIA control panel is presented. The
 blue **submit button** on the left can be used to submit the
@@ -117,19 +112,15 @@ buttons** there is a dropdown with name **amount** here the annotator
 can select the maximum number of images that are presented at the same
 time within the cluster view.
 
-<figure>
-<img src="../images/mia-controls2.*" alt="../images/mia-controls2.*" />
-<figcaption>Figure 9: Right part of the MIA control panel.</figcaption>
-</figure>
+![sia-example](/img/mia-controls2.png)
+
+Figure 9: Right part of the MIA control panel.
 
 In some cases the annotator may want to have a closer look at a specific
 image of the cluster. In order to **zoom a single image** perform a
 **double click** on it. Figure 10 shows an example of a single image
 zoom. To scale the image back to original size, **double click** again.
 
-<figure>
-<img src="../images/mia-example-zoom.*"
-alt="../images/mia-example-zoom.*" />
-<figcaption>Figure 10: Zoomed view of a specific image of the
-cluster.</figcaption>
-</figure>
+![sia-example](/img/mia-example-zoom.png)
+Figure 10: Zoomed view of a specific image of the
+cluster.

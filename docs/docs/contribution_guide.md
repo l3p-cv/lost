@@ -62,7 +62,7 @@ celery tasks. After such changes lost needs to be restarted manually to
 get the code changes working.
 :::
 
-# How to do frontend development?
+## How to do frontend development?
 
 The Frontend is developed with React, Redux, CoreUI
 
@@ -85,7 +85,8 @@ The Frontend is developed with React, Redux, CoreUI
 
   -------------------------------------------------------------------------
   Application                         Directory
-  ----------------------------------- -------------------------------------
+
+  -------------------------------------------------------------------------
   Dashboard                           src/components/Dashboard
 
   SIA (Single Image Annotation)       src/components/SIA
@@ -101,11 +102,12 @@ The Frontend is developed with React, Redux, CoreUI
   Workers                             src/components/Workers
 
 Users                               src/components/Users
+
   -------------------------------------------------------------------------
 
   : Frontend Applications
 
-# Building lost containers locally
+## Building lost containers locally
 
 - The whole build process is described in
     [.gitlab-ci.yml](https://github.com/l3p-cv/lost/blob/master/.gitlab-ci.yml).
@@ -114,27 +116,27 @@ Users                               src/components/Users
     [lost/docker](https://github.com/l3p-cv/lost/tree/master/docker)
     within the lost repo.
 
--
+There are 3 lost container that will be executing scripts and the webserver:
 
-    There are 3 lost container that will be executing scripts and the webserver
+- *lost*: Will run the webserver and provide the basic
+    environment where scripts can be executed.
 
-    :   -   *lost*: Will run the webserver and provide the basic
-            environment where scripts can be executed.
-        -   *lost-cv*: Will provide an computer vision environment in
-            oder to execute scripts that require special libraries like
-            opencv.
-        -   *lost-cv-gpu*: Will provide gpu support for scripts that use
-            libraries that need gpu support like tensorflow.
+- *lost-cv*: Will provide an computer vision environment in
+    oder to execute scripts that require special libraries like
+    opencv.
 
--
+- *lost-cv-gpu*: Will provide gpu support for scripts that use
+    libraries that need gpu support like tensorflow.
 
-    Building the *lost* container
+Building the *lost* container
 
-    :   -   The *lost* container will inherit from the *lost-base*.
-        -   As first step build *lost-base*. The Dockerfile is located
-            at
-            [lost/docker/lost-base](https://github.com/l3p-cv/lost/blob/master/docker/lost-base/).
-        -   After that you can build the *lost* container, using your
-            local version of *lost-base*. The dockerfile can be found
-            here:
-            [lost/docker/lost](https://github.com/l3p-cv/lost/blob/master/docker/lost/)
+- The *lost* container will inherit from the *lost-base*.
+
+- As first step build *lost-base*. The Dockerfile is located
+        at
+        [lost/docker/lost-base](https://github.com/l3p-cv/lost/blob/master/docker/lost-base/).
+
+- After that you can build the *lost* container, using your
+        local version of *lost-base*. The dockerfile can be found
+        here:
+        [lost/docker/lost](https://github.com/l3p-cv/lost/blob/master/docker/lost/)
