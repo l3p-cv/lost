@@ -6,17 +6,17 @@ sidebar_position: 8
 
 ## How to contribute new features or bug fixes?
 
-1. Select a feature you want to implement / a bug you want to fix from the [lost issue list](https://github.com/l3p-cv/lost/issues)
+1. Select a feature you want to implement or a bug you want to fix from the [lost issue list](https://github.com/l3p-cv/lost/issues)
     - If you have a new feature, create a new feature request
 2. State in the issue comments that you are willing to implement the
-    feature/ fix the bug
+    feature / fix the bug
 3. We will respond to your comment
 4. Implement the feature
 5. Create a pull request
 
 ## How to do backend development?
 
-The backend is written in python. We use flask as webserver and celery
+The backend is written in python. We use flask for the webserver and celery
 to execute time consuming tasks.
 
 If you want to adjust backend code and test your changes please perform
@@ -24,7 +24,7 @@ the following steps:
 
 1. Install LOST as described in `LOST QuickSetup <quick-setup>`.
 2. Adjust the *DEBUG* variable in the *.env* config file. This file
-    should be located at *lost_install_dir/docker/.env*.
+    should be located at *lost_install_dir/docker/compose.env*.
 
 > ``` {.bash caption="Changes that need to be performed in the *.env* file. This will cause the LOST flask server to start in debug mode."}
 > DEBUG=True
@@ -32,10 +32,9 @@ the following steps:
 
 3. In oder to run your code, you need to mount your code into the
     docker container. You can do this by adding docker volumes in the
-    *docker-compose.yml* file. The file should be located at
-    *lost_install_dir/docker/docker-compose.yml*. Do this for all
-    containers in the compose file that contain lost source code (lost,
-    lost-cv, lost-cv-gpu)
+    *compose.yml* file. The file should be located at
+    *lost_install_dir/docker/compose/compose.yml*. Do this for all
+    containers in the compose file that contain lost source code (lost-backend)
 
 > ``` {.yaml emphasize-lines="11" caption="Adjustments to *docker-compose.yml*. Mount your backend code into the docker container."}
 > version: '2'
@@ -57,9 +56,9 @@ Note
 :::
 
 Because flask is in debug mode, code changes are applied immediately. An
-exception to this behaviour are changes to code that is related to
-celery tasks. After such changes lost needs to be restarted manually to
-get the code changes working.
+exception to this behaviour are changes to code that are related to
+celery tasks. After such changes, lost needs to be restarted manually for
+the code changes to take effect.
 :::
 
 ## How to do frontend development?
@@ -117,6 +116,7 @@ Users                               src/components/Users
     within the lost repo.
 
 There are 3 lost container that will be executing scripts and the webserver:
+TODO: update on technical level:
 
 - *lost*: Will run the webserver and provide the basic
     environment where scripts can be executed.
