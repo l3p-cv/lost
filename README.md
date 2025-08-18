@@ -63,7 +63,7 @@ The adaptation of the documentation is currently still in progress.
 
 If you feel LOST, please find our full documentation here: [https://lost.readthedocs.io](https://lost.readthedocs.io).
 
-### LOST 2.x QuickSetup
+### LOST 3.x QuickSetup
 
 LOST releases are hosted on DockerHub and shipped in Containers. For a quick setup perform the following steps (these steps have been tested for Ubuntu):
 
@@ -84,7 +84,7 @@ LOST releases are hosted on DockerHub and shipped in Containers. For a quick set
 4. Run quick_setup script:
 
     ```bash
-    python3 setup/quick_setup.py /path/to/install/lost --release 2.0.0
+    python3 quick_setup.py /path/to/install/lost --release 3.0.0-alpha.2
     ```
 
 5. Run LOST:  

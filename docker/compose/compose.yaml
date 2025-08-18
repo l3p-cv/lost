@@ -6,6 +6,8 @@ include:
   - logging.compose.yaml
 
 volumes:
+  app:
+  data:
   db:
 
 services:
@@ -37,8 +39,8 @@ services:
     env_file:
       - .env
     volumes:
-      - $LOST_APP:/home/lost/app
-      - $LOST_DATA:/home/lost/data
+      - app:/home/lost/app
+      - data:/home/lost/data
     restart: always
     labels:
       - traefik.enable=true

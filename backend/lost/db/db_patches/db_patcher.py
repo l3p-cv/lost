@@ -1,4 +1,6 @@
 
+import traceback
+
 from lost.db import access
 from lost.db.model import DB_VERSION_KEY, DB_VERSION, Version
 from lostconfig import LOSTConfig
@@ -9,27 +11,14 @@ class DBPatcher(object):
 
     def __init__(self, db_version=DB_VERSION, 
                  version_key=DB_VERSION_KEY, 
-                 patch_map=None, dbm=None) -> None:
-        if dbm is None:
-            self.dbm = access.DBMan(LOSTConfig())
-            self.local_dbm = True
-        else:
-            self.dbm = dbm
-            self.local_dbm = False
+                 patch_map=None) -> None:
+        self.dbm = None
         self.db_version = db_version
         self.version_key = version_key
         if patch_map is None:
             self.patch_dict = patch_dict
         else:
             self.patch_dict = patch_map
-
-    
-    def __del__(self):
-        try:
-            if self.local_dbm:
-                self.dbm.close_session()
-        except:
-            pass
     
     def version_greater(self, current_version, new_version):
         c_v = [int(x) for x in current_version.split('.')]
@@ -48,11 +37,26 @@ class DBPatcher(object):
         '''Check and update database.
         
         Args:
-            all_patches_on_init (bool): Idicates wether all patches should be 
+            all_patches_on_init (bool): Indicates wether all patches should be 
                 applied on first db init
         '''
         print('------------------------ RUN daisy-backend DBPatcher check_and_update ------------------------')
-        cv = self.dbm.get_version(self.version_key)
+        
+        try:
+            print('Create / update database')
+            create_dbm = access.DBMan(LOSTConfig())
+            create_dbm.create_database()
+            create_dbm.close_session()
+        except:
+            print('Create / update database failed')
+            print(traceback.format_exc())
+
+        # recreate dbm context
+        patch_dbm = access.DBMan(LOSTConfig())
+        self.dbm = patch_dbm
+        
+        
+        cv = patch_dbm.get_version(self.version_key)
         if cv is None:
             print('Current db version is None')
             if all_patches_on_init:
@@ -70,6 +74,8 @@ class DBPatcher(object):
             self._run_patches(current_version)
         else:
             print('Nothing to patch')
+
+        self.dbm.close_session()
         
     def _update_version(self, new_version):
         version = self.dbm.get_version(self.version_key)

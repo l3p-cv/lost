@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added error boundaries around all datatables
 ### Changed
 - Replaced all usages of reactstrap and semantic-ui with CoreUI components and/or generic solutions 
+- moved quick_setup.py into main directory
+- Adapted quick setup for new docker compose structure
 - Ask for content when creating/editing instructions
 - replaced all defaultProps with default values in component-definition (for future compatibility)
 - Move table headlines and craete-buttons to new component TableHeader
