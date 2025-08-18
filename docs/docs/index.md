@@ -5,11 +5,8 @@ title: Welcome
 
 # Welcome to LOST's documentation
 
-<figure>
-<img src="images/LOSTFeaturesIn40seconds.gif"
-alt="images/LOSTFeaturesIn40seconds.gif" />
-<figcaption>LOST features in a nutshell.</figcaption>
-</figure>
+![lost features](/img/LOSTFeaturesIn40seconds.gif)  
+LOST features in a nutshell.
 
 ## About LOST
 
@@ -32,17 +29,3 @@ LOST was especially designed to model **semi-automatic** annotation
 pipelines to speed up the annotation process. Such a semi-automatic can
 be achieved by using AI generated annotation proposals that are
 presented to an annotator inside the annotation tool.
-
-:::
-Getting Started \<getting_started/index.rst\> Managing Annotation
-Pipelines \<managing_annotation_pipelines/index.rst\> Annotation
-\<annotation/index.rst\> Admin Area \<admin_area/index.rst\> Developing
-Pipelines \<developing_pipelines/index.rst\> Configuration
-\<configuration/index.rst\> Setup \<setup/index.rst\> Contribution
-\<contribution_guide.rst\>
-:::
-
-## Indices and tables
-
-- `genindex`
-- `search`

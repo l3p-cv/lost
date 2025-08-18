@@ -11,10 +11,8 @@ solution for easy deployment we use [Docker](https://www.docker.com/).
 
 ## The LOST Container Landscape {#container_landscape}
 
-<figure>
-<img src="images/lost-eco-system.*" alt="images/lost-eco-system.*" />
-<figcaption>Figure 1: The LOST default container landscape.</figcaption>
-</figure>
+![lost-eco-system](/img/lost-eco-system.svg)  
+Figure 1: The LOST default container landscape.
 
 LOST is a composition of different docker containers. The main
 ingredients for LOST are a **MySQL** database, a **RabbitMQ** message

@@ -111,11 +111,8 @@ The LOST command line tools support the **import** of a label tree from
 a csv file, the **export** of a label tree to a csv file and to
 **remove** a label tree by its name.
 
-<figure>
-<img src="images/labeltree_img.*" alt="images/labeltree_img.*" />
-<figcaption>Figure 1: An example label tree. As it is visualized in the
-web gui.</figcaption>
-</figure>
+![labeltree](/img/labeltree_img.png)  
+Figure 1: An example label tree. As it is visualized in the web gui.
 
 ### Import Label Tree
 
@@ -127,11 +124,8 @@ in our GitHub repository. Each **leaf** in a tree represents a label,
 while the **root** is the tree name and can not be selected as label
 during an annotation process.
 
-<figure>
-<img src="images/labeltree_csv.*" alt="images/labeltree_csv.*" />
-<figcaption>Figure 2: CSV representation of the example label tree in
-Figure 1.</figcaption>
-</figure>
+![labeltree](/img/labeltree_csv.png)  
+Figure 2: CSV representation of the example label tree in Figure 1.
 
 When you have created your own **label tree** (lets assume you defined
 it in *my_labeltree.csv*), you need to copy it to
