@@ -36,9 +36,6 @@ export default function Home(): ReactNode {
     >
       <HomepageHeader />
       <main>
-        <h2>@TODO Include Web page here?</h2>
-        <br />
-        <img src="img/LOSTFeaturesIn40seconds.gif" alt="LOST features" />
         <HomepageFeatures />
       </main>
     </Layout>
