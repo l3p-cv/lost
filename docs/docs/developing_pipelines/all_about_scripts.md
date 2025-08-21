@@ -52,7 +52,7 @@ It is a common pattern to read a **path** to an imageset from a
 `Listing 3 <aascripts-reading-images>` for
 a code example. Since multiple **Datasources** could be connected to our
 script, we iterate over all connected **Datasources** of the input with
-[self.inp.datasources](docs/developing_pipelines/all_about_pipelines#datasource-element). For each **Datasource** element we can read the
+[self.inp.datasources](all_about_pipelines#datasource-element). For each **Datasource** element we can read the
 **path** attribute to get the filesystem path to a folder with images.
 -TODO: make this link work...
 
