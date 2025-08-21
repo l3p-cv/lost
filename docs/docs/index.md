@@ -14,11 +14,11 @@ LOST (Label Object and Save Time) is a **flexible** **web-based**
 framework for **semi-automatic** image annotation. It provides multiple
 annotation interfaces for fast image annotation.
 
-LOST is **flexible** since it allows to run user defined annotation
+LOST is **flexible**, since it allows to run user defined annotation
 pipelines where different annotation interfaces / tools and algorithms
 can be combined in one process.
 
-It is **web-based** since the whole annotation process is visualized in
+It is **web-based**, since the whole annotation process is visualized in
 your browser. You can quickly set up LOST with docker on your local
 machine or run it on a web server to make an annotation process
 available to your annotators around the world. LOST allows to organize

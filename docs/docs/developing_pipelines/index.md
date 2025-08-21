@@ -27,17 +27,35 @@ Pipelines](https://github.com/l3p-cv/lost_ootb_pipes)
 pp_repo_structure.txt
 :::
 
+``` md
+lost_ootb_pipes/
+├── found
+│   ├── cluster_using_prev_stage.py
+│   ├── __init__.py
+│   ├── mia.json
+│   ├── mia_request_again.json
+│   ├── mia_sia.json
+│   ├── request_annos_again.py
+│   ├── request_annos.py
+│   ├── request_images_by_lbl.py
+│   ├── sia.json
+│   ├── sia_request_again.json
+│   └── two_stage.json
+├── LICENSE
+└── README.md
+```
+
 The `listing above <pp-dir-structure>`
 shows an example for a pipeline directory structure. Where the root
 folder **lost_ootb_pipes** is the repo name and **found** is the name of
 the pipeline project. **found** contains all files required for the
 pipelines of the pipeline project. Within the project there are json
-files where each represents a pipeline definition. A pipeline is
+files, each representing a pipeline definition. A pipeline is
 composed from different scripts (**request_annos.py**,
 **request_annos_again.py**, **request_images.\_by_lbl.py**) and other
 pipeline elements. Some of the scripts may require a special python
 package you have written. So if you want to use this package (e.g.
-**my_special_python_lib**), just place it also inside the pipeline
+**my_special_python_lib**), just place it inside the pipeline
 project folder. Sometimes it is also useful to place some files into the
 project folder, for example a pretrained ai model that should be loaded
 inside a script.
@@ -51,13 +69,13 @@ do that, you need to perform the following steps:
 2. Go to Admin Area
 3. Click on the Pipeline Projects tab
 4. Click on Import pipeline project button
-5. Click on Import/ Update pipeline project from a public git
+5. Click on Import / Update pipeline project from a public git
     repository
 6. Add the url of the pipeline project you like to import
 7. Click on Import/ Update
 
 ![pipeline import](/img/pipe_import.png)  
-Pipeline import GUI
+Figure 1: Pipeline import GUI
 
 ### Updating a LOST Pipeline
 
@@ -85,14 +103,17 @@ are supported by LOST like **datasource**, **script**, **annotTask**,
 **dataExport**, **visualOutput** and **loop**. Each pipeline element is
 represented by a json object inside the pipeline definition.
 
-As you can see in the `example <aapipelines-example>`, the pipeline itself is also defined by a json object. This
-object has a *description*, a *author*, a *pipe-schema-version* and a
-list of pipeline *elements*. Each element object has a *peN* (*pipeline
-element number*) which is the identifier of the element itself. An
-element needs also an attribute that is called *peOut* and contains a
+As you can see in the `example <aapipelines-example>`, the pipeline itself
+is also defined by a json object. This object has a *description*,
+an *author*, a *pipe-schema-version* and a list of pipeline *elements*.
+Each element object has a *peN* (*pipeline element number*)
+which is the identifier of the element itself. An
+element also needs to have an attribute that is called *peOut* and contains a
 list of elements where the current element is connected to.
 
 ### An Example
+
+-TODO: find the example...
 
 @TODO
 ::: #aapipelines-example .literalinclude language="json" linenos="" caption="A simple example pipeline."
@@ -183,42 +204,34 @@ If **\"type\"** is **\"mia\"** the configuration will be the following:
 
 MIA configuration:
 
-:   -
+- **type**
 
-        **type**
-
-        :   -   If **imageBased** a whole image will be presented in the
+  - If **imageBased** a whole image will be presented in the
                 clustered view.
-            -   If **annoBased** all
+  - If **annoBased** all
                 `lost.db.model.TwoDAnno` objects related to an image will be
                 cropped and presented in the clustered view.
 
-    -   
+  - **showProposedLabel**
 
-        **showProposedLabel**
+    - If **true**, the assigned sim_class will be interpreted
+                  as label and be used as pre-selection of the label in
+                  the MIA tool.
 
-        :   -   If **true**, the assigned sim_class will be interpreted
-                as label and be used as pre-selection of the label in
-                the MIA tool.
+- **drawAnno**
 
-    -   
-
-        **drawAnno**
-
-        :   -   If **true** and **type : annoBased** the specific
+  - If **true** and **type : annoBased** the specific
                 annotation will be drawn inside the cropped image.
 
-    -   
+- **addContext**
 
-        **addContext**
-
-        :   -   If **type : annoBased** and **addContext \> 0.0**, some
+  - If **type : annoBased** and **addContext \> 0.0**, some
                 amount of pixels will be added around the annotation
                 when the annotation is cropped. The number of pixels
-                that are add is calculated relative to the image size.
+                that are added is calculated relatively to the image size.
                 So if you set **addContext** to **0.1**, 10 percent of
                 the image size will be added to the crop. This setting
-                is useful to provide the annotator some more visual
+                is useful to provide the annotator with some more visual
                 context during the annotation step.
 
 If **\"type\"** is **\"sia\"** the configuration will be the following:
@@ -253,59 +266,47 @@ If **\"type\"** is **\"sia\"** the configuration will be the following:
 
 SIA configuration:
 
-:   -
+- **tools**
 
-        **tools**
-
-        :   -   Inside the **tools** object you can select which drawing
+  - Inside the **tools** object you can select which drawing
                 tools are available and if the junk button is present in
                 the SIA gui. You may choose either **true** or **false**
                 for each of the tools (**point, line, polygon, bbox,
                 junk**).
 
-    -   
+  - **annos** (configuration for annotations on the image)
 
-        **annos** (configuration for annotations on the image)
-
-        :   -   
-
-                **actions**
-
-                :   -   **draw** is set to **false** a user may not draw
+    - **actions**
+      - **draw** set to **false** means a user may not draw
                         any new annotations. This is useful if a script
                         sent annotation proposals to SIA and the user
                         should only correct the proposed annotations.
-                    -   **label** allows to disable the possibility to
-                        assign labels to annotations. This option is
-                        useful if you wish that your annotator will only
-                        draw annotations.
-                    -   **edit** inidcates wether an annotator may edit
+      - **label** allows to disable the possibility to
+                        assign labels to annotations if set to **false**.
+                        This option is useful if you wish that your
+                        annotator only draws annotations.
+      - **edit** inidcates wether an annotator may edit
                         an annotation that is already present.
 
-            -   **multilabels** allows to assign multiple labels per
+      - **multilabels** allows to assign multiple labels per
                 annotation.
 
-            -   **minArea** The minimum area in pixels that an
-                annotation may have. This constraint is only applied to
+      - **minArea** The minimum area in pixels that an
+                annotation must have. This constraint is only applied to
                 annotations where an area can be defined (e.g. BBoxs,
                 Polygons).
 
-            -   **maxAnnos** Maximum number of annos that are allowed
-                per image. If null an infinite number of annotation are
+      - **maxAnnos** Maximum number of annos that are allowed
+                per image. If null, an infinite number of annotations are
                 allowed per image.
 
-    -   
+    - **img** (configuration for the image)
 
-        **img** (configuration for the image)
+      - **actions**
+        - **label** allows to disable the possibility to
+                        assign labels to images.
 
-        :   -   
-
-                **actions**
-
-                :   -   **label** allows to disable the possibility to
-                        assign labels to the image.
-
-            -   **multilabels** allows to assign multiple labels to the
+        - **multilabels** allows to assign multiple labels to a single
                 image.
 
 ##### DataExport
@@ -323,21 +324,6 @@ web gui. No special configuration is required for this pipeline element.
 The file to download will be provided by a **Script** that is connected
 to the input of the **DataExport** element. This **Script** will call
 the `lost.pyapi.inout.ScriptOutput.add_data_export` method in order to do that.
-
-##### VisualOutput
-
-``` {.json linenos="" emphasize-lines="4"}
-{
-  "peN" : "[int]",
-  "peOut" : "[list of int]|[null]",
-  "visualOutput" : {}
-}
-```
-
-A **VisualOutput** element can display images and html text inside the
-LOST web gui. A connected **Script** element will provide the content to
-an **VisualOutput** by calling
-`lost.pyapi.inout.ScriptOutput.add_visual_output`.
 
 ##### Loop
 
@@ -360,7 +346,7 @@ The **peJumpId** defines the **peN** of another element in the pipeline
 where this **Loop** should jump to while looping. The **maxIteration**
 setting inside a loop definition can be set to a **maximum amount of
 iterations** that should be performed or to **null** in order to have an
-infinity loop.
+infinite loop.
 
 A **Script** element inside a loop cycle may break a loop by calling
 `lost.pyapi.script.Script.break_loop`.
@@ -371,7 +357,7 @@ calling `lost.pyapi.script.Script.loop_is_broken`.
 
 ## pyapi
 
-##### Script
+### Script
 
 @TODO
 ::: .autoclass members="" inherited-members=""
@@ -531,6 +517,12 @@ lost.pyapi.utils.vis
 
 ## Importing / Updating Pipelines
 
+-TODO
+
 ### Import via GUI
 
+-TODO
+
 ### LOST cli
+
+-TODO

@@ -23,38 +23,42 @@ If you want to adjust backend code and test your changes please perform
 the following steps:
 
 1. Install LOST as described in `LOST QuickSetup <quick-setup>`.
-2. Adjust the *DEBUG* variable in the *.env* config file. This file
-    should be located at *lost_install_dir/docker/compose.env*.
-
-> ``` {.bash caption="Changes that need to be performed in the *.env* file. This will cause the LOST flask server to start in debug mode."}
-> DEBUG=True
-> ```
-
+2. Adjust the *LOST_DEBUG_MODE* variable in the *.env* config file. This file
+    should be located at ```<lost_install_dir>/docker/compose/.env```.
+    >
+    > ``` {.bash caption="Changes that need to be performed in the *.env* file. This will cause the LOST flask server to start in debug mode."}
+    > LOST_DEBUG_MODE=True
+    > ```
+    >
 3. In oder to run your code, you need to mount your code into the
     docker container. You can do this by adding docker volumes in the
     *compose.yml* file. The file should be located at
     *lost_install_dir/docker/compose/compose.yml*. Do this for all
     containers in the compose file that contain lost source code (lost-backend)
+    >
+    > ``` {.yaml emphasize-lines="11" caption="Adjustments to *docker-compose.yml*. Mount your backend code into the docker container."}
+    >services
+    >    backend:
+    >        image: l3pcv/lost-backend:${LOST_VERSION}
+    >        env_file:
+    >          - .env
+    >        volumes:
+    >          - app:/home/lost/app
+    >          - data:/home/lost/data
+    >          - </path/to/lost_clone>/backend:/code/
+    >        restart: always
+    >        labels:
+    >          - traefik.enable=true
+    >          - traefik.http.routers.backend.rule=PathPrefix(`/api`)||PathPrefix(`/swaggerui`)
+    >          - traefik.http.routers.backend.entrypoints=web
+    >          - traefik.http.routers.backend.service=backend
+    >          - traefik.http.services.backend.loadbalancer.server.port=5000
+    >        depends_on:
+    >          db:
+    >            condition: service_started
+    > ```
 
-> ``` {.yaml emphasize-lines="11" caption="Adjustments to *docker-compose.yml*. Mount your backend code into the docker container."}
-> version: '2'
->   services:
->       lost:
->         image: l3pcv/lost:{LOST_VERSION}
->         container_name: lost
->         command: bash /entrypoint.sh
->         env_file:
->           - .env
->         volumes:
->           - {LOST_DATA}:/home/lost
->           - </path/to/lost_clone>/backend/lost:/code/src/backend/lost
-> ```
-
-::: note
-::: title
-Note
-:::
-
+:::note[Note]
 Because flask is in debug mode, code changes are applied immediately. An
 exception to this behaviour are changes to code that are related to
 celery tasks. After such changes, lost needs to be restarted manually for
@@ -63,7 +67,7 @@ the code changes to take effect.
 
 ## How to do frontend development?
 
-The Frontend is developed with React, Redux, CoreUI
+The Frontend is developed with React and CoreUI (and Redux, but this will be removed in the future)
 
 1. To start developing frontend follow the
     `LOST QuickSetup <quick-setup>` instruction.
@@ -74,15 +78,15 @@ The Frontend is developed with React, Redux, CoreUI
 > npm i
 > ```
 
-3. \[Optional\] Set backend port in package.json start script with
-    REACT_APP_PORT variable.
+3. \[Optional\] Set the ports as you need them in the compose.yaml
+
 4. Start development server with
 
 > ``` bash
 > npm start
 > ```
 
-  -------------------------------------------------------------------------
+  <!-- -------------------------------------------------------------------------
   Application                         Directory
 
   -------------------------------------------------------------------------
@@ -104,7 +108,12 @@ Users                               src/components/Users
 
   -------------------------------------------------------------------------
 
-  : Frontend Applications
+  : Frontend Applications -->
+
+To access the most common parts to develop for the frontend, search the
+[**containers**](https://github.com/l3p-cv/lost/tree/master/frontend/lost/src/containers)
+and [**components**](https://github.com/l3p-cv/lost/tree/master/frontend/lost/src/components)
+directories.
 
 ## Building lost containers locally
 
@@ -115,28 +124,11 @@ Users                               src/components/Users
     [lost/docker](https://github.com/l3p-cv/lost/tree/master/docker)
     within the lost repo.
 
-There are 3 lost container that will be executing scripts and the webserver:
-TODO: update on technical level:
+There are 2 containers unique to LOST, that will be executing scripts and the webserver:
 
-- *lost*: Will run the webserver and provide the basic
-    environment where scripts can be executed.
+- *lost-backend-1*: Handles the execution of scripts and the API
 
-- *lost-cv*: Will provide an computer vision environment in
-    oder to execute scripts that require special libraries like
-    opencv.
+- *lost-frontend-1*: Handles the GUI
 
-- *lost-cv-gpu*: Will provide gpu support for scripts that use
-    libraries that need gpu support like tensorflow.
-
-Building the *lost* container
-
-- The *lost* container will inherit from the *lost-base*.
-
-- As first step build *lost-base*. The Dockerfile is located
-        at
-        [lost/docker/lost-base](https://github.com/l3p-cv/lost/blob/master/docker/lost-base/).
-
-- After that you can build the *lost* container, using your
-        local version of *lost-base*. The dockerfile can be found
-        here:
-        [lost/docker/lost](https://github.com/l3p-cv/lost/blob/master/docker/lost/)
+You can find the LOST containers and their official names in the
+[compose.yaml](https://github.com/l3p-cv/lost/blob/master/docker/compose/compose.yaml)

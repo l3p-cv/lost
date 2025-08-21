@@ -1,9 +1,9 @@
 # LOST CLI
 
-# Login to a Docker Container
+## Login to a Docker Container
 
 In order to use the LOST command line interface, you need to login to a
-lost docker container:
+lost docker container like this:
 
 > ``` bash
 > # Log in to the docker container.
@@ -16,8 +16,8 @@ lost docker container:
 
 ### Import Project
 
-After creating a pipeline it needs to be imported into LOST. In order to
-do that we need to copy the pipeline project folder into the
+After creating a pipeline, it needs to be imported into LOST. In order to
+do that, we need to copy the pipeline project folder into the
 *lost_data_folder/my_data* in your/host file system e.g:
 
 > ``` bash
@@ -38,7 +38,7 @@ Now we will login to the container with:
 > ```
 
 After a successful login we can start the pipeline import. For this
-import we will use the lost command line tools. To import a pipeline
+import, we will use the lost command line tools. To import a pipeline
 project we use a program called *import_pipe_project.py*. This program
 expects the path to the *pipeline project* as argument.
 
@@ -47,18 +47,15 @@ If you copied your *pipeline project* to
 it will be available inside the container under
 */home/lost/my_data/my_pipe_project*.
 
-::: note
-::: title
-Note
-:::
+:::note[Note]
 
-It is just a convention to place your pipelines that should be imported
-into the **my_data** folder. Theoretical you could place your **pipeline
+It is just a convention to place your pipelines, that should be imported,
+into the **my_data** folder. Theoretically, you could place your **pipeline
 projects** anywhere in the *lost_data_folder*, but life is easier when
 following this convention.
 :::
 
-Let do the import:
+Let's do the import:
 
 > ``` bash
 > # Import my_pipe_project into LOST
@@ -67,14 +64,14 @@ Let do the import:
 
 The **import_pipe_project.py** program will copy your pipeline project
 folder into the folder */home/lost/data/pipes* and write all the meta
-information into the lost database. After this import the pipeline
+information into the lost database. After this import, the pipeline
 should be visible in the web gui when clicking on the *Start Pipeline*
 button in the *Designer* view.
 
 ### Update Project
 
-To update a pipe project you need to perform the same steps as for the
-import, with the difference that you need to call the
+To update a pipe project you need to perform the same steps as above
+for the import, with the sole difference being that you need to call the
 **update_pipe_project.py** program:
 
 > ``` bash
@@ -93,20 +90,16 @@ container, perform:
 remove_pipe_project.py /home/lost/my_data/my_pipe_project
 ```
 
-::: note
-::: title
-Note
-:::
-
-You can only remove pipelines are not already in use. Since your data
-would get inconsistent otherwise. If you like to remove a pipeline that
-was instantiated, you need to delete all instances of this pipeline
+:::note[Note]
+You can only remove pipelines that are not already in use, since your data
+would get inconsistent otherwise. If you'd like to remove a pipeline that
+was already instantiated, you need to delete all instances of this pipeline
 first.
 :::
 
 ## Managing Label Trees
 
-Sets of labels are managed in label trees. See Figure 1 for an example.
+Sets of labels are managed in label trees. See Figure 1 below for an example.
 The LOST command line tools support the **import** of a label tree from
 a csv file, the **export** of a label tree to a csv file and to
 **remove** a label tree by its name.
@@ -117,7 +110,7 @@ Figure 1: An example label tree. As it is visualized in the web gui.
 ### Import Label Tree
 
 Before you can import a labeltree, you need to define it in a csv file.
-See Figure to for an example of such a tree definition. For more
+See Figure 2 below for an example of such a tree definition. For more
 examples navigate to
 [lost/backend/lost/pyapi/examples/label_trees](https://github.com/l3p-cv/lost/tree/master/backend/lost/pyapi/examples/label_trees)
 in our GitHub repository. Each **leaf** in a tree represents a label,
@@ -127,7 +120,7 @@ during an annotation process.
 ![labeltree](/img/labeltree_csv.png)  
 Figure 2: CSV representation of the example label tree in Figure 1.
 
-When you have created your own **label tree** (lets assume you defined
+When you have created your own **label tree** (let's assume you defined
 it in *my_labeltree.csv*), you need to copy it to
 *lost_data_folder/my_data/*:
 
@@ -152,10 +145,10 @@ The label tree should now be visible in the web gui.
 
 ### Export Label Tree
 
-If you like to export a label tree that you have created with the lost
+If you'd like to export a label tree that you have created with the lost
 web gui to a csv file you can use **export_label_tree.py**.
 
-For now we will assume that we want to export the tree presented in
+For now, we will assume that we want to export the tree presented in
 Figure 1. Its name is **dummy tree** (name of the root node) an we want
 to export it to a file called **exported_tree.csv**. To do that we need
 to perform the following steps:

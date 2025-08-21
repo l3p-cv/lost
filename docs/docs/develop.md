@@ -28,7 +28,7 @@ In this setup, these files are used: `compose.yaml`, `compose.override.yaml`, `l
 ### Frontend
 
 1. React
-2. Redux
+2. Redux (will be removed in the future)
 3. CoreUI
 
 ### Backend
