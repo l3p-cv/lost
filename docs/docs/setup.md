@@ -41,11 +41,7 @@ LOST releases are hosted on DockerHub and shipped in Containers. For a quick set
     > Follow instructions of the quick_setup script, printed in the
     > command line.
 
-::: note
-::: title
-Note
-:::
-
+:::note[Note]
 The quick setup script has now created the docker configuration files
 `docker-compose.yml` and `.env` . In the following sections, additional
 desired configurations usually refer to these two files.

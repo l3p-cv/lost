@@ -4,12 +4,12 @@ sidebar_position: 6
 
 # Configuration
 
-# E-Mail Notifications
+## E-Mail Notifications
 
 In order to activate E-Mail Notifications you have to provide an
 outgoing E-Mail Account. In your `.env` file you have to add the
 following environment variables. If you have set up lost with the quick
-setup script, these variables only need to be commented out and
+setup script, these variables only need to be "commented in" and
 adjusted:
 
 > ``` bash
@@ -24,7 +24,7 @@ adjusted:
 > LOST_MAIL_LOST_URL=http://mylostinstance.url/
 > ```
 
-# LDAP
+## LDAP
 
 LDAP can be configured using the following environment variables in your
 `.env` file:
@@ -43,7 +43,7 @@ For more LDAP configurations just check the Flask LDAP documentation:
 [Flask LDAP
 Documentation](https://flask-ldap3-login.readthedocs.io/en/latest/quick_start.html).
 
-It is important that all LDAP environment variables are prefixed with LOST so that the settings are applied:
+It is important that all LDAP environment variables are prefixed with "LOST" so that the settings are applied:
 
 ``` bash
     LOST_LDAP_GROUP_OBJECT_FILTER=(objectclass=posixGroup)
@@ -75,8 +75,8 @@ user.
 ## JupyterLab
 
 The JupyterLab integration is primarily intended for pipeline developers
-and quick experiments in LOST. Through this integration it is very easy
-to access all pipelines and their elements at any time and manipulate
+and quick experiments in LOST. Through this integration, it is very easy
+to access all pipelines and their elements at any time and to manipulate
 them through a web interface. By accessing the LOST pyAPI, various
 operations can be investigated, as they are also executed in the scripts
 of the annotation pipelines.
@@ -102,7 +102,7 @@ service of your `docker-compose.yml` file:
 
 Once the JupyterLab integration has been activated, the started
 JupyterLab can be accessed via the GUI in the Admin Area. Within the
-Admin Area, a tab (far right) now appears that contains the link to the
+Admin Area, a new tab now appears that contains the link to the
 JupyterLab.
 
 > ::: warning
@@ -126,7 +126,7 @@ JupyterLab.
 > in development environments and in no case in production systems.
 > :::
 
-# Git Access Token
+## Git Access Token
 
 With the help of the Git configuration, you can have your Git access
 data (Personal Access Token) stored in the container. This means that,
@@ -144,11 +144,11 @@ following environment variables in your `.env` file:
 > LOST_GIT_ACCESS_TOKEN=https://mygitusername:mygitaccesstoken@github.com
 > ```
 
-# Nginx Configuration
+## Nginx Configuration
 
-## Configuration File
+### Configuration File
 
-When starting the lost container the corresponding nginx configuration
+When starting the lost container, the corresponding nginx configuration
 file (depending on debug mode) for nginx is copied from the repository
 into the folder
 
@@ -158,14 +158,15 @@ into the folder
 
 by the **entrypoint.sh** script.
 
-Both nginx configuration files (debug mode and production) can be found
+The two nginx configuration files (debug mode and production) can be found
 at:
-[lost/docker/lost/nginx](https://github.com/l3p-cv/lost/blob/master/docker/lost/nginx)
+[lost/frontend/nginx.conf](https://github.com/l3p-cv/lost/blob/master/frontend/nginx.conf)
+and [lost/setup/nginx.conf](https://github.com/l3p-cv/lost/blob/master/setup/nginx.conf)
 in our GitHub repository.
 
-## Custom Configuration File
+### Custom Configuration File
 
-If a custom configuration file is desired, this file must be mounted
+If a custom configuration file is desired, that file must be mounted
 from the host machine into the lost container.
 
 > ``` yaml
