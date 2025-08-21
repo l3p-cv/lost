@@ -26,3 +26,5 @@ A node in a **LabelTree** can have the following attributes:
 - External ID (optional)
 - Descripton (optional)
 - Abbreviation (optional)
+
+-TODO: add images

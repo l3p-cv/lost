@@ -41,9 +41,14 @@ lost. A **pipeline project** is defined as a folder of **pipeline** and
 **sia_all_tools** pipeline and its related scripts (**export_csv**,
 **request_annos**), which are highlighted in the listing.
 
-:::
-sia_pipe_project.txt
-:::
+```md
+sia/
+├── export_csv.py
+├── request_annos.py
+├── request_yolo_annos.py
+├── semiauto_yolov3.json
+└── sia_all_tools.json
+```
 
 ### A Pipeline Definition File
 
@@ -71,7 +76,7 @@ element is connected to the **Script** element with *peN: 1*. This
 a script *description*. The script *path* needs to be defined relative
 to the **pipeline project folder**.
 
-TODO: continue proofreading below!!!
+-TODO: how to handle sia_all_tool below???
 
 The **Script** element is connected to an **AnnotationTask** element
 with *peN: 2* of type *sia* (lines 20 - 45). Within the json object of
