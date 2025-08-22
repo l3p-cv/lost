@@ -154,7 +154,7 @@ const PaginatorBottomWhole = ({ table,
                         possiblePageSizes={possiblePageSizes}
                         // buttonWidth={buttonWidth}
                         minButtonWidth={minButtonWidth}
-                        wide={true}
+                        wide={large}
                     />
                 </CCol>
             </CRow>
