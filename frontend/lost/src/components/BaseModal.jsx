@@ -2,6 +2,7 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import PropTypes from 'prop-types'
 import IconButton from './IconButton'
 import { CModal, CModalBody, CModalFooter, CModalHeader } from '@coreui/react'
+import CoreIconButton from './CoreIconButton'
 
 const BaseModal = ({
     key,
@@ -45,14 +46,14 @@ const BaseModal = ({
                     {[
                         footer || null,
                         isShowCancelButton ? (
-                            <IconButton
+                            <CoreIconButton
                                 key={key}
-                                isOutline={false}
-                                color="secondary"
+                                // isOutline={false}
+                                color="primary"
                                 icon={faTimes}
                                 text="Close"
                                 onClick={toggle}
-                            ></IconButton>
+                            />
                         ) : null,
                     ]}
                 </CModalFooter>
