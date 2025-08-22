@@ -71,7 +71,7 @@ const WorkingOnMIA = ({ annoTask }) => {
                     <div className="callout callout-info">
                         <small className="text-muted">Pipeline</small>
                         <br />
-                        <strong>{annoTask.pipelineName}</strong>
+                        <strong>{annoTask.pipeline_name}</strong>
                     </div>
                 </CCol>
                 <CCol xs="2" md="2" xl="2">
@@ -88,7 +88,7 @@ const WorkingOnMIA = ({ annoTask }) => {
                         <small className="text-muted">Seconds/Annotation</small>
                         <br />
                         <strong className="h4">
-                            &#8709; {annoTask.statistic.secondsPerAnno}
+                            &#8709; {annoTask.statistic.seconds_per_anno}
                         </strong>
                     </div>
                 </CCol>
