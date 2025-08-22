@@ -66,7 +66,7 @@ do that, you need to perform the following steps:
 6. Add the url of the pipeline project you like to import
 7. Click on Import/ Update
 
-![pipeline import](/img/pipe_import.png)  
+![pipeline import](/img/pipe_import_new.png)  
 Figure 1: Pipeline import GUI
 
 ## Updating a LOST Pipeline

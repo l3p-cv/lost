@@ -9,4 +9,7 @@ under the **Datasources** section in the navigation bar.
 
 ## Adding a new Datasource
 
+![img](/img/add_datasource_new.png)
+Figure 1: The pop up, with which to add a new **Datasource**
+
 @TODO

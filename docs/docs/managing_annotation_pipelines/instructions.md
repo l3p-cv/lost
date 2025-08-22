@@ -10,7 +10,10 @@ reusable. When an **Annotator** opens an **AnnotationTask**,
 the first thing they see is a pop-up containing the
 **Instructions** selected when creating the **AnnotationTask**.
 
-To create new **Instructions**, to to the **Instructions* tab
+![img](/img/instruction_table_new.png)
+Figure 1: The table to manage all created instructions
+
+To create new **Instructions**, to to the **Instructions* tab (seen in Figure 1)
 and, above the table, click on the *"Create Instruction"*
 button. There you have to fill out three fields you can see
 in Figure 2:
@@ -23,9 +26,13 @@ in Figure 2:
 - Content
   - the actual instructions the **Annotator** sees
 
-Futhermore, the right window will show how the content
+![img](/img/instruction_creation_new.png)
+Figure 2: Window with which instructions are created
+
+Futhermore, the right window will give a preview of how the content
 is displayed for the user, as you can use markdown-
 language there, to style and adapt the **Instructions**.
 
--TODO: image of instruction table
--TODO: image of instruction creation
+![img](/img/instruction_annotask_new.png)
+Figure 3: How the instruction is presented, when an
+annotator starts a task
