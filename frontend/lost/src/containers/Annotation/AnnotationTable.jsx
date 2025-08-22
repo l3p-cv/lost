@@ -64,11 +64,11 @@ const AnnotatorDashboard = () => {
                                                 annoTask={workingOnAnnoTask}
                                             ></WorkingOn>
                                         </CCol>
-                                        {workingOnAnnoTask.statistic.amountPerLabel && 
+                                        {workingOnAnnoTask.statistic.amount_per_label && 
                                             <CCol xs="12" md="6" xl="6">
                                                 <AmountPerLabel
                                                     stats={
-                                                        workingOnAnnoTask.statistic.amountPerLabel
+                                                        workingOnAnnoTask.statistic.amount_per_label
                                                     }
                                                 />
                                             </CCol>
