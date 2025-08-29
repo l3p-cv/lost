@@ -10,6 +10,7 @@ import DatasetExportModal from './DatasetExportModal'
 import DatasetTable from './DatasetTable'
 import { WholeDatasetExportModal } from './WholeDatasetExportModal'
 import BaseContainer from '../../components/BaseContainer'
+import TableHeader from '../../components/TableHeader'
 
 const Datasets = () => {
     // const { data: datasetList, refetch: reloadDatasetList } = datasetApi.useDatasets()
@@ -163,20 +164,7 @@ const Datasets = () => {
             />
 
             <CContainer style={{ marginTop: '15px' }}>
-                <h3 className="card-title mb-3" style={{ textAlign: 'center' }}>
-                    Datasets
-                </h3>
                 <CRow>
-                    <CCol sm="auto">
-                        <IconButton
-                            isOutline={true}
-                            color="primary"
-                            icon={faFolderPlus}
-                            text="Add Dataset"
-                            onClick={openAddDatasetMenu}
-                            style={{ marginTop: '15px' }}
-                        />
-                    </CCol>
                     {/* <CCol sm="auto">
                         <IconButton
                             isOutline={false}
@@ -187,10 +175,17 @@ const Datasets = () => {
                             style={{ marginTop: '15px' }}
                         />
                     </CCol> */}
+                <TableHeader
+                    headline="Datasets"
+                    buttonStyle={{ marginTop: 15, marginBottom: 20 }}
+                    icon={faFolderPlus}
+                    buttonText='Add Dataset'
+                    onClick={openAddDatasetMenu}
+                />
                 </CRow>
                 <CRow>
                     <CCol>
-                        <div className="h-4">&nbsp;</div>
+                        {/* <div className="h-4">&nbsp;</div> */}
                         <BaseContainer>
                             <DatasetTable
                                 datasetList={dSData}

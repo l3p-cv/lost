@@ -128,6 +128,7 @@ const Toolbar = (props) => {
                             : "warning"
                         }
                         outline={true}
+                        disabled={props.data.progress === 'ERROR' || props.data.progress === '100%'}
                         size='lg'
                         icon={props.data.progress === 'PAUSED' ? (
                             faPlay 

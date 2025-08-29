@@ -17,8 +17,11 @@ import { CBadge, CCol, CRow } from '@coreui/react'
 import * as fbAPI from '../../actions/fb/fb_api'
 import BaseContainer from '../../components/BaseContainer'
 import CoreDataTable from '../../components/CoreDataTable'
+import CoreIconButton from '../../components/CoreIconButton'
+import TableHeader from '../../components/TableHeader'
+import ErrorBoundary from '../../components/ErrorBoundary'
 
-export const DSTable = ({ visLevel }) => {
+export const DSTable = ({ visLevel, headline="Datasources" }) => {
     const [isNewDS, setIsNewDS] = useState(false)
     // const [fsList, setFSList] = useState([])
     // const [possibleFsTypes, setPossibleFsTypes] = useState([])
@@ -172,7 +175,6 @@ export const DSTable = ({ visLevel }) => {
         setTableData(fsList)
     }, [fsList])
 
-    const columnHelper = createColumnHelper()
     const defineColumns = () => {
         const columnHelper = createColumnHelper()
         let columns = []
@@ -208,51 +210,40 @@ export const DSTable = ({ visLevel }) => {
                 },
             }),
             columnHelper.display({
-                id: 'browse',
-                header: () => 'Browse',
+                id: 'actions',
+                header: () => 'Actions',
                 cell: (props) => {
                     return (
-                        <IconButton
+                        <>
+                        <CoreIconButton
+                            style={{'margin-right': '5px'}}
                             icon={faFolderOpen}
                             color="info"
                             onClick={() => onOpenFileBrowser(props.row.original)}
-                            text="Browse"
+                            toolTip="Browse Datasource"
                         // isOutline={false}
                         />
-                    )
-                }
-            }),
-            columnHelper.display({
-                id: 'edit',
-                header: () => 'Edit',
-                cell: (props) => {
-                    return (
-                        <IconButton
+                        <CoreIconButton
+                            style={{'margin-right': '5px'}}
                             icon={faEdit}
                             color="warning"
                             onClick={() => onEditDs(props.row)}
                             disabled={checkEditable(props.row)}
-                            text="Edit"
+                            toolTip="Edit Datasource"
                         // isOutline={false}
                         />
+                        <CoreIconButton
+                            style={{'margin-right': '5px'}}
+                            icon={faTrash}
+                            color="danger"
+                            onClick={() => onDeleteDs(props)}
+                            disabled={checkEditable(props)}
+                            toolTip="Delete Datasource"
+                        />
+                        </>
                     )
                 }
             }),
-            columnHelper.display({
-                id: 'delete',
-                header: () => 'Delete',
-                cell: (row) => {
-                    return (
-                        <IconButton
-                            icon={faTrash}
-                            color="danger"
-                            onClick={() => onDeleteDs(row)}
-                            disabled={checkEditable(row)}
-                            text="Delete"
-                        />
-                    )
-                }
-            })
         ]
         return columns
     }
@@ -290,20 +281,17 @@ export const DSTable = ({ visLevel }) => {
                     visLevel={visLevel}
                 />
             )}
-            <CRow>
-                <CCol sm="auto">
-                    <IconButton
-                        isOutline={true}
-                        color="primary"
-                        icon={faUserPlus}
-                        text="Add Datasource"
-                        onClick={createNewDS}
-                        style={{ marginTop: 15, marginBottom: 20 }}
-                    />
-                </CCol>
-            </CRow>
+            <TableHeader
+                headline="Datasources"
+                buttonStyle={{ marginTop: 15, marginBottom: 20 }}
+                icon={faUserPlus}
+                buttonText='Add Datasource'
+                onClick={createNewDS}
+            />
             <BaseContainer>
+                <ErrorBoundary>
                 <CoreDataTable columns={defineColumns()} tableData={tableData} />
+                </ErrorBoundary>
             </BaseContainer>
         </>
     )
