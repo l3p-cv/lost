@@ -9,6 +9,7 @@ import { useGetCurrentInstruction } from '../../../actions/annoTask/anno_task_ap
 import { CRow, CCol, CProgress } from '@coreui/react'
 import CoreIconButton from '../../../components/CoreIconButton'
 import { faEye } from '@fortawesome/free-solid-svg-icons'
+import AnnotaskReviewComponent from './ReviewPage'
 
 const { siaLayoutUpdate } = actions
 
@@ -88,7 +89,7 @@ const WorkingOnSIA = ({ annoTask, siaLayoutUpdate }) => {
                     <div className="callout callout-info">
                         <small className="text-muted">Pipeline</small>
                         <br />
-                        <strong>{annoTask.pipelineName}</strong>
+                        <strong>{annoTask.pipeline_name}</strong>
                     </div>
                 </CCol>
                 <CCol xs="2" md="2" xl="2">
@@ -105,7 +106,7 @@ const WorkingOnSIA = ({ annoTask, siaLayoutUpdate }) => {
                         <small className="text-muted">Seconds/Annotation</small>
                         <br />
                         <strong className="h4">
-                            &#8709; {annoTask.statistic.secondsPerAnno}
+                            &#8709; {annoTask.statistic.seconds_per_anno}
                         </strong>
                     </div>
                 </CCol>

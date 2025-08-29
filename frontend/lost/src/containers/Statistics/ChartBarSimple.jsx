@@ -3,15 +3,15 @@ import PropTypes from 'prop-types'
 import { getColor } from '@coreui/utils'
 import { CChartBar } from '@coreui/react-chartjs'
 
-const ChartBarSimple = (props) => {
-    const {
-        backgroundColor,
-        pointHoverBackgroundColor,
-        dataPoints,
-        label,
-        pointed,
-        ...attributes
-    } = props
+const ChartBarSimple = ({
+    backgroundColor = 'rgba(0,0,0,.2)',
+    dataPoints = [10, 22, 34],
+    label = 'Sales',
+    pointHoverBackgroundColor,
+    pointed,
+    tag,
+    ...attributes
+}) => {
 
     const defaultDatasets = (() => {
         return [
@@ -72,10 +72,5 @@ ChartBarSimple.propTypes = {
     pointed: PropTypes.bool,
 }
 
-ChartBarSimple.defaultProps = {
-    backgroundColor: 'rgba(0,0,0,.2)',
-    dataPoints: [10, 22, 34, 46, 58, 70, 46, 23, 45, 78, 34, 12],
-    label: 'Sales',
-}
 
 export default ChartBarSimple

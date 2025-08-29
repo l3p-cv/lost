@@ -14,6 +14,8 @@ import * as pipelinedProjectsApi from '../../actions/pipeline/pipeline_projects_
 import * as Notification from '../../components/Notification'
 import HelpButton from '../../components/HelpButton'
 import CollapseCard from '../../containers/pipeline/globalComponents/modals/CollapseCard'
+import CoreIconButton from '../../components/CoreIconButton'
+import TableHeader from '../../components/TableHeader'
 const AddPipelineProject = ({ visLevel, projectNames = [], refetch }) => {
     const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -328,12 +330,13 @@ const AddPipelineProject = ({ visLevel, projectNames = [], refetch }) => {
                     </CCol>
                 </CRow>
             </BaseModal>
-            <IconButton
-                icon={faPlus}
-                text="Import pipeline project"
+            <TableHeader
+                headline={"Pipeline Projects"}
+                buttonStyle={{ marginBottom: 20, marginTop: 15}}
                 onClick={() => setIsModalOpen(true)}
-                style={{ marginBottom: 20 }}
-                color="primary"
+                icon={faPlus}
+                buttonText='Import pipeline project'
+
             />
         </>
     )

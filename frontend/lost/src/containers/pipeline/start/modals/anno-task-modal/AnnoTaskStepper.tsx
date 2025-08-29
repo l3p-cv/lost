@@ -59,8 +59,8 @@ export const AnnoTaskStepper = ({
     const isStepComplete = () => {
         if (currentStep === ANNO_TASK_INFO_STEP) {
             return (
-                !isEmpty(annoTaskNodeData.name.trim()) && 
-                annoTaskNodeData.instructionId !== undefined 
+                !isEmpty(annoTaskNodeData.name.trim()) //&& 
+                // annoTaskNodeData.instructionId !== undefined
             );
         }
 

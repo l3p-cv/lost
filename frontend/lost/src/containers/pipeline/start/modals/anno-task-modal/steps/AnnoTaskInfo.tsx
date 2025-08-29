@@ -1,6 +1,8 @@
 import { CCol, CRow, CFormSelect,
     CForm, CFormInput, CInputGroup, CFormLabel
  } from '@coreui/react'
+import { useEffect } from 'react';
+import Select from 'react-select'
 import { useNodesData, useReactFlow } from '@xyflow/react';
 import HelpButton from '../../../../../../components/HelpButton';
 import { AnnoTaskNodeData } from '../../../nodes';
@@ -46,9 +48,11 @@ export const AnnoTaskInfo = ({ nodeId }: UserInfoProps) => {
             : []),
     ];
 
-    if (annoTaskNodeData.instructionId === undefined) {
-        updateNodeData(nodeId, { instructionId: null });
-    }
+    useEffect(() => {
+        if (annoTaskNodeData.instructionId === undefined) {
+            updateNodeData(nodeId, { instructionId: null });
+        }
+    }, [annoTaskNodeData.instructionId, nodeId, updateNodeData]);
 
     return (
         <div>
@@ -97,8 +101,7 @@ export const AnnoTaskInfo = ({ nodeId }: UserInfoProps) => {
                                     ) : error ? (
                                         <div>Error loading instructions</div>
                                     ) : (
-                                    <CInputGroup className="mb-3">
-                                        <CFormSelect
+                                        <Select
                                             required
                                             options={instructionOptions}
                                             onChange={handleInstructionChange}
@@ -106,7 +109,6 @@ export const AnnoTaskInfo = ({ nodeId }: UserInfoProps) => {
                                             id="instruction"
                                             defaultValue={annoTaskNodeData.instructionId ?? '-1'}
                                         />
-                                    </CInputGroup>
                                     )}
                                 </CCol>
                             </CRow>

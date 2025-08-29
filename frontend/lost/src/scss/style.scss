@@ -2,9 +2,8 @@
 @use './variables' as *;
 
 // Import CoreUI styles
-@use "@coreui/coreui/scss/coreui" with(
-    $primary: $primary
-);
+@use "@coreui/coreui/scss/coreui" with ($primary: $primary,
+    $info: $info);
 
 @use 'layout';
 

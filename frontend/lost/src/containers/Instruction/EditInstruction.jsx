@@ -139,6 +139,7 @@ const EditInstruction = ({ instructionData, onSave, visLevel, onClose }) => {
   const handleSave = () => {
     if (!option.trim()) return alert('Annotation option cannot be empty.');
     if (!description.trim()) return alert('Description cannot be empty.');
+    if (!content.trim()) return alert('Content cannot be empty.');
 
     onSave({
       id: instructionData.id,

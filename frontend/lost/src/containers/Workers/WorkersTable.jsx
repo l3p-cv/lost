@@ -4,6 +4,8 @@ import { createColumnHelper } from '@tanstack/react-table'
 import BaseContainer from '../../components/BaseContainer'
 import CoreDataTable from '../../components/CoreDataTable'
 import { CBadge } from '@coreui/react'
+import TableHeader from '../../components/TableHeader'
+import ErrorBoundary from '../../components/ErrorBoundary'
 
 const WorkersTable = () => {
     const { data, isLoading, isError } = useWorkers()
@@ -82,11 +84,16 @@ const WorkersTable = () => {
     }
 
     return (
-        data && (
+        <>
+        <TableHeader headline={'Workers'} buttonStyle={{ marginTop: 15, marginBottom: 20, visibility: "hidden" }} />
+        {data && (
             <BaseContainer>
+                <ErrorBoundary>
                 <CoreDataTable columns={columns} tableData={data.workers} />
+                </ErrorBoundary>
             </BaseContainer>
-        )
+        )}
+        </>
     )
 }
 
