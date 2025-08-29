@@ -103,12 +103,12 @@ const TheLayout = () => {
                 canShowSidebar={canShowSidebar}
                 setCanShowSidebar={setCanShowSidebar}
             />
-            <JoyrideTour/>
             <div className="wrapper d-flex flex-column min-vh-100 bg-light">
                 <TheHeader
                     numNavItems={navItems.length}
                     canShowSidebar={canShowSidebar}
                     setCanShowSidebar={setCanShowSidebar}
+                    showJoyride={<JoyrideTour />}
                 />
                 <div className="body flex-grow-1 px-3">
                     <TheContent routes={routes} />

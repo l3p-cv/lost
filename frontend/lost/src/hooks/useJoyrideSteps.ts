@@ -1,9 +1,10 @@
+import { useEffect, useState } from 'react';
 import { Step } from 'react-joyride';
 
 export const useJoyrideSteps = (
   templateType: string,
+  latestPipelineId?: number
 ): Step[] => {
-  const latestPipelineId = localStorage.getItem('latestPipelineId');
   const mainPipelineSteps: Step[] = [
     {
       target: '#nav-start-pipeline',
@@ -68,13 +69,15 @@ export const useJoyrideSteps = (
       content: 'Here is the path you selected.',
       placement: 'bottom',
       spotlightClicks: false,
+      disableOverlay: true,
     },
     {
       target: '#done-button',
       title: 'Done',
       content: 'Click "Done" to finalize your Datasource configuration.',
       placement: 'bottom',
-      spotlightClicks: true,
+      spotlightClicks: false,
+      disableOverlay: true,
     },
     {
       target: `.react-flow__node.script-node`,
@@ -215,7 +218,7 @@ export const useJoyrideSteps = (
     {
       target: '#description',
       title: 'Pipeline Description',
-      content: 'Optionally add a description to remember the purpose of this pipeline.',
+      content: 'Add a description to remember the purpose of this pipeline.',
       placement: 'right',
       spotlightClicks: true,
       disableBeacon: true,
@@ -493,7 +496,7 @@ export const useJoyrideSteps = (
 
     return miaPipelineSteps;
   }
-  if (templateType === 'instructionTour' && !latestPipelineId) {
+  if (templateType === 'instructionTour' && latestPipelineId== undefined) {
     const instructionTourSteps: Step[] = [
       {
         // 0
@@ -839,7 +842,7 @@ export const useJoyrideSteps = (
         // 40
         target: '#description',
         title: 'Pipeline Description',
-        content: 'Optionally add a description to remember the purpose of this pipeline.',
+        content: 'Add a description to remember the purpose of this pipeline.',
         placement: 'right',
         spotlightClicks: true,
         disableBeacon: true,

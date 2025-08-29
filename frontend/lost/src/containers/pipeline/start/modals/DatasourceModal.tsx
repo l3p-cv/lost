@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import LostFileBrowser from '../../../../components/FileBrowser/LostFileBrowser'
 
 import { useNodesData, useReactFlow } from '@xyflow/react'
@@ -63,6 +63,24 @@ export const DatasourceModal = ({
         return undefined
     })
 
+    useEffect(() => {
+        if (isOpen) {
+            setTimeout(() => {
+                const modalContent = document.querySelector('.modal-content');
+                if (modalContent && !modalContent.id) {
+                    modalContent.id = 'datasource-modal';
+                }
+            }, 0);
+
+            setTimeout(() => {
+                const dropdownBtn = document.querySelector('#datasource-dropdown button');
+                if (dropdownBtn && !dropdownBtn.id) {
+                    dropdownBtn.id = 'select-datasource-button';
+                }
+            }, 100);
+        }
+    }, [isOpen]);
+
     const selectItem = useCallback(
         (path) => {
             if (path !== selectedPath) {
@@ -78,6 +96,7 @@ export const DatasourceModal = ({
                 }
 
             const isJoyrideRunning = localStorage.getItem('joyrideRunning') === 'true';
+            console.log('Joyride running:', isJoyrideRunning, 'Path:', path, 'Selected Path:', selectedPath);
             const isValidPath = path && path !== DEFAULT_TEXT_PATH;
             if (isJoyrideRunning && isValidPath) {
                 window.dispatchEvent(new CustomEvent('joyride-next-step', {
@@ -99,7 +118,18 @@ export const DatasourceModal = ({
     const datasourceDropDown = () => {
         return (
             <div>
-                <CDropdown id="datasource-dropdown">
+                <CDropdown id="datasource-dropdown"
+                    onShow={() => {
+                        const isJoyrideRunning = localStorage.getItem('joyrideRunning') === 'true';
+                        if (isJoyrideRunning) {
+                            window.dispatchEvent(
+                                new CustomEvent('joyride-next-step', {
+                                    detail: { step: 'dropdown-open' }
+                                })
+                            );
+                        }
+                    }}
+                >
                     <CDropdownToggle caret color='primary'>
                         <FontAwesomeIcon icon={faDatabase} />
                         {selectedFs ? selectedFs.name : 'Select Datasource ...'}
@@ -137,7 +167,7 @@ export const DatasourceModal = ({
     return (
         //TODO: make sure it opens with the first click every time
         <> 
-            <CModal size="lg" onShow={verifyNode} visible={isOpen} id="datasource-modal" 
+            <CModal size="lg" onShow={verifyNode} visible={isOpen} 
                 onClose={() => {
                     if (isOpen){
                     toggle();
@@ -158,7 +188,7 @@ export const DatasourceModal = ({
                             />
                         </div>
                         <LDivider text={"Selected Datasource"} className='fw-bold fs-5'></LDivider>
-                        <CBadge color={selectedPathColor}>
+                        <CBadge color={selectedPathColor} id="selected-datasource-path">
                             <FontAwesomeIcon icon={faFolderOpen} /> {selectedPath}
                         </CBadge>
                     </div>
