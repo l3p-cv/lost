@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Joyride, { STATUS, EVENTS } from 'react-joyride';
-import { useNavigate } from 'react-router-dom';
-
+import { useNavigate, useLocation } from 'react-router-dom';
 import TourModal from './components/TourModal';
 import TourTriggerButton from './components/TourTriggerButton';
 import { useTourStepManager } from './hooks/useTourStepManager';
@@ -9,16 +8,15 @@ import { useTourClickHandler } from './handlers/tourClickHandler';
 import { handleNavigationAndActions } from './handlers/tourNavigationHandler';
 import { getTooltipStyles, getOverlayStyles } from './config/tourStyles';
 import { useJoyrideSteps } from '../../hooks/useJoyrideSteps';
-import { usePipelinesPaged } from '../../actions/pipeline/pipeline_api'; 
+import { useConditionalPipelinesPaged } from '../../actions/pipeline/pipeline_api';
 
 const JoyrideTour = () => {
   const [run, setRun] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [pipelineType, setPipelineType] = useState('mainPipeline');
-
+  const isProcessingPrev = useRef(false);
   const navigate = useNavigate();
-
-  const { data: pipelineData } = usePipelinesPaged(0, 1);
+  const location = useLocation();
 
   const {
     currentStep,
@@ -29,11 +27,24 @@ const JoyrideTour = () => {
     useStepReadiness,
   } = useTourStepManager(pipelineType);
 
+  const [latestPipelineId, setLatestPipelineId] = useState(undefined);
+  const steps = useJoyrideSteps(pipelineType, latestPipelineId);
+
+  const isPipelinePage = location.pathname.includes('/pipelines');
+  const pipelineTargets = ['.latest-pipeline-row', '.first-row-class', '.latest-pipeline-open-button'];
+
+  const typedSteps = steps || [];
+  const pipelineDataSteps = typedSteps
+    .map((step, index) => (typeof step.target === 'string' && pipelineTargets.includes(step.target)) ? index : -1)
+    .filter((index) => index !== -1);
+
+  const requiresPipelineData = typedSteps[currentStep] && pipelineDataSteps.includes(currentStep);
+
+  const pipelineQuery = useConditionalPipelinesPaged(0, 10, isPipelinePage && requiresPipelineData);
+  const pipelineData = pipelineQuery.data;
+
   const siaPipelineId = localStorage.getItem('siaPipelineId');
   const miaPipelineId = localStorage.getItem('miaPipelineId');
-  const latestPipelineId = localStorage.getItem('latestPipelineId');
-
-  const steps = useJoyrideSteps(pipelineType);
 
   useStepReadiness(steps);
 
@@ -61,27 +72,35 @@ const JoyrideTour = () => {
   }, []);
 
   const handleJoyrideCallback = ({ action, index, status, type }) => {
-    if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status) || action === 'close') {
-      localStorage.setItem('hasCompletedTour', 'true');
-      setRun(false);
-      setIsModalVisible(false);
-      localStorage.removeItem('joyrideRunning');
-      localStorage.removeItem('currentStep');
-      localStorage.removeItem('latestPipelineId');
-      return;
-    }
+  if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status) || action === 'close') {
+    localStorage.setItem('hasCompletedTour', 'true');
+    setRun(false);
+    setIsModalVisible(false);
+    localStorage.removeItem('joyrideRunning');
+    localStorage.removeItem('currentStep');
+    localStorage.removeItem('latestPipelineId');
+    isProcessingPrev.current = false;
+    return;
+  }
 
     if (type === EVENTS.STEP_AFTER) {
       let nextIndex = index;
+      isProcessingPrev.current = false;
 
-      if (action === 'next') nextIndex = index + 1;
-      else if (action === 'prev') nextIndex = index - 1;
+      if (action === 'next' && !isProcessingPrev.current) {
+        nextIndex = index + 1;
+      } else if (action === 'prev') {
+        nextIndex = index - 1;
+        isProcessingPrev.current = true;
+      }
+    console.log(`Joyride step action: ${action}, current index: ${index}, next index: ${nextIndex}, isProcessingPrev: ${isProcessingPrev.current}`);
 
-      if (nextIndex !== currentStepRef.current) {
+    if (nextIndex !== currentStepRef.current) {
         setCurrentStep(nextIndex);
         localStorage.setItem('currentStep', String(nextIndex));
       }
 
+    if (!isProcessingPrev.current) {
       const result = handleNavigationAndActions(
         index,
         pipelineType,
@@ -97,21 +116,29 @@ const JoyrideTour = () => {
         localStorage.removeItem('joyrideRunning');
         localStorage.removeItem('currentStep');
         localStorage.removeItem('latestPipelineId');
+        }
       }
     }
   };
 
   const handleTourStart = (type = 'mainPipeline') => {
-    if (pipelineData && pipelineData.pipelines && pipelineData.pipelines.pipes && pipelineData.pipelines.pipes.length > 0) {
+    let latestId;
+
+    if (pipelineData?.pipelines?.pipes?.length) {
       const pipes = pipelineData.pipelines.pipes;
       const latestPipeline = pipes.reduce((latest, current) =>
         new Date(current.date) > new Date(latest.date) ? current : latest,
         pipes[0]
       );
-      const latestId = latestPipeline?.id;
-      if (latestId) {
-        localStorage.setItem('latestPipelineId', latestId);
-      }
+      latestId = latestPipeline?.id;
+    }
+
+    if (latestId !== undefined) {
+      localStorage.setItem('latestPipelineId', String(latestId));
+      setLatestPipelineId(latestId);
+    } else {
+      localStorage.removeItem('latestPipelineId');
+      setLatestPipelineId(undefined);
     }
 
     localStorage.removeItem('hasCompletedTour');
@@ -152,6 +179,7 @@ const JoyrideTour = () => {
           showProgress
           showSkipButton
           disableOverlayClose
+          debug={true}
           styles={{
             options: { zIndex: 10000 },
             ...getTooltipStyles(currentStep, pipelineType, latestPipelineId, isNextEnabled),

@@ -44,7 +44,7 @@ export const useTourStepManager = (pipelineType) => {
     const handleNextStep = (event) => {
       const latestPipelineId = localStorage.getItem('latestPipelineId');
       const mapToUse = 
-        pipelineType === 'instructionTour' && !latestPipelineId 
+        pipelineType === 'instructionTour' && latestPipelineId == undefined
           ? instructionStepMap 
           : pipelineType === 'instructionTour' && latestPipelineId 
           ? instructionStepMap2 

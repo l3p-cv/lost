@@ -68,16 +68,22 @@ const EditInstruction = ({ instructionData, onSave, visLevel, onClose }) => {
       const instructionMediaPath = `${basePath}/instruction_media`;
       const groupPath = `${instructionMediaPath}/admin_media`;
 
-      const ensureDir = async (fs, path, name) => {
-        if (!await fbAPI.checkIfPathExists(fs, path)) {
-          await mkDir({ fs, path, name });
+      const ensureDir = async (fs, fullPath) => {
+        const exists = await fbAPI.checkIfPathExists(fs, fullPath);
+        console.log('Checking path:', fullPath, 'Exists:', exists);
+
+        if (!exists) {
+          const parentPath = fullPath.substring(0, fullPath.lastIndexOf('/'));
+          const name = fullPath.substring(fullPath.lastIndexOf('/') + 1);
+          console.log('Creating directory:', parentPath, 'name:', name);
+          await mkDir({ fs, path: parentPath, name });
         }
       };
 
-      await ensureDir(fs, basePath, 'instruction_media');
+      await ensureDir(fs, instructionMediaPath);
 
       if (visLevel === 'global') {
-        await ensureDir(fs, instructionMediaPath, 'admin_media');
+        await ensureDir(fs, groupPath);
         setSelectedPath(groupPath);
       } else {
         setSelectedPath(instructionMediaPath);
@@ -151,7 +157,7 @@ const EditInstruction = ({ instructionData, onSave, visLevel, onClose }) => {
       }));
     }
 
-    visLevel !== 'global' ? navigate('/instruction') : onClose();
+    visLevel !== 'global' ? navigate('/instructions') : onClose();
   };
 
   return (
@@ -180,6 +186,14 @@ const EditInstruction = ({ instructionData, onSave, visLevel, onClose }) => {
         style={{ height: '400px' }}
         renderHTML={(text) => mdParser.render(text)}
         onChange={handleEditorChange}
+        onFocus={() => {
+          const currentStep = localStorage.getItem('currentStep');
+          if (currentStep === '11') {
+            window.dispatchEvent(
+              new CustomEvent('joyride-next-step', { detail: { step: 'save-step2' } })
+            );
+          }
+        }}
         config={{
           view: {
             menu: true,

@@ -13,8 +13,19 @@ const Logout = () => {
         // don't try to log out if we are already
         if (localStorage.getItem('token') === null) return
 
-        logout()
-    }, [logout])
+        logout(undefined, {
+            onSuccess: () => {
+            // Clear auth token
+            localStorage.removeItem('token')
+
+            // Clear all Joyride/tour-related state
+            localStorage.removeItem('currentStep')
+            localStorage.removeItem('joyrideRunning')
+            localStorage.removeItem('latestPipelineId')
+            localStorage.removeItem('hasCompletedTour')
+            },
+        })
+        }, [logout])
 
     return (
         <div className="app flex-row align-items-center">

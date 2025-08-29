@@ -1,7 +1,7 @@
 export const pipelineStepMap = {
   'dropdown-open': 6,
   'datasource-selected': 7,
-  'path-selected': 9,
+  'path-selected': 8,
   'done-clicked': 10,
   'anno-name': 11,
   'anno-task-info-done': 15,
@@ -22,6 +22,7 @@ export const instructionStepMap = {
   'save-step': 7,
   'instruction-list': 8,
   'edit-step': 11,
+  'save-step2': 12,
   'pipelines-nav': 13,
   'dropdown-open': 19,
   'datasource-selected': 20,

@@ -1,5 +1,5 @@
 export const handleNavigationAndActions = (index, pipelineType, latestPipelineId, siaPipelineId, miaPipelineId, navigate) => {
-  if (pipelineType === 'instructionTour' && !latestPipelineId) {
+  if (pipelineType === 'instructionTour' && latestPipelineId == undefined) {
     return handleInstructionTourNavigation(index, navigate, siaPipelineId, latestPipelineId);
   } else if (pipelineType === 'miaPipeline' || pipelineType === 'mainPipeline') {
     return handlePipelineTourNavigation(index, pipelineType, navigate, miaPipelineId, siaPipelineId);
@@ -13,7 +13,7 @@ export const handleNavigationAndActions = (index, pipelineType, latestPipelineId
 const handleInstructionTourNavigation = (index, navigate, siaPipelineId, latestPipelineId) => {
   switch (index) {
     case 0:
-      navigate('/instruction');
+      navigate('/instructions');
       break;
     case 1: {
       const addButton = document.querySelector('.add-instruction-button');
@@ -104,7 +104,7 @@ const handlePipelineTourNavigation = (index, pipelineType, navigate, miaPipeline
 const handleInstructionTourWithPipelineNavigation = (index, navigate, latestPipelineId) => {
   switch (index) {
     case 0:
-      navigate('/instruction');
+      navigate('/instructions');
       break;
     case 1: {
       const addButton = document.querySelector('.add-instruction-button');

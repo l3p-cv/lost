@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useGetInstructions, useDeleteInstruction, useAddInstruction, useEditInstruction } from './instruction_api';
 import { CContainer, CRow, CCol, CSpinner, CBadge, CTooltip } from '@coreui/react';
 // import Datatable from '../../components/Datatable';
@@ -56,7 +56,6 @@ const Instruction = ({ visLevel }) => {
   const handleViewClick = (instruction) => {
     setViewingInstruction(instruction);
     setEditingInstruction(null);
-    setModalOpen(true);
   };
 
   const handleSave = (updatedInstruction) => {
@@ -207,23 +206,32 @@ const Instruction = ({ visLevel }) => {
         </CCol>
       </CRow>
 
-      <BaseModal
-        isOpen={modalOpen}
-        title={viewingInstruction ? 'View Instruction' : editingInstruction ? 'Edit Instruction' : 'Add Instruction'}
-        toggle={() => setModalOpen(false)}
-        footer={null}
-      >
-        {viewingInstruction ? (
-          <ViewInstruction instructionData={viewingInstruction} onClose={() => setModalOpen(false)} onEdit={handleEditClick} />
-        ) : editingInstruction ? (
-          <EditInstruction
-            instructionData={editingInstruction}
-            onSave={handleSave}
-            visLevel={visLevel}
-            onClose={() => setModalOpen(false)}
-          />
-        ) : null}
-      </BaseModal>
+      {/* Only use BaseModal for add/edit */}
+          {(editingInstruction && modalOpen) && (
+            <BaseModal
+              isOpen={modalOpen}
+              title={editingInstruction.id ? 'Edit Instruction' : 'Add Instruction'}
+              toggle={() => setModalOpen(false)}
+              footer={null}
+            >
+              <EditInstruction
+                instructionData={editingInstruction}
+                onSave={handleSave}
+                visLevel={visLevel}
+                onClose={() => setModalOpen(false)}
+              />
+            </BaseModal>
+          )}
+
+          {/* Directly render ViewInstruction for view */}
+          {viewingInstruction && (
+            <ViewInstruction
+              instructionData={viewingInstruction}
+              onClose={() => setViewingInstruction(null)}
+              onEdit={handleEditClick}
+            />
+          )}
+
 
       {isLoading && (
         <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 1050 }}>

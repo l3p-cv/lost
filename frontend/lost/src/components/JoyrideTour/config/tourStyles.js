@@ -1,8 +1,29 @@
 export const getTooltipStyles = (stepIndex, pipelineType, latestPipelineId, isNextEnabled) => {
-  if (pipelineType === 'instructionTour' && !latestPipelineId) {
+  const baseStyles = {
+    buttonNext: {
+      backgroundColor: '#092f38',
+      color: '#fff',
+      border: '1px solid #092f38',
+      borderRadius: '4px',
+      padding: '8px 16px',
+      fontSize: '14px',
+    },
+    buttonBack: {
+      backgroundColor: '#fff',
+      color: '#092f38',
+      border: '1px solid #092f38',
+      borderRadius: '4px',
+      padding: '8px 16px',
+      fontSize: '14px',
+    },
+};
+
+
+  if (pipelineType === 'instructionTour' && latestPipelineId ==undefined) {
     const hideNextInstruction = [5, 6, 7, 8, 11, 12, 10, 22, 18, 19, 20, 27, 28, 29, 31, 33, 35, 37, 38, 41];
     const hideBackInstruction = [2, 5, 6, 7, 8, 11, 12, 13, 22, 25, 16, 17, 18, 19, 20, 23, 28, 30, 32, 34, 36, 38, 39];
     return {
+      ...baseStyles,
       ...(hideNextInstruction.includes(stepIndex) && { buttonNext: { display: 'none' } }),
       ...(hideBackInstruction.includes(stepIndex) && { buttonBack: { display: 'none' } }),
     };
@@ -10,6 +31,7 @@ export const getTooltipStyles = (stepIndex, pipelineType, latestPipelineId, isNe
     const hideNextInstruction = [5, 6, 7, 8, 11, 12, 10];
     const hideBackInstruction = [2, 5, 6, 7, 8, 11, 12, 13];
     return {
+      ...baseStyles,
       ...(hideNextInstruction.includes(stepIndex) && { buttonNext: { display: 'none' } }),
       ...(hideBackInstruction.includes(stepIndex) && { buttonBack: { display: 'none' } }),
     };
@@ -17,6 +39,7 @@ export const getTooltipStyles = (stepIndex, pipelineType, latestPipelineId, isNe
     const hideNextInstruction = [3, 5, 7, 10, 11, 12, 15, 16, 17, 20, 21];
     const hideBackInstruction = [4, 6];
     return {
+      ...baseStyles,
       ...(hideNextInstruction.includes(stepIndex) && { buttonNext: { display: 'none' } }),
       ...(hideBackInstruction.includes(stepIndex) && { buttonBack: { display: 'none' } }),
     };
@@ -31,13 +54,14 @@ export const getTooltipStyles = (stepIndex, pipelineType, latestPipelineId, isNe
   }
 
   return {
+    ...baseStyles,
     ...(hideNext.includes(stepIndex) && { buttonNext: { display: 'none' } }),
     ...(hideBack.includes(stepIndex) && { buttonBack: { display: 'none' } }),
   };
 };
 
 export const getOverlayStyles = (stepIndex, pipelineType, latestPipelineId) => {
-  if (pipelineType === 'instructionTour' && !latestPipelineId) {
+  if (pipelineType === 'instructionTour' && latestPipelineId == undefined) {
     const noOverlaySteps = [6, 12, 26, 28, 30, 34, 35, 36, 37, 38, 44];
     return {
       options: {
