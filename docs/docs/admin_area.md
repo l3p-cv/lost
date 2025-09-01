@@ -92,7 +92,7 @@ and they can be browsed, edited and deleted here.
 
 ## Workers
 
--TODO
+-TODO What are they???
 
 ![sia-example](/img/admin_workers_new.png)
 Figure 7: TODO
