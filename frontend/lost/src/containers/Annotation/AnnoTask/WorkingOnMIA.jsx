@@ -17,8 +17,13 @@ const WorkingOnMIA = ({ annoTask }) => {
         if (currentInstruction?.instruction_id) {
             const instruction = instructions?.find(
                 (inst) => inst.id === currentInstruction.instruction_id
-            );
-            setViewingInstruction(instruction || null);
+            )
+            if (instruction) setViewingInstruction(instruction)
+        } else {
+            const defaultInstruction = instructions?.find(
+                (inst) => inst.option === "Bounding Box"
+            )
+            if (defaultInstruction) setViewingInstruction(defaultInstruction)
         }
     }, [currentInstruction?.instruction_id, instructions]);
 
@@ -29,7 +34,7 @@ const WorkingOnMIA = ({ annoTask }) => {
             );
             setViewingInstruction(instruction || null);
         } else {
-            const defaultInstruction = instructions?.[0];
+            const defaultInstruction = instructions?.find( (inst) => inst.option === "Bounding Box")
             if (defaultInstruction) {
                 setViewingInstruction(defaultInstruction);
             } else {
