@@ -50,8 +50,11 @@ const handleInstructionTourNavigation = (index, navigate, siaPipelineId, latestP
       break;
     }
     case 42:
+      console.log('latestPipelineId', latestPipelineId);
       if (latestPipelineId) {
         navigate(`/pipeline/${latestPipelineId}`);
+      }else{
+        localStorage.getItem('latestPipelineId') && navigate(`/pipeline/${localStorage.getItem('latestPipelineId')}`);
       }
       break;
     case 43: {

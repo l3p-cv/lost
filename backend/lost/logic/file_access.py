@@ -97,6 +97,9 @@ class UserFileAccess(object):
 
     def get_media_path(self):
         return self.fm.get_media_path()
+    
+    def get_instruction_media_path(self):
+        return self.fm.get_instruction_media_path()
 
     def get_export_ds_path(self, export_id):
         return self.fm.get_export_ds_path(export_id)

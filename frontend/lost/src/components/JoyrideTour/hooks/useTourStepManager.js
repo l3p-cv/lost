@@ -65,15 +65,6 @@ export const useTourStepManager = (pipelineType) => {
     };
   }, [pipelineType]);
 
-  useEffect(() => {
-    if (location.pathname === '/annotation') {
-      window.dispatchEvent(
-        new CustomEvent('joyride-next-step', {
-          detail: { step: 'latest-running-annotask' },
-        })
-      );
-    }
-  }, [location.pathname]);
 
   useEffect(() => {
     if (currentStep === 29 && (pipelineType === 'miaPipeline' || pipelineType === 'mainPipeline')) {

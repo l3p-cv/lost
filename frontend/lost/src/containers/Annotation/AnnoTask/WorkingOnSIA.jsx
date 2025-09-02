@@ -53,25 +53,14 @@ const WorkingOnSIA = ({ annoTask, siaLayoutUpdate }) => {
             )
             setViewingInstruction(instruction || null)
         } else {
-            setViewingInstruction(null)
+        setViewingInstruction({
+                id: 'default',
+                option: 'Bounding Box',
+                description: 'Default task instruction',
+                instruction: `
 
-            showDecision({
-                title: 'No Instructions Found',
-                icon: 'info',
-                html: 'There are no instructions available for this task.',
-                option1: {
-                    text: 'OK',
-                    callback: () => {
-                        console.log('User acknowledged the absence of instructions.')
-                    },
-                },
-                option2: {
-                    text: 'Dismiss',
-                    callback: () => {
-                        console.log('User dismissed the notification.')
-                    },
-                },
-            })
+        Please draw bounding boxes for all objects in the image.`,
+            });
         }
     }
 

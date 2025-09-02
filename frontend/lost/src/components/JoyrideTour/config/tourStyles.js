@@ -20,8 +20,8 @@ export const getTooltipStyles = (stepIndex, pipelineType, latestPipelineId, isNe
 
 
   if (pipelineType === 'instructionTour' && latestPipelineId ==undefined) {
-    const hideNextInstruction = [5, 6, 7, 8, 11, 12, 10, 22, 18, 19, 20, 27, 28, 29, 31, 33, 35, 37, 38, 41];
-    const hideBackInstruction = [2, 5, 6, 7, 8, 11, 12, 13, 22, 25, 16, 17, 18, 19, 20, 23, 28, 30, 32, 34, 36, 38, 39];
+    const hideNextInstruction = [5, 6, 7, 8, 11, 12, 10, 22, 18, 19, 20, 27, 28, 29, 31, 33, 35, 37, 38, 41, 44];
+    const hideBackInstruction = [2, 5, 6, 7, 8, 11, 12, 13, 22, 25, 16, 17, 18, 19, 20, 23, 28, 30, 32, 34, 36, 38, 39, 42, 43, 44, 45];
     return {
       ...baseStyles,
       ...(hideNextInstruction.includes(stepIndex) && { buttonNext: { display: 'none' } }),
@@ -62,7 +62,7 @@ export const getTooltipStyles = (stepIndex, pipelineType, latestPipelineId, isNe
 
 export const getOverlayStyles = (stepIndex, pipelineType, latestPipelineId) => {
   if (pipelineType === 'instructionTour' && latestPipelineId == undefined) {
-    const noOverlaySteps = [6, 12, 26, 28, 30, 34, 35, 36, 37, 38, 44];
+    const noOverlaySteps = [6, 12, 21 ,26, 28, 30, 34, 35, 36, 37, 38, 44];
     return {
       options: {
         overlayColor: noOverlaySteps.includes(stepIndex) ? 'transparent' : 'rgba(0, 0, 0, 0.5)',

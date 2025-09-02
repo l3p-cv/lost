@@ -31,7 +31,7 @@ const JoyrideTour = () => {
   const steps = useJoyrideSteps(pipelineType, latestPipelineId);
 
   const isPipelinePage = location.pathname.includes('/pipelines');
-  const pipelineTargets = ['.latest-pipeline-row', '.first-row-class', '.latest-pipeline-open-button'];
+  const pipelineTargets = ['.latest-pipeline-row', '.first-row-class', '.latest-pipeline-open-button','#nav-pipelines'];
 
   const typedSteps = steps || [];
   const pipelineDataSteps = typedSteps

@@ -202,6 +202,7 @@ const Instruction = ({ visLevel }) => {
               buttonStyle={{ marginTop: 15, marginBottom: 20 }}
               icon={faUserPlus}
               buttonText='Add Instruction'
+              className="add-instruction-button"
               onClick={handleAddInstruction}
           />
         </CCol>

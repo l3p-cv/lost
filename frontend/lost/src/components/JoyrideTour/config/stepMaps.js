@@ -37,6 +37,7 @@ export const instructionStepMap = {
   'configuration-done': 38,
   'template-next': 39,
   'anno-task-display': 42,
+  'view-created-pipeline': 43,
 };
 
 export const instructionStepMap2 = {

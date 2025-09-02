@@ -63,13 +63,13 @@ export const PipelineTemplatesTable = () => {
                             <CoreIconButton
                             color="primary"
                             text=' Start Pipeline'
-                            //   className={
-                            //       row.original.name === 'found.sia'
-                            //           ? 'sia-start-button'
-                            //           : row.original.name === 'found.mia'
-                            //           ? 'mia-start-button'
-                            //           : ''
-                            //   }
+                              className={
+                                  row.original.name === 'found.sia'
+                                      ? 'sia-start-button'
+                                      : row.original.name === 'found.mia'
+                                      ? 'mia-start-button'
+                                      : ''
+                              }
                             onClick={() =>
                                 navigate(`/pipeline-template/${row.original.id}`)
                             }

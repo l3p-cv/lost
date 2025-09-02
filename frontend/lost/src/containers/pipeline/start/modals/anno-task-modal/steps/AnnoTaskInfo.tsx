@@ -101,7 +101,8 @@ export const AnnoTaskInfo = ({ nodeId }: UserInfoProps) => {
                                     ) : error ? (
                                         <div>Error loading instructions</div>
                                     ) : (
-                                        <Select
+                                    <CInputGroup className="mb-3">
+                                        <CFormSelect
                                             required
                                             options={instructionOptions}
                                             onChange={handleInstructionChange}
@@ -109,6 +110,7 @@ export const AnnoTaskInfo = ({ nodeId }: UserInfoProps) => {
                                             id="instruction"
                                             defaultValue={annoTaskNodeData.instructionId ?? '-1'}
                                         />
+                                    </CInputGroup>
                                     )}
                                 </CCol>
                             </CRow>

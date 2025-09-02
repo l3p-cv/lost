@@ -41,6 +41,7 @@ def main():
         create_user_default_fs(dbm, user, group.idx)
         import_ootb_pipelines(dbm, user)
         copy_example_images(dbm, lostconfig, user)
+        copy_instruction_media(dbm, lostconfig, user)
         import_example_label_trees(dbm, lostconfig)
     release_all_pipe_locks(dbm)
     dbm.close_session()
@@ -213,8 +214,30 @@ def copy_example_images(dbm, lostconfig, user):
         src_path = '/code/lost/pyapi/examples/images'
         admin_fs = dbm.get_user_default_fs(user.idx)
         ufa = UserFileAccess(dbm, user, admin_fs)
+        print('Copy example images from {} to {}'.format(src_path, ufa.get_media_path()))
         ufa.fm.fs.put(src_path, ufa.get_media_path(), recursive=True)
 
+def copy_instruction_media(dbm, lostconfig, user):
+    if lostconfig.add_examples:
+        src_path = '/code/lost/pyapi/examples/instruction_media'
+        admin_fs = dbm.get_user_default_fs(user.idx)
+        ufa = UserFileAccess(dbm, user, admin_fs)
+        ufa.fm.fs.put(src_path, ufa.get_instruction_media_path(), recursive=True)
+
+""" 
+def create_default_instruction(dbm):
+    default_instruction = model.Instruction(
+        option="Bounding Box",
+        description=(
+            "Please draw bounding boxes for all objects in the image.\n\n"
+            "![Annotation Example](/media/admin/instruction_media/AnnotationExample.png)"
+        ),
+        instruction="Use the bounding box tool to annotate every object.",
+        is_deleted=False,
+        group_id=None
+    )
+    dbm.session.add(default_instruction)
+    dbm.session.commit() """
 
 def import_example_label_trees(dbm, lostconfig):
     if lostconfig.add_examples:
