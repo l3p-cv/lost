@@ -53,14 +53,19 @@ const WorkingOnSIA = ({ annoTask, siaLayoutUpdate }) => {
             )
             setViewingInstruction(instruction || null)
         } else {
-        setViewingInstruction({
-                id: 'default',
-                option: 'Bounding Box',
-                description: 'Default task instruction',
-                instruction: `
+            const defaultInstruction = instructions?.[0];
+            if (defaultInstruction) {
+                setViewingInstruction(defaultInstruction);
+            } else {
+                setViewingInstruction({
+                    id: 'default',
+                    option: 'Bounding Box',
+                    description: 'Default task instruction',
+                    instruction: `
 
         Please draw bounding boxes for all objects in the image.`,
-            });
+                });
+            }
         }
     }
 
