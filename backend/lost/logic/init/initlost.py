@@ -43,6 +43,7 @@ def main():
         copy_example_images(dbm, lostconfig, user)
         copy_instruction_media(dbm, lostconfig, user)
         import_example_label_trees(dbm, lostconfig)
+        create_lost_default_instrction_entry(dbm, lostconfig, group.idx)
     release_all_pipe_locks(dbm)
     dbm.close_session()
 
@@ -167,6 +168,23 @@ def create_lost_filesystem_entry(dbm, lostconfig, admin_default_group):
         lost_fs.fs_type = lostconfig.data_fs_type 
     dbm.save_obj(lost_fs)
 
+def create_lost_default_instrction_entry(dbm, lostconfig, admin_default_group):
+    ins = dbm.session.query(model.Instruction).filter(model.Instruction.option=='Bounding Box').first()
+    if ins is None:
+        print('Create default instruction entry in database')
+        ins = model.Instruction(
+            option="Bounding Box",
+            description=(
+                "Please draw bounding boxes for all objects in the image.\n\n"
+            ),
+            instruction="Use the bounding box tool to annotate every object.![Image](http://localhost/api/media/media-file?path=%2Fhome%2Flost%2Fdata%2F1%2Finstruction_media%2FAnnotationExample.png)",
+            is_deleted=False,
+            group_id=None
+        )
+        dbm.save_obj(ins)
+    else:
+        print('Default instruction entry already exists in database')
+
 # def create_project_config(dbm):
 #     pc = ProjectConfigMan(dbm)
 #     print ('Try to create default project config!')
@@ -219,25 +237,11 @@ def copy_example_images(dbm, lostconfig, user):
 
 def copy_instruction_media(dbm, lostconfig, user):
     if lostconfig.add_examples:
-        src_path = '/code/lost/pyapi/examples/instruction_media'
+        src_path = '/code/lost/pyapi/examples/instruction_media/AnnotationExample.png'
         admin_fs = dbm.get_user_default_fs(user.idx)
         ufa = UserFileAccess(dbm, user, admin_fs)
         ufa.fm.fs.put(src_path, ufa.get_instruction_media_path(), recursive=True)
 
-""" 
-def create_default_instruction(dbm):
-    default_instruction = model.Instruction(
-        option="Bounding Box",
-        description=(
-            "Please draw bounding boxes for all objects in the image.\n\n"
-            "![Annotation Example](/media/admin/instruction_media/AnnotationExample.png)"
-        ),
-        instruction="Use the bounding box tool to annotate every object.",
-        is_deleted=False,
-        group_id=None
-    )
-    dbm.session.add(default_instruction)
-    dbm.session.commit() """
 
 def import_example_label_trees(dbm, lostconfig):
     if lostconfig.add_examples:
