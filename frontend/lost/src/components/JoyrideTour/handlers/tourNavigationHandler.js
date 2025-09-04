@@ -15,19 +15,13 @@ const handleInstructionTourNavigation = (index, navigate, siaPipelineId, latestP
     case 0:
       navigate('/instructions');
       break;
-    case 1: {
-      const addButton = document.querySelector('.add-instruction-button');
-      if (addButton) {
-        addButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-      }
-      break;
-    }
-    case 8: {
-      const lastRowEditBtn = document.querySelector('.last-row-highlight');
-      break;
-    }
-    case 13:
+
+    case 12:
+      console.log('Current Step in case 12', index);
       navigate('/pipeline-templates');
+      window.dispatchEvent(new CustomEvent('joyride-next-step', {
+        detail: { step: 'after-nav' }
+      }));
       break;
     case 15:
       if (siaPipelineId) {
@@ -49,14 +43,6 @@ const handleInstructionTourNavigation = (index, navigate, siaPipelineId, latestP
       combo?.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
       break;
     }
-    case 42:
-      console.log('latestPipelineId', latestPipelineId);
-      if (latestPipelineId) {
-        navigate(`/pipeline/${latestPipelineId}`);
-      }else{
-        localStorage.getItem('latestPipelineId') && navigate(`/pipeline/${localStorage.getItem('latestPipelineId')}`);
-      }
-      break;
     case 43: {
       const taskNode = document.querySelector('.react-flow__node.react-flow__node-annoTaskNode');
       taskNode?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
@@ -109,30 +95,13 @@ const handleInstructionTourWithPipelineNavigation = (index, navigate, latestPipe
     case 0:
       navigate('/instructions');
       break;
-    case 1: {
-      const addButton = document.querySelector('.add-instruction-button');
-      if (addButton) {
-        addButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-      }
-      break;
-    }
-    case 8: {
-      const lastRowEditBtn = document.querySelector('.last-row-highlight');
-      break;
-    }
-    case 13:
+    case 12:
+      console.log('Current Step in case 12', index);
       navigate('/pipelines');
+      window.dispatchEvent(new CustomEvent('joyride-next-step', {
+        detail: { step: 'after-nav' }
+      }));
       break;
-    case 14:
-      if (latestPipelineId) {
-        navigate(`/pipeline/${latestPipelineId}`);
-      }
-      break;
-    case 15: {
-      const taskNode = document.querySelector('.react-flow__node.react-flow__node-annoTaskNode');
-      taskNode?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-      break;
-    }
     default:
       break;
   }

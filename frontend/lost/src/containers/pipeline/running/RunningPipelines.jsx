@@ -112,6 +112,12 @@ export const RunningPipelines = () => {
                 variant='outline'
                 style={{ marginRight: '5px' }}
                 onClick={() => {
+                    const currentStep = parseInt(localStorage.getItem('currentStep')||'0');
+                    const isJoyrideRunning = localStorage.getItem('joyrideRunning') === 'true';
+                    console.log('OpenIcon clicked, currentStep:', currentStep, 'it will be made',currentStep + 1);
+                    if(isJoyrideRunning && (currentStep === 42 || currentStep === 14)){
+                        window.dispatchEvent(new CustomEvent('joyride-next-step', {detail: { step: 'view-created-pipeline' }}));
+                    }
                     localStorage.setItem('latestPipelineId', String(original.id));
                     navigate(`/pipeline/${original.id}`);
                 }}

@@ -1,4 +1,5 @@
 export const pipelineStepMap = {
+  'skip-navigate': 1,
   'dropdown-open': 6,
   'datasource-selected': 7,
   'path-selected': 8,
@@ -17,13 +18,15 @@ export const pipelineStepMap = {
 
 export const instructionStepMap = {
   'start-instruction': 0,
-  'add-step': 1,
-  'open-file-browser': 6,
-  'save-step': 7,
-  'instruction-list': 8,
-  'edit-step': 11,
-  'save-step2': 12,
-  'pipelines-nav': 13,
+  'add-step-clicked': 2,
+  'open-file-browser': 5,
+  'save-step': 6,
+  'instruction-list': 7,
+  'last-row-highlight': 8,
+  'edit-step': 10,
+  'save-step2': 11,
+  'pipelines-nav': 12,
+  'after-nav': 14,
   'dropdown-open': 19,
   'datasource-selected': 20,
   'path-selected': 21,
@@ -42,12 +45,17 @@ export const instructionStepMap = {
 
 export const instructionStepMap2 = {
   'start-instruction': 0,
-  'add-step': 1,
-  'open-file-browser': 6,
-  'save-step': 7,
-  'instruction-list': 8,
-  'edit-step': 11,
-  'pipelines-nav': 13,
+  'add-step-clicked': 2,
+  'open-file-browser': 5,
+  'save-step': 6,
+  'instruction-list': 7,
+  'last-row-highlight': 8,
+  'edit-step': 10,
+  'save-step2': 11,
+  'pipelines-nav': 12,
+  'after-nav': 14,
+  'view-created-pipeline': 15,
+  'view-created-annotask': 16,
 };
 
 export const labelStepMap = {

@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react'
 import { FaAngleDoubleRight } from 'react-icons/fa'
 import { Step } from 'react-joyride'
+import { useLocation } from 'react-router-dom';
 
 export const useJoyrideSteps = (
     templateType: string,
     latestPipelineId?: number,
 ): Step[] => {
+    const location = useLocation(); 
+    const currentPath = location.pathname;   
     const mainPipelineSteps: Step[] = [
         {
             // 0
@@ -538,35 +541,38 @@ export const useJoyrideSteps = (
         return miaPipelineSteps
     }
     if (templateType === 'instructionTour' && latestPipelineId == undefined) {
-        const instructionTourSteps: Step[] = [
-            {
+        const instructionTourSteps: Step[] = []
+            if (currentPath !== '/instructions') {
+                instructionTourSteps.push({
+                    target: '#nav-instruction',
+                    title: 'Instructions Tab',
+                    content: 'Click here to view instructions for annotators.',
+                    placement: 'right',
+                    disableBeacon: true,
+                    spotlightClicks: true,
+                }
+            );
+            }
+            instructionTourSteps.push(
+                {
                 // 0
-                target: '#nav-instruction',
-                title: 'Instructions Tab',
-                content: 'Click here to view instructions for annotators.',
-                placement: 'right',
-                disableBeacon: true,
-                spotlightClicks: false,
-            },
-            {
-                // 1
                 target: '.add-instruction-button',
                 title: 'Add Instruction',
                 content: 'Click here to start creating a new instruction.',
                 placement: 'right',
                 disableBeacon: true,
-                spotlightClicks: false,
+                spotlightClicks: true,
             },
             {
-                // 2
+                // 1
                 target: '.annotation-option-input',
                 title: 'Enter Annotation Option',
-                content: 'Enter the annotation option here when the modal opens.',
+                content: 'Enter the Title of your Instruction.',
                 placement: 'top',
                 spotlightClicks: true,
             },
             {
-                // 3
+                // 2
                 target: '.description-input',
                 title: 'Enter Description',
                 content: 'Provide a description for the instruction.',
@@ -574,7 +580,7 @@ export const useJoyrideSteps = (
                 spotlightClicks: true,
             },
             {
-                // 4
+                // 3
                 target: '#instruction-editor',
                 title: 'Add Instructions',
                 content: 'Write your instructions here using the editor.',
@@ -582,7 +588,7 @@ export const useJoyrideSteps = (
                 spotlightClicks: true,
             },
             {
-                // 5
+                // 4
                 target: '.browse-files-button',
                 title: 'Browse Files to Add Images',
                 content:
@@ -591,7 +597,7 @@ export const useJoyrideSteps = (
                 spotlightClicks: true,
             },
             {
-                // 6
+                // 5
                 target: '.file-browser-modal',
                 title: 'Browse Files to Add Images',
                 content: 'Browse and select images to include in your instructions.',
@@ -599,7 +605,7 @@ export const useJoyrideSteps = (
                 spotlightClicks: true,
             },
             {
-                // 7
+                // 6
                 target: '.save-button',
                 title: 'Save Instruction',
                 content: 'Click to save your instruction.',
@@ -607,7 +613,7 @@ export const useJoyrideSteps = (
                 spotlightClicks: true,
             },
             {
-                // 8
+                // 7
                 target: '.instruction-list',
                 title: 'View Instructions',
                 content: (
@@ -624,7 +630,7 @@ export const useJoyrideSteps = (
                 spotlightClicks: true,
             },
             {
-                // 9
+                // 8
                 target: '.last-row-highlight',
                 title: 'New Instruction Row',
                 content: 'This is your new instruction row.',
@@ -632,15 +638,15 @@ export const useJoyrideSteps = (
                 spotlightClicks: false,
             },
             {
-                // 10
+                // 9
                 target: '.edit-instruction-button',
                 title: 'Edit Instruction',
                 content: 'Click to edit your new instruction.',
-                placement: 'right',
+                placement: 'bottom',
                 spotlightClicks: true,
             },
             {
-                // 11
+                // 10
                 target: '.edit-instructions-modal',
                 content:
                     'Here you can edit the instruction details. Make changes and save when done.',
@@ -649,25 +655,25 @@ export const useJoyrideSteps = (
                 spotlightClicks: true,
             },
             {
-                // 12
+                // 11
                 target: '.save-button',
                 title: 'Save Instruction',
                 content: 'Click to save your instruction.',
                 placement: 'right',
                 spotlightClicks: true,
-            },
+            },            
             {
-                // 13
+                // 12
                 target: '#nav-start-pipeline',
                 title: 'Start Pipelines Tab',
                 content:
                     'Click here to navigate to the Pipeline Templates page to start an SIA pipeline.',
                 placement: 'right',
                 disableBeacon: true,
-                spotlightClicks: false,
+                spotlightClicks: true,
             },
             {
-                // 14
+                // 13
                 target: '.pipeline-start-1',
                 title: 'Pipeline Templates',
                 content:
@@ -676,7 +682,7 @@ export const useJoyrideSteps = (
                 spotlightClicks: false,
             },
             {
-                // 15
+                // 14
                 target: '.sia-start-button',
                 title: 'Start SIA Pipeline',
                 content: 'Click this button to open the SIA pipeline template.',
@@ -920,9 +926,9 @@ export const useJoyrideSteps = (
                 // 42
                 target: '.latest-pipeline-open-button',
                 title: 'Open Latest Pipeline',
-                content: 'Click the "Next" button to view the latest created pipeline.',
+                content: 'Click this button to view the latest created pipeline.',
                 placement: 'top',
-                spotlightClicks: false,
+                spotlightClicks: true,
                 disableBeacon: true,
             },
             {
@@ -953,167 +959,179 @@ export const useJoyrideSteps = (
                 spotlightClicks: true,
                 disableBeacon: true,
             },
-        ]
+            )
         return instructionTourSteps
     } else if (templateType === 'instructionTour' && latestPipelineId) {
-        const instructionTourSteps: Step[] = [
-            {
-                // 0
-                target: '#nav-instruction',
-                title: 'Instructions Tab',
-                content: 'Click here to view instructions for annotators.',
-                placement: 'right',
-                disableBeacon: true,
-                spotlightClicks: false,
-            },
-            {
-                // 1
-                target: '.add-instruction-button',
-                title: 'Add Instruction',
-                content: 'Click here to start creating a new instruction.',
-                placement: 'right',
-                disableBeacon: true,
-                spotlightClicks: false,
-            },
-            {
-                // 2
-                target: '.annotation-option-input',
-                title: 'Enter Annotation Option',
-                content: 'Enter the annotation option here when the modal opens.',
-                placement: 'top',
-                spotlightClicks: true,
-            },
-            {
-                // 3
-                target: '.description-input',
-                title: 'Enter Description',
-                content: 'Provide a description for the instruction.',
-                placement: 'top',
-                spotlightClicks: true,
-            },
-            {
-                // 4
-                target: '#instruction-editor',
-                title: 'Add Instructions',
-                content: 'Write your instructions here using the editor.',
-                placement: 'top',
-                spotlightClicks: true,
-            },
-            {
-                // 5
-                target: '.browse-files-button',
-                title: 'Browse Files to Add Images',
-                content:
-                    'Click to browse and select images to include in your instructions.',
-                placement: 'right',
-                spotlightClicks: true,
-            },
-            {
-                // 6
-                target: '.file-browser-modal',
-                title: 'Browse Files to Add Images',
-                content: 'Browse and select images to include in your instructions.',
-                placement: 'top',
-                spotlightClicks: true,
-            },
-            {
-                // 7
-                target: '.save-button',
-                title: 'Save Instruction',
-                content: 'Click to save your instruction.',
-                placement: 'right',
-                spotlightClicks: true,
-            },
-            {
-                // 8
-                target: '.instruction-list',
-                title: 'View Instructions',
-                content:
-                    'Your newly created instruction will appear at the end of this list.Click this "Next" button to Proceed.',
-                placement: 'top',
-                spotlightClicks: true,
-            },
-            {
-                // 9
-                target: '.last-row-highlight',
-                title: 'New Instruction Row',
-                content: 'This is your new instruction row.',
-                placement: 'top',
-                spotlightClicks: false,
-            },
-            {
-                // 10
-                target: '.edit-instruction-button',
-                title: 'Edit Instruction',
-                content: 'Click to edit your new instruction.',
-                placement: 'right',
-                spotlightClicks: true,
-            },
-            {
-                // 11
-                target: '.edit-instructions-modal',
-                content:
-                    'Here you can edit the instruction details. Make changes and save when done.',
-                placement: 'top',
-                disableBeacon: true,
-                spotlightClicks: true,
-            },
-            {
-                // 12
-                target: '.save-button',
-                title: 'Save Instruction',
-                content: 'Click to save your instruction.',
-                placement: 'right',
-                spotlightClicks: true,
-            },
-            {
-                // 13
-                target: '#nav-pipelines',
-                title: 'Pipelines Tab',
-                content:
-                    'Click here to navigate to the Pipelines page to start an SIA pipeline.',
-                placement: 'right',
-                disableBeacon: true,
-                spotlightClicks: false,
-            },
-            {
-                // 14
-                target: '.latest-pipeline-open-button',
-                title: 'Open Latest Pipeline',
-                content: 'Click the "Next" button to view the latest created pipeline.',
-                placement: 'top',
-                spotlightClicks: false,
-                disableBeacon: true,
-            },
-            {
-                // 15
-                target: '.react-flow__node.react-flow__node-annoTaskNode',
-                title: 'Edit Instructions',
-                content: 'To edit instructions in your pipeline, click next.',
-                placement: 'top',
-                disableBeacon: false,
-                spotlightClicks: true,
-            },
-            {
-                // 16
-                target: '.inactive-tab-class',
-                title: 'Switch Tab',
-                content: 'Click this tab to switch to the final instruction step.',
-                placement: 'top',
-                spotlightClicks: true,
-                disableBeacon: true,
-            },
-            {
-                // 17
-                target: '.instruction-tab',
-                title: 'Instruction Options Tab',
-                content:
-                    'Here you can "View" and "Edit" the instruction options. Make changes and "Save" when done.',
-                placement: 'top',
-                spotlightClicks: true,
-                disableBeacon: true,
-            },
-        ]
+                const instructionTourSteps: Step[] = []
+            if (currentPath !== '/instructions') {
+                instructionTourSteps.push({
+                    target: '#nav-instruction',
+                    title: 'Instructions Tab',
+                    content: 'Click here to view instructions for annotators.',
+                    placement: 'right',
+                    disableBeacon: true,
+                    spotlightClicks: true,
+                }
+            );
+            }
+            instructionTourSteps.push(
+
+                    {
+                    // 0
+                    target: '.add-instruction-button',
+                    title: 'Add Instruction',
+                    content: 'Click here to start creating a new instruction.',
+                    placement: 'right',
+                    disableBeacon: true,
+                    spotlightClicks: true,
+                },
+                {
+                    // 1
+                    target: '.annotation-option-input',
+                    title: 'Enter Annotation Option',
+                    content: 'Enter the Title of your Instruction.',
+                    placement: 'top',
+                    spotlightClicks: true,
+                },
+                {
+                    // 2
+                    target: '.description-input',
+                    title: 'Enter Description',
+                    content: 'Provide a description for the instruction.',
+                    placement: 'top',
+                    spotlightClicks: true,
+                },
+                {
+                    // 3
+                    target: '#instruction-editor',
+                    title: 'Add Instructions',
+                    content: 'Write your instructions here using the editor.',
+                    placement: 'top',
+                    spotlightClicks: true,
+                },
+                {
+                    // 4
+                    target: '.browse-files-button',
+                    title: 'Browse Files to Add Images',
+                    content:
+                        'Click to browse and select images to include in your instructions.',
+                    placement: 'right',
+                    spotlightClicks: true,
+                },
+                {
+                    // 5
+                    target: '.file-browser-modal',
+                    title: 'Browse Files to Add Images',
+                    content: 'Browse and select images to include in your instructions.',
+                    placement: 'top',
+                    spotlightClicks: true,
+                },
+                {
+                    // 6
+                    target: '.save-button',
+                    title: 'Save Instruction',
+                    content: 'Click to save your instruction.',
+                    placement: 'right',
+                    spotlightClicks: true,
+                },
+                {
+                    // 7
+                    target: '.instruction-list',
+                    title: 'View Instructions',
+                    content: (
+                        <div>
+                            Your newly created instruction will appear at the end of this
+                            list. Click the{' '}
+                            <FaAngleDoubleRight
+                                style={{ display: 'inline', margin: '0 4px' }}
+                            />{' '}
+                            button below to proceed.
+                        </div>
+                    ),
+                    placement: 'top',
+                    spotlightClicks: true,
+                },
+                {
+                    // 8
+                    target: '.last-row-highlight',
+                    title: 'New Instruction Row',
+                    content: 'This is your new instruction row.',
+                    placement: 'top',
+                    spotlightClicks: false,
+                },
+                {
+                    // 9
+                    target: '.edit-instruction-button',
+                    title: 'Edit Instruction',
+                    content: 'Click to edit your new instruction.',
+                    placement: 'bottom',
+                    spotlightClicks: true,
+                },
+                {
+                    // 10
+                    target: '.edit-instructions-modal',
+                    content:
+                        'Here you can edit the instruction details. Make changes and save when done.',
+                    placement: 'top',
+                    disableBeacon: true,
+                    spotlightClicks: true,
+                },
+                {
+                    // 11
+                    target: '.save-button',
+                    title: 'Save Instruction',
+                    content: 'Click to save your instruction.',
+                    placement: 'right',
+                    spotlightClicks: true,
+                },
+                {
+                    // 12
+                    target: '#nav-pipelines',
+                    title: 'Pipelines Tab',
+                    content:
+                        'Click here to navigate to the Pipelines page to start an SIA pipeline.',
+                    placement: 'right',
+                    disableBeacon: true,
+                    spotlightClicks: false,
+                },
+                {
+                    // 13
+                    target: '.latest-pipeline-open-button',
+                    title: 'Open Latest Pipeline',
+                    content: 'Click this button to view the latest created pipeline.',
+                    placement: 'top',
+                    spotlightClicks: true,
+                    disableBeacon: true,
+                },
+                {
+                    // 14
+                    target: '.react-flow__node.react-flow__node-annoTaskNode',
+                    title: 'Edit Instructions',
+                    content: 'To edit instructions in your pipeline, click next.',
+                    placement: 'top',
+                    disableBeacon: false,
+                    spotlightClicks: true,
+                },
+                {
+                    // 15
+                    target: '.inactive-tab-class',
+                    title: 'Switch Tab',
+                    content: 'Click this tab to switch to the final instruction step.',
+                    placement: 'top',
+                    spotlightClicks: true,
+                    disableBeacon: true,
+                },
+                {
+                    // 16
+                    target: '.instruction-tab',
+                    title: 'Instruction Options Tab',
+                    content:
+                        'Here you can "View" and "Edit" the instruction options. Make changes and "Save" when done.',
+                    placement: 'top',
+                    spotlightClicks: true,
+                    disableBeacon: true,
+                },
+            )
         return instructionTourSteps
     }
     if (templateType === 'labelTour') {

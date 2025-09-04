@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useGetInstructions, useDeleteInstruction, useAddInstruction, useEditInstruction } from './instruction_api';
 import { CContainer, CRow, CCol, CSpinner, CBadge, CTooltip } from '@coreui/react';
-// import Datatable from '../../components/Datatable';
 import BaseModal from '../../components/BaseModal';
 import IconButton from '../../components/IconButton';
 import EditInstruction from './EditInstruction';
@@ -30,6 +29,31 @@ const Instruction = ({ visLevel }) => {
   const editInstructionMutation = useEditInstruction();
   const { data: ownUser } = useOwnUser();
 
+  useEffect(() => {
+    const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true';
+    if (joyrideRunning && instructions?.length > 10) {
+      const currentStep = parseInt(localStorage.getItem('currentStep') || '0');
+      if (currentStep === 7) {
+        setTimeout(() => {
+          window.dispatchEvent(
+          new CustomEvent('joyride-next-step', {
+            detail: { step: 'last-row-highlight' }, 
+          })
+        );
+      }, 900);
+      }
+    }else if (joyrideRunning && instructions?.length <= 10) {
+      const currentStep = parseInt(localStorage.getItem('currentStep') || '0');
+      if (currentStep === 7) {
+          window.dispatchEvent(
+          new CustomEvent('joyride-next-step', {
+            detail: { step: 'last-row-highlight' }, 
+          })
+        );
+      }
+    }
+  }, [instructions]); 
+
   const deleteSelectedInstruction = (id) => {
     deleteInstructionMutation.mutate(id, {
       onSuccess: () => Notification.showSuccess('Instruction deleted successfully'),
@@ -57,6 +81,14 @@ const Instruction = ({ visLevel }) => {
     setEditingInstruction({ id: null, option: '', description: '', instruction: '', group_id: ownUser?.group_id });
     setViewingInstruction(null);
     setModalOpen(true);
+    const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true'
+    if(joyrideRunning){
+      window.dispatchEvent(
+        new CustomEvent('joyride-next-step', {
+          detail: { step: 'add-step-clicked' },
+        })
+      );
+    }
   };
 
   const handleEditClick = (instruction) => {
@@ -64,11 +96,13 @@ const Instruction = ({ visLevel }) => {
     setViewingInstruction(null);
     setModalOpen(true);
     if (instruction.isLastRow) {
+      setTimeout(() => {
       window.dispatchEvent(
         new CustomEvent('joyride-next-step', {
           detail: { step: 'edit-step' },
         })
       );
+    },400);
     }
   };
 
@@ -238,6 +272,7 @@ const Instruction = ({ visLevel }) => {
               title={editingInstruction.id ? 'Edit Instruction' : 'Add Instruction'}
               toggle={() => setModalOpen(false)}
               footer={null}
+              className={editingInstruction.id ? 'edit-instructions-modal' : 'add-instructions-modal'}
             >
               <EditInstruction
                 instructionData={editingInstruction}

@@ -43,7 +43,7 @@ def main():
         copy_example_images(dbm, lostconfig, user)
         copy_instruction_media(dbm, lostconfig, user)
         import_example_label_trees(dbm, lostconfig)
-        create_lost_default_instrction_entry(dbm, lostconfig, group.idx)
+        create_lost_default_instruction_entry(dbm, lostconfig, group.idx)
     release_all_pipe_locks(dbm)
     dbm.close_session()
 
@@ -168,7 +168,7 @@ def create_lost_filesystem_entry(dbm, lostconfig, admin_default_group):
         lost_fs.fs_type = lostconfig.data_fs_type 
     dbm.save_obj(lost_fs)
 
-def create_lost_default_instrction_entry(dbm, lostconfig, admin_default_group):
+def create_lost_default_instruction_entry(dbm, lostconfig, admin_default_group):
     ins = dbm.session.query(model.Instruction).filter(model.Instruction.option=='Bounding Box').first()
     if ins is None:
         print('Create default instruction entry in database')

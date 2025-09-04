@@ -33,6 +33,12 @@ export const PipelineView = () => {
         if (clickedModalData) {
             setModalData(clickedModalData)
             toggleModal()
+            const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true';
+            if (joyrideRunning && clickedModalData.annoTask){
+                window.dispatchEvent(new CustomEvent('joyride-next-step', {
+                    detail: { step: 'view-created-annotask' },
+                }))
+            }
         }
     }
 

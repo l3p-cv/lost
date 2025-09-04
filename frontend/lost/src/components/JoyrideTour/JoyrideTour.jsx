@@ -13,7 +13,7 @@ import { useConditionalPipelinesPaged } from '../../actions/pipeline/pipeline_ap
 const JoyrideTour = () => {
   const [run, setRun] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [pipelineType, setPipelineType] = useState('mainPipeline');
+  const [pipelineType, setPipelineType] = useState('');
   const isProcessingPrev = useRef(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -30,8 +30,8 @@ const JoyrideTour = () => {
   const [latestPipelineId, setLatestPipelineId] = useState(undefined);
   const steps = useJoyrideSteps(pipelineType, latestPipelineId);
 
-  const isPipelinePage = location.pathname.includes('/pipelines');
-  const pipelineTargets = ['.latest-pipeline-row', '.first-row-class', '.latest-pipeline-open-button','#nav-pipelines'];
+  const isPipelinePage = location.pathname.includes('/pipelines')||location.pathname.includes('/instructions');
+  const pipelineTargets = ['.latest-pipeline-row', '.first-row-class', '.latest-pipeline-open-button','#nav-pipelines','.add-instruction-button'];
 
   const typedSteps = steps || [];
   const pipelineDataSteps = typedSteps
@@ -124,7 +124,15 @@ const JoyrideTour = () => {
   const handleTourStart = (type = 'mainPipeline') => {
     let latestId;
 
-    if (pipelineData?.pipelines?.pipes?.length) {
+    if (pipelineData == undefined) {
+      pipelineQuery.refetch();
+      const pipes = pipelineQuery.data.pipelines.pipes;
+      const latestPipeline = pipes.reduce((latest, current) =>
+        new Date(current.date) > new Date(latest.date) ? current : latest,
+        pipes[0]
+      );
+      latestId = latestPipeline?.id;
+    }else {
       const pipes = pipelineData.pipelines.pipes;
       const latestPipeline = pipes.reduce((latest, current) =>
         new Date(current.date) > new Date(latest.date) ? current : latest,

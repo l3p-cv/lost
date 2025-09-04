@@ -92,9 +92,11 @@ const BaseModal = ({
             // style={style}
             // fullscreen={fullscreen}
         >     
+        <div className={className}>
             {renderTitle()}
             {renderBody()}
             {renderFooter()}
+        </div>
         </CModal>
     )
 }

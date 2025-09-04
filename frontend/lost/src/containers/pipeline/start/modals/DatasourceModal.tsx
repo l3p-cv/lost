@@ -70,7 +70,7 @@ export const DatasourceModal = ({
                 if (modalContent && !modalContent.id) {
                     modalContent.id = 'datasource-modal';
                 }
-            }, 0);
+            }, 100);
 
             setTimeout(() => {
                 const dropdownBtn = document.querySelector('#datasource-dropdown button');

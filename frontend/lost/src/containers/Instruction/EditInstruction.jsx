@@ -15,6 +15,8 @@ import IconButton from '../../components/IconButton';
 import ImageBrowserModal from '../../components/FileBrowser/ImageBrowserModal';
 import { API_URL } from '../../lost_settings';
 import { getImageMarkdown } from '../../containers/InstructionMedia/media_api';
+import { useGetInstructions } from './instruction_api';
+import { set } from 'lodash';
 
 const mdParser = new MarkdownIt();
 
@@ -32,6 +34,7 @@ const EditInstruction = ({ instructionData, onSave, visLevel, onClose }) => {
   const { mutateAsync: getFullFs, data: fullFs, isLoading: fsLoading } = fbAPI.useGetFullFs();
   const { mutateAsync: mkDir } = fbAPI.useMkDir();
   const { mutateAsync: getFSListNew } = fbAPI.useGetFSList();
+  const { data: instructions, isLoading } = useGetInstructions(visLevel);
 
   useEffect(() => {
     setOption(instructionData?.option || '');
@@ -89,11 +92,15 @@ const EditInstruction = ({ instructionData, onSave, visLevel, onClose }) => {
         setSelectedPath(instructionMediaPath);
       }
       setBrowseOpen(true);
+      const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true'
       const currentStep = localStorage.getItem('currentStep');
-      if (currentStep == '5') {
+      console.log('Current Step on Browse:', currentStep, 'Joyride Running:', joyrideRunning);
+      if (currentStep === '4' && joyrideRunning) {
+        setTimeout(() => {
         window.dispatchEvent(new CustomEvent('joyride-next-step', {
             detail: { step: 'open-file-browser' }
         }));
+       }, 200);
       }
     } catch (err) {
       console.error('Browse error:', err);
@@ -149,10 +156,12 @@ const EditInstruction = ({ instructionData, onSave, visLevel, onClose }) => {
     });
     const currentStep = localStorage.getItem('currentStep');
     if (currentStep === '12') {
+      console.log('Current Step to dispatch pipelines-nav:', currentStep);
       window.dispatchEvent(new CustomEvent('joyride-next-step', {
         detail: { step: 'pipelines-nav' }
       }));
     } else {
+      console.log('Current Step on save when instruction-list is dispatched',currentStep);
       window.dispatchEvent(new CustomEvent('joyride-next-step', {
         detail: { step: 'instruction-list' }
       }));
@@ -162,7 +171,7 @@ const EditInstruction = ({ instructionData, onSave, visLevel, onClose }) => {
   };
 
   return (
-    <div className='edit-instructions-modal'>
+    <div>
       <CFormInput
         label="Annotation Option"
         value={option}
@@ -189,7 +198,9 @@ const EditInstruction = ({ instructionData, onSave, visLevel, onClose }) => {
         onChange={handleEditorChange}
         onFocus={() => {
           const currentStep = localStorage.getItem('currentStep');
-          if (currentStep === '11') {
+          console.log('Current Step on Editor Focus: didnt enter save-step2 as current step is not 10 it is ', currentStep);
+          if (currentStep === '10') {
+            console.log('Current Step on Editor Focus:save-step2', currentStep);
             window.dispatchEvent(
               new CustomEvent('joyride-next-step', { detail: { step: 'save-step2' } })
             );

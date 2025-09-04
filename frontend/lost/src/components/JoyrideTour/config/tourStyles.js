@@ -20,16 +20,16 @@ export const getTooltipStyles = (stepIndex, pipelineType, latestPipelineId, isNe
 
 
   if (pipelineType === 'instructionTour' && latestPipelineId ==undefined) {
-    const hideNextInstruction = [5, 6, 7, 8, 11, 12, 10, 22, 18, 19, 20, 27, 28, 29, 31, 33, 35, 37, 38, 41, 44];
-    const hideBackInstruction = [2, 5, 6, 7, 8, 11, 12, 13, 22, 25, 16, 17, 18, 19, 20, 23, 28, 30, 32, 34, 36, 38, 39, 42, 43, 44, 45];
+    const hideNextInstruction = [0, 4, 5, 6, 7, 9, 11, 10, 22, 18, 19, 20, 27, 28, 29, 31, 33, 35, 37, 38, 41, 44];
+    const hideBackInstruction = [1, 2, 5, 6, 7, 8, 9, 11, 12, 13, 22, 25, 16, 17, 18, 19, 20, 23, 28, 30, 32, 34, 36, 38, 39, 42, 43, 44, 45];
     return {
       ...baseStyles,
       ...(hideNextInstruction.includes(stepIndex) && { buttonNext: { display: 'none' } }),
       ...(hideBackInstruction.includes(stepIndex) && { buttonBack: { display: 'none' } }),
     };
   } else if (pipelineType === 'instructionTour' && latestPipelineId) {
-    const hideNextInstruction = [5, 6, 7, 8, 11, 12, 10];
-    const hideBackInstruction = [2, 5, 6, 7, 8, 11, 12, 13];
+    const hideNextInstruction = [0 ,4 ,5, 6, 7, 9, 11, 10];
+    const hideBackInstruction = [1, 2, 5, 6, 7, 8, 10, 11, 12, 13, 16, 15];
     return {
       ...baseStyles,
       ...(hideNextInstruction.includes(stepIndex) && { buttonNext: { display: 'none' } }),
@@ -62,7 +62,7 @@ export const getTooltipStyles = (stepIndex, pipelineType, latestPipelineId, isNe
 
 export const getOverlayStyles = (stepIndex, pipelineType, latestPipelineId) => {
   if (pipelineType === 'instructionTour' && latestPipelineId == undefined) {
-    const noOverlaySteps = [6, 12, 21 ,26, 28, 30, 34, 35, 36, 37, 38, 44];
+    const noOverlaySteps = [6, 11, 21 ,26, 28, 30, 34, 35, 36, 37, 38, 44];
     return {
       options: {
         overlayColor: noOverlaySteps.includes(stepIndex) ? 'transparent' : 'rgba(0, 0, 0, 0.5)',
@@ -74,7 +74,7 @@ export const getOverlayStyles = (stepIndex, pipelineType, latestPipelineId) => {
       }),
     };
   } else if (pipelineType === 'instructionTour' && latestPipelineId) {
-    const noOverlaySteps = [6, 12, 16, 17];
+    const noOverlaySteps = [6, 11, 16, 17];
     return {
       options: {
         overlayColor: noOverlaySteps.includes(stepIndex) ? 'transparent' : 'rgba(0, 0, 0, 0.5)',
