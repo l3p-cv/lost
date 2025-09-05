@@ -43,9 +43,15 @@ export const useTourStepManager = (pipelineType) => {
   useEffect(() => {
     const handleNextStep = (event) => {
       const latestPipelineId = localStorage.getItem('latestPipelineId');
+      const currentStep = parseInt(localStorage.getItem('currentStep')||'0');
+      if (pipelineType === 'instructionTour' && currentStep >= 25 && latestPipelineId) {
+        localStorage.removeItem('latestPipelineId');
+      }
       const mapToUse = 
         pipelineType === 'instructionTour' && latestPipelineId == undefined
-          ? instructionStepMap 
+          ? instructionStepMap
+          :pipelineType === 'instructionTour' && latestPipelineId && currentStep >= 40
+          ? instructionStepMap
           : pipelineType === 'instructionTour' && latestPipelineId 
           ? instructionStepMap2 
           : pipelineType === 'labelTour' 
@@ -53,6 +59,12 @@ export const useTourStepManager = (pipelineType) => {
           : pipelineStepMap;
 
       const nextStep = mapToUse[event.detail.step];
+       if (event.detail.step === 'after-instruction-select') {
+        localStorage.setItem('hasCompletedTour', 'true');
+        setCurrentStep(46);
+        localStorage.removeItem('currentStep');
+        return; 
+      }
       if (typeof nextStep === 'number' && nextStep !== currentStepRef.current) {
         setCurrentStep(nextStep);
         localStorage.setItem('currentStep', String(nextStep));

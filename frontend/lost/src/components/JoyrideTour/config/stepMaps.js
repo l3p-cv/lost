@@ -41,6 +41,7 @@ export const instructionStepMap = {
   'template-next': 39,
   'anno-task-display': 42,
   'view-created-pipeline': 43,
+  'view-created-annotask': 44,
 };
 
 export const instructionStepMap2 = {

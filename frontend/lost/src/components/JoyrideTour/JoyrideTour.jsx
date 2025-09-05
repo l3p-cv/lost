@@ -133,6 +133,7 @@ const JoyrideTour = () => {
       );
       latestId = latestPipeline?.id;
     }else {
+      pipelineQuery.refetch();
       const pipes = pipelineData.pipelines.pipes;
       const latestPipeline = pipes.reduce((latest, current) =>
         new Date(current.date) > new Date(latest.date) ? current : latest,

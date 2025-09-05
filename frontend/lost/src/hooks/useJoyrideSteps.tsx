@@ -670,7 +670,7 @@ export const useJoyrideSteps = (
                     'Click here to navigate to the Pipeline Templates page to start an SIA pipeline.',
                 placement: 'right',
                 disableBeacon: true,
-                spotlightClicks: true,
+                spotlightClicks: false,
             },
             {
                 // 13

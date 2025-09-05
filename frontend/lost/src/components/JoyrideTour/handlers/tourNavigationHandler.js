@@ -43,11 +43,6 @@ const handleInstructionTourNavigation = (index, navigate, siaPipelineId, latestP
       combo?.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
       break;
     }
-    case 43: {
-      const taskNode = document.querySelector('.react-flow__node.react-flow__node-annoTaskNode');
-      taskNode?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-      break;
-    }
     default:
       break;
   }

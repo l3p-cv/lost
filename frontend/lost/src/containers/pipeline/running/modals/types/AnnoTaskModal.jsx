@@ -24,16 +24,6 @@ function handleForceAnnotationRelease(props) {
 const AnnoTaskModal = (props) => {
     const navigate = useNavigate()
 
-    useEffect(() => {
-    const timeout = setTimeout(() => {
-        window.dispatchEvent(new CustomEvent('joyride-next-step', {
-        detail: { step: 'anno-modal-opened' }
-        }));
-    }, 300);
-
-    return () => clearTimeout(timeout);
-    }, []);
-
     return (
         <>
             <CModalHeader>Annotation Task</CModalHeader>
