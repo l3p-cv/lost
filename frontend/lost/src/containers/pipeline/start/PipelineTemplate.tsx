@@ -66,6 +66,16 @@ export const PipelineTemplate: React.FC<PipelineTemplateProps> = ({
     setEdges(initialEdges)
   }, [initialNodes, initialEdges])
 
+  useEffect(() => {
+    const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true';
+    const currentStep = parseInt(localStorage.getItem('currentStep') || '0');
+    if (joyrideRunning && currentStep === 2 ) {
+      window.dispatchEvent(new CustomEvent('joyride-next-step', {
+        detail: { step: 'highlight-ds-node' }
+      }))
+    }
+  })
+
   useAutoLayout(defaultLayoutOptions)
 
   useEffect(() => {

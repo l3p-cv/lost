@@ -9,286 +9,291 @@ export const useJoyrideSteps = (
 ): Step[] => {
     const location = useLocation(); 
     const currentPath = location.pathname;   
-    const mainPipelineSteps: Step[] = [
-        {
-            // 0
-            target: '#nav-start-pipeline',
-            title: 'Start Pipeline',
-            content: 'Click here to begin setting up a new pipeline.',
-            placement: 'right',
-            disableBeacon: true,
-            spotlightClicks: false,
-        },
-        {
-            // 1
-            target: '.pipeline-start-1',
-            title: 'Pipeline Templates',
-            content: 'These are the available pipeline templates.',
-            placement: 'top',
-            spotlightClicks: false,
-        },
-        {
-            // 2
-            target: '.sia-start-button',
-            title: 'Start SIA Pipeline using a Template',
-            content: 'Click "Next" to open this template.',
-            placement: 'right',
-            spotlightClicks: false,
-        },
-        {
-            // 3
-            target: `.react-flow__node-datasourceNode[data-id="0"]`,
-            title: 'Datasource Node',
-            content: 'Start by configuring your datasource.',
-            placement: 'top',
-            spotlightClicks: false,
-        },
-        {
-            // 4
-            target: '#datasource-modal',
-            title: 'Datasource Modal',
-            content: 'This is where you configure your datasource.',
-            placement: 'right',
-            spotlightClicks: false,
-        },
-        {
-            // 5
-            target: '#datasource-dropdown',
-            title: 'Datasource Dropdown',
-            content: 'Click to select a datasource.',
-            placement: 'top',
-            spotlightClicks: true,
-        },
-        {
-            // 6
-            target: '#datasource-dropdown .dropdown-menu.show',
-            title: 'Select a Datasource',
-            content: 'Now select a datasource from the list.',
-            placement: 'top',
-            spotlightClicks: true,
-        },
-        {
-            // 7
-            target: '#file-browser-container',
-            title: 'Choose Media Folder',
-            content:
-                'Upload files using the upload box above, then browse and select the folder as input.',
-            placement: 'top',
-            spotlightClicks: true,
-        },
-        {
-            // 8
-            target: '#selected-datasource-path',
-            title: 'Selected Path',
-            content: 'Here is the path you selected.',
-            placement: 'bottom',
-            spotlightClicks: false,
-            disableOverlay: true,
-        },
-        {
-            // 9
-            target: '#done-button',
-            title: 'Done',
-            content: 'Click "Done" to finalize your Datasource configuration.',
-            placement: 'bottom',
-            spotlightClicks: false,
-            disableOverlay: true,
-        },
-        {
-            // 10
-            target: `.react-flow__node.script-node`,
-            title: 'Script Node',
-            content: 'This script is already configured. Click "Next" to continue.',
-            placement: 'top',
-            spotlightClicks: false,
-            disableBeacon: true,
-        },
-        {
-            // 11
-            target: `.react-flow__node.anno-task-node`,
-            title: 'Annotation Node',
-            content: 'Click to configure the annotation task.',
-            placement: 'top',
-            spotlightClicks: false,
-            disableBeacon: true,
-        },
-        {
-            // 12
-            target: '#name',
-            title: 'Annotation Task Name',
-            content: 'Give your annotation task a clear and descriptive name.',
-            placement: 'right',
-            spotlightClicks: true,
-            disableBeacon: true,
-        },
-        {
-            // 13
-            target: '#instruction',
-            title: 'Instructions (Optional)',
-            content:
-                'Optionally, provide instructions to help annotators understand the task.',
-            placement: 'right',
-            spotlightClicks: true,
-            disableBeacon: true,
-        },
-        {
-            // 14
-            target: '.step1next',
-            title: 'Continue to Next Step',
-            content: 'Click "Next" to continue after filling out task details.',
-            placement: 'top',
-            spotlightClicks: true,
-            disableBeacon: true,
-        },
-        {
-            // 15
-            target: '#userSelect',
-            title: 'User or Group Selection',
-            content: 'Select a user or group to assign this annotation task.',
-            placement: 'right',
-            spotlightClicks: true,
-            disableBeacon: true,
-        },
-        {
-            // 16
-            target: '.step2next',
-            title: 'Continue to Next Step',
-            content: 'Click "Next" to continue after selecting the user.',
-            placement: 'top',
-            spotlightClicks: true,
-            disableBeacon: true,
-        },
-        {
-            // 17
-            target: '#treeSelect',
-            title: 'Label Tree Selection',
-            content:
-                'Select a label tree to categorize your annotations. You will be able to select labels in the next step.',
-            placement: 'right',
-            spotlightClicks: true,
-            disableBeacon: true,
-        },
-        {
-            // 18
-            target: '.step3next',
-            title: 'Continue to Next Step',
-            content: 'Click "Next" to continue after selecting the label tree.',
-            placement: 'top',
-            spotlightClicks: true,
-            disableBeacon: true,
-        },
-        {
-            // 19
-            target: '#select-label-container',
-            title: 'Label Selection',
-            content:
-                'Select one or more labels to include in your annotation task. You can activate entire branches by clicking parent nodes.',
-            placement: 'right',
-            spotlightClicks: true,
-            disableBeacon: true,
-        },
-        {
-            // 20
-            target: '.step4next',
-            title: 'Continue',
-            content: 'Click "Next" after selecting your labels.',
-            placement: 'top',
-            spotlightClicks: true,
-            disableBeacon: true,
-        },
-        {
-            // 21
-            target: '#select-storage-container',
-            title: 'Dataset Selection',
-            content:
-                'Choose a dataset where the annotations for this task will be stored. You can also create a new one if needed.',
-            placement: 'right',
-            spotlightClicks: true,
-            disableBeacon: true,
-        },
-        {
-            // 22
-            target: '.step5next',
-            title: 'Continue to Next Step',
-            content: 'Click "Next" to continue after selecting or creating a dataset.',
-            placement: 'top',
-            spotlightClicks: true,
-            disableBeacon: true,
-        },
-        {
-            // 23
-            target: '#sia-configuration-heading',
-            content: 'This section lets you configure SIA annotation tools and actions.',
-            disableBeacon: true,
-            placement: 'right',
-            spotlightClicks: true,
-        },
-        {
-            // 24
-            target: '.steplast',
-            content: 'Click this button to finish the configuration process.',
-            disableBeacon: true,
-            placement: 'top',
-            spotlightClicks: true,
-        },
-        {
-            // 25
-            target: '.step-template-next',
-            title: 'Next Step',
-            content:
-                'Click this "Next" button to proceed to the next step of configuring your pipeline template.',
-            placement: 'top',
-            spotlightClicks: true,
-            disableBeacon: true,
-        },
-        {
-            // 26
-            target: '.start-pipeline-modal',
-            title: 'Pipeline Name',
-            content: 'Enter a name for your pipeline so you can identify it later.',
-            placement: 'right',
-            spotlightClicks: true,
-            disableBeacon: true,
-        },
-        {
-            // 27
-            target: '#description',
-            title: 'Pipeline Description',
-            content: 'Add a description to remember the purpose of this pipeline.',
-            placement: 'right',
-            spotlightClicks: true,
-            disableBeacon: true,
-        },
-        {
-            // 28
-            target: '.start-pipeline-btn',
-            title: 'Launch Your Pipeline',
-            content: 'Click here to start your configured pipeline.',
-            placement: 'top',
-            spotlightClicks: true,
-            disableBeacon: true,
-        },
-        {
-            // 29
-            target: '.latest-pipeline-row',
-            title: 'Latest Created Pipeline',
-            content:
-                'This is the pipeline you created. The pipeline execution is being initialized and might take a few seconds. Please wait before clicking "Next" to continue to Annotation.',
-            placement: 'top',
-            spotlightClicks: true,
-            disableBeacon: true,
-        },
-        {
-            target: '.first-row-class',
-            title: 'Latest Annotation Task',
-            content: 'This is your most recently created annotation task.',
-            placement: 'top',
-            spotlightClicks: true,
-            disableBeacon: true,
-        },
-    ]
-
-    if (templateType === 'mainPipeline') {
+    if (templateType === 'mainPipeline') {  
+        const mainPipelineSteps: Step[] = []
+            if (currentPath !== '/pipeline-templates') {
+                mainPipelineSteps.push({
+                    // 0
+                    target: '#nav-start-pipeline',
+                    title: 'Start Pipeline',
+                    content: 'Click here to begin setting up a new pipeline.',
+                    placement: 'right',
+                    disableBeacon: true,
+                    spotlightClicks: true,
+                });
+            }
+        mainPipelineSteps.push(
+            {
+                // 0
+                target: '.pipeline-start-1',
+                title: 'Pipeline Templates',
+                content: 'These are the available pipeline templates.',
+                placement: 'top',
+                spotlightClicks: false,
+                disableBeacon: true
+            },
+            {
+                // 1
+                target: '.sia-start-button',
+                title: 'Start SIA Pipeline using a Template',
+                content: 'Click "Next" to open this template.',
+                placement: 'right',
+                spotlightClicks: true,
+                disableBeacon: true
+            },
+            {
+                // 3
+                target: `.react-flow__node-datasourceNode[data-id="0"]`,
+                title: 'Datasource Node',
+                content: 'Start by configuring your datasource.',
+                placement: 'top',
+                spotlightClicks: false,
+                disableBeacon: true
+            },
+            {
+                // 4
+                target: '#datasource-modal',
+                title: 'Datasource Modal',
+                content: 'This is where you configure your datasource.',
+                placement: 'right',
+                spotlightClicks: false,
+            },
+            {
+                // 5
+                target: '#datasource-dropdown',
+                title: 'Datasource Dropdown',
+                content: 'Click to select a datasource.',
+                placement: 'top',
+                spotlightClicks: true,
+            },
+            {
+                // 6
+                target: '#datasource-dropdown .dropdown-menu.show',
+                title: 'Select a Datasource',
+                content: 'Now select a datasource from the list.',
+                placement: 'top',
+                spotlightClicks: true,
+            },
+            {
+                // 7
+                target: '#file-browser-container',
+                title: 'Choose Media Folder',
+                content:
+                    'Upload files using the upload box above, then browse and select the folder as input.',
+                placement: 'top',
+                spotlightClicks: true,
+            },
+            {
+                // 8
+                target: '#selected-datasource-path',
+                title: 'Selected Path',
+                content: 'Here is the path you selected.',
+                placement: 'bottom',
+                spotlightClicks: false,
+                disableOverlay: true,
+            },
+            {
+                // 9
+                target: '#done-button',
+                title: 'Done',
+                content: 'Click "Done" to finalize your Datasource configuration.',
+                placement: 'bottom',
+                spotlightClicks: false,
+                disableOverlay: true,
+            },
+            {
+                // 10
+                target: `.react-flow__node.script-node`,
+                title: 'Script Node',
+                content: 'This script is already configured. Click "Next" to continue.',
+                placement: 'top',
+                spotlightClicks: false,
+                disableBeacon: true,
+            },
+            {
+                // 11
+                target: `.react-flow__node.anno-task-node`,
+                title: 'Annotation Node',
+                content: 'Click to configure the annotation task.',
+                placement: 'top',
+                spotlightClicks: false,
+                disableBeacon: true,
+            },
+            {
+                // 12
+                target: '#name',
+                title: 'Annotation Task Name',
+                content: 'Give your annotation task a clear and descriptive name.',
+                placement: 'right',
+                spotlightClicks: true,
+                disableBeacon: true,
+            },
+            {
+                // 13
+                target: '#instruction',
+                title: 'Instructions (Optional)',
+                content:
+                    'Optionally, provide instructions to help annotators understand the task.',
+                placement: 'right',
+                spotlightClicks: true,
+                disableBeacon: true,
+            },
+            {
+                // 14
+                target: '.step1next',
+                title: 'Continue to Next Step',
+                content: 'Click "Next" to continue after filling out task details.',
+                placement: 'top',
+                spotlightClicks: true,
+                disableBeacon: true,
+            },
+            {
+                // 15
+                target: '#userSelect',
+                title: 'User or Group Selection',
+                content: 'Select a user or group to assign this annotation task.',
+                placement: 'right',
+                spotlightClicks: true,
+                disableBeacon: true,
+            },
+            {
+                // 16
+                target: '.step2next',
+                title: 'Continue to Next Step',
+                content: 'Click "Next" to continue after selecting the user.',
+                placement: 'top',
+                spotlightClicks: true,
+                disableBeacon: true,
+            },
+            {
+                // 17
+                target: '#treeSelect',
+                title: 'Label Tree Selection',
+                content:
+                    'Select a label tree to categorize your annotations. You will be able to select labels in the next step.',
+                placement: 'right',
+                spotlightClicks: true,
+                disableBeacon: true,
+            },
+            {
+                // 18
+                target: '.step3next',
+                title: 'Continue to Next Step',
+                content: 'Click "Next" to continue after selecting the label tree.',
+                placement: 'top',
+                spotlightClicks: true,
+                disableBeacon: true,
+            },
+            {
+                // 19
+                target: '#select-label-container',
+                title: 'Label Selection',
+                content:
+                    'Select one or more labels to include in your annotation task. You can activate entire branches by clicking parent nodes.',
+                placement: 'right',
+                spotlightClicks: true,
+                disableBeacon: true,
+            },
+            {
+                // 20
+                target: '.step4next',
+                title: 'Continue',
+                content: 'Click "Next" after selecting your labels.',
+                placement: 'top',
+                spotlightClicks: true,
+                disableBeacon: true,
+            },
+            {
+                // 21
+                target: '#select-storage-container',
+                title: 'Dataset Selection',
+                content:
+                    'Choose a dataset where the annotations for this task will be stored. You can also create a new one if needed.',
+                placement: 'right',
+                spotlightClicks: true,
+                disableBeacon: true,
+            },
+            {
+                // 22
+                target: '.step5next',
+                title: 'Continue to Next Step',
+                content: 'Click "Next" to continue after selecting or creating a dataset.',
+                placement: 'top',
+                spotlightClicks: true,
+                disableBeacon: true,
+            },
+            {
+                // 23
+                target: '#sia-configuration-heading',
+                content: 'This section lets you configure SIA annotation tools and actions.',
+                disableBeacon: true,
+                placement: 'right',
+                spotlightClicks: true,
+            },
+            {
+                // 24
+                target: '.steplast',
+                content: 'Click this button to finish the configuration process.',
+                disableBeacon: true,
+                placement: 'top',
+                spotlightClicks: true,
+            },
+            {
+                // 25
+                target: '.step-template-next',
+                title: 'Next Step',
+                content:
+                    'Click this "Next" button to proceed to the next step of configuring your pipeline template.',
+                placement: 'top',
+                spotlightClicks: true,
+                disableBeacon: true,
+            },
+            {
+                // 26
+                target: '.start-pipeline-modal',
+                title: 'Pipeline Name',
+                content: 'Enter a name for your pipeline so you can identify it later.',
+                placement: 'right',
+                spotlightClicks: true,
+                disableBeacon: true,
+            },
+            {
+                // 27
+                target: '#description',
+                title: 'Pipeline Description',
+                content: 'Add a description to remember the purpose of this pipeline.',
+                placement: 'right',
+                spotlightClicks: true,
+                disableBeacon: true,
+            },
+            {
+                // 28
+                target: '.start-pipeline-btn',
+                title: 'Launch Your Pipeline',
+                content: 'Click here to start your configured pipeline.',
+                placement: 'top',
+                spotlightClicks: true,
+                disableBeacon: true,
+            },
+            {
+                // 29
+                target: '.latest-pipeline-row',
+                title: 'Latest Created Pipeline',
+                content:
+                    'This is the pipeline you created. The pipeline execution is being initialized and might take a few seconds. Please wait before clicking "Next" to continue to Annotation.',
+                placement: 'top',
+                spotlightClicks: true,
+                disableBeacon: true,
+            },
+            {
+                target: '.first-row-class',
+                title: 'Latest Annotation Task',
+                content: 'This is your most recently created annotation task.',
+                placement: 'top',
+                spotlightClicks: true,
+                disableBeacon: true,
+            },
+        )
         return mainPipelineSteps
     }
 

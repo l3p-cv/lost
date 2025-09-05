@@ -1,5 +1,6 @@
 export const pipelineStepMap = {
   'skip-navigate': 1,
+  'highlight-ds-node': 3,
   'dropdown-open': 6,
   'datasource-selected': 7,
   'path-selected': 8,

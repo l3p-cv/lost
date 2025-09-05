@@ -53,7 +53,7 @@ const handlePipelineTourNavigation = (index, pipelineType, navigate, miaPipeline
     case 0:
       navigate('/pipeline-templates');
       break;
-    case 2:
+    case 1:
       if (pipelineType === 'miaPipeline' && miaPipelineId) {
         navigate(`/pipeline-template/${miaPipelineId}`);
       } else if (pipelineType === 'mainPipeline' && siaPipelineId) {

@@ -98,7 +98,14 @@ export const PipelineTemplatesTable = () => {
             }
 
             const templateData = data.templates
-
+            
+            setTimeout(() => {
+                const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true';
+                const currentStep = parseInt(localStorage.getItem('currentStep') || '0');
+                if (joyrideRunning && currentStep === 0)
+                window.dispatchEvent(new CustomEvent('joyride-next-step', {
+                detail: { step: 'skip-navigate' }
+            })); }, 3000);   
             return (
                 <ErrorBoundary>
                 <CoreDataTable columns={defineColumns()} tableData={templateData} />
