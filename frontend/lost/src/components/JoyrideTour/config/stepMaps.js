@@ -64,5 +64,8 @@ export const instructionStepMap2 = {
 };
 
 export const labelStepMap = {
+  'skip-tocreate':1,
   'latest-label-tree': 4,
+  'open-edit-modal': 5,
+  'create-label': 7,
 };

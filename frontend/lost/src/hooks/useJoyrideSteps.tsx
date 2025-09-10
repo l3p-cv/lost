@@ -1146,15 +1146,27 @@ export const useJoyrideSteps = (
         return instructionTourSteps
     }
     if (templateType === 'labelTour') {
-        const labelTourSteps: Step[] = [
-            {
+        const labelTourSteps: Step[] = []
+        if (currentPath !== '/labels') {
+            labelTourSteps.push({
                 // 0
                 target: '#nav-labels',
                 title: 'Labels Tab',
                 content: 'Click here to manage and create your label trees.',
                 placement: 'right',
                 disableBeacon: true,
+                spotlightClicks: true,
+            });
+        }
+            labelTourSteps.push(
+            {
+                // 0
+                target: '.label-tree-container',
+                title: 'Label Trees',
+                content: 'These are the available label trees.',
+                placement: 'top',
                 spotlightClicks: false,
+                disableBeacon: true
             },
             {
                 // 1
@@ -1163,6 +1175,7 @@ export const useJoyrideSteps = (
                 content: 'Type a name for your label tree. For example, "Fruits".',
                 placement: 'top',
                 spotlightClicks: true,
+                disableBeacon: true,
             },
             {
                 // 2
@@ -1176,7 +1189,7 @@ export const useJoyrideSteps = (
                 // 3
                 target: '.treeAdd',
                 title: 'Create the Tree',
-                content: 'Click here to make your label tree.',
+                content: 'Click here to create your label tree.',
                 placement: 'left',
                 disableBeacon: true,
                 spotlightClicks: true,
@@ -1185,7 +1198,7 @@ export const useJoyrideSteps = (
                 // 4
                 target: '.latestLabelTree',
                 title: 'See Your Tree',
-                content: 'This shows the tree you just made.',
+                content: 'This shows the tree you just created.',
                 placement: 'top',
                 spotlightClicks: false,
                 disableBeacon: true,
@@ -1195,7 +1208,7 @@ export const useJoyrideSteps = (
                 target: '.latest-edit-button',
                 title: 'Edit Your Tree',
                 content: 'Click here to open and edit the label tree you created.',
-                placement: 'left',
+                placement: 'bottom',
                 spotlightClicks: true,
                 disableBeacon: true,
             },
@@ -1204,7 +1217,7 @@ export const useJoyrideSteps = (
                 target: '.label-node.root-node',
                 title: 'Root Label',
                 content:
-                    'This is the root label in your tree.\n\nRight-click on it three times to add three child labels (e.g., Apple, Orange, Banana).\nYou’ll name them in the next steps.\nClick "Next" when Done.',
+                    'This is the root label in your tree.\n\nRight-click on it three times to add three child labels (e.g., Apple, Orange, Banana).\nYou’ll name them in the next steps.',
                 placement: 'left',
                 disableBeacon: true,
                 spotlightClicks: true,
@@ -1345,7 +1358,7 @@ export const useJoyrideSteps = (
                 disableBeacon: true,
                 spotlightClicks: false,
             },
-        ]
+        );
         return labelTourSteps
     }
 

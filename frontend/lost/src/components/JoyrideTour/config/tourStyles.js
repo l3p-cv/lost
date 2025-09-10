@@ -1,3 +1,5 @@
+import { useLocation } from "react-router-dom";
+
 export const getTooltipStyles = (stepIndex, pipelineType, latestPipelineId, isNextEnabled) => {
   const baseStyles = {
     buttonNext: {
@@ -36,8 +38,10 @@ export const getTooltipStyles = (stepIndex, pipelineType, latestPipelineId, isNe
       ...(hideBackInstruction.includes(stepIndex) && { buttonBack: { display: 'none' } }),
     };
   } else if (pipelineType === 'labelTour') {
-    const hideNextInstruction = [3, 5, 7, 10, 11, 12, 15, 16, 17, 20, 21];
-    const hideBackInstruction = [4, 6];
+    const location = useLocation(); 
+    const currentPath = location.pathname;
+    const hideNextInstruction = currentPath !== '/labels'?[0 ,3, 5, 7, 10, 11, 12, 15, 16, 17, 20, 21]:[3, 5, 7, 10, 11, 12, 15, 16, 17, 20, 21];
+    const hideBackInstruction = [1 ,4, 6];
     return {
       ...baseStyles,
       ...(hideNextInstruction.includes(stepIndex) && { buttonNext: { display: 'none' } }),

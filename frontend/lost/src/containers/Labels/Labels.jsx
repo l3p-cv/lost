@@ -17,7 +17,7 @@ const Labels = ({ visLevel, showHeader=true }) => {
 
     if (labelTrees) {
         return (
-            <CContainer style={{ marginTop: '15px' }}>
+            <CContainer style={{ marginTop: '15px' }} className='label-tree-container'>
                 {/* {showHeader && 
                 <h3 className="card-title mb-3" style={{ textAlign: 'center' }}>
                     Labels
