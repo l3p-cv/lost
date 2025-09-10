@@ -298,35 +298,40 @@ export const useJoyrideSteps = (
     }
 
     if (templateType === 'miaPipeline') {
-        const miaPipelineSteps: Step[] = [
-            {
+        const miaPipelineSteps: Step[] = []
+        if (currentPath !== '/pipeline-templates') {
+            miaPipelineSteps.push({
                 target: '#nav-start-pipeline',
                 title: 'Start Pipeline',
                 content: 'Click here to begin setting up a new pipeline.',
                 placement: 'right',
                 disableBeacon: true,
-                spotlightClicks: false,
-            },
-            {
+                spotlightClicks: true,
+            });
+        }
+            miaPipelineSteps.push({
                 target: '.pipeline-start-1',
                 title: 'Pipeline Templates',
                 content: 'These are the available pipeline templates.',
                 placement: 'top',
                 spotlightClicks: false,
+                disableBeacon: true,
             },
             {
                 target: '.mia-start-button',
                 title: 'Start MIA Pipeline using a Template',
                 content: 'Click here to open this template.',
                 placement: 'right',
-                spotlightClicks: false,
+                spotlightClicks: true,
+                disableBeacon: true,
             },
             {
                 target: `.react-flow__node-datasourceNode[data-id="0"]`,
                 title: 'Datasource Node',
                 content: 'Start by configuring your datasource node for MIA pipeline.',
                 placement: 'top',
-                spotlightClicks: false,
+                spotlightClicks: true,
+                disableBeacon: true,
             },
             {
                 target: '#datasource-modal',
@@ -334,6 +339,7 @@ export const useJoyrideSteps = (
                 content: 'This is where you configure your datasource.',
                 placement: 'right',
                 spotlightClicks: false,
+                disableBeacon: true,
             },
             {
                 target: '#datasource-dropdown',
@@ -363,6 +369,7 @@ export const useJoyrideSteps = (
                 content: 'Here is the path you selected.',
                 placement: 'bottom',
                 spotlightClicks: false,
+                disableOverlay: true,
             },
             {
                 target: '#done-button',
@@ -510,7 +517,7 @@ export const useJoyrideSteps = (
             {
                 target: '#description',
                 title: 'Pipeline Description',
-                content: 'Optionally add a description for your pipeline.',
+                content: 'Add a description for your pipeline.',
                 placement: 'right',
                 spotlightClicks: true,
                 disableBeacon: true,
@@ -541,7 +548,7 @@ export const useJoyrideSteps = (
                 spotlightClicks: true,
                 disableBeacon: true,
             },
-        ]
+        );
 
         return miaPipelineSteps
     }
