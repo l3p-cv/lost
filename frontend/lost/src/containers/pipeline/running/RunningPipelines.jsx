@@ -49,6 +49,7 @@ export const RunningPipelines = () => {
     useEffect(() => {
         if (data && page === lastRequestedPage) {
             const pipes = data.pipelines.pipes
+            console.log('Updating pipelineData:', pipes);
             setPageCount(data.pages)
             setPipelineData(pipes)
 
@@ -68,6 +69,8 @@ export const RunningPipelines = () => {
                         detail: { step: 'latest-running-pipeline' },
                     }))
                 }
+            } else {
+                setLatestPipelineId(null); 
             }
         }
     }, [data, lastRequestedPage])
@@ -219,6 +222,7 @@ export const RunningPipelines = () => {
             return (
                 <ErrorBoundary>
                 <CoreDataTable
+                    // key={pipelineData.length}
                     columns={columns}
                     tableData={pipelineData}
                     onPaginationChange={(table) => {
