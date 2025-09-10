@@ -32,7 +32,9 @@ const TheLayout = () => {
 
             const jwtDecoded = jwtDecode(token)
             const { roles } = jwtDecoded
-            role.current = roles[0]
+            const priority = ['Administrator', 'Designer', 'Annotator']
+            const index = priority.findIndex((p) => roles.includes(p))
+            role.current = roles.find((r) => r === priority[index])
 
             if (!guiSetup[role.current]) {
                 throw new Error(`Role ${role.current} not found in Gui Setup`)
