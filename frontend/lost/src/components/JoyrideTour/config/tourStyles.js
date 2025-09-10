@@ -45,7 +45,7 @@ export const getTooltipStyles = (stepIndex, pipelineType, latestPipelineId, isNe
     };
   }
 
-  const hideNextDefault = [0, 5, 6, 9, 14, 16, 18, 20, 22, 24, 25, 28];
+  const hideNextDefault = [0, 1, 3, 5, 6, 9, 14, 16, 18, 20, 22, 24, 25, 28];
   const hideBack = [0, 3, 4, 10, 12, 15, 17, 19, 21, 23, 25, 26, 29, 30];
 
   const hideNext = [...hideNextDefault];

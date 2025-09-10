@@ -53,18 +53,6 @@ const handlePipelineTourNavigation = (index, pipelineType, navigate, miaPipeline
     case 0:
       navigate('/pipeline-templates');
       break;
-    case 1:
-      if (pipelineType === 'miaPipeline' && miaPipelineId) {
-        navigate(`/pipeline-template/${miaPipelineId}`);
-      } else if (pipelineType === 'mainPipeline' && siaPipelineId) {
-        navigate(`/pipeline-template/${siaPipelineId}`);
-      }
-      break;
-    case 3: {
-      const node = document.querySelector('.react-flow__node-datasourceNode[data-id="0"]');
-      node?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-      break;
-    }
     case 11: {
       const taskNode = document.querySelector('.react-flow__node.anno-task-node');
       taskNode?.dispatchEvent(new MouseEvent('click', { bubbles: true }));

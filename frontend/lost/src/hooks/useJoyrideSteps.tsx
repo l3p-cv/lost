@@ -36,7 +36,7 @@ export const useJoyrideSteps = (
                 // 1
                 target: '.sia-start-button',
                 title: 'Start SIA Pipeline using a Template',
-                content: 'Click "Next" to open this template.',
+                content: 'Click here to open this template.',
                 placement: 'right',
                 spotlightClicks: true,
                 disableBeacon: true
@@ -47,7 +47,7 @@ export const useJoyrideSteps = (
                 title: 'Datasource Node',
                 content: 'Start by configuring your datasource.',
                 placement: 'top',
-                spotlightClicks: false,
+                spotlightClicks: true,
                 disableBeacon: true
             },
             {
@@ -317,7 +317,7 @@ export const useJoyrideSteps = (
             {
                 target: '.mia-start-button',
                 title: 'Start MIA Pipeline using a Template',
-                content: 'Click "Next" to open this template.',
+                content: 'Click here to open this template.',
                 placement: 'right',
                 spotlightClicks: false,
             },
@@ -876,8 +876,7 @@ export const useJoyrideSteps = (
             {
                 // 36
                 target: '#sia-configuration-heading',
-                content:
-                    'This section lets you configure SIA annotation tools and actions.',
+                content:'This section lets you configure SIA annotation tools and actions.',
                 disableBeacon: true,
                 placement: 'right',
                 spotlightClicks: true,
