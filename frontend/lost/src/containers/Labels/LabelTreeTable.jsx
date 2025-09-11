@@ -41,7 +41,7 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
 
         if (joyrideRunning && currentStep === 0){
         setTimeout(() => {
-                    window.dispatchEvent(new CustomEvent('joyride-next-step', {detail: { step: 'skip-tocreate' }}))}, 1000); ;
+                    window.dispatchEvent(new CustomEvent('joyride-next-step', {detail: { step: 'skip-tocreate' }}))}, 3000); ;
         }
     }, [labelTrees.length])
 
