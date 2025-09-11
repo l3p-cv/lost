@@ -178,7 +178,7 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
                                     if (joyrideRunning && currentStep === 5){
                                         window.dispatchEvent(new CustomEvent('joyride-next-step', {
                                         detail: { step: 'open-edit-modal' }
-                                }))}; }, 3000);   
+                                }))}; }, 300);   
                             }}
                         />
                         </>
