@@ -63,7 +63,7 @@ const Instruction = ({ visLevel }) => {
 
   const handleDelete = (id) => {
     Notification.showDecision({
-                title: 'Do you really want to delete datasource?',
+                title: 'Do you really want to delete the instruction?',
                 option1: {
                     text: 'YES',
                     callback: () => {
