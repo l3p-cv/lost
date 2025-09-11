@@ -26,7 +26,7 @@ const TabInstructions = ({ annotask, updateAnnotask }) => {
         if (joyrideRunning && (currentStep === 45 || currentStep === 16)) {
             setTimeout(() => {
                 window.dispatchEvent(new CustomEvent('joyride-next-step', { detail: { step: 'after-instruction-select' } }));
-            }, 1000);
+            }, 10000);
         }
     });
 
