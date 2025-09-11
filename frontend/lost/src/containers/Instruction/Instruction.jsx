@@ -40,7 +40,7 @@ const Instruction = ({ visLevel }) => {
             detail: { step: 'last-row-highlight' }, 
           })
         );
-      }, 900);
+      }, 3000);
       }
     }else if (joyrideRunning && instructions?.length <= 10) {
       const currentStep = parseInt(localStorage.getItem('currentStep') || '0');
