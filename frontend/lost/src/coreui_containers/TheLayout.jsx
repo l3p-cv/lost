@@ -110,7 +110,11 @@ const TheLayout = () => {
                     numNavItems={navItems.length}
                     canShowSidebar={canShowSidebar}
                     setCanShowSidebar={setCanShowSidebar}
-                    showJoyride={<JoyrideTour />}
+                    showJoyride={
+                        role.current === 'Administrator' || role.current === 'Designer' ? (
+                            <JoyrideTour />
+                        ) : null
+                    }
                 />
                 <div className="body flex-grow-1 px-3">
                     <TheContent routes={routes} />
