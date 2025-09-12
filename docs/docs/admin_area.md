@@ -83,7 +83,7 @@ TODO
 In this tab pipeline projects can be imported and exported.
 
 ![sia-example](/img/admin_pipe_projects_new.png)
-Figure 7: TODO
+Figure 7: The pipeline projects, whose templates everyone can use to create their pipelines
 
 ## Global Datasources/Labels/Instructions
 
