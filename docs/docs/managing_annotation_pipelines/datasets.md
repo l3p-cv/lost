@@ -8,7 +8,8 @@ sidebar_position: 0
 They allow for a hierarchical, where **AnnotationTasks** do not only belong to a **Dataset**, but that **Dataset**
 itself can have another **Dataset** as a parent.
 
-TODO: Figure 1: The **DatasetsTab**, listing all parent **Datasets**
+![datasets-table](/img/datasets_table.png)
+Figure 1: The **DatasetsTab**, listing all parent **Datasets**
 
 ## Assigning a Dataset
 
@@ -23,14 +24,16 @@ The **Dataset-ID** can be found right in the **DatasetTable**, as it is written,
 
 Later on, these designations can still be changed in the **DatasetTable**. For this, see Figure 2.
 
-TODO: Figure 2: change dataset
+![datasets-change](/img/datasets_change_parent.png)
+Figure 2: Changing the parent of an **AnnotationTask** or **Dataset**
 
 ## Data Export
 
 Among the main advantages **Datasets** provide, is the possibility to export the data of
 all **AnnotationTasks** belonging to it at once.
 
-TODO: Figure 3: Exporting TODO
+![datasets-change](/img/datasets_export.png)
+Figure 3: Generating and downloading an export
 
 When exporting (see Figure 3), there is the option to either .
 Upon clicking "Download", the download will start and you will get the data
