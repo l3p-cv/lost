@@ -18,6 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ask for confirmation when deleting Instructions
 - Ask for filling content of Instructions, when creating/editing one
 - Added error boundaries around all datatables
+- Made tour guide accessible from every page via navigation bar
+- Added page-specific tour guides (Dashboard = all tours, Pipeline = pipeline-only, etc.)
+- Added default instruction set for new users
+- Simplified "view instruction" modal
+- Included optional UI improvements (tour guide button color, tooltip for >10 instructions)
+
 ### Changed
 - Replaced all usages of reactstrap and semantic-ui with CoreUI components and/or generic solutions 
 - moved quick_setup.py into main directory
@@ -32,6 +38,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Put buttons into general column "Actions" for most datatables
 - changed color of standard color 'info'
 - load Datatable columns with useMemo (Pipelines, Datastes)
+- Updated pipeline description handling in tour guide step(mandatory message)
+
 ### Fixed
 - Removed centered spinner of CoreDataTable, when faced with empty data, to not block the rest of the page
 - Fixed execution of DBPatcher at wrong place on start up
@@ -40,6 +48,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed SIA crashing (when doing anything referencing labels)
 - Saving instructions no longer leads to a blank page
 - CoreIconButton no longer raises warnings when loading for the first time
+- Fixed unnecessary polling to `/api/pipeline/0/1` → now only triggered when relevant
+- Stopped all active tour guides on logout or session expiration
+- Fixed back-button behavior in Step 3 of the SIA pipeline tour guide
+- Improved positioning of step dialogs (now waits for rendering)
+- Resolved issue with image folder selection during tours
+
 ### Removed
 - Removed all instances of reactstrap library
 - Removed all instances of semantic-ui library
