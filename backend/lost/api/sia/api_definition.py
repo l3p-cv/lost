@@ -188,3 +188,19 @@ label_leaf = api.model('Label Leaf',{
 labels = api.model('Labels', {
     'labels': fields.List(fields.Nested(label_leaf)) 
 })
+
+
+sia_polygon_operations = api.model('SIA Polygon Operations', {
+    'anno1': fields.Nested(annotations, required=True),
+    'anno2': fields.Nested(annotations, required=True),
+    'operation': fields.String(description='Geometric operation (union, intersection, difference)', required=True, enum=['union', 'intersection', 'difference']),
+    'img': fields.Nested(api.model('Image', {
+        'imgId': fields.Integer(description='Image ID', required=True)
+    }), required=True)
+})
+
+sia_polygon_operations_response = api.model('SIA Polygon Operations Response', {
+    'operation': fields.String(description='The performed geometric operation', required=True),
+    'imgId': fields.Integer(description='The identifier of the image', required=True),
+    'result_polygon': fields.List(fields.Nested(point_data), description='Coordinates of the resulting polygon', required=True)
+})

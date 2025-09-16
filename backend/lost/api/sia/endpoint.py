@@ -4,12 +4,14 @@ from flask import request
 from flask_restx import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from lost.api.api import api
-from lost.api.sia.api_definition import sia_anno, sia_config, labels
+from lost.api.sia.api_definition import sia_anno, sia_config, labels, sia_polygon_operations,sia_polygon_operations_response
 from lost.db import roles, access
 from lost.settings import LOST_CONFIG, DATA_URL
 from lost.logic import sia
 from lost.logic.permissions import UserPermissions
 import json
+from shapely.geometry import Polygon
+from shapely.ops import unary_union
 import base64
 import cv2
 from lost.logic.file_man import FileMan
@@ -259,3 +261,59 @@ class Configuration(Resource):
             re = sia.get_configuration(dbm, identity)
             dbm.close_session()
             return re
+
+@namespace.route("/polygon_operations")
+@api.doc()
+class PolygonOperations(Resource):
+    @api.doc(description="Perform geometric operations (union, intersection, difference) on two polygons for the same image")
+    @api.expect(sia_polygon_operations)
+    @api.marshal_with(sia_polygon_operations_response)
+    def post(self):
+        try:
+            data = json.loads(request.data)
+            
+            if not all(key in data for key in ["anno1", "anno2", "operation", "img"]):
+                return {"error": "Missing required fields: anno1, anno2, operation, or img"}, 400
+            
+            if data["anno1"]["type"] != "polygon" or data["anno2"]["type"] != "polygon":
+                return {"error": "Both annotations must be of type 'polygon'"}, 400
+            
+            if data["img"]["imgId"] != data["anno1"].get("imgId") or data["img"]["imgId"] != data["anno2"].get("imgId"):
+                return {"error": "Both polygons must belong to the same image ID"}, 400
+            
+            if data["operation"] not in ["union", "intersection", "difference"]:
+                return {"error": "Operation must be one of 'union', 'intersection', or 'difference'"}, 400
+            
+            coords1 = [(p["x"], p["y"]) for p in data["anno1"]["data"]]
+            coords2 = [(p["x"], p["y"]) for p in data["anno2"]["data"]]
+            
+            poly1 = Polygon(coords1)
+            poly2 = Polygon(coords2)
+            
+            if data["operation"] == "union":
+                result_poly = poly1.union(poly2)
+            elif data["operation"] == "intersection":
+                result_poly = poly1.intersection(poly2)
+            elif data["operation"] == "difference":
+                result_poly = poly1.difference(poly2)
+            
+            if result_poly.is_empty:
+                return {"error": f"{data['operation']} resulted in an empty polygon"}, 400
+            
+            if result_poly.geom_type == "Polygon":
+                result_coords = [{"x": x, "y": y} for x, y in result_poly.exterior.coords[:-1]]  
+            elif result_poly.geom_type == "MultiPolygon":
+                largest_poly = max(result_poly.geoms, key=lambda p: p.area)
+                result_coords = [{"x": x, "y": y} for x, y in largest_poly.exterior.coords[:-1]]
+            else:
+                return {"error": f"Unsupported geometry type: {result_poly.geom_type}"}, 400
+            
+            return {
+                "operation": data["operation"],
+                "imgId": data["img"]["imgId"],
+                "result_polygon": result_coords
+            }
+        
+        except Exception as e:
+            flask.current_app.logger.error(f"Error in polygon_operations: {str(e)}")
+            return {"error": str(e)}, 500
