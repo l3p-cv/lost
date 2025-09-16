@@ -127,12 +127,29 @@ const SiaWrapper = (props) => {
                 ([type, items]) =>
                     items.map((annotation) => {
                         const convertedAnnoType = convertAnnoToolType(type)
+
+                        let newCoords = annotation.data
+                        if (convertedAnnoType === AnnotationTool.BBox) {
+                            const oldFormat = annotation.data
+                            newCoords = [
+                                { x: oldFormat.x, y: oldFormat.x },
+                                {
+                                    x: oldFormat.x + oldFormat.w,
+                                    y: oldFormat.y + oldFormat.h,
+                                },
+                            ]
+                        }
+
+                        if (convertedAnnoType === AnnotationTool.Point) {
+                            newCoords = [annotation.data]
+                        }
+
                         return {
                             ...annotation,
                             id: null,
                             data: null,
                             externalId: annotation.id,
-                            coordinates: annotation.data,
+                            coordinates: newCoords,
                             type: convertedAnnoType,
                         }
                     }),
@@ -359,6 +376,10 @@ const SiaWrapper = (props) => {
             direction: 'prev',
             imageId: imageId,
         })
+    }
+
+    const submitAnnotask = () => {
+        console.log('@TODO implement finish annotask logic here')
     }
 
     const handleToolBarEvent = (e, data) => {
@@ -771,7 +792,7 @@ const SiaWrapper = (props) => {
         setSamBBox(null)
     }
 
-    if (imageBlob === undefined) return 'Loading...'
+    if (annoData === undefined || imageBlob === undefined) return 'Loading...'
 
     return (
         <>
@@ -804,7 +825,7 @@ const SiaWrapper = (props) => {
                         </CButton>
                     </div>
                 )}
-            <div>
+            <div style={{ height: '100%', width: '100%' }}>
                 <Sia2
                     image={imageBlob}
                     initialAnnotations={annotations}
@@ -812,8 +833,11 @@ const SiaWrapper = (props) => {
                     possibleLabels={props.possibleLabels}
                     additionalButtons={
                         <NavigationButtons
+                            isFirstImage={annoData.image.isFirst}
+                            isLastImage={annoData.image.isLast}
                             onNextImagePressed={getNextImage}
                             onPreviousImagePressed={getPreviousImage}
+                            onSubmitAnnotask={submitAnnotask}
                         />
                     }
                 />

@@ -4,7 +4,7 @@ import AnnotationTableComponent from './containers/Annotation/AnnotationTable'
 import MiaComponent from './containers/Annotation/MultiImageAnnotation'
 import SiaReviewComponent from './containers/Annotation/SIAReviewAnnotation'
 import SiaComponent from './containers/Annotation/SingleImageAnnotation'
-import SiaWrapper2 from './containers/Annotation/SingleImageAnnotation2'
+import SiaComponent2 from './containers/Annotation/SingleImageAnnotation2'
 import DataSourcesComponent from './containers/DataSources/DataSources'
 import DatasetsComponent from './containers/Datasets/Datasets'
 import DatasetsReviewComponent from './containers/Datasets/ReviewPage'
@@ -134,7 +134,7 @@ const Sia = {
 
 const Sia2 = {
     path: '/sia2/*',
-    component: SiaWrapper2,
+    component: SiaComponent2,
 }
 
 const SiaReview = {

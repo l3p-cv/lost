@@ -46,23 +46,38 @@ const SingleImageAnnotation = (props) => {
             getAnnoExample({ llId: exampleArgs.lbl.id, prevExamples })
         }
     }
+
+    // method to get the available height of the page without scrolling
+    const contentRootStyle = {
+        display: 'flex',
+        flexDirection: 'column',
+        height: 'calc(100vh - 375px)',
+        overflow: 'hidden',
+    }
+
+    const middleStyle = {
+        flexGrow: 1,
+        flexShrink: 0,
+        flexBasis: 'auto',
+        minHeight: 0,
+    }
+
     return (
-        <CRow>
-            <CCol>
-                <CRow>
-                    <CCol xs="12">
-                        <WorkingOnSIA annoTask={props.workingOnAnnoTask} />
-                        <h3>SIA2 Preview</h3>
-                        <SiaWrapper
-                            exampleImg={exampleImg}
-                            onGetAnnoExample={(exampleArgs) =>
-                                handleGetAnnoExample(exampleArgs)
-                            }
-                        />
-                    </CCol>
-                </CRow>
-            </CCol>
-        </CRow>
+        <>
+            <WorkingOnSIA annoTask={props.workingOnAnnoTask} />
+
+            <div style={contentRootStyle}>
+                <div style={middleStyle}>
+                    <SiaWrapper
+                        exampleImg={exampleImg}
+                        onGetAnnoExample={(exampleArgs) =>
+                            handleGetAnnoExample(exampleArgs)
+                        }
+                    />
+                </div>
+                <h3>SIA2 Preview</h3>
+            </div>
+        </>
     )
 }
 
