@@ -5,6 +5,8 @@ from lost.db import dtype, state, model
 from lost.db.access import DBMan
 from lost.logic.anno_task import set_finished, update_anno_task
 from datetime import datetime
+from shapely.geometry import Polygon
+from shapely.ops import unary_union
 __author__ = "Gereon Reus"
 
 def get_first(db_man, user_id, media_url):
@@ -915,3 +917,67 @@ def reviewoptions_annotask(dbm, at_id, user_id):
     anno_task = dbm.get_anno_task(anno_task_id=at_id)
     options['possible_labels'] = get_label_trees(dbm, user_id, anno_task)['labels']
     return options
+
+
+def perform_polygon_operations(data):
+    try:
+        if not all(key in data for key in ["poly1", "poly2", "operation", "img"]):
+            flask.current_app.logger.info("Missing required fields")
+            return {"error": "Missing required fields: poly1, poly2, operation, or img"}, 400
+        
+        if data["poly1"]["type"] != "polygon" or data["poly2"]["type"] != "polygon":
+            flask.current_app.logger.info(f"Invalid type: poly1.type={data['poly1']['type']}, poly2.type={data['poly2']['type']}")
+            return {"error": "Both annotations must be of type 'polygon'"}, 400
+        
+        if data["img"]["imgId"] != data["poly1"].get("imgId") or data["img"]["imgId"] != data["poly2"].get("imgId"):
+            flask.current_app.logger.info("Image ID mismatch")
+            return {"error": "Both polygons must belong to the same image ID"}, 400
+        
+        if data["operation"] not in ["union", "intersection", "difference"]:
+            flask.current_app.logger.info("Invalid operation")
+            return {"error": "Operation must be one of 'union', 'intersection', or 'difference'"}, 400
+        
+        coords1 = [(p["x"], p["y"]) for p in data["poly1"]["poly1_data"]]
+        coords2 = [(p["x"], p["y"]) for p in data["poly2"]["poly2_data"]]
+        if len(coords1) < 3 or len(coords2) < 3:
+            flask.current_app.logger.info("Insufficient vertices")
+            return {"error": "Each polygon must have at least 3 vertices"}, 400
+        
+        try:
+            poly1 = Polygon(coords1)
+            poly2 = Polygon(coords2)
+        except Exception as e:
+            flask.current_app.logger.error(f"Invalid geometry: {str(e)}")
+            return {"error": f"Invalid polygon geometry: {str(e)}"}, 400
+        
+        if data["operation"] == "union":
+            result_poly = poly1.union(poly2)
+        elif data["operation"] == "intersection":
+            result_poly = poly1.intersection(poly2)
+        else:  
+            result_poly = poly1.difference(poly2)
+        
+        if result_poly.is_empty:
+            flask.current_app.logger.info("Empty result polygon")
+            return {"error": f"{data['operation']} resulted in an empty polygon"}, 400
+        
+        if result_poly.geom_type == "Polygon":
+            result_coords = [{"x": float(x), "y": float(y)} for x, y in result_poly.exterior.coords[:-1]]
+        elif result_poly.geom_type == "MultiPolygon":
+            largest_poly = max(result_poly.geoms, key=lambda p: p.area)
+            result_coords = [{"x": float(x), "y": float(y)} for x, y in largest_poly.exterior.coords[:-1]]
+        else:
+            flask.current_app.logger.info("Unsupported geometry")
+            return {"error": f"Unsupported geometry type: {result_poly.geom_type}"}, 400
+        
+        response = {
+            "operation": data["operation"],
+            "imgId": data["img"]["imgId"],
+            "result_polygon": result_coords
+        }
+        flask.current_app.logger.info(f"Returning success response: {response}")
+        return response, 200
+    
+    except Exception as e:
+        flask.current_app.logger.error(f"Error in polygon_operations: {str(e)}")
+        return {"error": str(e)}, 500

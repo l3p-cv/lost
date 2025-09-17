@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ask for confirmation when deleting Instructions
 - Ask for filling content of Instructions, when creating/editing one
 - Added error boundaries around all datatables
+- Added /polygon_operations endpoint with perform_polygon_operations for union, intersection, and difference of polygons, including validations.
+- Added Swagger UI documentation for the new polygon operations API.
 ### Changed
 - Replaced all usages of reactstrap and semantic-ui with CoreUI components and/or generic solutions 
 - moved quick_setup.py into main directory
