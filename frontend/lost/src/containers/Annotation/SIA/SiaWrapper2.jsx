@@ -5,7 +5,11 @@ import actions from '../../../actions'
 import { useDispatch } from 'react-redux'
 import siaActions from '../../../actions/sia'
 
-import { useGetSiaAnnos, useGetSiaImage } from '../../../actions/sia/sia_api'
+import {
+    useGetSiaAnnos,
+    useGetSiaImage,
+    useEditAnnotation,
+} from '../../../actions/sia/sia_api'
 
 import withRouter from '../../../utils/withRouter'
 
@@ -107,10 +111,13 @@ const SiaWrapper = (props) => {
         setImageBlob(imageBlobRequest)
     }, [imageBlobRequest])
 
+    // @TODO check if request worked
+    const { data: editAnnotationResponse, mutate: editAnnotation } = useEditAnnotation()
+
     // @TODO convert old API/backend style to new SIA format
     // while this is not finished, we'll convert the API response here
-    const convertAnnoToolType = (annotationType) => {
-        switch (annotationType) {
+    const convertAnnoToolType = (annotationTypeString) => {
+        switch (annotationTypeString) {
             case 'bBoxes':
                 return AnnotationTool.BBox
             case 'lines':
@@ -834,6 +841,27 @@ const SiaWrapper = (props) => {
                             onSubmitAnnotask={submitAnnotask}
                         />
                     }
+                    onAnnoChanged={(annotation) => {
+                        const newAnnotation = {
+                            ...annotation,
+                            status: AnnotationStatus.CHANGED,
+                        }
+                        const annotationInOldFormat =
+                            convertAnnoToOldFormat(newAnnotation)
+
+                        const currentImageData = annoData.image
+                        const imageData = {
+                            imgId: currentImageData.id,
+                            imgActions: currentImageData.imgActions,
+                            annoTime: currentImageData.annoTime, // @TODO
+                        }
+
+                        const editAnnotationData = {
+                            annotation: annotationInOldFormat,
+                            imageEditData: imageData,
+                        }
+                        editAnnotation(editAnnotationData)
+                    }}
                 />
 
                 {/* <Sia

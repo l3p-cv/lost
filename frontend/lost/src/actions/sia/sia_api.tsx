@@ -1,6 +1,18 @@
 import axios from 'axios'
-import { useQuery } from 'react-query'
+import { useMutation, useQuery } from 'react-query'
 import { API_URL } from '../../lost_settings'
+import { Annotation } from 'lost-sia/models'
+
+type ImageEditData = {
+    imgId: number
+    imgActions: string
+    annoTime: number
+}
+
+type editAnnotationData = {
+    annotation: Annotation
+    imageEditData: ImageEditData
+}
 
 export const useGetSiaAnnos = (annotationRequestData) => {
     return useQuery(
@@ -12,6 +24,8 @@ export const useGetSiaAnnos = (annotationRequestData) => {
                 )
                 .then((res) => res.data),
         {
+            // only fetch when annotationRequestData is available
+            // request will automatically refetch when value changes
             enabled: !!annotationRequestData,
             refetchOnWindowFocus: false,
             cacheTime: 0,
@@ -34,4 +48,16 @@ export const useGetSiaImage = (imageId) => {
             refetchOnWindowFocus: false,
         },
     )
+}
+
+export const useEditAnnotation = () => {
+    return useMutation(({ annotation, imageEditData }: editAnnotationData) => {
+        const requestData = {
+            action: 'annoEdited',
+            anno: annotation,
+            img: imageEditData,
+        }
+
+        return axios.patch(API_URL + `/sia`, requestData).then((res) => res.data)
+    })
 }
