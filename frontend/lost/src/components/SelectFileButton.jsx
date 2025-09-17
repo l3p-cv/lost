@@ -3,7 +3,7 @@ import { useRef } from 'react'
 import CoreIconButton from './CoreIconButton'
 import { faUpload } from '@fortawesome/free-solid-svg-icons'
 
-const SelectFileButton = ({ text, className, accept, onSelect, disabled = false, color = "primary" }) => {
+const SelectFileButton = ({ text='Choose File', className, style, accept, onSelect=() => {}, disabled=false, color="primary" }) => {
     const inputRef = useRef()
     const selectVideoFaker = () => {
         inputRef.current.click()
@@ -32,6 +32,7 @@ const SelectFileButton = ({ text, className, accept, onSelect, disabled = false,
                 disabled={disabled}
                 // left={<FaUpload />}
                 icon={faUpload}
+                style={style}
                 // right={text}
                 text={text}
                 className={className}
@@ -49,11 +50,6 @@ SelectFileButton.propTypes = {
     className: PropTypes.string,
     accept: PropTypes.string,
     onSelect: PropTypes.func,
-}
-
-SelectFileButton.defaultProps = {
-    text: 'Choose File',
-    onSelect: () => {},
 }
 
 export default SelectFileButton

@@ -2,8 +2,6 @@ import { CBadge } from '@coreui/react'
 import { faFileExport, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { saveAs } from 'file-saver'
 import { useEffect, useState } from 'react'
-import Datatable from '../../components/Datatable'
-import IconButton from '../../components/IconButton'
 import * as Notification from '../../components/Notification'
 import { API_URL } from '../../lost_settings'
 
@@ -12,6 +10,8 @@ import AddPipelineProject from './AddPipelineProject'
 import { createColumnHelper } from '@tanstack/react-table'
 import CoreDataTable from '../../components/CoreDataTable'
 import BaseContainer from '../../components/BaseContainer'
+import CoreIconButton from '../../components/CoreIconButton'
+import ErrorBoundary from '../../components/ErrorBoundary'
 
 const PTTable = ({ visLevel }) => {
     const [tableData, setTableData] = useState([])
@@ -96,36 +96,32 @@ const PTTable = ({ visLevel }) => {
             },
         }),
         columnHelper.display({
-            header: 'Export',
-            id: "export",
+            header: 'Actions',
+            id: "action",
             cell: (props) => {
                 return (
-                    <IconButton
+                    <>
+                    <CoreIconButton
                         icon={faFileExport}
-                        text="Export"
+                        style={{ marginRight: '5px' }}
+                        toolTip="Export Pipeline Project"
                         color="info"
                         isOutline={true}
                         onClick={() =>
                             handlePipelineProjectExport(props.row.original.pipeProject)
                         }
                     />
-                )
-            },
-        }),
-        columnHelper.display({
-            header: 'Delete',
-            id: "delete",
-            cell: (props) => {
-                return (
-                    <IconButton
+                    <CoreIconButton
                         icon={faTrash}
-                        text="Delete"
+                        style={{ marginRight: '5px' }}
+                        toolTip="Delete Pipeline Project"
                         color="danger"
                         disabled={props.row.original.pipelineCount > 0}
                         onClick={() =>
                             handlePipelineProjectDelete(props.row.original.pipeProject)
                         }
                     />
+                    </>
                 )
             },
         }),
@@ -143,7 +139,9 @@ const PTTable = ({ visLevel }) => {
             {/* </CRow> */}
             {tableData.length > 0 ? (
                 <BaseContainer>
+                    <ErrorBoundary>
                     <CoreDataTable columns={columns} tableData={tableData} />
+                    </ErrorBoundary>
                 </BaseContainer>
             ) : (
                 ''

@@ -45,7 +45,7 @@ function CoreDataTable({
         const newPageCount = pageCount ?? table.getPageCount()
         const currentIndex = paginationState.pageIndex
 
-        if (tableData !== dataTemp && tableData?.length > 0) {
+        if (!Object.is(tableData, dataTemp)) {
             setDataTemp(tableData)
             // Only correct the page if it's actually out of range
             if (newPageCount > 0 && currentIndex >= newPageCount) {

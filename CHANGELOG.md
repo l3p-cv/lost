@@ -14,13 +14,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add support for model assisted image annotation, model management UI
 - CoreIconButton has more options regarding shape and tooltip-placement
 - Component TagLabel to replace semantic-ui's Label
+- ImageSearchActive in review, so that one can easily switch between images in the image-search 
+- Ask for confirmation when deleting Instructions
+- Ask for filling content of Instructions, when creating/editing one
+- Added error boundaries around all datatables
+- Made tour guide accessible from every page via navigation bar
+- Added page-specific tour guides (Dashboard = all tours, Pipeline = pipeline-only, etc.)
+- Added default instruction set for new users
+- Simplified "view instruction" modal
+- Included optional UI improvements (tour guide button color, tooltip for >10 instructions)
+
 ### Changed
 - Replaced all usages of reactstrap and semantic-ui with CoreUI components and/or generic solutions 
 - moved quick_setup.py into main directory
 - Adapted quick setup for new docker compose structure
+- Ask for content when creating/editing instructions
+- replaced all defaultProps with default values in component-definition (for future compatibility)
+- Move table headlines and craete-buttons to new component TableHeader
+- Reworked InferenceModelTable (to make it like all the other tables)
+- Changed not working colors for sweetalarm to black/grey
+- Buttons (CoreIconButton) are now grey (secondary) when disabled
+- Reworked TablePagination (and split it into one more component, "PageSizeNavigator")
+- Put buttons into general column "Actions" for most datatables
+- changed color of standard color 'info'
+- load Datatable columns with useMemo (Pipelines, Datastes)
+- Updated pipeline description handling in tour guide step(mandatory message)
+
 ### Fixed
 - Removed centered spinner of CoreDataTable, when faced with empty data, to not block the rest of the page
 - Fixed execution of DBPatcher at wrong place on start up
+- Show annotations when choosing current image per image-search in SIA-review (by not reloading the image)
+- Fixed instruction selection on anno-pipeline-creation
+- Fixed SIA crashing (when doing anything referencing labels)
+- Saving instructions no longer leads to a blank page
+- CoreIconButton no longer raises warnings when loading for the first time
+- Fixed unnecessary polling to `/api/pipeline/0/1` → now only triggered when relevant
+- Stopped all active tour guides on logout or session expiration
+- Fixed back-button behavior in Step 3 of the SIA pipeline tour guide
+- Improved positioning of step dialogs (now waits for rendering)
+- Resolved issue with image folder selection during tours
+
 ### Removed
 - Removed all instances of reactstrap library
 - Removed all instances of semantic-ui library

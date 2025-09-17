@@ -32,7 +32,9 @@ const TheLayout = () => {
 
             const jwtDecoded = jwtDecode(token)
             const { roles } = jwtDecoded
-            role.current = roles[0]
+            const priority = ['Administrator', 'Designer', 'Annotator']
+            const index = priority.findIndex((p) => roles.includes(p))
+            role.current = roles.find((r) => r === priority[index])
 
             if (!guiSetup[role.current]) {
                 throw new Error(`Role ${role.current} not found in Gui Setup`)
@@ -103,12 +105,16 @@ const TheLayout = () => {
                 canShowSidebar={canShowSidebar}
                 setCanShowSidebar={setCanShowSidebar}
             />
-            <JoyrideTour/>
             <div className="wrapper d-flex flex-column min-vh-100 bg-light">
                 <TheHeader
                     numNavItems={navItems.length}
                     canShowSidebar={canShowSidebar}
                     setCanShowSidebar={setCanShowSidebar}
+                    showJoyride={
+                        role.current === 'Administrator' || role.current === 'Designer' ? (
+                            <JoyrideTour />
+                        ) : null
+                    }
                 />
                 <div className="body flex-grow-1 px-3">
                     <TheContent routes={routes} />

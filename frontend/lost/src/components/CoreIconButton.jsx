@@ -4,19 +4,19 @@ import PropTypes from 'prop-types'
 import { CButton, CTooltip } from '@coreui/react'
 
 const CoreIconButton = ({
-    isBack,
+    isBack = false,
     loadingSize = '1x',
     isLoading = false,
-    isForward,
-    margin,
-    icon,
-    text,
+    isForward = false,
+    margin = 5,
+    icon = null,
+    text = "",
     size,
-    isTextLeft,
-    style,
+    isTextLeft = false,
+    style = null,
     id=undefined,
     type = 'button',
-    disabled,
+    disabled = false,
     onClick,
     className = '',
     color = 'primary',
@@ -50,11 +50,9 @@ const CoreIconButton = ({
                 </div>
             )
         }
-        const ic = iconButtonIcon ? (
-            <FontAwesomeIcon key="icon" icon={iconButtonIcon} size={loadingSize || '2x'} />
-        ) : (
-            ''
-        )
+        const ic = (iconButtonIcon && iconButtonIcon.iconName && iconButtonIcon.prefix)
+            ? <FontAwesomeIcon key="icon" icon={iconButtonIcon} size={loadingSize || '2x'} />
+            : null
         const iconButtonText = text ? (
             <span key="text" style={{ marginLeft: margin, marginRight: margin }}>
                 {text}
@@ -79,7 +77,7 @@ const CoreIconButton = ({
                     variant={buttonVariant}
                     disabled={disabled || isLoading}
                     onClick={onClick}
-                    color={color}
+                    color={disabled || isLoading ? 'secondary' : color}
                     shape={shape}
                 >
                     {renderContent()}
@@ -101,7 +99,7 @@ const CoreIconButton = ({
             variant={buttonVariant}
             disabled={disabled || isLoading}
             onClick={onClick}
-            color={color}
+            color={disabled || isLoading ? 'secondary' : color}
         >
             {renderContent()}
             {/* { props.text && (
@@ -125,19 +123,6 @@ CoreIconButton.propTypes = {
     isForward: PropTypes.bool,
     isTextLeft: PropTypes.bool,
     size: PropTypes.string,
-}
-CoreIconButton.defaultProps = {
-    style: null,
-    disabled: false,
-    color: 'primary',
-    icon: null,
-    isOutline: true,
-    margin: 5,
-    text: '',
-    isBack: false,
-    isForward: false,
-    isTextLeft: false,
-    size: undefined,
 }
 
 export default CoreIconButton

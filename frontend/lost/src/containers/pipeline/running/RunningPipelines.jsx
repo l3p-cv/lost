@@ -1,4 +1,4 @@
-import { CContainer, CButton, CTooltip, CProgress } from '@coreui/react'
+import { CContainer, CTooltip, CProgress, CBadge } from '@coreui/react'
 import { faEye, faPlay, faPause, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
 import 'react-table/react-table.css'
@@ -8,14 +8,15 @@ import {
 } from '../../../actions/pipeline/pipeline_api'
 import BaseContainer from '../../../components/BaseContainer'
 import { CenteredSpinner } from '../../../components/CenteredSpinner'
-import HelpButton from '../../../components/HelpButton'
 import { getColor } from '../../Annotation/AnnoTask/utils'
 import '../globalComponents/pipeline.scss'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { alertDeletePipeline } from '../globalComponents/Sweetalert'
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import CoreDataTable from '../../../components/CoreDataTable'
 import { createColumnHelper } from '@tanstack/react-table'
+import TableHeader from '../../../components/TableHeader'
+import CoreIconButton from '../../../components/CoreIconButton'
+import ErrorBoundary from '../../../components/ErrorBoundary'
 
 export const RunningPipelines = () => {
     const navigate = useNavigate()
@@ -48,6 +49,7 @@ export const RunningPipelines = () => {
     useEffect(() => {
         if (data && page === lastRequestedPage) {
             const pipes = data.pipelines.pipes
+            console.log('Updating pipelineData:', pipes);
             setPageCount(data.pages)
             setPipelineData(pipes)
 
@@ -60,12 +62,15 @@ export const RunningPipelines = () => {
                 setLatestPipelineId(latestId)
 
                 const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true'
-                if (joyrideRunning) {
+                const currentStep = parseInt(localStorage.getItem('currentStep') || '0')
+                if (joyrideRunning && currentStep === 28) {
                     localStorage.setItem('latestPipelineId', latestId)
                     window.dispatchEvent(new CustomEvent('joyride-next-step', {
                         detail: { step: 'latest-running-pipeline' },
                     }))
                 }
+            } else {
+                setLatestPipelineId(null); 
             }
         }
     }, [data, lastRequestedPage])
@@ -78,8 +83,8 @@ export const RunningPipelines = () => {
     }, [datatableInfo])
 
     const UnPauseButton = ({ original }) => (
-        <CTooltip placement="top" content={original.progress === 'PAUSED' ? "Activate Pipeline" : "Pause Pipeline"}>
-            <CButton
+            <CoreIconButton
+                toolTip={original.progress === 'PAUSED' ? "Activate Pipeline" : "Pause Pipeline"}
                 color={original.progress === 'PAUSED' ? "success" : "warning"}
                 variant='outline'
                 disabled={original.progress === 'ERROR' || original.progress === '100%'}
@@ -89,45 +94,52 @@ export const RunningPipelines = () => {
                         ? playPipelineHandler(original)
                         : pausePipelineHandler(original)
                 }
-            >
-                <FontAwesomeIcon icon={original.progress === 'PAUSED' ? faPlay : faPause} />
-            </CButton>
-        </CTooltip>
+                icon={original.progress === 'PAUSED' ? faPlay : faPause}
+            />
     )
 
     const DeleteButton = ({ original }) => (
-        <CTooltip content="Delete Pipeline" placement="top">
-            <CButton
+            <CoreIconButton
+                toolTip='Delete Pipeline'
                 color="danger"
                 variant='outline'
                 onClick={() => deletePipelineHandler(original)}
-            >
-                <FontAwesomeIcon icon={faTrash} />
-            </CButton>
-        </CTooltip>
+                icon={faTrash}
+            />
     )
 
     const OpenIcon = ({ original }) => (
-        <CTooltip content="Inspect Pipeline" placement="top">
-            <CButton
+            <CoreIconButton
+                toolTip='Inspect Pipeline'
                 color="info"
                 variant='outline'
                 style={{ marginRight: '5px' }}
-                onClick={() => navigate(`/pipeline/${original.id}`)}
+                onClick={() => {
+                    const currentStep = parseInt(localStorage.getItem('currentStep')||'0');
+                    const isJoyrideRunning = localStorage.getItem('joyrideRunning') === 'true';
+                    console.log('OpenIcon clicked, currentStep:', currentStep, 'it will be made',currentStep + 1);
+                    if(isJoyrideRunning && (currentStep === 42 || currentStep === 14)){
+                        window.dispatchEvent(new CustomEvent('joyride-next-step', {detail: { step: 'view-created-pipeline' }}));
+                    }
+                    localStorage.setItem('latestPipelineId', String(original.id));
+                    navigate(`/pipeline/${original.id}`);
+                }}
                 className={original.id === latestPipelineId ? 'latest-pipeline-open-button' : ''}
-            >
-                <FontAwesomeIcon icon={faEye} />
-            </CButton>
-        </CTooltip>
+                icon={faEye}
+            />
     )
 
-    const TemplateDescButton = ({ templates, templName, pipeID }) => {
-        const match = templates.find(t => t.name === templName)
-        return <HelpButton id={`${pipeID}_${match?.id}`} text={match?.description} />
+    const getTemplateDescription = ({ templates, templName }) => {
+        const match = templates?.find(t => t?.name === templName)
+        return match?.description
     }
 
     const getRowClassName = (original) => {
         return original.id === latestPipelineId ? 'latest-pipeline-row' : ''
+    }
+   
+    const navigateToTemplates = () => {
+        navigate('/pipeline-templates')
     }
     
     const defineColumns = () => {
@@ -137,11 +149,9 @@ export const RunningPipelines = () => {
                 header: 'Name',
                 cell: (props) => (
                     <div>
-                        <b>{props.row.original.name}</b>
-                        <HelpButton
-                            id={props.row.original.id}
-                            text={props.row.original.description}
-                        />
+                        <CTooltip content={props.row.original.description} placement="top">
+                            <b style={{ textDecoration: 'grey dotted underline'}}>{props.row.original.name}</b>
+                        </CTooltip>
                         <div className="small text-muted">
                             {`ID: ${props.row.original.id}`}
                         </div>
@@ -150,26 +160,29 @@ export const RunningPipelines = () => {
             }),
             columnHelper.accessor('description', {
                 header: 'Template',
-                cell: (props) => (
+                cell: (props) => {
+                    return (
                     <>
-                        <b>{props.row.original.templateName.split('.')[1]}</b>
-                        <TemplateDescButton
-                            templName={props.row.original.templateName}
-                            templates={templateData.templates}
-                            pipeID={props.row.original.id}
-                        />
+                        <CTooltip 
+                            content={getTemplateDescription({
+                                templates: templateData?.templates,
+                                templName: props.row.original.templateName})}
+                            placement="top"
+                        >
+                            <b style={{ textDecoration: 'grey dotted underline'}}>{props.row.original.templateName.split('.')[1]}</b>
+                        </CTooltip>
                         <div className="small text-muted">
                             {props.row.original.templateName.split('.')[0]}
                         </div>
                     </>
-                )
+                )}
             }),
             columnHelper.accessor('progress', {
                 header: 'Progress',
                 cell: (props) => {
                     const progress = parseInt(props.row.original.progress)
-                    if (props.row.original.progress === 'ERROR') return <div>ERROR</div>
-                    if (props.row.original.progress === 'PAUSED') return <div>PAUSED</div>
+                    if (props.row.original.progress === 'ERROR') return <CBadge color='danger'>ERROR</CBadge>
+                    if (props.row.original.progress === 'PAUSED') return <CBadge color='warning'>PAUSED</CBadge>
                     return (
                         <CProgress
                             className="progress-xs rt-progress"
@@ -184,8 +197,8 @@ export const RunningPipelines = () => {
                 cell: ({ row }) => new Date(row.original.date).toLocaleString(),
             }),
             columnHelper.display({
-                id: 'options',
-                header: 'Options',
+                id: 'actions',
+                header: 'Actions',
                 cell: ({ row }) => (
                     <>
                         <OpenIcon original={row.original} />
@@ -197,6 +210,8 @@ export const RunningPipelines = () => {
         ]
     }
 
+    const columns = useMemo(() => defineColumns(), [pipelineData, templateData])
+
     const renderDatatable = () => {
         if ((isLoading || templateIsLoading) && !pipelineData) return <CenteredSpinner />
         if (isError || templateIsError) return <div className="pipeline-error-message">Error loading data</div>
@@ -204,10 +219,11 @@ export const RunningPipelines = () => {
             if ((data && templateData) && (data.pipelines.error || templateData.error)) {
                 return <div className="pipeline-error-message">{data.pipelines.error}</div>
             }
-            // TODO: handle data?.pipelines not loading quick enough
             return (
+                <ErrorBoundary>
                 <CoreDataTable
-                    columns={defineColumns()}
+                    // key={pipelineData.length}
+                    columns={columns}
                     tableData={pipelineData}
                     onPaginationChange={(table) => {
                         const nextPage = table.getState().pagination.pageIndex
@@ -225,15 +241,20 @@ export const RunningPipelines = () => {
                     wholeData={false}
                     getRowClassName={getRowClassName}
                 />
+                </ErrorBoundary>
             )
         }
     }
 
     return (
         <CContainer style={{ marginTop: '15px' }}>
-            <h3 className="card-title mb-3" style={{ textAlign: 'center' }}>
-                Pipelines
-            </h3>
+            <TableHeader
+                headline="Pipelines"
+                buttonStyle={{ marginTop: 15, marginBottom: 20 }}
+                icon={faPlay}
+                buttonText='Start new Pipeline'
+                onClick={navigateToTemplates}
+            />
             <BaseContainer>
                 <div className="pipeline-running-1">{renderDatatable()}</div>
             </BaseContainer>

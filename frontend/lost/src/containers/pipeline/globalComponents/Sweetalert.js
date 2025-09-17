@@ -49,7 +49,7 @@ export const alertDeletePipeline = (id) => {
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',
-        cancelButtonColor: 'primary',
+        cancelButtonColor: '#363636ff',
         confirmButtonText: 'Yes, delete it!',
     })
 }
@@ -61,7 +61,7 @@ export const alertDeletion = (text) => {
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',
-        cancelButtonColor: 'primary',
+        cancelButtonColor: '#363636ff',
         confirmButtonText: 'Yes, delete it!',
     })
 }

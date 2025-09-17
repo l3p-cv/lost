@@ -9,6 +9,7 @@ import { useGetCurrentInstruction } from '../../../actions/annoTask/anno_task_ap
 import { CRow, CCol, CProgress } from '@coreui/react'
 import CoreIconButton from '../../../components/CoreIconButton'
 import { faEye } from '@fortawesome/free-solid-svg-icons'
+import AnnotaskReviewComponent from './ReviewPage'
 
 const { siaLayoutUpdate } = actions
 
@@ -35,7 +36,12 @@ const WorkingOnSIA = ({ annoTask, siaLayoutUpdate }) => {
             const instruction = instructions?.find(
                 (inst) => inst.id === currentInstruction.instruction_id
             )
-            setViewingInstruction(instruction || null)
+            if (instruction) setViewingInstruction(instruction)
+        } else {
+            const defaultInstruction = instructions?.find(
+                (inst) => inst.option === "Bounding Box"
+            )
+            if (defaultInstruction) setViewingInstruction(defaultInstruction)
         }
     }, [currentInstruction?.instruction_id, instructions])
 
@@ -52,25 +58,19 @@ const WorkingOnSIA = ({ annoTask, siaLayoutUpdate }) => {
             )
             setViewingInstruction(instruction || null)
         } else {
-            setViewingInstruction(null)
+            const defaultInstruction = instructions?.find( (inst) => inst.option === "Bounding Box")
+            if (defaultInstruction) {
+                setViewingInstruction(defaultInstruction);
+            } else {
+                setViewingInstruction({
+                    id: 'default',
+                    option: 'Bounding Box',
+                    description: 'Default task instruction',
+                    instruction: `
 
-            showDecision({
-                title: 'No Instructions Found',
-                icon: 'info',
-                html: 'There are no instructions available for this task.',
-                option1: {
-                    text: 'OK',
-                    callback: () => {
-                        console.log('User acknowledged the absence of instructions.')
-                    },
-                },
-                option2: {
-                    text: 'Dismiss',
-                    callback: () => {
-                        console.log('User dismissed the notification.')
-                    },
-                },
-            })
+        Please draw bounding boxes for all objects in the image.`,
+                });
+            }
         }
     }
 
@@ -88,7 +88,7 @@ const WorkingOnSIA = ({ annoTask, siaLayoutUpdate }) => {
                     <div className="callout callout-info">
                         <small className="text-muted">Pipeline</small>
                         <br />
-                        <strong>{annoTask.pipelineName}</strong>
+                        <strong>{annoTask.pipeline_name}</strong>
                     </div>
                 </CCol>
                 <CCol xs="2" md="2" xl="2">
@@ -105,7 +105,7 @@ const WorkingOnSIA = ({ annoTask, siaLayoutUpdate }) => {
                         <small className="text-muted">Seconds/Annotation</small>
                         <br />
                         <strong className="h4">
-                            &#8709; {annoTask.statistic.secondsPerAnno}
+                            &#8709; {annoTask.statistic.seconds_per_anno}
                         </strong>
                     </div>
                 </CCol>
@@ -136,36 +136,7 @@ const WorkingOnSIA = ({ annoTask, siaLayoutUpdate }) => {
             />
             <br />
             {viewingInstruction && (
-                <div
-                    style={{
-                        position: 'fixed',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                        backdropFilter: 'blur(5px)',
-                        zIndex: 999,
-                    }}
-                />
-            )}
-            {viewingInstruction && (
-                <div
-                    style={{
-                        position: 'fixed',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        zIndex: 1000,
-                        backgroundColor: 'white',
-                        padding: '20px',
-                        borderRadius: '10px',
-                        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-                        width: '600px', 
-                        height: '500px', 
-                        overflow: 'auto', 
-                       }}
-                >
+                <div>
                     <ViewInstruction
                         instructionData={viewingInstruction}
                         onClose={() => setViewingInstruction(null)}

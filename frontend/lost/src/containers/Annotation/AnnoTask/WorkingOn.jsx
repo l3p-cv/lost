@@ -5,6 +5,7 @@ import IconButton from '../../../components/IconButton'
 import { useNavigate } from 'react-router-dom'
 import { faFastForward } from '@fortawesome/free-solid-svg-icons'
 import { CCol, CProgress, CRow } from '@coreui/react'
+import CoreIconButton from '../../../components/CoreIconButton'
 
 const WorkingOn = ({ annoTask }) => {
     const navigate = useNavigate()
@@ -31,7 +32,7 @@ const WorkingOn = ({ annoTask }) => {
                         <div className="text-body-secondary text-truncate small">
                             Pipeline
                         </div>
-                        <div className="fs-5 fw-semibold">{annoTask.pipelineName}</div>
+                        <div className="fs-5 fw-semibold">{annoTask.pipeline_name}</div>
                     </div>
                 </CCol>
                 <CCol xs={12} md={6} className="mt-2">
@@ -50,7 +51,7 @@ const WorkingOn = ({ annoTask }) => {
                             Seconds/Annotation
                         </div>
                         <div className="fs-5 fw-semibold">
-                            &#8709; {annoTask.statistic.secondsPerAnno}
+                            &#8709; {annoTask.statistic.seconds_per_anno}
                         </div>
                     </div>
                 </CCol>
@@ -75,7 +76,7 @@ const WorkingOn = ({ annoTask }) => {
 
             <CRow>
                 <CCol className="mt-5">
-                    <IconButton
+                    <CoreIconButton
                         onClick={() => handleContinue(annoTask.type)}
                         color="primary"
                         isOutline={true}

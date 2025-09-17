@@ -3,6 +3,7 @@ import { useEffect, useLayoutEffect, useState } from 'react'
 // import * as canvasActions from '../Annotation/SIA/lost-sia/src/types/canvasActions'
 import * as reviewApi from '../../actions/dataset/dataset_review_api'
 import SIAImageSearchModal from './SIAImageSearchModal'
+import CoreIconButton from '../../components/CoreIconButton'
 
 import { canvasActions, notificationType, Sia, toolbarEvents as tbe } from 'lost-sia'
 import {
@@ -11,6 +12,7 @@ import {
     showSuccess,
     showWarning,
 } from '../../components/Notification'
+import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 
 const CANVAS_CONFIG = {
     tools: {
@@ -59,6 +61,8 @@ const SIAReview = ({ datasetId = null, annotaskId = null }) => {
     const [selectedTool, setSelectedTool] = useState()
     const [updateSize, setUpdateSize] = useState()
     const [layoutUpdateInt, setLayoutUpdateInt] = useState(0)
+    const [imageSearchActive, setImageSearchActive] = useState(false)
+    const [filteredImageIds, setFilteredImageIds] = useState(null)
 
     // filter single annotasks labels by retrieving them from annotask options
     // stays empty when reviewing datasets
@@ -84,6 +88,7 @@ const SIAReview = ({ datasetId = null, annotaskId = null }) => {
     }, [nextPrev])
 
     useLayoutEffect(() => {
+        document.body.style.overflow = 'hidden'
         const windowSizeUpdate = () => {
             setUpdateSize([window.innerWidth, window.innerHeight])
         }
@@ -93,6 +98,11 @@ const SIAReview = ({ datasetId = null, annotaskId = null }) => {
 
         return () => window.removeEventListener('resize', windowSizeUpdate)
     }, [])
+
+    useEffect(() => {
+        document.body.style.overflow = 'hidden'
+        setLayoutUpdateInt(layoutUpdateInt + 1)
+    }, [imageSearchActive])
 
     useEffect(() => {
         const data = {
@@ -187,13 +197,33 @@ const SIAReview = ({ datasetId = null, annotaskId = null }) => {
         }
     }
 
+    const getSearchImageId = (currentId, direction) => {
+        if (direction == 'previous'){
+            if (filteredImageIds.indexOf(currentId) != 0){
+                return filteredImageIds[filteredImageIds.indexOf(currentId) - 1]
+            }
+        } else if (direction == 'next'){
+            if (filteredImageIds.indexOf(currentId) != filteredImageIds.length -1){
+                return filteredImageIds[filteredImageIds.indexOf(currentId) + 1]
+            }
+        }
+
+        return -1
+    }
+
     const handleCanvasKeyDown = (e) => {
         console.log('Canvas keyDown: ', e.key)
         if (!reviewPageData || !reviewPageData.image) return
 
         switch (e.key) {
             case 'ArrowLeft':
-                if (!reviewPageData.image.isFirst) {
+                if (imageSearchActive){
+                    if (getSearchImageId(reviewPageData.image.id, 'previous') != -1){
+                        setNextPrev({imgId: getSearchImageId(reviewPageData.image.id, 'previous'), cmd: 'specificImage' })
+                    } else {
+                        break
+                    }
+                } else if (!reviewPageData.image.isFirst) {
                     setNextPrev({ imgId: reviewPageData.image.id, cmd: 'previous' })
                 } else {
                     handleNotification({
@@ -204,7 +234,13 @@ const SIAReview = ({ datasetId = null, annotaskId = null }) => {
                 }
                 break
             case 'ArrowRight':
-                if (!reviewPageData.image.isLast) {
+                if (imageSearchActive){
+                    if (getSearchImageId(reviewPageData.image.id, 'next') != -1){
+                        setNextPrev({imgId: getSearchImageId(reviewPageData.image.id, 'next'), cmd: 'specificImage'})
+                    } else {
+                        break
+                    }
+                } else if (!reviewPageData.image.isLast) {
                     setNextPrev({ imgId: reviewPageData.image.id, cmd: 'next' })
                 } else {
                     handleNotification({
@@ -236,10 +272,27 @@ const SIAReview = ({ datasetId = null, annotaskId = null }) => {
                 handleToolSelected(data)
                 break
             case tbe.GET_NEXT_IMAGE:
-                setNextPrev({ imgId: reviewPageData.image.id, cmd: 'next' })
+                if (imageSearchActive) {
+                    if (getSearchImageId(reviewPageData.image.id, 'next') != -1){
+                        setNextPrev({ imgId: getSearchImageId(reviewPageData.image.id, 'next'), cmd: 'specificImage' })
+                    } else {
+                        break
+                    }
+                } else {
+                    console.log("normal")
+                    setNextPrev({ imgId: reviewPageData.image.id, cmd: 'next' })
+                }
                 break
             case tbe.GET_PREV_IMAGE:
-                setNextPrev({ imgId: reviewPageData.image.id, cmd: 'previous' })
+                if (imageSearchActive) {
+                    if (getSearchImageId(reviewPageData.image.id, 'previous') != -1){
+                        setNextPrev({ imgId: getSearchImageId(reviewPageData.image.id, 'previous'), cmd: 'specificImage' })
+                    } else {
+                        break
+                    }
+                } else {
+                    setNextPrev({ imgId: reviewPageData.image.id, cmd: 'previous' })
+                }
                 break
             case tbe.TASK_FINISHED:
                 break
@@ -306,7 +359,12 @@ const SIAReview = ({ datasetId = null, annotaskId = null }) => {
             iteration: null,
         }
 
+        // do not reload, when the image stays the same
+        if (imageAnnoId == reviewPageData.image.id){
+            return
+        }
         loadNextReviewPage([id, data])
+        setImageSearchActive(true)
     }
 
     const renderSia = () => {
@@ -314,7 +372,24 @@ const SIAReview = ({ datasetId = null, annotaskId = null }) => {
         if (!reviewOptions) return 'No Review Data!'
 
         return (
-            <div>
+            <div style={{overflow: 'hidden',}}>
+                {imageSearchActive && <CoreIconButton 
+                    className="mb-2"
+                    onClick={ () => setImageSearchActive(false)}
+                    isOutline={imageSearchActive ? false : true}
+                    icon={faMagnifyingGlass}
+                    disabled={imageSearchActive ? false : true}
+                    text={imageSearchActive ? 
+                        "Stop Search-Mode!"
+                        : "Search-Mode Deactivated"
+                    }
+                    color={
+                        imageSearchActive ? 
+                        'danger' 
+                        : 'info'
+                    }
+                    toolTip='return to normal mode'
+                />}
                 <Sia
                     annoTaskId={reviewPageData.current_annotask_idx}
                     annoSaveResponse={annoSaveResponse}
@@ -358,6 +433,7 @@ const SIAReview = ({ datasetId = null, annotaskId = null }) => {
                     // blocked={state.blockCanvas}
                     onToolBarEvent={(e, data) => handleToolBarEvent(e, data)}
                     onImgageSearchClicked={onImgageSearchClicked}
+                    preventScrolling={true}
                     // svg={props.svg}
                     // filter={props.filter}
                     toolbarEnabled={{
@@ -386,6 +462,7 @@ const SIAReview = ({ datasetId = null, annotaskId = null }) => {
                 setIsVisible={setIsImgSearchModalVisible}
                 onChooseImage={switchSIAImage}
                 possibleAnnotaskLabels={possibleAnnotaskLabels}
+                onSearchResult={setFilteredImageIds}
             />
             {renderSia()}
         </div>

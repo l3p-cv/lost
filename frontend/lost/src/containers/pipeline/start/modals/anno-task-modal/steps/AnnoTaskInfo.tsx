@@ -1,6 +1,8 @@
 import { CCol, CRow, CFormSelect,
     CForm, CFormInput, CInputGroup, CFormLabel
  } from '@coreui/react'
+import { useEffect } from 'react';
+import Select from 'react-select'
 import { useNodesData, useReactFlow } from '@xyflow/react';
 import HelpButton from '../../../../../../components/HelpButton';
 import { AnnoTaskNodeData } from '../../../nodes';
@@ -18,13 +20,14 @@ export const AnnoTaskInfo = ({ nodeId }: UserInfoProps) => {
 
     const { data: instructions, isLoading, error } = useGetInstructions('all'); 
 
-    const handleInstructionChange = (selectedOption: any) => {
-        if (!selectedOption || selectedOption.value === '-1') {
+    const handleInstructionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const value = e.target.value;
+        if (value === '-1') {
             updateNodeData(nodeId, { instructionId: null });
             return;
         }
 
-        updateNodeData(nodeId, { instructionId: selectedOption.value });
+        updateNodeData(nodeId, { instructionId: value });
 
         const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true';
         if (joyrideRunning) {
@@ -45,9 +48,11 @@ export const AnnoTaskInfo = ({ nodeId }: UserInfoProps) => {
             : []),
     ];
 
-    if (annoTaskNodeData.instructionId === undefined) {
-        updateNodeData(nodeId, { instructionId: null });
-    }
+    useEffect(() => {
+        if (annoTaskNodeData.instructionId === undefined) {
+            updateNodeData(nodeId, { instructionId: null });
+        }
+    }, [annoTaskNodeData.instructionId, nodeId, updateNodeData]);
 
     return (
         <div>
@@ -103,13 +108,7 @@ export const AnnoTaskInfo = ({ nodeId }: UserInfoProps) => {
                                             onChange={handleInstructionChange}
                                             placeholder="Select an instruction..."
                                             id="instruction"
-                                            defaultValue={
-                                                annoTaskNodeData.instructionId == null
-                                                    ? instructionOptions[0]
-                                                    : instructionOptions.find(
-                                                        (option) => option.value === annoTaskNodeData.instructionId
-                                                    )
-                                            }
+                                            defaultValue={annoTaskNodeData.instructionId ?? '-1'}
                                         />
                                     </CInputGroup>
                                     )}

@@ -7,17 +7,15 @@ import {
 import { useEffect, useState } from 'react'
 import { useCopyToClipboard } from 'react-use'
 import { useDeleteUser, useUsers } from '../../actions/user/user_api'
-import Datatable from '../../components/Datatable'
-import IconButton from '../../components/IconButton'
 import * as Notification from '../../components/Notification'
 import EditUserModal from './EditUserModal'
 import { createColumnHelper } from '@tanstack/react-table'
 import CoreDataTable from '../../components/CoreDataTable'
-import { CBadge, CButton, CTooltip } from '@coreui/react'
+import { CBadge } from '@coreui/react'
 import BaseContainer from '../../components/BaseContainer'
-import { FaFontAwesome } from 'react-icons/fa'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { alertDeletion } from '../pipeline/globalComponents/Sweetalert'
+import CoreIconButton from '../../components/CoreIconButton'
+import ErrorBoundary from '../../components/ErrorBoundary'
 
 const RenderBadge = ({ key, text, color }) => (
     <div>
@@ -113,7 +111,7 @@ export const UsersTable = () => {
             header: 'Roles',
             cell: (props) => {
                 return props.row.original.roles.map((el) => (
-                    <RenderBadge // TODO: replace with CBadge
+                    <RenderBadge
                         key={el.idx}
                         text={el.name}
                         color="success"
@@ -125,7 +123,7 @@ export const UsersTable = () => {
             header: 'Groups',
             cell: (props) => {
                 return props.row.original.groups.map((el) => (
-                    <RenderBadge // TODO: replace with CBadge
+                    <RenderBadge
                         key={el.idx}
                         text={el.name}
                         color="primary"
@@ -133,62 +131,45 @@ export const UsersTable = () => {
                 ))
             },
         }),
-        columnHelper.accessor('apiToken', {
-            header: 'API Token',
+        columnHelper.accessor('actions', {
+            header: 'Actions',
             cell: (props) => {
-                const visBool = false
-                if (props.row.original.apiToken) {
+                    const user_row = props.row
                     return (
-                        <CTooltip content="Copy Token to Clipboard" placement="top">
-                            <CButton
+                        <>
+                            {/* {(props.row.original.apiToken && */}
+                            <CoreIconButton
+                                toolTip='Copy API Token to Clipboard'
+                                style={{ marginRight: '5px' }}
                                 color="info"
                                 variant='outline'
+                                disabled={!(props.row.original.apiToken)}
                                 onClick={() => {
                                     copyToClipboard(props.row.original.apiToken)
                                 }}
-                            >
-                                <FontAwesomeIcon icon={faCopy} />
-                            </CButton>
-                        </CTooltip>
+                                icon={faCopy}
+                            />
+                            {/* )} */}
+                            <CoreIconButton
+                                toolTip='Edit User'
+                                style={{ marginRight: '5px' }}
+                                variant='outline'
+                                color="warning"
+                                onClick={() => editClick(user_row)}
+                                icon={faUserEdit}
+                            />
+                            <CoreIconButton
+                                toolTip='Delete User'
+                                style={{ marginRight: '5px' }}
+                                variant='outline'
+                                color="danger"
+                                onClick={() => {
+                                    deleteClick(props.row)
+                                }}
+                                icon={faTrash}
+                            />
+                        </>
                     )
-                }
-                return null
-            },
-        }),
-        columnHelper.accessor('edit', {
-            header: 'Edit',
-            cell: (props) => {
-                // console.log("Log 1: ", props.row.original.user_name)
-                const user_row = props.row
-                return (
-                    <CTooltip content="Edit User" placement="top">
-                        <CButton
-                            variant='outline'
-                            color="warning"
-                            onClick={() => editClick(user_row)}
-                        >
-                            <FontAwesomeIcon icon={faUserEdit} />
-                        </CButton>
-                    </CTooltip>
-                )
-            },
-        }),
-        columnHelper.accessor('delete', {
-            header: 'Delete',
-            cell: (props) => {
-                return (
-                    <CTooltip content="Delete User" placement="top">
-                        <CButton
-                            variant='outline'
-                            color="danger"
-                            onClick={() => {
-                                deleteClick(props.row)
-                            }}
-                        >
-                            <FontAwesomeIcon icon={faTrash} />
-                        </CButton>
-                    </CTooltip>
-                )
             },
         }),
     ]
@@ -205,16 +186,19 @@ export const UsersTable = () => {
                     onClosed={onClosedModal}
                 />
             )}
-
-            <IconButton
-                color="primary"
-                icon={faUserPlus}
-                text="Add User"
-                onClick={createNewUser}
-                style={{ marginBottom: 20 }}
-            />
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <CoreIconButton
+                    color="primary"
+                    icon={faUserPlus}
+                    text="Add User"
+                    onClick={createNewUser}
+                    style={{ marginBottom: 20}}
+                />
+            </div>
             <BaseContainer>
+                <ErrorBoundary>
                 <CoreDataTable columns={columns} tableData={usersData.users} />
+                </ErrorBoundary>
             </BaseContainer>
         </div>
     ) : (
