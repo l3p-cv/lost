@@ -4,7 +4,7 @@ from flask import request
 from flask_restx import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from lost.api.api import api
-from lost.api.sia.api_definition import sia_anno, sia_config, labels
+from lost.api.sia.api_definition import sia_anno, sia_config, labels, sia_polygon_operations, sia_polygon_operations_response, error_model
 from lost.db import roles, access
 from lost.settings import LOST_CONFIG, DATA_URL
 from lost.logic import sia
@@ -259,3 +259,31 @@ class Configuration(Resource):
             re = sia.get_configuration(dbm, identity)
             dbm.close_session()
             return re
+
+@namespace.route("/polygon_operations")
+@api.doc(security="apikey")
+class PolygonOperations(Resource):
+    @api.doc(security="apikey", description="Perform geometric operations (union, intersection, difference) on two polygons for the same image")
+    @api.expect(sia_polygon_operations)
+    @api.response(200, "Success", sia_polygon_operations_response)
+    @api.response(400, "Bad Request", error_model)
+    @api.response(500, "Internal Server Error", error_model)
+    @jwt_required()
+    def post(self):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = int(get_jwt_identity())
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.ANNOTATOR):
+            dbm.close_session()
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
+        
+        try:
+            data = json.loads(request.data)
+            flask.current_app.logger.info(f"Received payload: {data}")
+            response, status_code = sia.perform_polygon_operations(data)
+            dbm.close_session()
+            return response, status_code
+        except Exception as e:
+            flask.current_app.logger.error(f"Error parsing request: {str(e)}")
+            dbm.close_session()
+            return {"error": str(e)}, 500
