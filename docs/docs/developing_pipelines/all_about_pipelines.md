@@ -14,11 +14,6 @@ Pipelines](https://github.com/l3p-cv/lost_ootb_pipes)
 
 ### Repository Structure
 
-@TODO
-::: #pp-dir-structure .literalinclude caption="Example repo structure of a lost pipeline project."
-pp_repo_structure.txt
-:::
-
 ``` md
 lost_ootb_pipes/
 ├── found
@@ -54,6 +49,8 @@ inside a script.
 
 ### Importing a Pipeline Project into LOST {#aapipelines-import}
 
+#### Import per GUI
+
 After creating a pipeline it needs to be imported into LOST. In order to
 do that, you need to perform the following steps:
 
@@ -69,11 +66,15 @@ do that, you need to perform the following steps:
 ![pipeline import](/img/pipe_import_new.png)  
 Figure 1: Pipeline import GUI
 
+#### Import per CLI
+
+TODO (noted)
+
 ## Updating a LOST Pipeline
 
 If there was an update for one of your pipelines you need to update your
 pipe project in LOST.In order to do this, the procedure is the same as
-for `importing a pipeline <aapipelines-import>`
+[*importing a pipeline above*](/docs/developing_pipelines/all_about_pipelines#aapipelines-import).
 
 ## Namespacing
 
@@ -84,8 +85,7 @@ be namespaced internally by LOST: **\<name of pipeline project
 folder\>.\<name of python script file\>**.
 
 So in `our example <pp-dir-structure>` the
-pipelines would be named **found.mia** and **found.mia_request_again**
-\....
+pipelines would be named **found.mia** and **found.mia_request_again**.
 
 ## Pipeline Definition Files {#aapipelines-pipe-def-files}
 
@@ -103,19 +103,16 @@ which is the identifier of the element itself. An
 element also needs to have an attribute that is called *peOut* and contains a
 list of elements where the current element is connected to.
 
-### An Example
+### Pipeline Example
 
--TODO: find the example...
-
-@TODO
-::: #aapipelines-example .literalinclude language="json" linenos="" caption="A simple example pipeline."
-../../../backend/lost/pyapi/examples/pipes/mia/anno_all_imgs.json
-:::
+An example of a MIA-Pipeline, with the three **Stages** of
+**Datasource**, **Script** and **AnnotationTask** can be
+found [*in this json-file*](https://github.com/l3p-cv/lost_ootb_pipes/blob/main/found/mia.json).
 
 ### Possible Pipeline Elements
 
 Below you will find the definition of all possible pipeline elements in
-LOST.
+LOST. These will be the **Stages** of your **Pipelines**.
 
 #### Datasource Element
 
@@ -154,7 +151,7 @@ of your pipeline. In order to define a **Script** you need to specify a
 **path** to the script file relative to the
 `pipeline project folder <aapipelines-pipe-projects>` and a short **description** of your script.
 
-#### AnnoTask Element
+#### AnnotationTask Element
 
 ``` {.json linenos="" emphasize-lines="4-8
 
@@ -170,7 +167,7 @@ of your pipeline. In order to define a **Script** you need to specify a
 }"}
 ```
 
-An **AnnoTask** represents an annotation task for a human-in-the-loop.
+An **AnnotationTask** represents an annotation task for a human-in-the-loop.
 **Scripts** can request annotations for specific images that will be
 presented in one of the annotation tools in the web gui.
 
@@ -180,7 +177,7 @@ Right now two types of annotation tools are available. If you set
 images will be present in the
 `multi image annotation tool <annotators-mia>`.
 
-An **AnnoTask** requires also a **name** and **instructions** for the
+An **AnnotationTask** requires also a **name** and **instructions** for the
 annotator. Based on the **type** a specific configuration is required.
 
 If **\"type\"** is **\"mia\"** the configuration will be the following:

@@ -7,11 +7,7 @@ pipeline. A script element is implemented as a python3 module. The
 listing below
 shows an example of such a script. This script will request image
 annotations for all images of a dataset.
-
--TODO: get the example script...
-::: #aascripts-anno-all-imgs .literalinclude caption="Listing 1: An example LOST script."
-../../../backend/lost/pyapi/examples/pipes/mia/anno_all_imgs.py
-:::
+You can [*find the script here*](https://github.com/l3p-cv/lost_ootb_pipes/blob/main/found/request_annos.py).
 
 In order to implement a script you need to create a python class that
 inherits from `lost.pyapi.script.Script`. Your class needs to implement a **main** method
@@ -52,9 +48,9 @@ It is a common pattern to read a **path** to an imageset from a
 `Listing 3 <aascripts-reading-images>` for
 a code example. Since multiple **Datasources** could be connected to our
 script, we iterate over all connected **Datasources** of the input with
-[self.inp.datasources](all_about_pipelines#datasource-element). For each **Datasource** element we can read the
+[*self.inp.datasources*](/docs/developing_pipelines/all_about_pipelines#datasource_element). For each **Datasource**
+element we can read the
 **path** attribute to get the filesystem path to a folder with images.
--TODO: make this link work...
 
 ``` {#aascripts-reading-images .python linenos="" caption="Listing 3: Getting the path to all images of a Datasource."}
 from lost.pyapi import script

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 1
+sidebar_position: 0
 ---
 
 # Starting Pipelines
@@ -7,11 +7,12 @@ sidebar_position: 1
 ## Templates
 
 To start a **Pipeline**, one need to first select a **PipelineTemplates**, defining the stages the **Pipeline** will consist of.
-The **PipelineTemplates** at ones disposal are part of the **PipelineProjects** one imported ([*see here*](/docs/developing_pipelines/all_about_pipelines)).
+The **PipelineTemplates** at ones disposal are part of the **PipelineProjects** one has imported ([*see here*](/docs/developing_pipelines/all_about_pipelines)).
 
 Selecting a **Template** will directly lead to the stage configuration.
 
-TODO: image of template-selection
+![img](/img/pipeline_templates.png)
+Figure 1: Table with the **PipelineTemplates**
 
 ## Configuring the Stages
 
@@ -20,7 +21,9 @@ one can see which stage still needs to be configured, by looking at the the head
 of the stage. If it still needs ones input, it will be yellow.
 Headers of fully configured stages are displayed in green instead.
 
-TODO: image of example stages SIA
+![img](/img/pipeline_start.png)
+Figure 2: The stages of the standard **SIA-Pipeline**. The first and last stages are
+not yet configured, while the middle one is.
 
 The most common elements, which need configuration, are the types **"Datasource"** and **"Annotation Task"**.
 After having specified everyting there, one can continue by clicking the arrow on the upper right and giving
@@ -33,7 +36,12 @@ Upon clicking the stage, a window will open. There, the user can first select a 
 The shown files and directories in the main part of the window, will be the content of the respective source.
 There, one can select the exact data for the **Pipeline** to process.
 
-TODO: image
+![img](/img/start_pipeline_datasource.png)
+Figure 3: The file-browser with which to select a **Datasource**
+
+For the standard SIA and MIA **AnnotationTasks**, the input should either be
+a directory of images or a .parquet-file, containing a **LOSTDataset**, specifying
+in its column "img_path" where the images to (re)annotate are.
 
 ### Configuring AnnotationTasks
 

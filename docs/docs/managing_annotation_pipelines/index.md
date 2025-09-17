@@ -11,7 +11,7 @@ sidebar_position: 2
 
 ## [Configure AnnotationTask](/docs/managing_annotation_pipelines/start_pipeline#configuring-annotationtasks)
 
-## [Configure Script arguments](/docs/managing_annotation_pipelines/start_pipeline#configuring-annotationtasks#configuring-scripts) <!-- TODO write-->
+## [Configure Script arguments](/docs/managing_annotation_pipelines/start_pipeline#configuring-annotationtasks#configuring-scripts)
 
 ## [Datasets](/docs/managing_annotation_pipelines/datasets.md)
 
@@ -19,8 +19,8 @@ sidebar_position: 2
 
 ## [Instructions](/docs/managing_annotation_pipelines/instructions.md)
 
-## [Running Pipelines](/docs/managing_annotation_pipelines/running_pipelines) <!-- TODO -->
+## [Running Pipelines](/docs/managing_annotation_pipelines/running_pipelines)
 
 ## [Review Annotations](/docs/managing_annotation_pipelines/annotation_review.md)
 
-## Designer Statistics <!-- TODO -->
+## [Designer Statistics](/docs/managing_annotation_pipelines/designer_statistics.md) <!-- TODO -->

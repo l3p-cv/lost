@@ -1,3 +1,7 @@
+---
+sidebar_position: 4
+---
+
 # Datasources
 
 ## General
@@ -13,3 +17,4 @@ under the **Datasources** section in the navigation bar.
 Figure 1: The pop up, with which to add a new **Datasource**
 
 @TODO
+TODO

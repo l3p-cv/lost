@@ -1,5 +1,6 @@
 ---
 # title: LabelTrees
+sidebar_position: 6
 ---
 
 # LabelTrees
