@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { connect } from 'react-redux'
 import actions from '../../../actions'
 import { getColor } from './utils'
@@ -6,10 +6,10 @@ import { useGetInstructions } from '../../../containers/Instruction/instruction_
 import ViewInstruction from '../../../containers/Instruction/ViewInstruction' // Import ViewInstruction component
 import { showDecision } from '../../../components/Notification' // Import showDecision function
 import { useGetCurrentInstruction } from '../../../actions/annoTask/anno_task_api'
-import { CRow, CCol, CProgress } from '@coreui/react'
+import { CRow, CCol, CWidgetStatsF, CWidgetStatsB } from '@coreui/react'
 import CoreIconButton from '../../../components/CoreIconButton'
 import { faEye } from '@fortawesome/free-solid-svg-icons'
-import AnnotaskReviewComponent from './ReviewPage'
+import { FaBriefcase, FaClock, FaPen, FaTasks } from 'react-icons/fa'
 
 const { siaLayoutUpdate } = actions
 
@@ -18,7 +18,7 @@ const WorkingOnSIA = ({ annoTask, siaLayoutUpdate }) => {
     const myRef = useRef(null)
 
     const [viewingInstruction, setViewingInstruction] = useState(null) // State to hold the current instruction data
-    const { data: instructions, isLoading, error, refetch: refetchInstructions } = useGetInstructions('all') // API hook to fetch instructions
+    const { data: instructions } = useGetInstructions('all') // API hook to fetch instructions
     const { data: currentInstruction } = useGetCurrentInstruction(annoTask?.id) // Fetch current instruction based on annoTask.id
 
     useEffect(() => {
@@ -34,14 +34,14 @@ const WorkingOnSIA = ({ annoTask, siaLayoutUpdate }) => {
     useEffect(() => {
         if (currentInstruction?.instruction_id) {
             const instruction = instructions?.find(
-                (inst) => inst.id === currentInstruction.instruction_id
+                (inst) => inst.id === currentInstruction.instruction_id,
             )
             setViewingInstruction(instruction || null)
         }
     }, [currentInstruction?.instruction_id, instructions])
 
     if (!annoTask) {
-        return <div>Loading...</div> 
+        return <div>Loading...</div>
     }
 
     const progress = Math.floor((annoTask.finished / annoTask.size) * 100)
@@ -49,7 +49,7 @@ const WorkingOnSIA = ({ annoTask, siaLayoutUpdate }) => {
     const handleViewInstruction = () => {
         if (currentInstruction?.instruction_id) {
             const instruction = instructions?.find(
-                (inst) => inst.id === currentInstruction.instruction_id
+                (inst) => inst.id === currentInstruction.instruction_id,
             )
             setViewingInstruction(instruction || null)
         } else {
@@ -76,66 +76,67 @@ const WorkingOnSIA = ({ annoTask, siaLayoutUpdate }) => {
     }
 
     return (
-        <div ref={myRef} style={{ position: 'relative' }}>
+        <div ref={myRef} style={{ position: 'relative', marginTop: 10 }}>
             <CRow>
-                <CCol xs="2" md="2" xl="2">
-                    <div className="callout callout-danger">
-                        <small className="text-muted">Working on</small>
-                        <br />
-                        <strong>{annoTask.name}</strong>
-                    </div>
+                <CCol xs="3" md="3" xl="3">
+                    <CWidgetStatsF
+                        color="primary"
+                        icon={<FaBriefcase />}
+                        value={annoTask.name}
+                        title="Working on"
+                        style={{ height: '100%' }}
+                    />
                 </CCol>
-                <CCol xs="2" md="2" xl="2">
-                    <div className="callout callout-info">
-                        <small className="text-muted">Pipeline</small>
-                        <br />
-                        <strong>{annoTask.pipeline_name}</strong>
-                    </div>
+
+                <CCol xs="3" md="3" xl="3">
+                    <CWidgetStatsF
+                        color="primary"
+                        icon={<FaTasks />}
+                        title="Pipeline"
+                        value={annoTask.pipeline_name}
+                        style={{ height: '100%' }}
+                    />
                 </CCol>
-                <CCol xs="2" md="2" xl="2">
-                    <div className="callout callout-warning">
-                        <small className="text-muted">Annotations</small>
-                        <br />
-                        <strong className="h4">
-                            {annoTask.finished}/{annoTask.size}
-                        </strong>
-                    </div>
+
+                <CCol xs="3" md="3" xl="3">
+                    <CWidgetStatsF
+                        color="primary"
+                        icon={<FaPen />}
+                        title="Annotations"
+                        value={`${annoTask.finished}/${annoTask.size}`}
+                        style={{ height: '100%' }}
+                    />
                 </CCol>
-                <CCol xs="2" md="2" xl="2">
-                    <div className="callout callout-success">
-                        <small className="text-muted">Seconds/Annotation</small>
-                        <br />
-                        <strong className="h4">
-                            &#8709; {annoTask.statistic.seconds_per_anno}
-                        </strong>
-                    </div>
+                <CCol xs="3" md="3" xl="3">
+                    <CWidgetStatsF
+                        color="primary"
+                        icon={<FaClock />}
+                        title={annoTask.statistic.seconds_per_anno}
+                        value="Seconds/Annotation"
+                        style={{ height: '100%' }}
+                    />
+                </CCol>
+            </CRow>
+
+            <CRow style={{ marginTop: 10 }}>
+                <CCol xs="10">
+                    <CWidgetStatsB
+                        progress={{ color: getColor(progress), value: progress }}
+                        title={`Started at: ${new Date(annoTask.createdAt).toLocaleString()}`}
+                        value={`${progress}%`}
+                    />
                 </CCol>
                 <CCol xs="2" md="2" xl="2">
                     <CoreIconButton
                         color="primary"
-                        style={{ marginTop: '25px' }}
+                        // style={{ marginTop: '25px' }}
                         onClick={handleViewInstruction}
-                        text={"Show Instructions"}
+                        text={'Show Instructions'}
                         icon={faEye}
                     />
                 </CCol>
             </CRow>
-            <div className="clearfix">
-                <div className="float-left">
-                    <strong>{progress}%</strong>
-                </div>
-                <div className="float-right">
-                    <small className="text-muted">
-                        Started at: {new Date(annoTask.createdAt).toLocaleString()}
-                    </small>
-                </div>
-            </div>
-            <CProgress
-                className="progress-xs"
-                color={getColor(progress)}
-                value={progress}
-            />
-            <br />
+
             {viewingInstruction && (
                 <div
                     style={{
@@ -162,15 +163,17 @@ const WorkingOnSIA = ({ annoTask, siaLayoutUpdate }) => {
                         padding: '20px',
                         borderRadius: '10px',
                         boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-                        width: '600px', 
-                        height: '500px', 
-                        overflow: 'auto', 
-                       }}
+                        width: '600px',
+                        height: '500px',
+                        overflow: 'auto',
+                    }}
                 >
                     <ViewInstruction
                         instructionData={viewingInstruction}
                         onClose={() => setViewingInstruction(null)}
-                        onEdit={(instruction) => alert('Edit functionality is not implemented yet')}
+                        onEdit={(instruction) =>
+                            alert('Edit functionality is not implemented yet')
+                        }
                     />
                 </div>
             )}

@@ -75,7 +75,7 @@ const WorkingOn = ({ annoTask }) => {
             </CRow>
 
             <CRow>
-                <CCol className="mt-5">
+                <CCol xs="4" className="mt-5">
                     <CoreIconButton
                         onClick={() => handleContinue(annoTask.type)}
                         color="primary"
@@ -84,6 +84,17 @@ const WorkingOn = ({ annoTask }) => {
                         text="Continue"
                     />
                 </CCol>
+                {annoTask.type === 'SIA' && (
+                    <CCol xs="7" className="mt-5">
+                        <CoreIconButton
+                            onClick={() => navigate(`/sia2`)}
+                            color="primary"
+                            isOutline={true}
+                            icon={faFastForward}
+                            text="Continue using the new SIA"
+                        />
+                    </CCol>
+                )}
             </CRow>
         </>
     )

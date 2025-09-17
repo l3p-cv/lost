@@ -53,6 +53,7 @@ const SingleImageAnnotation = (props) => {
         flexDirection: 'column',
         height: 'calc(100vh - 375px)',
         overflow: 'hidden',
+        marginTop: 10,
     }
 
     const middleStyle = {
@@ -75,7 +76,6 @@ const SingleImageAnnotation = (props) => {
                         }
                     />
                 </div>
-                <h3>SIA2 Preview</h3>
             </div>
         </>
     )
