@@ -35,7 +35,8 @@ import {
     showWarning,
 } from '../../../components/Notification'
 import NavigationButtons from './NavigationButtons'
-import { AnnotationTool } from 'lost-sia/models'
+
+import { AnnotationStatus, AnnotationTool } from 'lost-sia/models'
 
 // import * as filterTools from './lost-sia/src/filterTools'
 // import * as notificationType from './lost-sia/src/types/notificationType'
@@ -127,6 +128,80 @@ const SiaWrapper = (props) => {
             case 'polygons':
                 return AnnotationTool.Polygon
         }
+    }
+
+    const unconvertAnnoToolType = (annotationType) => {
+        switch (annotationType) {
+            case AnnotationTool.BBox:
+                return 'bBox'
+            case AnnotationTool.Line:
+                return 'line'
+            case AnnotationTool.Point:
+                return 'point'
+            case AnnotationTool.Polygon:
+                return 'polygon'
+        }
+    }
+
+    const unconvertAnnotationStatus = (annotationStatus) => {
+        switch (annotationStatus) {
+            case AnnotationStatus.NEW:
+                return 'new'
+            case AnnotationStatus.DELETED:
+                return 'deleted'
+            case AnnotationStatus.DATABASE:
+                return 'database'
+            case AnnotationStatus.CHANGED:
+                return 'changed'
+        }
+    }
+
+    // convert an annotation from SIA into the older Database format
+    const convertAnnoToOldFormat = (annotation) => {
+        // copy without reference
+        const annotationInOldFormat = { ...annotation }
+
+        // rename external id
+        annotationInOldFormat.id = annotationInOldFormat.externalId
+        annotationInOldFormat.externalId = null
+
+        // default (just rename coordinates key)
+        annotationInOldFormat.data = annotation.coordinates
+
+        // handle special annotation types that were used in the old format
+        if (annotation.type === AnnotationTool.BBox) {
+            // get top left point + height and width instead of just two points
+            const topLeft = annotation.data[0]
+            const downRight = annotation.data[1]
+
+            const width = downRight.x - topLeft.x
+            const height = downRight.y - topLeft.y
+
+            const oldFormat = {
+                x: topLeft.x,
+                y: topLeft.y,
+                width,
+                height,
+            }
+
+            return oldFormat
+        }
+
+        if (annotation.type === AnnotationTool.Point) {
+            // list -> single point
+            annotationInOldFormat.data = annotation.coordinates[0]
+        }
+
+        // finish renaming
+        annotationInOldFormat.coordinates = null
+
+        // change the type value back
+        annotationInOldFormat.type = unconvertAnnoToolType(annotation.type)
+
+        // change the status value back
+        annotationInOldFormat.status = unconvertAnnotationStatus(annotation.status)
+
+        return annotationInOldFormat
     }
 
     useEffect(() => {
