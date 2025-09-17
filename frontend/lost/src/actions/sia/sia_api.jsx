@@ -14,6 +14,8 @@ export const useGetSiaAnnos = (annotationRequestData) => {
         {
             enabled: !!annotationRequestData,
             refetchOnWindowFocus: false,
+            cacheTime: 0,
+            staleTime: 0,
         },
     )
 }

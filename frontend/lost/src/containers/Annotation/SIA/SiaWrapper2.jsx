@@ -31,7 +31,7 @@ import {
     showWarning,
 } from '../../../components/Notification'
 import NavigationButtons from './NavigationButtons'
-import AnnotationTool from '../../../../../lost-sia/src/models/AnnotationTool'
+import { AnnotationTool } from 'lost-sia/models'
 
 // import * as filterTools from './lost-sia/src/filterTools'
 // import * as notificationType from './lost-sia/src/types/notificationType'
@@ -86,8 +86,6 @@ const SiaWrapper = (props) => {
     const { mutate: inferAnnotations, isLoading: isInferenceLoading } =
         useTritonInference()
 
-    const [isSiaLoading, setIsSiaLoading] = useState(true)
-
     const [annotations, setAnnotations] = useState()
 
     // image nr in annotask
@@ -101,7 +99,13 @@ const SiaWrapper = (props) => {
 
     // requests will automatically refetched when their state (parameter) changes
     const { data: annoData } = useGetSiaAnnos(annotationRequestData)
-    const { data: imageBlob } = useGetSiaImage(imageId)
+    const { data: imageBlobRequest } = useGetSiaImage(imageId)
+    const [imageBlob, setImageBlob] = useState()
+
+    // move this to an external state to be able to unload the image
+    useEffect(() => {
+        setImageBlob(imageBlobRequest)
+    }, [imageBlobRequest])
 
     // @TODO convert old API/backend style to new SIA format
     // while this is not finished, we'll convert the API response here
@@ -119,56 +123,48 @@ const SiaWrapper = (props) => {
     }
 
     useEffect(() => {
-        if (annoData === undefined) return
+        // react query throws a state update with undefined right before the actual data is set when the query cache is disabled
+        if (annoData?.image === undefined || annoData?.annotations === undefined) return
 
-        if (annoData.image !== undefined && annoData.annotations !== undefined) {
-            // @TODO use the old api style (annos separated by type) for now, but convert it here to the new style
-            const collectedAnnoData = Object.entries(annoData.annotations).flatMap(
-                ([type, items]) =>
-                    items.map((annotation) => {
-                        const convertedAnnoType = convertAnnoToolType(type)
+        // @TODO use the old api style (annos separated by type) for now, but convert it here to the new style
+        const collectedAnnoData = Object.entries(annoData.annotations).flatMap(
+            ([type, items]) =>
+                items.map((annotation) => {
+                    const convertedAnnoType = convertAnnoToolType(type)
 
-                        let newCoords = annotation.data
-                        if (convertedAnnoType === AnnotationTool.BBox) {
-                            const oldFormat = annotation.data
-                            newCoords = [
-                                { x: oldFormat.x, y: oldFormat.x },
-                                {
-                                    x: oldFormat.x + oldFormat.w,
-                                    y: oldFormat.y + oldFormat.h,
-                                },
-                            ]
-                        }
+                    let newCoords = annotation.data
+                    if (convertedAnnoType === AnnotationTool.BBox) {
+                        const oldFormat = annotation.data
+                        newCoords = [
+                            { x: oldFormat.x, y: oldFormat.x },
+                            {
+                                x: oldFormat.x + oldFormat.w,
+                                y: oldFormat.y + oldFormat.h,
+                            },
+                        ]
+                    }
 
-                        if (convertedAnnoType === AnnotationTool.Point) {
-                            newCoords = [annotation.data]
-                        }
+                    if (convertedAnnoType === AnnotationTool.Point) {
+                        newCoords = [annotation.data]
+                    }
 
-                        return {
-                            ...annotation,
-                            id: null,
-                            data: null,
-                            externalId: annotation.id,
-                            coordinates: newCoords,
-                            type: convertedAnnoType,
-                        }
-                    }),
-            )
+                    return {
+                        ...annotation,
+                        id: null,
+                        data: null,
+                        externalId: annotation.id,
+                        coordinates: newCoords,
+                        type: convertedAnnoType,
+                    }
+                }),
+        )
 
-            setAnnotations(collectedAnnoData)
+        setAnnotations(collectedAnnoData)
 
-            // request the image from the backend
-            const imageId = annoData.image.id
-            setImageId(imageId)
-        }
+        // request the image from the backend
+        const imageId = annoData.image.id
+        setImageId(imageId)
     }, [annoData])
-
-    useEffect(() => {
-        if (imageBlob === undefined) return
-
-        // image + anno loaded - release sia
-        setIsSiaLoading(false)
-    }, [imageBlob])
 
     useEffect(() => {
         document.body.style.overflow = 'hidden'
@@ -357,7 +353,7 @@ const SiaWrapper = (props) => {
         //     dispatch(siaActions.siaGetNextImage(props.currentImage.id))
         // }
 
-        setIsSiaLoading(true)
+        setImageBlob()
         setAnnotationRequestData({
             direction: 'next',
             imageId: imageId,
@@ -371,7 +367,7 @@ const SiaWrapper = (props) => {
         //     // props.siaGetPrevImage(props.currentImage.id)
         //     dispatch(siaActions.siaGetPrevImage(props.currentImage.id))
         // }
-        setIsSiaLoading(true)
+        setImageBlob()
         setAnnotationRequestData({
             direction: 'prev',
             imageId: imageId,
@@ -792,8 +788,6 @@ const SiaWrapper = (props) => {
         setSamBBox(null)
     }
 
-    if (annoData === undefined || imageBlob === undefined) return 'Loading...'
-
     return (
         <>
             {props.canvasConfig.inferenceModel &&
@@ -829,12 +823,12 @@ const SiaWrapper = (props) => {
                 <Sia2
                     image={imageBlob}
                     initialAnnotations={annotations}
-                    isLoading={isSiaLoading}
+                    isLoading={!imageBlob}
                     possibleLabels={props.possibleLabels}
                     additionalButtons={
                         <NavigationButtons
-                            isFirstImage={annoData.image.isFirst}
-                            isLastImage={annoData.image.isLast}
+                            isFirstImage={annoData?.image?.isFirst}
+                            isLastImage={annoData?.image?.isLast}
                             onNextImagePressed={getNextImage}
                             onPreviousImagePressed={getPreviousImage}
                             onSubmitAnnotask={submitAnnotask}
