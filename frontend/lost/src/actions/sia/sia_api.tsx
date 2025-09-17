@@ -50,6 +50,18 @@ export const useGetSiaImage = (imageId) => {
     )
 }
 
+export const useCreateAnnotation = () => {
+    return useMutation(({ annotation, imageEditData }: editAnnotationData) => {
+        const requestData = {
+            action: 'annoCreated',
+            anno: annotation,
+            img: imageEditData,
+        }
+
+        return axios.patch(API_URL + `/sia`, requestData).then((res) => res.data)
+    })
+}
+
 export const useEditAnnotation = () => {
     return useMutation(({ annotation, imageEditData }: editAnnotationData) => {
         const requestData = {

@@ -9,6 +9,7 @@ import {
     useGetSiaAnnos,
     useGetSiaImage,
     useEditAnnotation,
+    useCreateAnnotation,
 } from '../../../actions/sia/sia_api'
 
 import withRouter from '../../../utils/withRouter'
@@ -49,7 +50,7 @@ const {
     getSiaLabels,
     getSiaConfig,
     siaSetSVG,
-    getSiaImage,
+    // getSiaImage,
     siaSendFinishToBackend,
     siaSetFullscreen,
     siaSetUIConfig,
@@ -113,6 +114,8 @@ const SiaWrapper = (props) => {
     }, [imageBlobRequest])
 
     // @TODO check if request worked
+    const { data: createAnnotationResponse, mutate: createAnnotation } =
+        useCreateAnnotation()
     const { data: editAnnotationResponse, mutate: editAnnotation } = useEditAnnotation()
 
     // @TODO convert old API/backend style to new SIA format
@@ -237,6 +240,7 @@ const SiaWrapper = (props) => {
                         externalId: annotation.id,
                         coordinates: newCoords,
                         type: convertedAnnoType,
+                        status: AnnotationStatus.DATABASE,
                     }
                 }),
         )
@@ -269,32 +273,6 @@ const SiaWrapper = (props) => {
             canvas.unloadImage()
         }
     }, [localTaskFinished])
-
-    useEffect(() => {
-        if (props.getNextImage) {
-            handleClearSamHelperAnnos()
-            getNewImage(props.getNextImage, 'next')
-        }
-    }, [props.getNextImage])
-
-    useEffect(() => {
-        if (props.getPrevImage) {
-            handleClearSamHelperAnnos()
-            getNewImage(props.getPrevImage, 'prev')
-        }
-    }, [props.getPrevImage])
-
-    useEffect(() => {
-        if (props.annos) {
-            if (props.annos.image) {
-                props.siaImgIsJunk(props.annos.image.isJunk)
-                if (props.annos.image.id !== image.id) {
-                    requestImageFromBackend()
-                }
-            }
-            setAnnos(props.annos)
-        }
-    }, [props.annos])
 
     // useEffect(() => {
     //     if (props.taskFinished) {
@@ -440,6 +418,8 @@ const SiaWrapper = (props) => {
             direction: 'next',
             imageId: imageId,
         })
+
+        handleClearSamHelperAnnos()
     }
 
     const getPreviousImage = () => {
@@ -454,6 +434,8 @@ const SiaWrapper = (props) => {
             direction: 'prev',
             imageId: imageId,
         })
+
+        handleClearSamHelperAnnos()
     }
 
     const submitAnnotask = () => {
@@ -776,21 +758,6 @@ const SiaWrapper = (props) => {
         }
     }
 
-    const requestImageFromBackend = () => {
-        props.getSiaImage(props.annos.image.id).then((response) => {
-            setBackendImage({
-                id: props.annos.image.id,
-                data: response ? response.data : failedToLoadImage(),
-            })
-            // setBlockNextImageTrigger(false)
-            setBlockCanvas(filterTools.active(props.filter))
-        })
-        props.getWorkingOnAnnoTask()
-        // if (filterTools.active(props.filter)) {
-        //     filterImage(props.filter)
-        // }
-    }
-
     const failedToLoadImage = () => {
         const message = {
             title: 'Load image error',
@@ -917,10 +884,20 @@ const SiaWrapper = (props) => {
                         />
                     }
                     onAnnoChanged={(annotation) => {
-                        const newAnnotation = {
-                            ...annotation,
-                            status: AnnotationStatus.CHANGED,
-                        }
+                        // do nothing when still creating annotation
+                        // @TODO adapt backend to support partly-finished annotations
+                        if (annotation.status === AnnotationStatus.NEW) return
+
+                        console.log('ANNO EDITED', annotation)
+                        const newAnnotation = { ...annotation }
+
+                        // mark annoation only as changed if it made contact with the server once
+                        // (keeps new annotations new)
+                        newAnnotation.status =
+                            annotation.status === AnnotationStatus.DATABASE
+                                ? AnnotationStatus.CHANGED
+                                : annotation.status
+
                         const annotationInOldFormat =
                             convertAnnoToOldFormat(newAnnotation)
 
@@ -936,6 +913,33 @@ const SiaWrapper = (props) => {
                             imageEditData: imageData,
                         }
                         editAnnotation(editAnnotationData)
+                    }}
+                    onAnnoCreated={(annotation) => {
+                        // do nothing when initially creating an annotation
+                        // @TODO adapt backend to support partly-finished annotations
+                        console.log('ANNO CREATED', annotation)
+                    }}
+                    onAnnoCreationFinished={(annotation) => {
+                        console.log('CREATION FINISHED', annotation)
+
+                        const newAnnotation = {
+                            ...annotation,
+                        }
+                        const annotationInOldFormat =
+                            convertAnnoToOldFormat(newAnnotation)
+
+                        const currentImageData = annoData.image
+                        const imageData = {
+                            imgId: currentImageData.id,
+                            imgActions: currentImageData.imgActions,
+                            annoTime: currentImageData.annoTime, // @TODO
+                        }
+
+                        const createAnnotationData = {
+                            annotation: annotationInOldFormat,
+                            imageEditData: imageData,
+                        }
+                        createAnnotation(createAnnotationData)
                     }}
                 />
 
@@ -1035,7 +1039,7 @@ export default connect(
         getSiaConfig,
         getSiaLabels,
         siaSetSVG,
-        getSiaImage,
+        // getSiaImage,
         siaSendFinishToBackend,
         selectAnnotation,
         siaSetTaskFinished,
