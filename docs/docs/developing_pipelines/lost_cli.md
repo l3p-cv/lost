@@ -104,7 +104,7 @@ The LOST command line tools support the **import** of a label tree from
 a csv file, the **export** of a label tree to a csv file and to
 **remove** a label tree by its name.
 
-![labeltree](/img/labeltree_img.png)  
+![labeltree](/img/label_tree_example.png)  
 Figure 1: An example label tree. As it is visualized in the web gui.
 
 ### Import Label Tree

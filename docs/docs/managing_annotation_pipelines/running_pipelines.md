@@ -5,9 +5,8 @@ sidebar_position: 1
 
 # Running Pipelines
 
-<!-- TODO -->
-
-TODO: image of pipeline table
+![img](/img/pipeline_table.png)
+Figure 1: A table with all created pipelines
 
 Under the section **Pipelines**, all **Pipelines** started by the respective **User** are
 listed in a table. They can be paused, unpaused, deleted and inspected there.

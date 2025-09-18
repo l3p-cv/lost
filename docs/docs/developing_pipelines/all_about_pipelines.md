@@ -87,7 +87,7 @@ folder\>.\<name of python script file\>**.
 So in `our example <pp-dir-structure>` the
 pipelines would be named **found.mia** and **found.mia_request_again**.
 
-## Pipeline Definition Files {#aapipelines-pipe-def-files}
+## Pipeline Definition Files
 
 Within the **pipeline definition file** you define your annotation
 process. Such a pipeline is composed of different standard elements that
@@ -151,7 +151,7 @@ of your pipeline. In order to define a **Script** you need to specify a
 **path** to the script file relative to the
 `pipeline project folder <aapipelines-pipe-projects>` and a short **description** of your script.
 
-#### AnnotationTask Element
+#### AnnoTask Element
 
 ``` {.json linenos="" emphasize-lines="4-8
 
@@ -167,7 +167,8 @@ of your pipeline. In order to define a **Script** you need to specify a
 }"}
 ```
 
-An **AnnotationTask** represents an annotation task for a human-in-the-loop.
+An **AnnotationTask**, defined with the **AnnoTask Element**
+represents an annotation task for a human-in-the-loop.
 **Scripts** can request annotations for specific images that will be
 presented in one of the annotation tools in the web gui.
 

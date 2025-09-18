@@ -56,27 +56,21 @@ Import & Export Pipelines
 
 #### Global LabelTrees
 
-TODO
+Global **LabelTrees** are available for everyone to use.
 
 #### Global Datasources
+
+Global **Datasources** are available for every user.
 
 ![sia-example](/img/global_datasources_new.png)
 Figure 7: The global datasources
 
 #### Global Instructions
 
-TODO
+Instructions available for everyone to use, but only admins can edit them.
+
 ![sia-example](/img/global_instructions_new.png)
 Figure 7: Global insturctions, only able to be edited here
-
-#### Workers
-
-TODO
-TODO: what are workers even?
-
-#### Inference Models
-
-TODO
 
 ## Pipeline Projects
 
@@ -92,7 +86,7 @@ and they can be browsed, edited and deleted here.
 
 ## Workers
 
--TODO What are they???
+These workers are the docker-containers able to execute scripts for LOST.
 
 ![sia-example](/img/admin_workers_new.png)
-Figure 7: TODO
+Figure 7: All current worker(s) listed in a table
