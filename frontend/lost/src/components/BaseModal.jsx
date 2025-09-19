@@ -41,7 +41,7 @@ const BaseModal = ({
     }
     const renderFooter = () => {
         return (
-            isShowCancelButton && (
+            // isShowCancelButton && (
                 <CModalFooter>
                     {[
                         footer || null,
@@ -58,7 +58,7 @@ const BaseModal = ({
                     ]}
                 </CModalFooter>
             )
-        )
+        // )
     }
     return (
         // TODO: fix this as CModal... does not want to work...

@@ -54,6 +54,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed back-button behavior in Step 3 of the SIA pipeline tour guide
 - Improved positioning of step dialogs (now waits for rendering)
 - Resolved issue with image folder selection during tours
+- Re-added rendering of footer for component BaseModal
 
 ### Removed
 - Removed all instances of reactstrap library
@@ -63,6 +64,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed unused Iconbutton from globalComponents
 - Removed unused BaseModal from globalComponents
 - Removed ToolbarTooltip from containers/pipeline/running (replaced with CoreUI functionality)
+- Removed unnecessary "close"-button for global instructions
 
 ## [2.7.0] - 2025-06-12 
 ### Added
