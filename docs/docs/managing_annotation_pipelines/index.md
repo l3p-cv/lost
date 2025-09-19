@@ -5,26 +5,22 @@ sidebar_position: 2
 
 # Managing Annotation Pipelines
 
-## Datasources
+## [Datasources](/docs/managing_annotation_pipelines/datasources.md)
 
-## TODO Datasources
+## [Starting Pipelines](/docs/managing_annotation_pipelines/start_pipeline)
 
-## Label Trees
+## [Configure AnnotationTask](/docs/managing_annotation_pipelines/start_pipeline#configuring-annotationtasks)
 
-## Start Pipeline
+## [Configure Script arguments](/docs/managing_annotation_pipelines/start_pipeline#configuring-annotationtasks#configuring-scripts)
 
-## Choose Datasource
+## [Datasets](/docs/managing_annotation_pipelines/datasets.md)
 
-## TODO
+## [Label Trees](/docs/managing_annotation_pipelines/label_trees.md)
 
-## Configure AnnotationTask
+## [Instructions](/docs/managing_annotation_pipelines/instructions.md)
 
-## Configure Script arguments
+## [Running Pipelines](/docs/managing_annotation_pipelines/running_pipelines)
 
-## Running Pipelines
+## [Review Annotations](/docs/managing_annotation_pipelines/annotation_review.md)
 
-## Instant Annotation Export
-
-## Review Annotations
-
-## Designer Statistics
+## [Designer Statistics](/docs/managing_annotation_pipelines/designer_statistics.md) <!-- TODO -->

@@ -39,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - changed color of standard color 'info'
 - load Datatable columns with useMemo (Pipelines, Datastes)
 - Updated pipeline description handling in tour guide step(mandatory message)
+- Big update of LOST Documentation (now with docusaurus)
 
 ### Fixed
 - Removed centered spinner of CoreDataTable, when faced with empty data, to not block the rest of the page
