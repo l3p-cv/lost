@@ -174,8 +174,8 @@ const SiaWrapper = (props) => {
         // handle special annotation types that were used in the old format
         if (annotation.type === AnnotationTool.BBox) {
             // get top left point + height and width instead of just two points
-            const topLeft = annotation.data[0]
-            const downRight = annotation.data[1]
+            const topLeft = annotation.coordinates[0]
+            const downRight = annotation.coordinates[1]
 
             const width = downRight.x - topLeft.x
             const height = downRight.y - topLeft.y
@@ -183,11 +183,11 @@ const SiaWrapper = (props) => {
             const oldFormat = {
                 x: topLeft.x,
                 y: topLeft.y,
-                width,
-                height,
+                w: width,
+                h: height,
             }
 
-            return oldFormat
+            annotationInOldFormat.data = oldFormat
         }
 
         if (annotation.type === AnnotationTool.Point) {
