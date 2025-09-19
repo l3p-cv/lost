@@ -190,29 +190,40 @@ labels = api.model('Labels', {
 })
 
 
-sia_polygon_operations = api.model('SIA Polygon Operations', {
-    'poly1': fields.Nested(api.model('Polygon1',{
-        'id': fields.Integer(readOnly=True, description='The identifier of the polygon.'),
-        'type': fields.String(description='Type of Geometry (polygon, line, point)',required=True, enum=['polygon', 'line', 'point']),
-        'imgId':fields.Integer(readOnly=True, description='The identifier of the image this polygon is annotated for.',required=True),
-        'poly1_data': fields.List(fields.Nested(point_data, description='2-D data of that polygon1.')),
-    }), required=True),
-    'poly2': fields.Nested(api.model('Polygon2',{
-        'id': fields.Integer(readOnly=True, description='The identifier of the polygon.'),
-        'type': fields.String(description='Type of Geometry (polygon, line, point)',required=True, enum=['polygon', 'line', 'point']),
-        'imgId':fields.Integer(readOnly=True, description='The identifier of the image this polygon is annotated for.',required=True),
-        'poly2_data': fields.List(fields.Nested(point_data, description='2-D data of that polygon2.')),
-    }), required=True),
-    'operation': fields.String(description='Geometric operation (union, intersection, difference)', required=True, enum=['union', 'intersection', 'difference']),
-    'img': fields.Nested(api.model('Image', {
-        'imgId': fields.Integer(description='Image ID', required=True)
-    }), required=True)
+sia_polygon_union = api.model('SIA Polygon Union', {
+    'polygons': fields.List(
+        fields.List(fields.Nested(point_data, description='2-D coordinates of a polygon')),
+        description='List of at least 2 polygons for union operation',
+        required=True
+    )
+})
+
+sia_polygon_intersection = api.model('SIA Polygon Intersection', {
+    'polygons': fields.List(
+        fields.List(fields.Nested(point_data, description='2-D coordinates of a polygon')),
+        description='Exactly 2 polygons for intersection operation',
+        required=True,
+        max_length=2,
+        min_length=2
+    )
+})
+
+sia_polygon_difference = api.model('SIA Polygon Difference', {
+    'selectedPolygon': fields.List(
+        fields.Nested(point_data, description='2-D coordinates of the selected polygon'),
+        description='Selected polygon for difference operation',
+        required=True
+    ),
+    'polygonModifiers': fields.List(
+        fields.List(fields.Nested(point_data, description='2-D coordinates of a modifier polygon')),
+        description='List of at least 1 modifier polygon for difference operation',
+        required=True,
+        min_length=1
+    )
 })
 
 sia_polygon_operations_response = api.model('SIA Polygon Operations Response', {
-    'operation': fields.String(description='The performed geometric operation', required=True),
-    'imgId': fields.Integer(description='The identifier of the image', required=True),
-    'result_polygon': fields.List(fields.Nested(point_data), description='Coordinates of the resulting polygon', required=True)
+    'resultantPolygon': fields.List(fields.Nested(point_data), description='Coordinates of the resulting polygon', required=True)
 })
 
 error_model = api.model("Error", {
