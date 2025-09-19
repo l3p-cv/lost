@@ -96,6 +96,10 @@ const SiaWrapper = (props) => {
     // the modified annotations are stored inside SIA and handed to us using events
     const [initialAnnotations, setInitialAnnotations] = useState()
 
+    // Annotations that are just created in SIA have never been stored in the backend and therefore don't have an externalId yet.
+    // To identify them later on, we store a mapping between the external and SIAs internal id for freshly created annos
+    const [annotationIdMapping, setAnnotationIdMapping] = useState({})
+
     // image nr in annotask
     const [annotationRequestData, setAnnotationRequestData] = useState({
         direction: 'next',
@@ -150,11 +154,12 @@ const SiaWrapper = (props) => {
 
     const unconvertAnnotationStatus = (annotationStatus) => {
         switch (annotationStatus) {
-            case AnnotationStatus.NEW:
+            case AnnotationStatus.CREATING:
                 return 'new'
             case AnnotationStatus.DELETED:
                 return 'deleted'
             case AnnotationStatus.DATABASE:
+            case AnnotationStatus.CREATED:
                 return 'database'
             case AnnotationStatus.CHANGED:
                 return 'changed'
@@ -363,6 +368,25 @@ const SiaWrapper = (props) => {
             console.log('cleaned up')
         }
     }, [])
+
+    useEffect(() => {
+        if (createAnnotationResponse === undefined) return
+
+        // we got an external id assigned from the server
+        // update the mapping
+        console.log('createAnnotationResponse', createAnnotationResponse)
+
+        // remove the 'new-' prefix
+        const siaInternalAnnoId = parseInt(
+            createAnnotationResponse.tempId.replace('new-', ''),
+        )
+
+        // update the mapping to include the new annotation
+        const newAnnotationIdMapping = { ...annotationIdMapping }
+        newAnnotationIdMapping[siaInternalAnnoId] = createAnnotationResponse.dbId
+
+        setAnnotationIdMapping(newAnnotationIdMapping)
+    }, [createAnnotationResponse])
 
     const allowedToMarkExample = () => {
         props.siaAllowedToMarkExample().then((response) => {
@@ -899,17 +923,25 @@ const SiaWrapper = (props) => {
                     onAnnoChanged={(annotation) => {
                         // do nothing when still creating annotation
                         // @TODO adapt backend to support partly-finished annotations
-                        if (annotation.status === AnnotationStatus.NEW) return
+                        if (annotation.status === AnnotationStatus.CREATING) return
 
-                        console.log('ANNO EDITED', annotation)
                         const newAnnotation = { ...annotation }
 
-                        // mark annoation only as changed if it made contact with the server once
-                        // (keeps new annotations new)
-                        newAnnotation.status =
-                            annotation.status === AnnotationStatus.DATABASE
-                                ? AnnotationStatus.CHANGED
-                                : annotation.status
+                        if (
+                            [
+                                AnnotationStatus.DATABASE,
+                                AnnotationStatus.CREATED,
+                            ].includes(annotation.status)
+                        ) {
+                            // mark annoation only as changed if it made contact with the server once
+                            // (keeps new annotations new)
+                            newAnnotation.status = AnnotationStatus.CHANGED
+
+                            // search for an external anno id in the mapping
+                            const externalAnnoId =
+                                annotationIdMapping[newAnnotation.internalId]
+                            if (externalAnnoId) newAnnotation.externalId = externalAnnoId
+                        }
 
                         const annotationInOldFormat =
                             convertAnnoToOldFormat(newAnnotation)
@@ -937,6 +969,7 @@ const SiaWrapper = (props) => {
 
                         const newAnnotation = {
                             ...annotation,
+                            status: AnnotationStatus.CREATING, // mark as new so the anno is created at the server
                         }
                         const annotationInOldFormat =
                             convertAnnoToOldFormat(newAnnotation)
@@ -949,7 +982,12 @@ const SiaWrapper = (props) => {
                         }
 
                         const createAnnotationData = {
-                            annotation: annotationInOldFormat,
+                            annotation: {
+                                ...annotationInOldFormat,
+                                // special case for created annos: the server saves the anno and returns this id back as 'tempId'
+                                // use SIAs internalId for identifying the annotation when the response arrived
+                                id: `new-${newAnnotation.internalId}`,
+                            },
                             imageEditData: imageData,
                         }
                         createAnnotation(createAnnotationData)
