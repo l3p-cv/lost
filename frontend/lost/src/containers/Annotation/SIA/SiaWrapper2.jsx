@@ -92,7 +92,9 @@ const SiaWrapper = (props) => {
     const { mutate: inferAnnotations, isLoading: isInferenceLoading } =
         useTritonInference()
 
-    const [annotations, setAnnotations] = useState()
+    // only the initial annotations (the ones we got from the server) are stored in this component
+    // the modified annotations are stored inside SIA and handed to us using events
+    const [initialAnnotations, setInitialAnnotations] = useState()
 
     // image nr in annotask
     const [annotationRequestData, setAnnotationRequestData] = useState({
@@ -174,15 +176,21 @@ const SiaWrapper = (props) => {
         // handle special annotation types that were used in the old format
         if (annotation.type === AnnotationTool.BBox) {
             // get top left point + height and width instead of just two points
-            const topLeft = annotation.coordinates[0]
-            const downRight = annotation.coordinates[1]
+            const topLeft = annotationInOldFormat.coordinates[0]
+            const downRight = annotationInOldFormat.coordinates[1]
 
             const width = downRight.x - topLeft.x
             const height = downRight.y - topLeft.y
 
+            const bboxCenter = {
+                x: topLeft.x + width / 2,
+                y: topLeft.y + height / 2,
+            }
+
+            // the old format stored the BBox CENTER, not the top left corner
             const oldFormat = {
-                x: topLeft.x,
-                y: topLeft.y,
+                x: bboxCenter.x,
+                y: bboxCenter.y,
                 w: width,
                 h: height,
             }
@@ -218,15 +226,20 @@ const SiaWrapper = (props) => {
                     const convertedAnnoType = convertAnnoToolType(type)
 
                     let newCoords = annotation.data
+
                     if (convertedAnnoType === AnnotationTool.BBox) {
-                        const oldFormat = annotation.data
-                        newCoords = [
-                            { x: oldFormat.x, y: oldFormat.x },
-                            {
-                                x: oldFormat.x + oldFormat.w,
-                                y: oldFormat.y + oldFormat.h,
-                            },
-                        ]
+                        // the old format saved the CENTER of the BBox, not the top left corner...
+                        const centerPoint = { x: newCoords.x, y: newCoords.y }
+                        const topLeftPoint = {
+                            x: centerPoint.x - newCoords.w / 2,
+                            y: centerPoint.y - newCoords.h / 2,
+                        }
+                        const bottomRightPoint = {
+                            x: centerPoint.x + newCoords.w / 2,
+                            y: centerPoint.y + newCoords.h / 2,
+                        }
+
+                        newCoords = [topLeftPoint, bottomRightPoint]
                     }
 
                     if (convertedAnnoType === AnnotationTool.Point) {
@@ -245,7 +258,7 @@ const SiaWrapper = (props) => {
                 }),
         )
 
-        setAnnotations(collectedAnnoData)
+        setInitialAnnotations(collectedAnnoData)
 
         // request the image from the backend
         const imageId = annoData.image.id
@@ -871,7 +884,7 @@ const SiaWrapper = (props) => {
             <div style={{ height: '100%', width: '100%' }}>
                 <Sia2
                     image={imageBlob}
-                    initialAnnotations={annotations}
+                    initialAnnotations={initialAnnotations}
                     isLoading={!imageBlob}
                     possibleLabels={props.possibleLabels}
                     additionalButtons={
