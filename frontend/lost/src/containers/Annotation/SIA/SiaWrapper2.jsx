@@ -10,6 +10,7 @@ import {
     useGetSiaImage,
     useEditAnnotation,
     useCreateAnnotation,
+    useDeleteAnnotation,
 } from '../../../actions/sia/sia_api'
 
 import withRouter from '../../../utils/withRouter'
@@ -123,6 +124,8 @@ const SiaWrapper = (props) => {
     const { data: createAnnotationResponse, mutate: createAnnotation } =
         useCreateAnnotation()
     const { data: editAnnotationResponse, mutate: editAnnotation } = useEditAnnotation()
+    const { data: deleteAnnotationResponse, mutate: deleteAnnotation } =
+        useDeleteAnnotation()
 
     // @TODO convert old API/backend style to new SIA format
     // while this is not finished, we'll convert the API response here
@@ -991,6 +994,25 @@ const SiaWrapper = (props) => {
                             imageEditData: imageData,
                         }
                         createAnnotation(createAnnotationData)
+                    }}
+                    onAnnoDeleted={(annotation) => {
+                        const currentImageData = annoData.image
+                        const imageData = {
+                            imgId: currentImageData.id,
+                            imgActions: currentImageData.imgActions,
+                            annoTime: currentImageData.annoTime, // @TODO
+                        }
+                        const deletedAnnotation = {
+                            ...annotation,
+                            status: AnnotationStatus.DELETED,
+                        }
+                        const annotationInOldFormat =
+                            convertAnnoToOldFormat(deletedAnnotation)
+                        const deleteAnnotationData = {
+                            annotation: annotationInOldFormat,
+                            imageEditData: imageData,
+                        }
+                        deleteAnnotation(deleteAnnotationData)
                     }}
                 />
 

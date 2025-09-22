@@ -73,3 +73,15 @@ export const useEditAnnotation = () => {
         return axios.patch(API_URL + `/sia`, requestData).then((res) => res.data)
     })
 }
+
+export const useDeleteAnnotation = () => {
+    return useMutation(({ annotation, imageEditData }: editAnnotationData) => {
+        const requestData = {
+            action: 'annoDeleted',
+            anno: annotation,
+            img: imageEditData,
+        }
+
+        return axios.patch(API_URL + `/sia`, requestData).then((res) => res.data)
+    })
+}
