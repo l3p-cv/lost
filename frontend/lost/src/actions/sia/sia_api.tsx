@@ -56,6 +56,26 @@ export const useGetSiaImage = (imageId) => {
     )
 }
 
+export const useGetSiaPossibleLabels = () => {
+    return useQuery(
+        'getsiaPossibleLabels',
+        () => axios.get(`${API_URL}/sia/label`).then((res) => res.data.labels),
+        {
+            refetchOnWindowFocus: false,
+        },
+    )
+}
+
+export const useGetSiaConfiguration = () => {
+    return useQuery(
+        'getsiaConfiguration',
+        () => axios.get(`${API_URL}/sia/configuration`).then((res) => res.data),
+        {
+            refetchOnWindowFocus: false,
+        },
+    )
+}
+
 export const useCreateAnnotation = () => {
     return useMutation(({ annotation, imageEditData }: editAnnotationData) => {
         const requestData = {
@@ -101,4 +121,8 @@ export const useImageJunk = () => {
 
         return axios.patch(API_URL + `/sia`, requestData).then((res) => res.data)
     })
+}
+
+export const useFinishAnnotask = () => {
+    return useMutation(() => axios.post(API_URL + `/sia/finish`).then((res) => res.data))
 }
