@@ -111,8 +111,8 @@ const WorkingOnSIA = ({ annoTask, siaLayoutUpdate }) => {
                     <CWidgetStatsF
                         color="primary"
                         icon={<FaClock />}
-                        title={annoTask.statistic.seconds_per_anno}
-                        value="Seconds/Annotation"
+                        title="Seconds/Annotation"
+                        value={annoTask.statistic.seconds_per_anno}
                         style={{ height: '100%' }}
                     />
                 </CCol>
