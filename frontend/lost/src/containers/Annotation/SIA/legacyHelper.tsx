@@ -1,9 +1,41 @@
 // @TODO convert old API/backend style to new SIA format
 
-import { AnnotationStatus, AnnotationTool } from 'lost-sia/models'
+import {
+    Annotation,
+    AnnotationMode,
+    AnnotationStatus,
+    AnnotationTool,
+    // Point,
+} from 'lost-sia/models'
+
+export type LegacyBboxData = {
+    x: number
+    y: number
+    w: number
+    h: number
+}
+
+export type LegacyAnnotation = {
+    id: number
+    annoTime: number
+    data: LegacyBboxData
+    labelIds: number[]
+    mode: AnnotationMode // do we even need this globally? - only really used inside AnnotationComponent
+    selectedNode: number
+    status: AnnotationStatus
+    type: AnnotationTool
+    timestamp: DOMHighResTimeStamp
+}
+
+export type LegacyAnnotationResponse = {
+    bBoxes: LegacyAnnotation[]
+    points: LegacyAnnotation[]
+    lines: LegacyAnnotation[]
+    polygons: LegacyAnnotation[]
+}
 
 // while this is not finished, we'll convert the API response here
-const convertAnnoToolType = (annotationTypeString) => {
+const convertAnnoToolType = (annotationTypeString: string): AnnotationTool => {
     switch (annotationTypeString) {
         case 'bBoxes':
             return AnnotationTool.BBox
@@ -16,7 +48,7 @@ const convertAnnoToolType = (annotationTypeString) => {
     }
 }
 
-const unconvertAnnoToolType = (annotationType) => {
+const unconvertAnnoToolType = (annotationType: AnnotationTool): string => {
     switch (annotationType) {
         case AnnotationTool.BBox:
             return 'bBox'
@@ -27,9 +59,11 @@ const unconvertAnnoToolType = (annotationType) => {
         case AnnotationTool.Polygon:
             return 'polygon'
     }
+
+    return ''
 }
 
-const unconvertAnnotationStatus = (annotationStatus) => {
+const unconvertAnnotationStatus = (annotationStatus: AnnotationStatus): string => {
     switch (annotationStatus) {
         case AnnotationStatus.CREATING:
             return 'new'
@@ -41,12 +75,14 @@ const unconvertAnnotationStatus = (annotationStatus) => {
         case AnnotationStatus.CHANGED:
             return 'changed'
     }
+
+    return ''
 }
 
 // convert an annotation from SIA into the older Database format
-const convertAnnoToOldFormat = (annotation) => {
+const convertAnnoToOldFormat = (annotation: Annotation) => {
     // copy without reference
-    const annotationInOldFormat = { ...annotation }
+    const annotationInOldFormat: Annotation = { ...annotation }
 
     // rename external id
     annotationInOldFormat.id = annotationInOldFormat.externalId

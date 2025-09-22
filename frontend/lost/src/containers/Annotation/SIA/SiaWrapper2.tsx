@@ -26,9 +26,9 @@ import {
 } from '../../../components/Notification'
 import NavigationButtons from './NavigationButtons'
 
-import { AnnotationStatus, AnnotationTool } from 'lost-sia/models'
+import { Annotation, AnnotationStatus, AnnotationTool } from 'lost-sia/models'
 
-import legacyHelper from './legacyHelper'
+import legacyHelper, { LegacyAnnotation, LegacyAnnotationResponse } from './legacyHelper'
 
 const SiaWrapper = () => {
     const navigate = useNavigate()
@@ -41,7 +41,7 @@ const SiaWrapper = () => {
 
     // only the initial annotations (the ones we got from the server) are stored in this component
     // the modified annotations are stored inside SIA and handed to us using events
-    const [initialAnnotations, setInitialAnnotations] = useState()
+    const [initialAnnotations, setInitialAnnotations] = useState<Annotation[]>()
 
     // Annotations that are just created in SIA have never been stored in the backend and therefore don't have an externalId yet.
     // To identify them later on, we store a mapping between the external and SIAs internal id for freshly created annos
@@ -54,7 +54,7 @@ const SiaWrapper = () => {
     })
 
     // image id in filesystem
-    const [imageId, setImageId] = useState()
+    const [imageId, setImageId] = useState<number | undefined>()
 
     const { data: possibleLabels } = useGetSiaPossibleLabels()
     const { data: siaConfiguration } = useGetSiaConfiguration()
@@ -62,7 +62,7 @@ const SiaWrapper = () => {
     // requests will automatically refetched when their state (parameter) changes
     const { data: annoData } = useGetSiaAnnos(annotationRequestData)
     const { data: imageBlobRequest } = useGetSiaImage(imageId)
-    const [imageBlob, setImageBlob] = useState()
+    const [imageBlob, setImageBlob] = useState<string | undefined>()
 
     // move this to an external state to be able to unload the image
     // changing the image does also reinitialize SIA
@@ -88,8 +88,9 @@ const SiaWrapper = () => {
         if (annoData?.image === undefined || annoData?.annotations === undefined) return
 
         // @TODO use the old api style (annos separated by type) for now, but convert it here to the new style
-        const collectedAnnoData = Object.entries(annoData.annotations).flatMap(
-            ([type, items]) =>
+        const annotationsByType: LegacyAnnotationResponse = annoData.annotations
+        const collectedAnnoData = Object.entries(annotationsByType).flatMap(
+            ([type, items]: [string, LegacyAnnotation[]]) =>
                 items.map((annotation) => {
                     const convertedAnnoType = legacyHelper.convertAnnoToolType(type)
 
@@ -204,20 +205,20 @@ const SiaWrapper = () => {
     }
 
     const getNextImage = () => {
-        setImageBlob()
+        setImageBlob(undefined)
         setAnnotationRequestData({
             direction: 'next',
-            imageId: imageId,
+            imageId: imageId!,
         })
 
         handleClearSamHelperAnnos()
     }
 
     const getPreviousImage = () => {
-        setImageBlob()
+        setImageBlob(undefined)
         setAnnotationRequestData({
             direction: 'prev',
-            imageId: imageId,
+            imageId: imageId!,
         })
 
         handleClearSamHelperAnnos()

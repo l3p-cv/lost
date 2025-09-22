@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
-import { CCol, CRow } from '@coreui/react'
 
 import WorkingOnSIA from './AnnoTask/WorkingOnSIA'
 import SiaWrapper from './SIA/SiaWrapper2'
