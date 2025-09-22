@@ -11,6 +11,7 @@ import {
     useEditAnnotation,
     useCreateAnnotation,
     useDeleteAnnotation,
+    useImageJunk,
 } from '../../../actions/sia/sia_api'
 
 import withRouter from '../../../utils/withRouter'
@@ -126,6 +127,7 @@ const SiaWrapper = (props) => {
     const { data: editAnnotationResponse, mutate: editAnnotation } = useEditAnnotation()
     const { data: deleteAnnotationResponse, mutate: deleteAnnotation } =
         useDeleteAnnotation()
+    const { data: imageJunkResponse, mutate: junkImage } = useImageJunk()
 
     // @TODO convert old API/backend style to new SIA format
     // while this is not finished, we'll convert the API response here
@@ -911,7 +913,7 @@ const SiaWrapper = (props) => {
             <div style={{ height: '100%', width: '100%' }}>
                 <Sia2
                     image={imageBlob}
-                    initialAnnotations={initialAnnotations}
+                    initialIsImageJunk={annoData?.image?.isJunk}
                     isLoading={!imageBlob}
                     possibleLabels={props.possibleLabels}
                     additionalButtons={
@@ -1013,6 +1015,15 @@ const SiaWrapper = (props) => {
                             imageEditData: imageData,
                         }
                         deleteAnnotation(deleteAnnotationData)
+                    }}
+                    onIsImageJunk={(newJunkState) => {
+                        const currentImageData = annoData.image
+                        const imageData = {
+                            imgId: currentImageData.id,
+                            annoTime: currentImageData.annoTime,
+                            isJunk: newJunkState,
+                        }
+                        junkImage(imageData)
                     }}
                 />
 

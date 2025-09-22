@@ -9,6 +9,12 @@ type ImageEditData = {
     annoTime: number
 }
 
+type ImageJunkData = {
+    imgId: number
+    annoTime: number
+    isJunk: boolean
+}
+
 type editAnnotationData = {
     annotation: Annotation
     imageEditData: ImageEditData
@@ -80,6 +86,17 @@ export const useDeleteAnnotation = () => {
             action: 'annoDeleted',
             anno: annotation,
             img: imageEditData,
+        }
+
+        return axios.patch(API_URL + `/sia`, requestData).then((res) => res.data)
+    })
+}
+
+export const useImageJunk = () => {
+    return useMutation((imageJunkData: ImageJunkData) => {
+        const requestData = {
+            action: 'imgJunkUpdate',
+            img: imageJunkData,
         }
 
         return axios.patch(API_URL + `/sia`, requestData).then((res) => res.data)
