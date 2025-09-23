@@ -44,6 +44,27 @@ export const TemplateView = () => {
             setModalData(clickedModalData)
             toggleModal()
         }
+
+        if (node.type === 'datasourceNode'){
+            const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true';
+            const currentStep = parseInt(localStorage.getItem('currentStep') || '0');
+            if (joyrideRunning && currentStep === 3) {
+            window.dispatchEvent(
+                new CustomEvent('joyride-next-step', {
+                detail: { step: 'navigate-to-dsnode' }
+                })
+            );}
+        }
+        if (node.type === 'annoTaskNode'){
+            setTimeout(() => { 
+                const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true';
+                const currentStep = parseInt(localStorage.getItem('currentStep') || '0');
+                if (joyrideRunning && currentStep === 11) {
+                window.dispatchEvent(
+                new CustomEvent('joyride-next-step', {
+                detail: { step: 'navigate-to-annoTasknode' }
+                }))}},1000);
+            }
     }
 
         const handleNextClick = () => {

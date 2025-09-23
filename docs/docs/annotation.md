@@ -8,7 +8,7 @@ sidebar_position: 3
 
 ### Your Dashboard
 
-![sia-example](/img/annotator-dashboard.png)
+![sia-example](/img/anno_dashboard_new.png)
 Figure 1: The annotator dashboard.
 
 In Figure 1 you can see an example of the annotator dashboard. At the
@@ -30,25 +30,25 @@ Figure 2 shows an example of the SIA tool. At the top you can see a
 progess bar with some information about the current AnnotationTask.
 Beyond this bar the actual annotation tool is presented. SIA consists of
 three main components. These components are the canvas, the image bar
-and the tool bar
+and the tool bar.
 
-![sia-example](/img/sia-example.png)
+![sia-example](/img/sia_example_new.png)
 Figure 2: An example of SIA.
 
-![sia-canvas](/img/sia-canvas.png)
+![sia-canvas](/img/sia_canvas_new.png)
 Figure 3: An example of the SIA canvas component. It
 presents the image to the annotator. By right clicking, you can draw
 annotations on the image.
 
-![image-bar](/img/sia-image-bar.png)
+![image-bar](/img/sia_img_top_new.png)
 Figure 4: The image bar component provides information about
-the image, beginning with the IDs of the AnnotationTask and of this
-image in the database. This is followed by the number of the image in
+the image, beginning with the IDs of the AnnotationTask.
+This is followed by the number of the image in
 the current annotation session and the overall number of images to
 annotate. The last information is the label that was given to the whole
-image, if one was provided.
+image, if one was provided (in this example, it was not).
 
-![toolbar](/img/sia-toolbar.png)
+![toolbar](/img/sia_toolbar_new.png)
 
 Figure 5: The toolbar and the buttons it consists of provide
 the following functions:
@@ -89,23 +89,23 @@ it is possible to reverse the selection with the "Reverse" button.
 This removes all unremoved images and selects the ones, for the
 current label, which were previously removed.
 
-As an example, in Figure 7 the annotator clicked on the car, since it
-does not belong to the cluster of aeroplanes. Since he clicked on it, the
-car is now grayed out. Then the annotator moved on to the label input field
+As an example, in Figure 7 the annotator clicked on the images without hores, since
+they do not belong to the cluster of horses. Since they clicked on it, the
+clicked on images are now grayed out. Then the annotator moved on to the label input field
 on the upper left
-and selected **Aeroplane** as label for the remaining images. Now the
-annotator needs to click on the **Submit** button to complete this
+and selected **Horse** as label for the remaining images. Now the
+annotator needs to click on the **arrow facing right** to complete this
 annotation step.
 
-![sia-example](/img/mia-example.png)
+![sia-example](/img/mia_example.png)
 Figure 7: An example of MIA.
 
 Figure 8 shows the left part of the MIA control panel. You can see the
 **label input field** and the currently **selected label** in a red box.
 
-![sia-example](/img/mia-controls1.png)
+![sia-example](/img/mia_toolbar_left.png)
 
-Figure 8: Left part of the MIA control panel.
+Figure 8: Left part of the MIA control panel, with the label selection.
 
 In Figure 9 the right part of the MIA control panel is presented. The
 blue **submit button** on the left can be used to submit the
@@ -120,8 +120,7 @@ buttons** there is a dropdown with name **amount** here the annotator
 can select the maximum number of images that are presented at the same
 time within the cluster view.
 
-![sia-example](/img/mia-controls2.png)
-TODO: change image to up to date MIA!!! (arrow buttons)
+![sia-example](/img/mia_toolbar_right_new.png)
 
 Figure 9: Right part of the MIA control panel.
 
@@ -130,6 +129,6 @@ image of the cluster. In order to **zoom a single image**, perform a
 **double click** on it. Figure 10 shows an example of such a single image
 zoom. To scale the image back to its original size, **double click** it again.
 
-![sia-example](/img/mia-example-zoom.png)
+![sia-example](/img/mia_zoom_new2.png)
 Figure 10: Zoomed view of a specific image of the
 cluster.

@@ -20,13 +20,14 @@ export const AnnoTaskInfo = ({ nodeId }: UserInfoProps) => {
 
     const { data: instructions, isLoading, error } = useGetInstructions('all'); 
 
-    const handleInstructionChange = (selectedOption: any) => {
-        if (!selectedOption || selectedOption.value === '-1') {
+    const handleInstructionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const value = e.target.value;
+        if (value === '-1') {
             updateNodeData(nodeId, { instructionId: null });
             return;
         }
 
-        updateNodeData(nodeId, { instructionId: selectedOption.value });
+        updateNodeData(nodeId, { instructionId: value });
 
         const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true';
         if (joyrideRunning) {
@@ -100,20 +101,16 @@ export const AnnoTaskInfo = ({ nodeId }: UserInfoProps) => {
                                     ) : error ? (
                                         <div>Error loading instructions</div>
                                     ) : (
-                                        <Select
+                                    <CInputGroup className="mb-3">
+                                        <CFormSelect
                                             required
                                             options={instructionOptions}
                                             onChange={handleInstructionChange}
                                             placeholder="Select an instruction..."
                                             id="instruction"
-                                            defaultValue={
-                                                annoTaskNodeData.instructionId == null
-                                                    ? instructionOptions[0]
-                                                    : instructionOptions.find(
-                                                        (option) => option.value === annoTaskNodeData.instructionId
-                                                    )
-                                            }
+                                            defaultValue={annoTaskNodeData.instructionId ?? '-1'}
                                         />
+                                    </CInputGroup>
                                     )}
                                 </CCol>
                             </CRow>

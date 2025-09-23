@@ -118,11 +118,11 @@ directories.
 ## Building lost containers locally
 
 - The whole build process is described in
-    [.gitlab-ci.yml](https://github.com/l3p-cv/lost/blob/master/.gitlab-ci.yml).
+    [*`.gitlab-ci.yml`*](https://github.com/l3p-cv/lost/blob/master/.gitlab-ci.yml).
 
 - All required docker files are provided in
-    [lost/docker](https://github.com/l3p-cv/lost/tree/master/docker)
-    within the lost repo.
+    [*`lost/docker`*](https://github.com/l3p-cv/lost/tree/master/docker)
+    within the lost repository.
 
 There are 2 containers unique to LOST, that will be executing scripts and the webserver:
 
@@ -131,4 +131,4 @@ There are 2 containers unique to LOST, that will be executing scripts and the we
 - *lost-frontend-1*: Handles the GUI
 
 You can find the LOST containers and their official names in the
-[compose.yaml](https://github.com/l3p-cv/lost/blob/master/docker/compose/compose.yaml)
+[*compose.yaml*](https://github.com/l3p-cv/lost/blob/master/docker/compose/compose.yaml)

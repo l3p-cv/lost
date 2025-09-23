@@ -5,22 +5,24 @@ import LostFileBrowser from './LostFileBrowser';
 const ImageBrowserModal = ({ visible, onClose, fs, fsLoading, fullFs, initPath, onPathSelected }) => {
   return (
     <CModal visible={visible} onClose={onClose} size="lg">
-      <CModalHeader>
-        <CModalTitle>Select an Image</CModalTitle>
-      </CModalHeader>
-      <CModalBody  className="file-browser-modal">
-        {fsLoading ? (
-          <CSpinner color="primary" />
-        ) : (
-          fullFs && (
-            <LostFileBrowser
-              fs={fullFs}
-              initPath={initPath}
-              onPathSelected={onPathSelected}
-            />
-          )
-        )}
-      </CModalBody>
+      <div className='file-browser-modal'>
+        <CModalHeader>
+          <CModalTitle>Select an Image</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          {fsLoading ? (
+            <CSpinner color="primary" />
+          ) : (
+            fullFs && (
+              <LostFileBrowser
+                fs={fullFs}
+                initPath={initPath}
+                onPathSelected={onPathSelected}
+              />
+            )
+          )}
+        </CModalBody>
+      </div>
     </CModal>
   );
 };

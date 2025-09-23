@@ -1,3 +1,7 @@
+---
+sidebar_position: 10
+---
+
 # For Pipeline Designers
 
 ## The pipeline idea
@@ -55,7 +59,7 @@ sia/
 Below you can see the **pipeline definition file** of the
 **sia_all_tools** pipeline. This pipeline will request annotations for
 all images inside a folder from the
-`Single Image Annotation (SIA) tool <annotators-sia>` and export these annotations to a csv file. The created csv
+**Single Image Annotation (SIA) tool** and export these annotations to a csv file. The created csv
 file will be available for download by means of a **DataExport** element
 inside the web gui.
 
@@ -76,7 +80,7 @@ element is connected to the **Script** element with *peN: 1*. This
 a script *description*. The script *path* needs to be defined relative
 to the **pipeline project folder**.
 
--TODO: how to handle sia_all_tool below???
+-TODO: How to handle removed all_tools.json
 
 The **Script** element is connected to an **AnnotationTask** element
 with *peN: 2* of type *sia* (lines 20 - 45). Within the json object of
@@ -94,9 +98,9 @@ download by the **DataExport** element with *peN: 4*. A **DataExport**
 element may serve an arbitrary file from the LOST filesystem for
 download.
 
-:::
+```
 ../../../backend/lost/pyapi/examples/pipes/sia/all_tools.json
-:::
+```
 
 ### How to write a script?
 
@@ -111,31 +115,33 @@ the pipeline. This script will also send dummy annotation proposals to
 the annotation task if one of the arguments is set to *ture* when the
 pipeline is started in the web gui.
 
-:::
+```
 ../../../backend/lost/pyapi/examples/pipes/sia/request_annos.py
-:::
+```
 
 In order to write a LOST script you need to define a class that inherits
 from *lost.pyapi* and defines a *main* method (see below).
 
-:::
+```
 ../../../backend/lost/pyapi/examples/pipes/sia/request_annos.py
-:::
+```
 
 Later on you need to instantiate it and your LOST script is done.
 
-:::
+```
 ../../../backend/lost/pyapi/examples/pipes/sia/request_annos.py
-:::
+```
 
 In the *request_annos.py* script you can also see some special variables
 **ENVS** and **ARGUMENTS**. These variables will be read during the
-`import process <designers-pipeline-import>`. The **EVNS** variable provides meta information for the
-`pipeline engine <lost-ecosystem-pipe-engine>` by defining a list of environments (similar to conda
+[*`import process`*](/docs/managing_annotation_pipelines/designers#designers-pipeline-import).
+The **EVNS** variable provides meta information for the
+[*`pipeline engine`*](/docs/developing_pipelines/lost_ecosystem#lost-ecosystem-pipe-engine)
+by defining a list of environments (similar to conda
 environments) where this script may be executed in. In this way you can
 assure that a script will only be executed in environments where all
 your dependencies are installed. All environments are installed in
-`workers <lost-ecosystem-pipe-engine>`
+[*`workers`*](/docs/developing_pipelines/lost_ecosystem#lost-ecosystem-pipe-engine)
 that may execute your script. If many different environments are defined
 within the **ENVS** list of a script, the pipeline engine will try to
 assign the script to a worker in the same order as defined within the
@@ -145,9 +151,9 @@ this worker. If no worker with the first environment is online, it will
 try to assign the script to a worker with the second environment in the
 list and so on.
 
-:::
+```
 ../../../backend/lost/pyapi/examples/pipes/sia/request_annos.py
-:::
+```
 
 The **ARGUMENTS** variable will be used to provide script arguments that
 can be set during the start process of a pipline within the web gui.
@@ -157,16 +163,16 @@ the arguments. Each argument is again a dictionary with keys *value* and
 *polygon* its *value* is *false* and its *help* text is *Add a dummy
 polygon as example*.
 
-:::
+```
 ../../../backend/lost/pyapi/examples/pipes/sia/request_annos.py
-:::
+```
 
 Within your script you can access the value of an argument with the
 *get_arg(\...)* method as shown below.
 
-:::
+```
 ../../../backend/lost/pyapi/examples/pipes/sia/request_annos.py
-:::
+```
 
 A script can access all the elements it is connected to. Each script has
 an input and an output object. Since the input of our *request_annos.py*
@@ -174,9 +180,9 @@ script is connected to a *Datasource* element, we access it by iterating
 over all *Datasource* objects that are connected to the input and read
 out the *path* where a folder with images is provided:
 
-> :::
+> ```
 > ../../../backend/lost/pyapi/examples/pipes/sia/request_annos.py
-> :::
+> ```
 
 Now we can use the *path* provided by the datasource to read all image
 files that are located there and request annotations for each image, as
@@ -189,55 +195,55 @@ automatic setup, you could use an ai to generate some annotation
 proposal and send these proposals to the annotation tool in the same
 way.
 
-> :::
+> ```
 > ../../../backend/lost/pyapi/examples/pipes/sia/request_annos.py
-> :::
+> ```
 
 Since each script has a logger, we can also write which images we have
 requested to the pipeline log file. The log file can be downloaded in
-the web gui. The logger object is a standard [python
-logger](https://docs.python.org/3.6/howto/logging.html).
+the web gui. The logger object is a standard [*python
+logger*](https://docs.python.org/3.12/howto/logging.html).
 
-:::
+```
 ../../../backend/lost/pyapi/examples/pipes/sia/request_annos.py
-:::
+```
 
 #### export_csv.py
 
-The *export_csv.py* (see `export-csv-full`) script will read all annotations from its input and create
+The *export_csv.py* (see below) script will read all annotations from its input and create
 a csv file from these annotations. This csv file will then be added to a
 *DataExport* element, which will provide the file in the web gui for
 download.
 
-::: export-csv-full .literalinclude language="python" linenos="" caption="|ls-export-full|: Full export_csv.py script."
+``` export-csv-full .literalinclude language="python" linenos="" caption="|ls-export-full|: Full export_csv.py script."
 ../../../backend/lost/pyapi/examples/pipes/sia/export_csv.py
-:::
+```
 
 Now we will do a step by step walk through the code.
 
-::: export-envs-args .literalinclude language="python" lines="5-8" caption="|ls-export-envs-args|: ENVS and ARGUMENTS of *export_csv.py*."
+``` export-envs-args .literalinclude language="python" lines="5-8" caption="|ls-export-envs-args|: ENVS and ARGUMENTS of *export_csv.py*."
 ../../../backend/lost/pyapi/examples/pipes/sia/export_csv.py
-:::
+```
 
 As you can see in the
-`listing above <export-envs-args>`, the
+*listing above*, the
 script is executed in the standard *lost* environment. The name of the
 csv file can be set by the argument *file_name* and has a default value
 of *annos.csv*.
 
-::: export-to-df .literalinclude language="python" lines="15" caption="|ls-export-to-df|: Transforming all annotations from input into a pandas.DataFrame."
+``` export-to-df .literalinclude language="python" lines="15" caption="|ls-export-to-df|: Transforming all annotations from input into a pandas.DataFrame."
 ../../../backend/lost/pyapi/examples/pipes/sia/export_csv.py
-:::
+```
 
 The `lost.pyapi.inout.Input.to_df`
 method will read all annotations form *self.inp* (Input of this script
 `lost.pyapi.script.Script.inp`) and
 transform the annotations into a
-[pandas.DataFrame](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html)
+[***pandas.DataFrame***](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html)
 
-::: export-get-path .literalinclude language="python" lines="16" caption="|ls-export-get-path|: Get the path to store the csv file."
+``` export-get-path .literalinclude language="python" lines="16" caption="|ls-export-get-path|: Get the path to store the csv file."
 ../../../backend/lost/pyapi/examples/pipes/sia/export_csv.py
-:::
+```
 
 Now the script will calculate the path to store the csv file
 (`lost.pyapi.script.Script.get_path`).
@@ -251,18 +257,18 @@ access the file and exchange information in this way. The third
 *context* is called *static*. The *static context* allows to access and
 store files in the pipe project folder.
 
-::: export-to-csv .literalinclude language="python" lines="17-20" caption="|ls-export-to-csv|: Store csv file to the LOST filesystem."
+``` export-to-csv .literalinclude language="python" lines="17-20" caption="|ls-export-to-csv|: Store csv file to the LOST filesystem."
 ../../../backend/lost/pyapi/examples/pipes/sia/export_csv.py
-:::
+```
 
 After we have calculated the *csv_path*, the csv file can be stored to
 this path. In order to do that the [to_csv method from the
 pandas.DataFrame is
 used](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_csv.html).
 
-::: export-add-data-export .literalinclude language="python" lines="21" caption="|ls-export-add-data-export|: Adding the csv file path to all connected *DataExport* elements."
+``` export-add-data-export .literalinclude language="python" lines="21" caption="|ls-export-add-data-export|: Adding the csv file path to all connected *DataExport* elements."
 ../../../backend/lost/pyapi/examples/pipes/sia/export_csv.py
-:::
+```
 
 As final step the path to the csv file is assigned to the connected
 *DataExport* element in order to make it available for download via the
@@ -270,12 +276,11 @@ web gui.
 
 ## Importing a pipeline project {#designers-pipeline-import}
 
-After creating a pipeline it needs to be imported into LOST. Please see
-`aapipelines-import` for more information.
+After creating a pipeline it needs to be imported into LOST.
+[*Please see here*](/docs/developing_pipelines/all_about_pipelines#aapipelines-import) for more information.
 
 ## Debugging a script
 
 When your script starts to throw errors it is time for debugging your
-script inside the docker container. Please see
-`aascripts-debugging` for more
-information.
+script inside the docker container. [*Please refer to this page*](/docs/developing_pipelines/all_about_scripts#aascripts-debugging)
+for more information.

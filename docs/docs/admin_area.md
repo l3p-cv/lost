@@ -25,6 +25,9 @@ Users and groups can be added via the \"Users\" section.
 Then, users can be added to groups and be given roles, by
 editing them.
 
+![sia-example](/img/admin_users_groups_new.png)
+Figure 1: The tables for groups (left) and users (right)
+
 ### Visibility
 
 #### Pipelines
@@ -34,6 +37,9 @@ Pipelines are generally visible to the user who created them.
 #### Label Trees
 
 Label Trees are visible system-wide across all applications.
+
+![sia-example](/img/global_labels_new.png)
+Figure 2: The global label trees
 
 #### AnnoTasks
 
@@ -50,28 +56,28 @@ Import & Export Pipelines
 
 #### Global LabelTrees
 
-TODO
+Global **LabelTrees** are available for everyone to use.
 
 #### Global Datasources
 
-TODO
+Global **Datasources** are available for every user.
+
+![sia-example](/img/global_datasources_new.png)
+Figure 7: The global datasources
 
 #### Global Instructions
 
-TODO
+Instructions available for everyone to use, but only admins can edit them.
 
-#### Workers
-
-TODO
-TODO: what are workers even?
-
-#### Inference Models
-
-TODO
+![sia-example](/img/global_instructions_new.png)
+Figure 7: Global insturctions, only able to be edited here
 
 ## Pipeline Projects
 
 In this tab pipeline projects can be imported and exported.
+
+![sia-example](/img/admin_pipe_projects_new.png)
+Figure 7: The pipeline projects, whose templates everyone can use to create their pipelines
 
 ## Global Datasources/Labels/Instructions
 
@@ -79,3 +85,8 @@ These items are available for all users to use in their pipelines
 and they can be browsed, edited and deleted here.
 
 ## Workers
+
+These workers are the docker-containers able to execute scripts for LOST.
+
+![sia-example](/img/admin_workers_new.png)
+Figure 7: All current worker(s) listed in a table

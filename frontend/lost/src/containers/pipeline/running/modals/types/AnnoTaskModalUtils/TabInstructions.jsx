@@ -4,7 +4,7 @@ import { showSuccess, showError } from '../../../../../../components/Notificatio
 import { useGetInstructions } from '../../../../../../containers/Instruction/instruction_api';
 import { useUpdateInstruction, useGetCurrentInstruction } from '../../../../../../actions/annoTask/anno_task_api';
 import Select from 'react-select';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import IconButton from '../../../../../../components/IconButton';
 import { faEye } from '@fortawesome/free-solid-svg-icons';
 import ViewInstruction from '../../../../../../containers/Instruction/ViewInstruction';
@@ -19,6 +19,16 @@ const TabInstructions = ({ annotask, updateAnnotask }) => {
     const [viewingInstruction, setViewingInstruction] = useState(null);
     const [isSelectLoading, setSelectLoading] = useState(false);
     const [unsavedChanges, setUnsavedChanges] = useState(false);
+
+    useEffect(() => {
+        const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true' ;
+        const currentStep = parseInt(localStorage.getItem('currentStep') || '0');
+        if (joyrideRunning && (currentStep === 45 || currentStep === 16)) {
+            setTimeout(() => {
+                window.dispatchEvent(new CustomEvent('joyride-next-step', { detail: { step: 'after-instruction-select' } }));
+            }, 10000);
+        }
+    });
 
     const handleInstructionChange = async (selectedOption) => {
         const selectedValue = selectedOption?.value ?? null;

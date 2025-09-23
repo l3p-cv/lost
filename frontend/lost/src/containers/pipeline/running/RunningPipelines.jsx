@@ -49,6 +49,7 @@ export const RunningPipelines = () => {
     useEffect(() => {
         if (data && page === lastRequestedPage) {
             const pipes = data.pipelines.pipes
+            console.log('Updating pipelineData:', pipes);
             setPageCount(data.pages)
             setPipelineData(pipes)
 
@@ -61,12 +62,15 @@ export const RunningPipelines = () => {
                 setLatestPipelineId(latestId)
 
                 const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true'
-                if (joyrideRunning) {
+                const currentStep = parseInt(localStorage.getItem('currentStep') || '0')
+                if (joyrideRunning && currentStep === 28) {
                     localStorage.setItem('latestPipelineId', latestId)
                     window.dispatchEvent(new CustomEvent('joyride-next-step', {
                         detail: { step: 'latest-running-pipeline' },
                     }))
                 }
+            } else {
+                setLatestPipelineId(null); 
             }
         }
     }, [data, lastRequestedPage])
@@ -110,7 +114,16 @@ export const RunningPipelines = () => {
                 color="info"
                 variant='outline'
                 style={{ marginRight: '5px' }}
-                onClick={() => navigate(`/pipeline/${original.id}`)}
+                onClick={() => {
+                    const currentStep = parseInt(localStorage.getItem('currentStep')||'0');
+                    const isJoyrideRunning = localStorage.getItem('joyrideRunning') === 'true';
+                    console.log('OpenIcon clicked, currentStep:', currentStep, 'it will be made',currentStep + 1);
+                    if(isJoyrideRunning && (currentStep === 42 || currentStep === 14)){
+                        window.dispatchEvent(new CustomEvent('joyride-next-step', {detail: { step: 'view-created-pipeline' }}));
+                    }
+                    localStorage.setItem('latestPipelineId', String(original.id));
+                    navigate(`/pipeline/${original.id}`);
+                }}
                 className={original.id === latestPipelineId ? 'latest-pipeline-open-button' : ''}
                 icon={faEye}
             />
@@ -209,6 +222,7 @@ export const RunningPipelines = () => {
             return (
                 <ErrorBoundary>
                 <CoreDataTable
+                    // key={pipelineData.length}
                     columns={columns}
                     tableData={pipelineData}
                     onPaginationChange={(table) => {

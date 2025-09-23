@@ -128,7 +128,8 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
     useEffect(() => {
       if (aTData.length > 0) {
         const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true'
-        if (joyrideRunning) {
+        const currentStep = parseInt(localStorage.getItem('currentStep') || '0')
+        if (joyrideRunning && currentStep === 30) {
           window.dispatchEvent(
             new CustomEvent('joyride-next-step', {
               detail: { step: 'latest-running-annotask' },

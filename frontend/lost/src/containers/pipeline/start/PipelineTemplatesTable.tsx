@@ -63,16 +63,26 @@ export const PipelineTemplatesTable = () => {
                             <CoreIconButton
                             color="primary"
                             text=' Start Pipeline'
-                            //   className={
-                            //       row.original.name === 'found.sia'
-                            //           ? 'sia-start-button'
-                            //           : row.original.name === 'found.mia'
-                            //           ? 'mia-start-button'
-                            //           : ''
-                            //   }
-                            onClick={() =>
+                              className={
+                                  row.original.name === 'found.sia'
+                                      ? 'sia-start-button'
+                                      : row.original.name === 'found.mia'
+                                      ? 'mia-start-button'
+                                      : ''
+                              }
+                            onClick={() =>{
+                                if (row.original.name){
+                                    const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true';
+                                    const currentStep = parseInt(localStorage.getItem('currentStep') || '0');
+                                    if (joyrideRunning && currentStep === 1) {
+                                    window.dispatchEvent(
+                                        new CustomEvent('joyride-next-step', {
+                                        detail: { step: 'navigate-to-template' }
+                                        })
+                                    );}
+                                }
                                 navigate(`/pipeline-template/${row.original.id}`)
-                            }
+                            }}
                             icon={faPlay}
                         />
                       </>
@@ -98,7 +108,14 @@ export const PipelineTemplatesTable = () => {
             }
 
             const templateData = data.templates
-
+            
+            setTimeout(() => {
+                const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true';
+                const currentStep = parseInt(localStorage.getItem('currentStep') || '0');
+                if (joyrideRunning && currentStep === 0){
+                    window.dispatchEvent(new CustomEvent('joyride-next-step', {
+                    detail: { step: 'skip-navigate' }
+            }))}; }, 3000);   
             return (
                 <ErrorBoundary>
                 <CoreDataTable columns={defineColumns()} tableData={templateData} />
