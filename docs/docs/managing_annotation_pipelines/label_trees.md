@@ -1,5 +1,6 @@
 ---
 # title: LabelTrees
+sidebar_position: 6
 ---
 
 # LabelTrees
@@ -12,7 +13,7 @@ When creating an **AnnotationTask**, one or more nodes from
 a **LabelTree** are selected, making all their leafs available
 for the **AnnotationTask**.
 
-![lbl-tree-example](/img/labeltree_editing.png)
+![lbl-tree-example](/img/label_tree_new.png)
 Figure 1: Editing view of a **LabelTree**
 
 A node in a **LabelTree** can have the following attributes:
@@ -26,5 +27,3 @@ A node in a **LabelTree** can have the following attributes:
 - External ID (optional)
 - Descripton (optional)
 - Abbreviation (optional)
-
--TODO: add images

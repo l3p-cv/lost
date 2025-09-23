@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useGetInstructions, useDeleteInstruction, useAddInstruction, useEditInstruction } from './instruction_api';
 import { CContainer, CRow, CCol, CSpinner, CBadge, CTooltip } from '@coreui/react';
-// import Datatable from '../../components/Datatable';
 import BaseModal from '../../components/BaseModal';
 import IconButton from '../../components/IconButton';
 import EditInstruction from './EditInstruction';
@@ -30,6 +29,31 @@ const Instruction = ({ visLevel }) => {
   const editInstructionMutation = useEditInstruction();
   const { data: ownUser } = useOwnUser();
 
+  useEffect(() => {
+    const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true';
+    if (joyrideRunning && instructions?.length > 10) {
+      const currentStep = parseInt(localStorage.getItem('currentStep') || '0');
+      if (currentStep === 7) {
+        setTimeout(() => {
+          window.dispatchEvent(
+          new CustomEvent('joyride-next-step', {
+            detail: { step: 'last-row-highlight' }, 
+          })
+        );
+      }, 3000);
+      }
+    }else if (joyrideRunning && instructions?.length <= 10) {
+      const currentStep = parseInt(localStorage.getItem('currentStep') || '0');
+      if (currentStep === 7) {
+          window.dispatchEvent(
+          new CustomEvent('joyride-next-step', {
+            detail: { step: 'last-row-highlight' }, 
+          })
+        );
+      }
+    }
+  }, [instructions]); 
+
   const deleteSelectedInstruction = (id) => {
     deleteInstructionMutation.mutate(id, {
       onSuccess: () => Notification.showSuccess('Instruction deleted successfully'),
@@ -39,7 +63,7 @@ const Instruction = ({ visLevel }) => {
 
   const handleDelete = (id) => {
     Notification.showDecision({
-                title: 'Do you really want to delete datasource?',
+                title: 'Do you really want to delete the instruction?',
                 option1: {
                     text: 'YES',
                     callback: () => {
@@ -57,6 +81,14 @@ const Instruction = ({ visLevel }) => {
     setEditingInstruction({ id: null, option: '', description: '', instruction: '', group_id: ownUser?.group_id });
     setViewingInstruction(null);
     setModalOpen(true);
+    const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true'
+    if(joyrideRunning){
+      window.dispatchEvent(
+        new CustomEvent('joyride-next-step', {
+          detail: { step: 'add-step-clicked' },
+        })
+      );
+    }
   };
 
   const handleEditClick = (instruction) => {
@@ -64,18 +96,19 @@ const Instruction = ({ visLevel }) => {
     setViewingInstruction(null);
     setModalOpen(true);
     if (instruction.isLastRow) {
+      setTimeout(() => {
       window.dispatchEvent(
         new CustomEvent('joyride-next-step', {
           detail: { step: 'edit-step' },
         })
       );
+    },400);
     }
   };
 
   const handleViewClick = (instruction) => {
     setViewingInstruction(instruction);
     setEditingInstruction(null);
-    setModalOpen(true);
   };
 
   const handleSave = (updatedInstruction) => {
@@ -203,6 +236,7 @@ const Instruction = ({ visLevel }) => {
               buttonStyle={{ marginTop: 15, marginBottom: 20 }}
               icon={faUserPlus}
               buttonText='Add Instruction'
+              className="add-instruction-button"
               onClick={handleAddInstruction}
           />
         </CCol>
@@ -231,23 +265,33 @@ const Instruction = ({ visLevel }) => {
         </CCol>
       </CRow>
 
-      <BaseModal
-        isOpen={modalOpen}
-        title={viewingInstruction ? 'View Instruction' : editingInstruction ? 'Edit Instruction' : 'Add Instruction'}
-        toggle={() => setModalOpen(false)}
-        footer={null}
-      >
-        {viewingInstruction ? (
-          <ViewInstruction instructionData={viewingInstruction} onClose={() => setModalOpen(false)} onEdit={handleEditClick} />
-        ) : editingInstruction ? (
-          <EditInstruction
-            instructionData={editingInstruction}
-            onSave={handleSave}
-            visLevel={visLevel}
-            onClose={() => setModalOpen(false)}
-          />
-        ) : null}
-      </BaseModal>
+      {/* Only use BaseModal for add/edit */}
+          {(editingInstruction && modalOpen) && (
+            <BaseModal
+              isOpen={modalOpen}
+              title={editingInstruction.id ? 'Edit Instruction' : 'Add Instruction'}
+              toggle={() => setModalOpen(false)}
+              footer={null}
+              className={editingInstruction.id ? 'edit-instructions-modal' : 'add-instructions-modal'}
+            >
+              <EditInstruction
+                instructionData={editingInstruction}
+                onSave={handleSave}
+                visLevel={visLevel}
+                onClose={() => setModalOpen(false)}
+              />
+            </BaseModal>
+          )}
+
+          {/* Directly render ViewInstruction for view */}
+          {viewingInstruction && (
+            <ViewInstruction
+              instructionData={viewingInstruction}
+              onClose={() => setViewingInstruction(null)}
+              onEdit={handleEditClick}
+            />
+          )}
+
 
       {isLoading && (
         <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 1050 }}>

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MarkdownIt from 'markdown-it';
-import { CCard, CCardBody, CCardHeader, CButton, CModal, CModalBody, CModalHeader } from '@coreui/react';
+import { CModal, CModalBody, CModalHeader, CButton } from '@coreui/react';
 import { FaExpand, FaCompress } from 'react-icons/fa';
 
 const mdParser = new MarkdownIt();
@@ -8,18 +8,32 @@ const mdParser = new MarkdownIt();
 const ViewInstruction = ({ instructionData, onClose, onEdit }) => {
   const [isFullScreen, setIsFullScreen] = useState(false);
 
+  useEffect(() => {
+    const originalStyle = window.getComputedStyle(document.body).overflow;
+    document.body.style.overflow = 'hidden';  
+    return () => {
+      document.body.style.overflow = originalStyle; 
+    };
+  }, []);
+
   const toggleFullScreen = () => {
     setIsFullScreen(!isFullScreen);
   };
 
-  const modifyInstructionHTML = (htmlContent) => {
-    return htmlContent.replace(/<img([^>]+)>/g, (match, p1) => {
+  const modifyInstructionHTML = (htmlContent) =>
+    htmlContent.replace(/<img([^>]+)>/g, (match, p1) => {
       return `<img${p1} style="max-width: 100%; height: auto; display: block; margin: 0 auto;" />`;
     });
-  };
 
   const renderContent = () => (
-    <div className="p-4">
+    <div
+      className="p-4"
+      style={{
+        width: isFullScreen ? '100%' : '700px', 
+        margin: isFullScreen ? '0' : '0 auto', 
+        textAlign: 'left',                        
+      }}
+    >
       <div className="mb-4">
         <strong className="text-primary">Annotation Option:</strong>
         <p>{instructionData.option}</p>
@@ -36,11 +50,13 @@ const ViewInstruction = ({ instructionData, onClose, onEdit }) => {
           className="p-4 border rounded-lg shadow-sm overflow-auto"
           style={{
             backgroundColor: '#f9f9f9',
-            maxHeight: '400px',
+            maxHeight: isFullScreen ? 'calc(100vh - 150px)' : '400px',
             borderRadius: '10px',
-            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+            boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
             fontFamily: 'Arial, sans-serif',
-            overflow: 'hidden',
+            overflow: 'auto',
+            width: '100%',
+            textAlign: 'left',
           }}
           dangerouslySetInnerHTML={{
             __html: modifyInstructionHTML(mdParser.render(instructionData.instruction)),
@@ -51,76 +67,37 @@ const ViewInstruction = ({ instructionData, onClose, onEdit }) => {
   );
 
   return (
-    <>
-      {/* Regular View (Card) */}
-      {!isFullScreen && (
-        <CCard className="mx-auto" style={{ maxWidth: '700px' }}>
-          <CCardHeader className="d-flex justify-content-between align-items-center">
-            <h5 className="mb-0">Instruction Details</h5>
-            <div>
-              <CButton color="info" size="sm" onClick={toggleFullScreen} className="me-2">
-                <FaExpand />
-              </CButton>
-              <CButton color="secondary" size="sm" onClick={onClose}>
-                Close
-              </CButton>
-            </div>
-          </CCardHeader>
-          <CCardBody className="overflow-auto" style={{ maxHeight: '500px' }}>
-            {renderContent()}
-          </CCardBody>
-        </CCard>
-      )}
-
-      {/* Full-Screen View */}
-      {isFullScreen && (
-        <CModal size="xl" visible={isFullScreen} onClose={toggleFullScreen} fullscreen>
-          <CModalHeader closeButton>
-            <h5>Instruction Details (Full Screen)</h5>
-          </CModalHeader>
-          <CModalBody
-            className="overflow-auto"
-            style={{
-              height: '100vh',
-              display: 'flex',
-              flexDirection: 'column',
-            }}
-          >
-            <div className="d-flex justify-content-between align-items-center mb-4">
-              <CButton color="info" size="sm" onClick={toggleFullScreen}>
-                <FaCompress />
-              </CButton>
-              <CButton color="secondary" size="sm" onClick={onClose}>
-                Close
-              </CButton>
-            </div>
-            <div
-              style={{
-                flex: 1,
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between', 
-                height: 'calc(100vh - 90px)',
-                overflowY: 'auto',
-              }}
-            >
-              <div
-                className="p-4 border rounded-lg shadow-sm overflow-auto"
-                style={{
-                  backgroundColor: '#f9f9f9',
-                  borderRadius: '10px',
-                  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                  fontFamily: 'Arial, sans-serif',
-                }}
-                dangerouslySetInnerHTML={{
-                  __html: modifyInstructionHTML(mdParser.render(instructionData.instruction)),
-                }}
-              />
-            </div>
-          </CModalBody>
-        </CModal>
-      )}
-    </>
+    <CModal
+      size={isFullScreen ? 'xl' : 'lg'}
+      visible={true}
+      onClose={onClose}
+      fullscreen={isFullScreen}
+      backdrop="static"
+    >
+      <CModalHeader closeButton>
+        <div className="d-flex justify-content-between align-items-center w-100">
+          <h5 className="mb-0">Instruction Details</h5>
+          <div>
+            <CButton color="info" size="sm" onClick={toggleFullScreen} className="me-2">
+              {isFullScreen ? <FaCompress /> : <FaExpand />}
+            </CButton>
+            <CButton color="secondary" size="sm" onClick={onClose}>
+              Close
+            </CButton>
+          </div>
+        </div>
+      </CModalHeader>
+      <CModalBody
+        className="overflow-auto"
+        style={{
+          maxHeight: '100vh',
+          display: 'flex',
+          justifyContent: isFullScreen ? 'flex-start' : 'center',
+        }}
+      >
+        {renderContent()}
+      </CModalBody>
+    </CModal>
   );
 };
 

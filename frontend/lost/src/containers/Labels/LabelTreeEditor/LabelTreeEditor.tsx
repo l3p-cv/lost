@@ -105,7 +105,10 @@ export const LabelTreeEditor: React.FC<LabelTreeFlowProps> = ({
                         if (joyrideRunning) {
                             if (childCount === 0) childClass += ' first-label-node'
                             else if (childCount === 1) childClass += ' second-label-node'
-                            else if (childCount === 2) childClass += ' third-label-node'
+                            else if (childCount === 2) {
+                                childClass += ' third-label-node';
+                                 window.dispatchEvent(new CustomEvent('joyride-next-step', {detail: { step: 'create-label' }}))
+                            }
                         }
 
                         const childNode: Node = {

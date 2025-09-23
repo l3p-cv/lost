@@ -1,3 +1,4 @@
+import { useLocation } from 'react-router-dom';
 import { CContainer } from '@coreui/react';
 import { faPlay } from '@fortawesome/free-solid-svg-icons';
 import { useTemplates } from '../../actions/pipeline/pipeline_api';
@@ -11,44 +12,76 @@ import IconButton from '../../components/IconButton';
 const TourStartTable = ({ onStartTour }) => {
   const { data, isLoading, isError } = useTemplates('all');
   const [pipelines, setPipelines] = useState([]);
+  const location = useLocation();
 
   useEffect(() => {
     if (data?.templates) {
       const foundSia = data.templates.find(t => t.name === 'found.sia');
       const foundMia = data.templates.find(t => t.name === 'found.mia');
+      let newPipelines = [];
 
-      const newPipelines = [];
-
-      if (foundSia) {
-        localStorage.setItem('siaPipelineId', foundSia.id);
-        newPipelines.push({ ...foundSia, tourType: 'mainPipeline', label: 'SIA' });
+      if (location.pathname === '/dashboard') {
+        if (foundSia) {
+          localStorage.setItem('siaPipelineId', foundSia.id);
+          newPipelines.push({ ...foundSia, tourType: 'mainPipeline', label: 'SIA' });
+        }
+        if (foundMia) {
+          localStorage.setItem('miaPipelineId', foundMia.id);
+          newPipelines.push({ ...foundMia, tourType: 'miaPipeline', label: 'MIA' });
+        }
+        newPipelines.push({
+          id: 'instructionTour',
+          label: 'Instructions',
+          description: 'Learn how to create, view, and edit instructions.',
+          tourType: 'instructionTour',
+        });
+        newPipelines.push({
+          id: 'labelTour',
+          label: 'Labels',
+          description: 'Learn how to label data in a pipeline.',
+          tourType: 'labelTour',
+        });
+      } else if (location.pathname === '/pipeline-templates') {
+        if (foundSia) {
+          localStorage.setItem('siaPipelineId', foundSia.id);
+          newPipelines.push({ ...foundSia, tourType: 'mainPipeline', label: 'SIA' });
+        }
+        if (foundMia) {
+          localStorage.setItem('miaPipelineId', foundMia.id);
+          newPipelines.push({ ...foundMia, tourType: 'miaPipeline', label: 'MIA' });
+        }
+      } else if (location.pathname === '/labels') {
+        newPipelines.push({
+          id: 'labelTour',
+          label: 'Labels',
+          description: 'Learn how to label data in a pipeline.',
+          tourType: 'labelTour',
+        });
+      } else if (location.pathname === '/instructions') {
+        newPipelines.push({
+          id: 'instructionTour',
+          label: 'Instructions',
+          description: 'Learn how to create, view, and edit instructions.',
+          tourType: 'instructionTour',
+        });
       }
-
-      if (foundMia) {
-        localStorage.setItem('miaPipelineId', foundMia.id);
-        newPipelines.push({ ...foundMia, tourType: 'miaPipeline', label: 'MIA' });
-      }
-
-      newPipelines.push({
-        id: 'instructionTour',
-        label: 'Instructions',
-        description: 'Learn how to create, view, and edit instructions.',
-        tourType: 'instructionTour',
-      });
-
-      newPipelines.push({
-        id: 'labelTour',
-        label: 'Labels',
-        description: 'Learn how to label data in a pipeline.',
-        tourType: 'labelTour',
-      });
 
       setPipelines(newPipelines);
     }
-  }, [data]);
+  }, [data, location.pathname]);
 
   if (isLoading) return <CenteredSpinner />;
-  if (isError || pipelines.length === 0) return <div>Error loading pipeline templates</div>;
+  if (isError) return <div>Error loading pipeline templates</div>;
+  if (pipelines.length === 0)
+    return (
+      <CContainer style={{ marginTop: '15px' }}>
+        <BaseContainer>
+          <div className="d-flex justify-content-center align-items-center" style={{ height: '150px' }}>
+            <h5 className="text-muted">No tours are available on this page. Please visit the Dashboard to start a guided tour.</h5>
+          </div>
+        </BaseContainer>
+      </CContainer>
+    );
 
   return (
     <CContainer style={{ marginTop: '15px' }}>

@@ -9,7 +9,7 @@ export const useTourClickHandler = (
   setRun
 ) => {
   const getClickStepsForTourType = () => {
-    if (pipelineType === 'instructionTour' && !latestPipelineId) {
+    if (pipelineType === 'instructionTour' && latestPipelineId == undefined) {
       return [8, 11, 15, 22, 23, 27, 29, 31, 33, 35, 38, 41, 44];
     } else if (pipelineType === 'miaPipeline' || pipelineType === 'mainPipeline') {
       return [29, 30];

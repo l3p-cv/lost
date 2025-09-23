@@ -13,13 +13,12 @@ LOST releases are hosted on DockerHub and shipped in Containers. See
 
 ### Image Data
 
-TODO: update!!!
 In the current version there is no GUI available in order to load images
-into LOST. So we will use the command line or a file explorer to do
+into LOST. So we will use the command line and a file explorer to do
 that. An image dataset in LOST is just a folder with images. LOST will
 recognize all folders that are located at *path_to_lost/data/data/media*
-in your filesystem as a dataset. In order to add your dataset just copy
-it to the path above e.g.:
+in your filesystem, as it is mounted into the container. In order to add
+your dataset just copy it to the path below e.g.:
 
 > ``` bash
 > # Copy your dataset into the LOST media folder
@@ -30,6 +29,11 @@ it to the path above e.g.:
 > # and owns the media folder.
 > sudo cp -r path/to/my/dataset path_to_lost/data/data/media
 > ```
+
+Then, if not already available, it is time to create a **DataSource**,
+with which you can then use a file browser and select your data, for
+a **Pipeline** to use. For the specifics, please refer to the
+[***Datasource** page here*](/docs/managing_annotation_pipelines/datasources#adding-a-new-datasource).
 
 ### LabelTrees
 
@@ -45,7 +49,7 @@ need to click the **Labels** button on the left navigation bar.
 ## Users, Groups and Roles
 
 There are three roles in LOST: A **Designer**, an **Annotator** and an Admin role.
-All roles have ifferent views and access to information. An **Annotator's** job is just
+All roles have different views and access to information. An **Annotator's** job is just
 to work on annotation tasks that are assigned to them, while a
 **Designer** may do more advanced stuff and everything an **Annotator**
 may do. For example a **Designer** will start annotation piplines and
@@ -103,7 +107,7 @@ In the upper right corner of the screen. Here you have to
 enter a **name** and a **description** of your pipeline. After entering
 these informations you can click on the checkmark symbol to get to the
 **Start Pipe** button. With a click on this button your annotation
-pipeline will be started :-)
+pipeline will be started, good job.
 
 You can monitor the state of all running pipelines by clicking on the
 **Pipelines** button in the left navigation bar.
@@ -127,7 +131,7 @@ see this directly after login.
 Here you can see a table with all available **AnnotationTasks** for you.
 Click on the **Annotate** button in the row of a taks you want to work on
 and you will be redirected to one of the annotation tools (see also the
-`annotators` chapter). Now instructions will pop up and you are ready to
+[*annotators*](/docs/annotation.md) chapter). Now instructions will pop up and you are ready to
 annotate.
 
 ## Downloading Annotation Results

@@ -33,10 +33,15 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
 
     useEffect(() => {
         const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true'
-        const currentStep = localStorage.getItem('currentStep')
+        const currentStep = parseInt(localStorage.getItem('currentStep') || '0');
 
-        if (joyrideRunning && currentStep === '4') {
+        if (joyrideRunning && currentStep === 3) {
             setHighlightLatestRow(true)
+        }
+
+        if (joyrideRunning && currentStep === 0){
+        setTimeout(() => {
+                    window.dispatchEvent(new CustomEvent('joyride-next-step', {detail: { step: 'skip-tocreate' }}))}, 3000); ;
         }
     }, [labelTrees.length])
 
@@ -167,6 +172,13 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
                                     edges: graph.edges,
                                 })
                                 setIsEditModalOpen(true)
+                                 setTimeout(() => {
+                                    const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true';
+                                    const currentStep = parseInt(localStorage.getItem('currentStep') || '0');
+                                    if (joyrideRunning && currentStep === 5){
+                                        window.dispatchEvent(new CustomEvent('joyride-next-step', {
+                                        detail: { step: 'open-edit-modal' }
+                                }))}; }, 300);   
                             }}
                         />
                         </>

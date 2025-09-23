@@ -1,5 +1,5 @@
 export const handleNavigationAndActions = (index, pipelineType, latestPipelineId, siaPipelineId, miaPipelineId, navigate) => {
-  if (pipelineType === 'instructionTour' && !latestPipelineId) {
+  if (pipelineType === 'instructionTour' && latestPipelineId == undefined) {
     return handleInstructionTourNavigation(index, navigate, siaPipelineId, latestPipelineId);
   } else if (pipelineType === 'miaPipeline' || pipelineType === 'mainPipeline') {
     return handlePipelineTourNavigation(index, pipelineType, navigate, miaPipelineId, siaPipelineId);
@@ -13,21 +13,15 @@ export const handleNavigationAndActions = (index, pipelineType, latestPipelineId
 const handleInstructionTourNavigation = (index, navigate, siaPipelineId, latestPipelineId) => {
   switch (index) {
     case 0:
-      navigate('/instruction');
+      navigate('/instructions');
       break;
-    case 1: {
-      const addButton = document.querySelector('.add-instruction-button');
-      if (addButton) {
-        addButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-      }
-      break;
-    }
-    case 8: {
-      const lastRowEditBtn = document.querySelector('.last-row-highlight');
-      break;
-    }
-    case 13:
+
+    case 12:
+      console.log('Current Step in case 12', index);
       navigate('/pipeline-templates');
+      window.dispatchEvent(new CustomEvent('joyride-next-step', {
+        detail: { step: 'after-nav' }
+      }));
       break;
     case 15:
       if (siaPipelineId) {
@@ -49,16 +43,6 @@ const handleInstructionTourNavigation = (index, navigate, siaPipelineId, latestP
       combo?.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
       break;
     }
-    case 42:
-      if (latestPipelineId) {
-        navigate(`/pipeline/${latestPipelineId}`);
-      }
-      break;
-    case 43: {
-      const taskNode = document.querySelector('.react-flow__node.react-flow__node-annoTaskNode');
-      taskNode?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-      break;
-    }
     default:
       break;
   }
@@ -69,18 +53,6 @@ const handlePipelineTourNavigation = (index, pipelineType, navigate, miaPipeline
     case 0:
       navigate('/pipeline-templates');
       break;
-    case 2:
-      if (pipelineType === 'miaPipeline' && miaPipelineId) {
-        navigate(`/pipeline-template/${miaPipelineId}`);
-      } else if (pipelineType === 'mainPipeline' && siaPipelineId) {
-        navigate(`/pipeline-template/${siaPipelineId}`);
-      }
-      break;
-    case 3: {
-      const node = document.querySelector('.react-flow__node-datasourceNode[data-id="0"]');
-      node?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-      break;
-    }
     case 11: {
       const taskNode = document.querySelector('.react-flow__node.anno-task-node');
       taskNode?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
@@ -104,32 +76,15 @@ const handlePipelineTourNavigation = (index, pipelineType, navigate, miaPipeline
 const handleInstructionTourWithPipelineNavigation = (index, navigate, latestPipelineId) => {
   switch (index) {
     case 0:
-      navigate('/instruction');
+      navigate('/instructions');
       break;
-    case 1: {
-      const addButton = document.querySelector('.add-instruction-button');
-      if (addButton) {
-        addButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-      }
-      break;
-    }
-    case 8: {
-      const lastRowEditBtn = document.querySelector('.last-row-highlight');
-      break;
-    }
-    case 13:
+    case 12:
+      console.log('Current Step in case 12', index);
       navigate('/pipelines');
+      window.dispatchEvent(new CustomEvent('joyride-next-step', {
+        detail: { step: 'after-nav' }
+      }));
       break;
-    case 14:
-      if (latestPipelineId) {
-        navigate(`/pipeline/${latestPipelineId}`);
-      }
-      break;
-    case 15: {
-      const taskNode = document.querySelector('.react-flow__node.react-flow__node-annoTaskNode');
-      taskNode?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-      break;
-    }
     default:
       break;
   }

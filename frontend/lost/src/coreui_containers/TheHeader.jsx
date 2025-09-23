@@ -3,7 +3,7 @@ import CIcon from '@coreui/icons-react'
 import { CHeader, CHeaderBrand, CHeaderNav, CHeaderToggler } from '@coreui/react'
 import TheHeaderDropdownAccount from './TheHeaderDropdownAccount'
 
-const TheHeader = ({ numNavItems, canShowSidebar, setCanShowSidebar }) => {
+const TheHeader = ({ numNavItems, canShowSidebar, setCanShowSidebar , showJoyride}) => {
     const renderSidebarToggler = () => {
         if (numNavItems) {
             if (numNavItems > 1) {
@@ -30,6 +30,7 @@ const TheHeader = ({ numNavItems, canShowSidebar, setCanShowSidebar }) => {
             </CHeaderBrand>
 
             <CHeaderNav className="px-3">
+                {showJoyride}
                 <TheHeaderDropdownAccount />
             </CHeaderNav>
         </CHeader>
