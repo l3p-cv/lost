@@ -4,7 +4,7 @@ from flask import request
 from flask_restx import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from lost.api.api import api
-from lost.api.sia.api_definition import sia_anno, sia_config, labels
+from lost.api.sia.api_definition import sia_anno, sia_config, labels, sia_polygon_operations_response, error_model, sia_polygon_union, sia_polygon_intersection, sia_polygon_difference
 from lost.db import roles, access
 from lost.settings import LOST_CONFIG, DATA_URL
 from lost.logic import sia
@@ -13,6 +13,7 @@ import json
 import base64
 import cv2
 from lost.logic.file_man import FileMan
+from shapely.errors import TopologicalError
 
 namespace = api.namespace("sia", description="SIA Annotation API.")
 
@@ -259,3 +260,111 @@ class Configuration(Resource):
             re = sia.get_configuration(dbm, identity)
             dbm.close_session()
             return re
+
+@namespace.route("/polygonOperations/union")
+@api.doc(security="apikey")
+class PolygonUnion(Resource):
+    @api.doc(security="apikey", description="Perform union operation on a list of at least 2 polygons.")
+    @api.expect(sia_polygon_union)
+    @api.response(200, "Success", sia_polygon_operations_response)
+    @api.response(400, "Bad Request", error_model)
+    @api.response(403, "Forbidden", error_model)
+    @api.response(500, "Internal Server Error", error_model)
+    @jwt_required()
+    def post(self):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = int(get_jwt_identity())
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.ANNOTATOR):
+            dbm.close_session()
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
+        try:
+            data = json.loads(request.data)
+            flask.current_app.logger.info(f"Received payload for union: {data}")
+            response = sia.perform_polygon_union(data)
+            dbm.close_session()
+            return response, 200
+        except sia.PolygonOperationError as e:
+            flask.current_app.logger.error(f"Validation error in polygon union: {str(e)}")
+            dbm.close_session()
+            return {"error": str(e)}, 400
+        except TopologicalError as e:
+            flask.current_app.logger.error(f"Topology error in polygon union: {str(e)}")
+            dbm.close_session()
+            return {"error": str(e)}, 400
+        except Exception as e:
+            flask.current_app.logger.error(f"Unexpected error in polygon union: {str(e)}")
+            dbm.close_session()
+            return {"error": str(e)}, 500
+
+@namespace.route("/polygonOperations/intersection")
+@api.doc(security="apikey")
+class PolygonIntersection(Resource):
+    @api.doc(security="apikey", description="Perform intersection operation on exactly 2 polygons.")
+    @api.expect(sia_polygon_intersection)
+    @api.response(200, "Success", sia_polygon_operations_response)
+    @api.response(400, "Bad Request", error_model)
+    @api.response(403, "Forbidden", error_model)
+    @api.response(500, "Internal Server Error", error_model)
+    @jwt_required()
+    def post(self):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = int(get_jwt_identity())
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.ANNOTATOR):
+            dbm.close_session()
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
+        try:
+            data = json.loads(request.data)
+            flask.current_app.logger.info(f"Received payload for intersection: {data}")
+            response = sia.perform_polygon_intersection(data)
+            dbm.close_session()
+            return response, 200
+        except sia.PolygonOperationError as e:
+            flask.current_app.logger.error(f"Validation error in polygon intersection: {str(e)}")
+            dbm.close_session()
+            return {"error": str(e)}, 400
+        except TopologicalError as e:
+            flask.current_app.logger.error(f"Topology error in polygon intersection: {str(e)}")
+            dbm.close_session()
+            return {"error": str(e)}, 400
+        except Exception as e:
+            flask.current_app.logger.error(f"Unexpected error in polygon intersection: {str(e)}")
+            dbm.close_session()
+            return {"error": str(e)}, 500
+
+@namespace.route("/polygonOperations/difference")
+@api.doc(security="apikey")
+class PolygonDifference(Resource):
+    @api.doc(security="apikey", description="Perform difference operation on a selected polygon and a list of modifier polygons.")
+    @api.expect(sia_polygon_difference)
+    @api.response(200, "Success", sia_polygon_operations_response)
+    @api.response(400, "Bad Request", error_model)
+    @api.response(403, "Forbidden", error_model)
+    @api.response(500, "Internal Server Error", error_model)
+    @jwt_required()
+    def post(self):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = int(get_jwt_identity())
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.ANNOTATOR):
+            dbm.close_session()
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
+        try:
+            data = json.loads(request.data)
+            flask.current_app.logger.info(f"Received payload for difference: {data}")
+            response = sia.perform_polygon_difference(data)
+            dbm.close_session()
+            return response, 200
+        except sia.PolygonOperationError as e:
+            flask.current_app.logger.error(f"Validation error in polygon difference: {str(e)}")
+            dbm.close_session()
+            return {"error": str(e)}, 400
+        except TopologicalError as e:
+            flask.current_app.logger.error(f"Topology error in polygon difference: {str(e)}")
+            dbm.close_session()
+            return {"error": str(e)}, 400
+        except Exception as e:
+            flask.current_app.logger.error(f"Unexpected error in polygon difference: {str(e)}")
+            dbm.close_session()
+            return {"error": str(e)}, 500
