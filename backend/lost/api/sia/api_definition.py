@@ -188,3 +188,44 @@ label_leaf = api.model('Label Leaf',{
 labels = api.model('Labels', {
     'labels': fields.List(fields.Nested(label_leaf)) 
 })
+
+
+sia_polygon_union = api.model('SIA Polygon Union', {
+    'polygons': fields.List(
+        fields.List(fields.Nested(point_data, description='2-D coordinates of a polygon')),
+        description='List of at least 2 polygons for union operation',
+        required=True
+    )
+})
+
+sia_polygon_intersection = api.model('SIA Polygon Intersection', {
+    'polygons': fields.List(
+        fields.List(fields.Nested(point_data, description='2-D coordinates of a polygon')),
+        description='Exactly 2 polygons for intersection operation',
+        required=True,
+        max_length=2,
+        min_length=2
+    )
+})
+
+sia_polygon_difference = api.model('SIA Polygon Difference', {
+    'selectedPolygon': fields.List(
+        fields.Nested(point_data, description='2-D coordinates of the selected polygon'),
+        description='Selected polygon for difference operation',
+        required=True
+    ),
+    'polygonModifiers': fields.List(
+        fields.List(fields.Nested(point_data, description='2-D coordinates of a modifier polygon')),
+        description='List of at least 1 modifier polygon for difference operation',
+        required=True,
+        min_length=1
+    )
+})
+
+sia_polygon_operations_response = api.model('SIA Polygon Operations Response', {
+    'resultantPolygon': fields.List(fields.Nested(point_data), description='Coordinates of the resulting polygon', required=True)
+})
+
+error_model = api.model("Error", {
+    "error": fields.String(description="Error message")
+})

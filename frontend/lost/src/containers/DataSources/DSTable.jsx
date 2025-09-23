@@ -255,17 +255,6 @@ export const DSTable = ({ visLevel, headline="Datasources" }) => {
                 title="Browse Files"
                 toggle={() => setBrowseOpen(!browseOpen)}
                 // onClosed={onClosed}
-                footer={
-                    <>
-                        <IconButton
-                            isOutline={false}
-                            icon={faTimes}
-                            color="secondary"
-                            text="Close"
-                            onClick={() => setBrowseOpen(false)}
-                        />
-                    </>
-                }
             >
                 {fullFs ? <LostFileBrowser fs={fullFs} /> : ''}
             </BaseModal>

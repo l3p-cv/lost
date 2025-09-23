@@ -24,6 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Simplified "view instruction" modal
 - Included optional UI improvements (tour guide button color, tooltip for >10 instructions)
 
+- Added /polygon_operations endpoint with perform_polygon_operations for union, intersection, and difference of polygons, including validations.
+- Added Swagger UI documentation for the new polygon operations API.
+- Added pytest for polygon operation validation comprehensive test coverage.
 ### Changed
 - Replaced all usages of reactstrap and semantic-ui with CoreUI components and/or generic solutions 
 - moved quick_setup.py into main directory
@@ -54,6 +57,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed back-button behavior in Step 3 of the SIA pipeline tour guide
 - Improved positioning of step dialogs (now waits for rendering)
 - Resolved issue with image folder selection during tours
+- Re-added rendering of footer for component BaseModal
 
 ### Removed
 - Removed all instances of reactstrap library
@@ -63,6 +67,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed unused Iconbutton from globalComponents
 - Removed unused BaseModal from globalComponents
 - Removed ToolbarTooltip from containers/pipeline/running (replaced with CoreUI functionality)
+- Removed unnecessary "close"-button for global instructions
 
 ## [2.7.0] - 2025-06-12 
 ### Added
