@@ -162,13 +162,14 @@ const AddPipelineProject = ({ visLevel, projectNames = [], refetch }) => {
     }
     const renderModalFooter = () => {
         return (
-            <IconButton
-                icon={faTimes}
-                isOutline={false}
-                color="secondary"
-                text="Close"
-                onClick={() => setIsModalOpen(false)}
-            />
+            <></>
+            // <IconButton
+            //     icon={faTimes}
+            //     isOutline={false}
+            //     color="secondary"
+            //     text="Close"
+            //     onClick={() => setIsModalOpen(false)}
+            // />
         )
     }
 
