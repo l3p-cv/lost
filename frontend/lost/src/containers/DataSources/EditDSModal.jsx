@@ -236,13 +236,6 @@ const EditDSModal = ({
                             text="Save Root Path"
                             onClick={saveBrowse}
                         />
-                        <IconButton
-                            isOutline={false}
-                            color="secondary"
-                            icon={faTimes}
-                            text="Close"
-                            onClick={cancelBrowse}
-                        ></IconButton>
                     </>
                 }
             >
@@ -273,13 +266,6 @@ const EditDSModal = ({
                                 text="Save"
                                 onClick={save}
                             />
-                            <IconButton
-                                isOutline={false}
-                                color="secondary"
-                                icon={faTimes}
-                                text="Close"
-                                onClick={cancel}
-                            ></IconButton>
                         </>
                     }
                 >
