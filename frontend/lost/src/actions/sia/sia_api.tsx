@@ -2,6 +2,7 @@ import axios from 'axios'
 import { useMutation, useQuery } from 'react-query'
 import { API_URL } from '../../lost_settings'
 import { Annotation } from 'lost-sia/models'
+import { SiaImageRequest } from '../../types/SiaTypes'
 
 type ImageEditData = {
     imgId: number
@@ -40,17 +41,19 @@ export const useGetSiaAnnos = (annotationRequestData) => {
     )
 }
 
-export const useGetSiaImage = (imageId) => {
+export const useGetSiaImage = (imageRequestData: SiaImageRequest) => {
     return useQuery(
-        ['getsiaimage', imageId],
+        ['getsiaimage', imageRequestData],
         () =>
             axios
-                .get(`${API_URL}/data/image/${imageId}?type=imageBased`)
+                .get(`${API_URL}/data/image/${imageRequestData!.imageId}?type=imageBased`)
                 .then((res) => res.data),
+
+        // @TODO fiters are skipped for now. Wait for backend implementation
         {
             // only fetch when imageId is available
             // request will automatically refetch when value changes
-            enabled: !!imageId,
+            enabled: !!imageRequestData?.imageId,
             refetchOnWindowFocus: false,
         },
     )

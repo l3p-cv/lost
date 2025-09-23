@@ -29,6 +29,8 @@ import NavigationButtons from './NavigationButtons'
 import { Annotation, AnnotationStatus, AnnotationTool } from 'lost-sia/models'
 
 import legacyHelper, { LegacyAnnotation, LegacyAnnotationResponse } from './legacyHelper'
+import ImageFilterButton from './ImageFilterButton'
+import { AnnotationCoordinates, SiaImageRequest } from '../../../types/SiaTypes'
 
 const SiaWrapper = () => {
     const navigate = useNavigate()
@@ -54,14 +56,17 @@ const SiaWrapper = () => {
     })
 
     // image id in filesystem
-    const [imageId, setImageId] = useState<number | undefined>()
+    const [imageRequestData, setImageRequestData] = useState<SiaImageRequest>({
+        imageId: -1,
+        appliedFilters: [],
+    })
 
     const { data: possibleLabels } = useGetSiaPossibleLabels()
     const { data: siaConfiguration } = useGetSiaConfiguration()
 
     // requests will automatically refetched when their state (parameter) changes
     const { data: annoData } = useGetSiaAnnos(annotationRequestData)
-    const { data: imageBlobRequest } = useGetSiaImage(imageId)
+    const { data: imageBlobRequest } = useGetSiaImage(imageRequestData)
     const [imageBlob, setImageBlob] = useState<string | undefined>()
 
     // move this to an external state to be able to unload the image
@@ -94,7 +99,7 @@ const SiaWrapper = () => {
                 items.map((annotation) => {
                     const convertedAnnoType = legacyHelper.convertAnnoToolType(type)
 
-                    let newCoords = annotation.data
+                    let newCoords: AnnotationCoordinates = annotation.data
 
                     if (convertedAnnoType === AnnotationTool.BBox) {
                         // the old format saved the CENTER of the BBox, not the top left corner...
@@ -131,7 +136,13 @@ const SiaWrapper = () => {
 
         // request the image from the backend
         const imageId = annoData.image.id
-        setImageId(imageId)
+
+        // update the image id in the request data
+        // request will automatically refetched
+        setImageRequestData({
+            ...imageRequestData!,
+            imageId,
+        })
     }, [annoData])
 
     useEffect(() => {
@@ -208,7 +219,7 @@ const SiaWrapper = () => {
         setImageBlob(undefined)
         setAnnotationRequestData({
             direction: 'next',
-            imageId: imageId!,
+            imageId: imageRequestData!.imageId!,
         })
 
         handleClearSamHelperAnnos()
@@ -218,7 +229,7 @@ const SiaWrapper = () => {
         setImageBlob(undefined)
         setAnnotationRequestData({
             direction: 'prev',
-            imageId: imageId!,
+            imageId: imageRequestData!.imageId!,
         })
 
         handleClearSamHelperAnnos()
@@ -342,13 +353,27 @@ const SiaWrapper = () => {
                     isLoading={!imageBlob}
                     possibleLabels={possibleLabels}
                     additionalButtons={
-                        <NavigationButtons
-                            isFirstImage={annoData?.image?.isFirst}
-                            isLastImage={annoData?.image?.isLast}
-                            onNextImagePressed={getNextImage}
-                            onPreviousImagePressed={getPreviousImage}
-                            onSubmitAnnotask={submitAnnotask}
-                        />
+                        <>
+                            <NavigationButtons
+                                isFirstImage={annoData?.image?.isFirst}
+                                isLastImage={annoData?.image?.isLast}
+                                onNextImagePressed={getNextImage}
+                                onPreviousImagePressed={getPreviousImage}
+                                onSubmitAnnotask={submitAnnotask}
+                            />
+                            &nbsp; &nbsp;
+                            <ImageFilterButton
+                                isDisabled={!imageBlob}
+                                onFiltersChanged={(newFilters) => {
+                                    // update filters in image request
+                                    // the request will automatically refetched
+                                    setImageRequestData({
+                                        ...imageRequestData,
+                                        appliedFilters: newFilters,
+                                    })
+                                }}
+                            />
+                        </>
                     }
                     onAnnoChanged={(annotation) => {
                         // do nothing when still creating annotation
