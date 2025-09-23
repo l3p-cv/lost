@@ -13,6 +13,7 @@ import json
 import base64
 import cv2
 from lost.logic.file_man import FileMan
+from shapely.errors import TopologicalError
 
 namespace = api.namespace("sia", description="SIA Annotation API.")
 
@@ -267,6 +268,7 @@ class PolygonUnion(Resource):
     @api.expect(sia_polygon_union)
     @api.response(200, "Success", sia_polygon_operations_response)
     @api.response(400, "Bad Request", error_model)
+    @api.response(403, "Forbidden", error_model)
     @api.response(500, "Internal Server Error", error_model)
     @jwt_required()
     def post(self):
@@ -279,11 +281,19 @@ class PolygonUnion(Resource):
         try:
             data = json.loads(request.data)
             flask.current_app.logger.info(f"Received payload for union: {data}")
-            response, status_code = sia.perform_polygon_union(data)
+            response = sia.perform_polygon_union(data)
             dbm.close_session()
-            return response, status_code
+            return response, 200
+        except sia.PolygonOperationError as e:
+            flask.current_app.logger.error(f"Validation error in polygon union: {str(e)}")
+            dbm.close_session()
+            return {"error": str(e)}, 400
+        except TopologicalError as e:
+            flask.current_app.logger.error(f"Topology error in polygon union: {str(e)}")
+            dbm.close_session()
+            return {"error": str(e)}, 400
         except Exception as e:
-            flask.current_app.logger.error(f"Error parsing request: {str(e)}")
+            flask.current_app.logger.error(f"Unexpected error in polygon union: {str(e)}")
             dbm.close_session()
             return {"error": str(e)}, 500
 
@@ -294,6 +304,7 @@ class PolygonIntersection(Resource):
     @api.expect(sia_polygon_intersection)
     @api.response(200, "Success", sia_polygon_operations_response)
     @api.response(400, "Bad Request", error_model)
+    @api.response(403, "Forbidden", error_model)
     @api.response(500, "Internal Server Error", error_model)
     @jwt_required()
     def post(self):
@@ -306,11 +317,19 @@ class PolygonIntersection(Resource):
         try:
             data = json.loads(request.data)
             flask.current_app.logger.info(f"Received payload for intersection: {data}")
-            response, status_code = sia.perform_polygon_intersection(data)
+            response = sia.perform_polygon_intersection(data)
             dbm.close_session()
-            return response, status_code
+            return response, 200
+        except sia.PolygonOperationError as e:
+            flask.current_app.logger.error(f"Validation error in polygon intersection: {str(e)}")
+            dbm.close_session()
+            return {"error": str(e)}, 400
+        except TopologicalError as e:
+            flask.current_app.logger.error(f"Topology error in polygon intersection: {str(e)}")
+            dbm.close_session()
+            return {"error": str(e)}, 400
         except Exception as e:
-            flask.current_app.logger.error(f"Error parsing request: {str(e)}")
+            flask.current_app.logger.error(f"Unexpected error in polygon intersection: {str(e)}")
             dbm.close_session()
             return {"error": str(e)}, 500
 
@@ -321,6 +340,7 @@ class PolygonDifference(Resource):
     @api.expect(sia_polygon_difference)
     @api.response(200, "Success", sia_polygon_operations_response)
     @api.response(400, "Bad Request", error_model)
+    @api.response(403, "Forbidden", error_model)
     @api.response(500, "Internal Server Error", error_model)
     @jwt_required()
     def post(self):
@@ -333,10 +353,18 @@ class PolygonDifference(Resource):
         try:
             data = json.loads(request.data)
             flask.current_app.logger.info(f"Received payload for difference: {data}")
-            response, status_code = sia.perform_polygon_difference(data)
+            response = sia.perform_polygon_difference(data)
             dbm.close_session()
-            return response, status_code
+            return response, 200
+        except sia.PolygonOperationError as e:
+            flask.current_app.logger.error(f"Validation error in polygon difference: {str(e)}")
+            dbm.close_session()
+            return {"error": str(e)}, 400
+        except TopologicalError as e:
+            flask.current_app.logger.error(f"Topology error in polygon difference: {str(e)}")
+            dbm.close_session()
+            return {"error": str(e)}, 400
         except Exception as e:
-            flask.current_app.logger.error(f"Error parsing request: {str(e)}")
+            flask.current_app.logger.error(f"Unexpected error in polygon difference: {str(e)}")
             dbm.close_session()
             return {"error": str(e)}, 500

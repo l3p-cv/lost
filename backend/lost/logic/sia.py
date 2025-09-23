@@ -7,6 +7,9 @@ from lost.logic.anno_task import set_finished, update_anno_task
 from datetime import datetime
 from shapely.geometry import Polygon
 from shapely.ops import unary_union
+from shapely.errors import ShapelyError, TopologicalError
+import math
+
 __author__ = "Gereon Reus"
 
 def get_first(db_man, user_id, media_url):
@@ -918,147 +921,185 @@ def reviewoptions_annotask(dbm, at_id, user_id):
     options['possible_labels'] = get_label_trees(dbm, user_id, anno_task)['labels']
     return options
 
+class PolygonOperationError(Exception):
+    """Custom exception for polygon operation errors."""
+    def __init__(self, message):
+        super().__init__(message)
+        self.message = message
 
 def perform_polygon_union(data):
-    try:
-        if "polygons" not in data or not isinstance(data["polygons"], list):
-            flask.current_app.logger.info("Missing or invalid 'polygons' field")
-            return {"error": "Missing or invalid 'polygons' field"}, 400
-        if len(data["polygons"]) < 2:
-            flask.current_app.logger.info("At least 2 polygons required for union")
-            return {"error": "At least 2 polygons required for union"}, 400
-        polygons = data["polygons"]
-        
-        shapely_polygons = []
-        for poly in polygons:
-            if len(poly) < 3:
-                flask.current_app.logger.info("Insufficient vertices")
-                return {"error": "Each polygon must have at least 3 vertices"}, 400
-            coords = [(p["x"], p["y"]) for p in poly]
-            try:
-                shapely_polygons.append(Polygon(coords))
-            except Exception as e:
-                flask.current_app.logger.error(f"Invalid geometry: {str(e)}")
-                return {"error": f"Invalid polygon geometry: {str(e)}"}, 400
-        
-        result_poly = unary_union(shapely_polygons)
-        
-        if result_poly.is_empty:
-            flask.current_app.logger.info("Empty result polygon")
-            return {"error": "Union resulted in an empty polygon"}, 400
-        
-        if result_poly.geom_type != "Polygon":
-            flask.current_app.logger.info("Unexpected geometry type")
-            return {"error": f"Unexpected geometry type: {result_poly.geom_type}"}, 400
-        
-        result_coords = [{"x": float(x), "y": float(y)} for x, y in result_poly.exterior.coords[:-1]]
-        
-        response = {"resultantPolygon": result_coords}
-        flask.current_app.logger.info(f"Returning success response: {response}")
-        return response, 200
+    if "polygons" not in data or not isinstance(data["polygons"], list):
+        flask.current_app.logger.info("Missing or invalid 'polygons' field")
+        raise PolygonOperationError("Missing or invalid 'polygons' field")
+    if len(data["polygons"]) < 2:
+        flask.current_app.logger.info("At least 2 polygons required for union")
+        raise PolygonOperationError("At least 2 polygons required for union")
+    polygons = data["polygons"]
     
-    except Exception as e:
-        flask.current_app.logger.error(f"Error in polygon_union: {str(e)}")
-        return {"error": str(e)}, 500
+    shapely_polygons = []
+    for poly in polygons:
+        if len(poly) < 3:
+            flask.current_app.logger.info("Insufficient vertices")
+            raise PolygonOperationError("Each polygon must have at least 3 vertices")
+        coords = []
+        for p in poly:
+            if not (isinstance(p.get("x"), (int, float)) and isinstance(p.get("y"), (int, float))):
+                flask.current_app.logger.info("Non-numeric coordinates detected")
+                raise PolygonOperationError("All coordinates must be numeric")
+            if math.isnan(p["x"]) or math.isinf(p["x"]) or math.isnan(p["y"]) or math.isinf(p["y"]):
+                flask.current_app.logger.info("Invalid coordinates (NaN or inf)")
+                raise PolygonOperationError("Coordinates cannot be NaN or infinite")
+            coords.append((p["x"], p["y"]))
+        try:
+            shapely_poly = Polygon(coords)
+            if not shapely_poly.is_valid:
+                flask.current_app.logger.info("Self-intersecting polygon detected")
+                raise PolygonOperationError("Invalid polygon geometry: Self-intersection")
+            shapely_polygons.append(shapely_poly)
+        except (ShapelyError, TopologicalError) as e:
+            flask.current_app.logger.error(f"Invalid geometry: {str(e)}")
+            raise PolygonOperationError(f"Invalid polygon geometry: {str(e)}")
+    
+    try:
+        result_poly = unary_union(shapely_polygons)
+    except (ShapelyError, TopologicalError) as e:
+        flask.current_app.logger.error(f"Topology error in union: {str(e)}")
+        raise PolygonOperationError(f"Topology error during union: {str(e)}")
+    
+    if result_poly.is_empty:
+        flask.current_app.logger.info("Empty result polygon")
+        raise PolygonOperationError("Union resulted in an empty polygon")
+    
+    if result_poly.geom_type != "Polygon":
+        flask.current_app.logger.info(f"Unexpected geometry type: {result_poly.geom_type}")
+        raise PolygonOperationError(f"Unexpected geometry type: {result_poly.geom_type}")
+    
+    result_coords = [{"x": float(x), "y": float(y)} for x, y in result_poly.exterior.coords[:-1]]
+    
+    response = {"resultantPolygon": result_coords}
+    flask.current_app.logger.info(f"Returning success response: {response}")
+    return response
 
 def perform_polygon_intersection(data):
-    try:
-        if "polygons" not in data or not isinstance(data["polygons"], list):
-            flask.current_app.logger.info("Missing or invalid 'polygons' field")
-            return {"error": "Missing or invalid 'polygons' field"}, 400
-        if len(data["polygons"]) != 2:
-            flask.current_app.logger.info("Exactly 2 polygons required for intersection")
-            return {"error": "Exactly 2 polygons required for intersection"}, 400
-        polygons = data["polygons"]
-        
-        shapely_polygons = []
-        for poly in polygons:
-            if len(poly) < 3:
-                flask.current_app.logger.info("Insufficient vertices")
-                return {"error": "Each polygon must have at least 3 vertices"}, 400
-            coords = [(p["x"], p["y"]) for p in poly]
-            try:
-                shapely_polygons.append(Polygon(coords))
-            except Exception as e:
-                flask.current_app.logger.error(f"Invalid geometry: {str(e)}")
-                return {"error": f"Invalid polygon geometry: {str(e)}"}, 400
-        
-        result_poly = shapely_polygons[0].intersection(shapely_polygons[1])
-        
-        if result_poly.is_empty:
-            flask.current_app.logger.info("Empty result polygon")
-            return {"error": "Intersection resulted in an empty polygon"}, 400
-        
-        if result_poly.geom_type == "Polygon":
-            result_coords = [{"x": float(x), "y": float(y)} for x, y in result_poly.exterior.coords[:-1]]
-        elif result_poly.geom_type == "MultiPolygon":
-            largest_poly = max(result_poly.geoms, key=lambda p: p.area)
-            result_coords = [{"x": float(x), "y": float(y)} for x, y in largest_poly.exterior.coords[:-1]]
-        elif result_poly.geom_type == "GeometryCollection":
-            valid_polygons = [geom for geom in result_poly.geoms if geom.geom_type == "Polygon"]
-            if not valid_polygons:
-                flask.current_app.logger.info("No valid polygons in GeometryCollection")
-                return {"error": "No valid polygons found in GeometryCollection"}, 400
-            largest_poly = max(valid_polygons, key=lambda p: p.area)
-            result_coords = [{"x": float(x), "y": float(y)} for x, y in largest_poly.exterior.coords[:-1]]
-        else:
-            flask.current_app.logger.info("Unsupported geometry")
-            return {"error": f"Unsupported geometry type: {result_poly.geom_type}"}, 400
-        
-        response = {"resultantPolygon": result_coords}
-        flask.current_app.logger.info(f"Returning success response: {response}")
-        return response, 200
+    if "polygons" not in data or not isinstance(data["polygons"], list):
+        flask.current_app.logger.info("Missing or invalid 'polygons' field")
+        raise PolygonOperationError("Missing or invalid 'polygons' field")
+    if len(data["polygons"]) != 2:
+        flask.current_app.logger.info("Exactly 2 polygons required for intersection")
+        raise PolygonOperationError("Exactly 2 polygons required for intersection")
+    polygons = data["polygons"]
     
-    except Exception as e:
-        flask.current_app.logger.error(f"Error in polygon_intersection: {str(e)}")
-        return {"error": str(e)}, 500
+    shapely_polygons = []
+    for poly in polygons:
+        if len(poly) < 3:
+            flask.current_app.logger.info("Insufficient vertices")
+            raise PolygonOperationError("Each polygon must have at least 3 vertices")
+        coords = []
+        for p in poly:
+            if not (isinstance(p.get("x"), (int, float)) and isinstance(p.get("y"), (int, float))):
+                flask.current_app.logger.info("Non-numeric coordinates detected")
+                raise PolygonOperationError("All coordinates must be numeric")
+            if math.isnan(p["x"]) or math.isinf(p["x"]) or math.isnan(p["y"]) or math.isinf(p["y"]):
+                flask.current_app.logger.info("Invalid coordinates (NaN or inf)")
+                raise PolygonOperationError("Coordinates cannot be NaN or infinite")
+            coords.append((p["x"], p["y"]))
+        try:
+            shapely_poly = Polygon(coords)
+            if not shapely_poly.is_valid:
+                flask.current_app.logger.info("Self-intersecting polygon detected")
+                raise PolygonOperationError("Invalid polygon geometry: Self-intersection")
+            shapely_polygons.append(shapely_poly)
+        except (ShapelyError, TopologicalError) as e:
+            flask.current_app.logger.error(f"Invalid geometry: {str(e)}")
+            raise PolygonOperationError(f"Invalid polygon geometry: {str(e)}")
+    
+    try:
+        result_poly = shapely_polygons[0].intersection(shapely_polygons[1])
+    except (ShapelyError, TopologicalError) as e:
+        flask.current_app.logger.error(f"Topology error in intersection: {str(e)}")
+        raise PolygonOperationError(f"Topology error during intersection: {str(e)}")
+    
+    if result_poly.is_empty:
+        flask.current_app.logger.info("Empty result polygon")
+        raise PolygonOperationError("Intersection resulted in an empty polygon")
+    
+    if result_poly.geom_type == "Polygon":
+        result_coords = [{"x": float(x), "y": float(y)} for x, y in result_poly.exterior.coords[:-1]]
+    elif result_poly.geom_type == "MultiPolygon":
+        largest_poly = max(result_poly.geoms, key=lambda p: p.area)
+        result_coords = [{"x": float(x), "y": float(y)} for x, y in largest_poly.exterior.coords[:-1]]
+    elif result_poly.geom_type == "GeometryCollection":
+        valid_polygons = [geom for geom in result_poly.geoms if geom.geom_type == "Polygon"]
+        if not valid_polygons:
+            flask.current_app.logger.info("No valid polygons in GeometryCollection")
+            raise PolygonOperationError("No valid polygons found in GeometryCollection")
+        largest_poly = max(valid_polygons, key=lambda p: p.area)
+        result_coords = [{"x": float(x), "y": float(y)} for x, y in largest_poly.exterior.coords[:-1]]
+    else:
+        flask.current_app.logger.info(f"Unsupported geometry: {result_poly.geom_type}")
+        raise PolygonOperationError(f"Unsupported geometry type: {result_poly.geom_type}")
+    
+    response = {"resultantPolygon": result_coords}
+    flask.current_app.logger.info(f"Returning success response: {response}")
+    return response
 
 def perform_polygon_difference(data):
+    if "selectedPolygon" not in data or "polygonModifiers" not in data:
+        flask.current_app.logger.info("Missing 'selectedPolygon' or 'polygonModifiers' field")
+        raise PolygonOperationError("Missing 'selectedPolygon' or 'polygonModifiers' field")
+    if not isinstance(data["selectedPolygon"], list) or not isinstance(data["polygonModifiers"], list):
+        flask.current_app.logger.info("Invalid 'selectedPolygon' or 'polygonModifiers' format")
+        raise PolygonOperationError("Invalid 'selectedPolygon' or 'polygonModifiers' format")
+    if not data["polygonModifiers"]:
+        flask.current_app.logger.info("At least one modifier polygon required")
+        raise PolygonOperationError("At least one modifier polygon required")
+    polygons = [data["selectedPolygon"]] + data["polygonModifiers"]
+    
+    shapely_polygons = []
+    for poly in polygons:
+        if len(poly) < 3:
+            flask.current_app.logger.info("Insufficient vertices")
+            raise PolygonOperationError("Each polygon must have at least 3 vertices")
+        coords = []
+        for p in poly:
+            if not (isinstance(p.get("x"), (int, float)) and isinstance(p.get("y"), (int, float))):
+                flask.current_app.logger.info("Non-numeric coordinates detected")
+                raise PolygonOperationError("All coordinates must be numeric")
+            if math.isnan(p["x"]) or math.isinf(p["x"]) or math.isnan(p["y"]) or math.isinf(p["y"]):
+                flask.current_app.logger.info("Invalid coordinates (NaN or inf)")
+                raise PolygonOperationError("Coordinates cannot be NaN or infinite")
+            coords.append((p["x"], p["y"]))
+        try:
+            shapely_poly = Polygon(coords)
+            if not shapely_poly.is_valid:
+                flask.current_app.logger.info("Self-intersecting polygon detected")
+                raise PolygonOperationError("Invalid polygon geometry: Self-intersection")
+            shapely_polygons.append(shapely_poly)
+        except (ShapelyError, TopologicalError) as e:
+            flask.current_app.logger.error(f"Invalid geometry: {str(e)}")
+            raise PolygonOperationError(f"Invalid polygon geometry: {str(e)}")
+    
     try:
-        if "selectedPolygon" not in data or "polygonModifiers" not in data:
-            flask.current_app.logger.info("Missing 'selectedPolygon' or 'polygonModifiers' field")
-            return {"error": "Missing 'selectedPolygon' or 'polygonModifiers' field"}, 400
-        if not isinstance(data["selectedPolygon"], list) or not isinstance(data["polygonModifiers"], list):
-            flask.current_app.logger.info("Invalid 'selectedPolygon' or 'polygonModifiers' format")
-            return {"error": "Invalid 'selectedPolygon' or 'polygonModifiers' format"}, 400
-        if not data["polygonModifiers"]:
-            flask.current_app.logger.info("At least one modifier polygon required")
-            return {"error": "At least one modifier polygon required"}, 400
-        polygons = [data["selectedPolygon"]] + data["polygonModifiers"]
-        
-        shapely_polygons = []
-        for poly in polygons:
-            if len(poly) < 3:
-                flask.current_app.logger.info("Insufficient vertices")
-                return {"error": "Each polygon must have at least 3 vertices"}, 400
-            coords = [(p["x"], p["y"]) for p in poly]
-            try:
-                shapely_polygons.append(Polygon(coords))
-            except Exception as e:
-                flask.current_app.logger.error(f"Invalid geometry: {str(e)}")
-                return {"error": f"Invalid polygon geometry: {str(e)}"}, 400
-        
         result_poly = shapely_polygons[0]
         for modifier in shapely_polygons[1:]:
             result_poly = result_poly.difference(modifier)
-        
-        if result_poly.is_empty:
-            flask.current_app.logger.info("Empty result polygon")
-            return {"error": "Difference resulted in an empty polygon"}, 400
-        
-        if result_poly.geom_type == "Polygon":
-            result_coords = [{"x": float(x), "y": float(y)} for x, y in result_poly.exterior.coords[:-1]]
-        elif result_poly.geom_type == "MultiPolygon":
-            largest_poly = max(result_poly.geoms, key=lambda p: p.area)
-            result_coords = [{"x": float(x), "y": float(y)} for x, y in largest_poly.exterior.coords[:-1]]
-        else:
-            flask.current_app.logger.info("Unsupported geometry")
-            return {"error": f"Unsupported geometry type: {result_poly.geom_type}"}, 400
-        
-        response = {"resultantPolygon": result_coords}
-        flask.current_app.logger.info(f"Returning success response: {response}")
-        return response, 200
+    except (ShapelyError, TopologicalError) as e:
+        flask.current_app.logger.error(f"Topology error in difference: {str(e)}")
+        raise PolygonOperationError(f"Topology error during difference: {str(e)}")
     
-    except Exception as e:
-        flask.current_app.logger.error(f"Error in polygon_difference: {str(e)}")
-        return {"error": str(e)}, 500
+    if result_poly.is_empty:
+        flask.current_app.logger.info("Empty result polygon")
+        raise PolygonOperationError("Difference resulted in an empty polygon")
+    
+    if result_poly.geom_type == "Polygon":
+        result_coords = [{"x": float(x), "y": float(y)} for x, y in result_poly.exterior.coords[:-1]]
+    elif result_poly.geom_type == "MultiPolygon":
+        largest_poly = max(result_poly.geoms, key=lambda p: p.area)
+        result_coords = [{"x": float(x), "y": float(y)} for x, y in largest_poly.exterior.coords[:-1]]
+    else:
+        flask.current_app.logger.info(f"Unsupported geometry: {result_poly.geom_type}")
+        raise PolygonOperationError(f"Unsupported geometry type: {result_poly.geom_type}")
+    
+    response = {"resultantPolygon": result_coords}
+    flask.current_app.logger.info(f"Returning success response: {response}")
+    return response
