@@ -3,7 +3,7 @@
 ## Image coordinate system
 
 The same coordinate system as in OpenCv is used. So an image is treated
-as a matix. The x-axis increases to the right and the y-axis increases
+as a matrix. The x-axis increases to the right and the y-axis increases
 while moving downwards in the coordinate system, as in matrix notation.
 
 ## Annotations
