@@ -362,6 +362,17 @@ const SiaWrapper = () => {
 
     // handles response after we did the polygon merge operation (HTTP request)
     useEffect(() => {
+        // show errors to user
+        if (polygonMergeReponse?.error) {
+            handleNotification({
+                title: 'Invalid selection',
+                message: polygonMergeReponse.error,
+                type: notificationType.ERROR,
+            })
+            setIsSiaLoading(false)
+            return
+        }
+
         if (polygonMergeReponse?.resultantPolygon === undefined) return
 
         const { resultantPolygon } = polygonMergeReponse
@@ -574,6 +585,13 @@ const SiaWrapper = () => {
                             ) {
                                 // there's an imposter - abort mission
                                 setPolygonEditMode(PolygonEditMode.NONE)
+
+                                handleNotification({
+                                    title: 'Invalid selection',
+                                    message:
+                                        'Merge can only be done with polygon annotations',
+                                    type: notificationType.ERROR,
+                                })
 
                                 return
                             }
