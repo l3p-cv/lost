@@ -9,9 +9,10 @@ import {
     useImageJunk,
     useGetSiaPossibleLabels,
     useGetSiaConfiguration,
+    usePolygonMerge,
 } from '../../../actions/sia/sia_api'
 
-import { Sia2, notificationType } from 'lost-sia'
+import { Sia2, notificationType, PolygonOperationResult } from 'lost-sia'
 import { useNavigate } from 'react-router-dom'
 import { CBadge, CButton } from '@coreui/react'
 import {
@@ -31,12 +32,27 @@ import { Annotation, AnnotationStatus, AnnotationTool } from 'lost-sia/models'
 import legacyHelper, { LegacyAnnotation, LegacyAnnotationResponse } from './legacyHelper'
 import ImageFilterButton from './ImageFilterButton'
 import { AnnotationCoordinates, SiaImageRequest } from '../../../types/SiaTypes'
+import PolygonEditButtons from './PolygonEditButtons'
+import PolygonEditMode from '../../../models/PolygonEditMode'
 
 const SiaWrapper = () => {
     const navigate = useNavigate()
 
     const [samPoints, setSamPoints] = useState([])
     const [samBBox, setSamBBox] = useState(null)
+
+    const [isSiaLoading, setIsSiaLoading] = useState<boolean>(true)
+    const [polygonEditMode, setPolygonEditMode] = useState<PolygonEditMode>(
+        PolygonEditMode.NONE,
+    )
+
+    const [polygonOperationResult, setPolygonOperationResult] =
+        useState<PolygonOperationResult>([])
+
+    // save the selected annotation for polygon edit events
+    // THIS IS A SHADOW COPY THAT IS NOT READ FROM INSIDE SIA
+    const [currentlySelectedAnnotation, setCurrentlySelectedAnnotation] =
+        useState<Annotation>()
 
     const { mutate: inferAnnotations, isLoading: isInferenceLoading } =
         useTritonInference()
@@ -76,6 +92,7 @@ const SiaWrapper = () => {
         if (possibleLabels === undefined) return
 
         setImageBlob(imageBlobRequest)
+        setIsSiaLoading(false)
     }, [imageBlobRequest, possibleLabels])
 
     // @TODO check if request worked
@@ -87,6 +104,8 @@ const SiaWrapper = () => {
     const { data: imageJunkResponse, mutate: junkImage } = useImageJunk()
 
     const { data: finishAnnotaskResponse, mutate: finishAnnotask } = useFinishAnnotask()
+
+    const { data: polygonMergeReponse, mutate: mergePolygons } = usePolygonMerge()
 
     useEffect(() => {
         // react query throws a state update with undefined right before the actual data is set when the query cache is disabled
@@ -196,6 +215,25 @@ const SiaWrapper = () => {
         handleFinishAnnotaskResponse()
     }, [finishAnnotaskResponse])
 
+    const calculatePolygonOperation = (
+        firstAnnotation: Annotation,
+        secondAnnotation: Annotation,
+    ) => {
+        switch (polygonEditMode) {
+            case PolygonEditMode.MERGE:
+                setIsSiaLoading(true)
+                mergePolygons({
+                    firstPolygon: firstAnnotation.coordinates,
+                    secondPolygon: secondAnnotation.coordinates,
+                })
+                break
+            case PolygonEditMode.INTERSECT:
+                break
+            case PolygonEditMode.DIFFERENCE:
+                break
+        }
+    }
+
     const handleNotification = (messageObj) => {
         switch (messageObj.type) {
             case notificationType.WARNING:
@@ -216,6 +254,7 @@ const SiaWrapper = () => {
     }
 
     const getNextImage = () => {
+        setPolygonEditMode(PolygonEditMode.NONE)
         setImageBlob(undefined)
         setAnnotationRequestData({
             direction: 'next',
@@ -226,6 +265,7 @@ const SiaWrapper = () => {
     }
 
     const getPreviousImage = () => {
+        setPolygonEditMode(PolygonEditMode.NONE)
         setImageBlob(undefined)
         setAnnotationRequestData({
             direction: 'prev',
@@ -315,6 +355,22 @@ const SiaWrapper = () => {
         setSamBBox(null)
     }
 
+    // handles response after we did the polygon merge operation (HTTP request)
+    useEffect(() => {
+        if (polygonMergeReponse?.resultantPolygon === undefined) return
+
+        const { resultantPolygon } = polygonMergeReponse
+
+        const newPolygonOperationResult: PolygonOperationResult = {
+            polygonsToCreate: [resultantPolygon],
+            annotationsToDelete: [currentlySelectedAnnotation],
+        }
+
+        // write update to SIA
+        setPolygonOperationResult(newPolygonOperationResult)
+        setIsSiaLoading(false)
+    }, [polygonMergeReponse])
+
     return (
         <>
             {siaConfiguration?.inferenceModel?.id && (
@@ -350,20 +406,19 @@ const SiaWrapper = () => {
                     image={imageBlob}
                     initialAnnotations={initialAnnotations}
                     initialIsImageJunk={annoData?.image?.isJunk}
-                    isLoading={!imageBlob}
+                    isLoading={isSiaLoading}
+                    isPolygonSelectionMode={polygonEditMode !== PolygonEditMode.NONE}
                     possibleLabels={possibleLabels}
+                    polygonOperationResult={polygonOperationResult}
                     additionalButtons={
                         <>
-                            <NavigationButtons
-                                isFirstImage={annoData?.image?.isFirst}
-                                isLastImage={annoData?.image?.isLast}
-                                onNextImagePressed={getNextImage}
-                                onPreviousImagePressed={getPreviousImage}
-                                onSubmitAnnotask={submitAnnotask}
+                            <PolygonEditButtons
+                                polygonEditMode={polygonEditMode}
+                                onPolygonEditModeChanged={setPolygonEditMode}
                             />
                             &nbsp; &nbsp;
                             <ImageFilterButton
-                                isDisabled={!imageBlob}
+                                isDisabled={isSiaLoading}
                                 onFiltersChanged={(newFilters) => {
                                     // update filters in image request
                                     // the request will automatically refetched
@@ -373,12 +428,24 @@ const SiaWrapper = () => {
                                     })
                                 }}
                             />
+                            &nbsp; &nbsp;
+                            <NavigationButtons
+                                isFirstImage={annoData?.image?.isFirst}
+                                isLastImage={annoData?.image?.isLast}
+                                onNextImagePressed={getNextImage}
+                                onPreviousImagePressed={getPreviousImage}
+                                onSubmitAnnotask={submitAnnotask}
+                            />
                         </>
                     }
                     onAnnoChanged={(annotation) => {
                         // do nothing when still creating annotation
                         // @TODO adapt backend to support partly-finished annotations
                         if (annotation.status === AnnotationStatus.CREATING) return
+
+                        // the polygon result throws the created and changed event at the same time
+                        // we only need the created event since it already contains all coordinates
+                        if (polygonEditMode !== PolygonEditMode.NONE) return
 
                         const newAnnotation = { ...annotation }
 
@@ -420,6 +487,9 @@ const SiaWrapper = () => {
                         console.log('ANNO CREATED', annotation)
                     }}
                     onAnnoCreationFinished={(annotation) => {
+                        // reset polygon edit mode
+                        setPolygonEditMode(PolygonEditMode.NONE)
+
                         const newAnnotation = {
                             ...annotation,
                             status: AnnotationStatus.CREATING, // mark as new so the anno is created at the server
@@ -472,6 +542,17 @@ const SiaWrapper = () => {
                             isJunk: newJunkState,
                         }
                         junkImage(imageData)
+                    }}
+                    onSelectAnnotation={(annotation: Annotation) => {
+                        // if we have a polygon edit mode selected we are currently searching for the second polygon to calculate
+                        if (polygonEditMode != PolygonEditMode.NONE) {
+                            calculatePolygonOperation(
+                                currentlySelectedAnnotation,
+                                annotation,
+                            )
+                        } else {
+                            setCurrentlySelectedAnnotation(annotation)
+                        }
                     }}
                 />
             </div>

@@ -2,6 +2,7 @@ import axios from 'axios'
 import { useMutation, useQuery } from 'react-query'
 import { API_URL } from '../../lost_settings'
 import { Annotation } from 'lost-sia/models'
+import { Point } from 'lost-sia'
 import { SiaImageRequest } from '../../types/SiaTypes'
 
 type ImageEditData = {
@@ -19,6 +20,11 @@ type ImageJunkData = {
 type editAnnotationData = {
     annotation: Annotation
     imageEditData: ImageEditData
+}
+
+type PolygonData = {
+    firstPolygon: Point[]
+    secondPolygon: Point[]
 }
 
 export const useGetSiaAnnos = (annotationRequestData) => {
@@ -128,4 +134,16 @@ export const useImageJunk = () => {
 
 export const useFinishAnnotask = () => {
     return useMutation(() => axios.post(API_URL + `/sia/finish`).then((res) => res.data))
+}
+
+export const usePolygonMerge = () => {
+    return useMutation((polygonData: PolygonData) => {
+        const requestData = {
+            polygons: [polygonData.firstPolygon, polygonData.secondPolygon],
+        }
+
+        return axios
+            .post(API_URL + `/sia/polygonOperations/union`, requestData)
+            .then((res) => res.data)
+    })
 }
