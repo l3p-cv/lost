@@ -145,5 +145,6 @@ export const usePolygonMerge = () => {
         return axios
             .post(API_URL + `/sia/polygonOperations/union`, requestData)
             .then((res) => res.data)
+            .catch((error) => error.response.data)
     })
 }

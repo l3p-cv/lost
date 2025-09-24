@@ -220,6 +220,34 @@ const SiaWrapper = () => {
         firstAnnotation: Annotation,
         secondAnnotation: Annotation,
     ) => {
+        // check if both annotations are polygons
+        if (
+            firstAnnotation?.type !== AnnotationTool.Polygon ||
+            secondAnnotation?.type !== AnnotationTool.Polygon
+        ) {
+            // there's an imposter - abort mission
+            setPolygonEditMode(PolygonEditMode.NONE)
+
+            handleNotification({
+                title: 'Invalid selection',
+                message: 'Merge can only be done with polygon annotations',
+                type: notificationType.ERROR,
+            })
+
+            return
+        }
+
+        // stop if user clicks onto the same annotation twice
+        if (firstAnnotation.internalId === secondAnnotation.internalId) {
+            setPolygonEditMode(PolygonEditMode.NONE)
+            handleNotification({
+                title: 'Invalid selection',
+                message: 'Cannot merge polygon with itself',
+                type: notificationType.ERROR,
+            })
+            return
+        }
+
         switch (polygonEditMode) {
             case PolygonEditMode.MERGE:
                 setIsSiaLoading(true)
@@ -370,6 +398,7 @@ const SiaWrapper = () => {
                 type: notificationType.ERROR,
             })
             setIsSiaLoading(false)
+            setPolygonEditMode(PolygonEditMode.NONE)
             return
         }
 
@@ -577,25 +606,6 @@ const SiaWrapper = () => {
                     onSelectAnnotation={(annotation: Annotation) => {
                         // if we have a polygon edit mode selected we are currently searching for the second polygon to calculate
                         if (polygonEditMode != PolygonEditMode.NONE) {
-                            // check if both annotations are polygons
-                            if (
-                                currentlySelectedAnnotation?.type !==
-                                    AnnotationTool.Polygon ||
-                                annotation?.type !== AnnotationTool.Polygon
-                            ) {
-                                // there's an imposter - abort mission
-                                setPolygonEditMode(PolygonEditMode.NONE)
-
-                                handleNotification({
-                                    title: 'Invalid selection',
-                                    message:
-                                        'Merge can only be done with polygon annotations',
-                                    type: notificationType.ERROR,
-                                })
-
-                                return
-                            }
-
                             calculatePolygonOperation(
                                 currentlySelectedAnnotation,
                                 annotation,
