@@ -9,7 +9,9 @@ import {
     useImageJunk,
     useGetSiaPossibleLabels,
     useGetSiaConfiguration,
-    usePolygonMerge,
+    usePolygonDifference,
+    usePolygonIntersection,
+    usePolygonUnion,
 } from '../../../actions/sia/sia_api'
 
 import { Sia2, notificationType, PolygonOperationResult } from 'lost-sia'
@@ -106,7 +108,10 @@ const SiaWrapper = () => {
 
     const { data: finishAnnotaskResponse, mutate: finishAnnotask } = useFinishAnnotask()
 
-    const { data: polygonMergeReponse, mutate: mergePolygons } = usePolygonMerge()
+    const { data: polygonDiffReponse, mutate: diffPolygons } = usePolygonDifference()
+    const { data: polygonIntersectionReponse, mutate: intersectPolygons } =
+        usePolygonIntersection()
+    const { data: polygonUnionReponse, mutate: mergePolygons } = usePolygonUnion()
 
     useEffect(() => {
         // react query throws a state update with undefined right before the actual data is set when the query cache is disabled
@@ -248,17 +253,25 @@ const SiaWrapper = () => {
             return
         }
 
+        setIsSiaLoading(true)
         switch (polygonEditMode) {
             case PolygonEditMode.MERGE:
-                setIsSiaLoading(true)
                 mergePolygons({
                     firstPolygon: firstAnnotation.coordinates,
                     secondPolygon: secondAnnotation.coordinates,
                 })
                 break
             case PolygonEditMode.INTERSECT:
+                intersectPolygons({
+                    firstPolygon: firstAnnotation.coordinates,
+                    secondPolygon: secondAnnotation.coordinates,
+                })
                 break
             case PolygonEditMode.DIFFERENCE:
+                diffPolygons({
+                    firstPolygon: firstAnnotation.coordinates,
+                    secondPolygon: secondAnnotation.coordinates,
+                })
                 break
         }
     }
@@ -388,13 +401,13 @@ const SiaWrapper = () => {
         setSamBBox(null)
     }
 
-    // handles response after we did the polygon merge operation (HTTP request)
-    useEffect(() => {
+    // handles response after we did a polygon operation (HTTP request)
+    const handlePolygonOperationResponse = (response) => {
         // show errors to user
-        if (polygonMergeReponse?.error) {
+        if (response?.error) {
             handleNotification({
                 title: 'Invalid selection',
-                message: polygonMergeReponse.error,
+                message: response.error,
                 type: notificationType.ERROR,
             })
             setIsSiaLoading(false)
@@ -402,9 +415,9 @@ const SiaWrapper = () => {
             return
         }
 
-        if (polygonMergeReponse?.resultantPolygon === undefined) return
+        if (response?.resultantPolygon === undefined) return
 
-        const { resultantPolygon } = polygonMergeReponse
+        const { resultantPolygon } = response
 
         const newPolygonOperationResult: PolygonOperationResult = {
             polygonsToCreate: [resultantPolygon],
@@ -414,7 +427,22 @@ const SiaWrapper = () => {
         // write update to SIA
         setPolygonOperationResult(newPolygonOperationResult)
         setIsSiaLoading(false)
-    }, [polygonMergeReponse])
+    }
+
+    useEffect(() => {
+        if (polygonDiffReponse === undefined) return
+        handlePolygonOperationResponse(polygonDiffReponse)
+    }, [polygonDiffReponse])
+
+    useEffect(() => {
+        if (polygonIntersectionReponse === undefined) return
+        handlePolygonOperationResponse(polygonIntersectionReponse)
+    }, [polygonIntersectionReponse])
+
+    useEffect(() => {
+        if (polygonUnionReponse === undefined) return
+        handlePolygonOperationResponse(polygonUnionReponse)
+    }, [polygonUnionReponse])
 
     return (
         <>

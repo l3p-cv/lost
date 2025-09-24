@@ -136,7 +136,34 @@ export const useFinishAnnotask = () => {
     return useMutation(() => axios.post(API_URL + `/sia/finish`).then((res) => res.data))
 }
 
-export const usePolygonMerge = () => {
+export const usePolygonDifference = () => {
+    return useMutation((polygonData: PolygonData) => {
+        const requestData = {
+            selectedPolygon: polygonData.firstPolygon,
+            polygonModifiers: [polygonData.secondPolygon],
+        }
+
+        return axios
+            .post(API_URL + `/sia/polygonOperations/difference`, requestData)
+            .then((res) => res.data)
+            .catch((error) => error.response.data)
+    })
+}
+
+export const usePolygonIntersection = () => {
+    return useMutation((polygonData: PolygonData) => {
+        const requestData = {
+            polygons: [polygonData.firstPolygon, polygonData.secondPolygon],
+        }
+
+        return axios
+            .post(API_URL + `/sia/polygonOperations/intersection`, requestData)
+            .then((res) => res.data)
+            .catch((error) => error.response.data)
+    })
+}
+
+export const usePolygonUnion = () => {
     return useMutation((polygonData: PolygonData) => {
         const requestData = {
             polygons: [polygonData.firstPolygon, polygonData.secondPolygon],
