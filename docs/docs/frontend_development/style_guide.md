@@ -2,7 +2,7 @@
 # Style Guide
 
 To maintain a consistent UI (and therfore UX), this style guide
-provides developers with paradigms and instrictions to work with.
+provides developers with paradigms and instructions to work with.
 These guidelines are to be respected when making changes to the UI.
 
 ## Tables
@@ -19,7 +19,7 @@ Figure 1: **CoreDataTable** in use (here for the Pipeline-Tab).
 ### Table/Page Header
 
 Typically, above the left corner of the table, there will be the headline.
-Above the right corner, there is button with the fucntion to add an element
+Above the right corner, there is button with the function to add an element
 of whatever the table displays, if applicable.
 
 There is a custom component used for this called [***TableHeader***](https://github.com/l3p-cv/lost/blob/master/frontend/lost/src/components/TableHeader.jsx),
@@ -70,9 +70,9 @@ Also for additional colors in elements like pagination, where it contributes to 
 **Info**: For functionality leading to further information, like
 inspecting pipelines.
 
-**Success**: Mainly only used for unpausing pipelines (as to fucntionally contrast **warning** below).
+**Success**: Mainly only used for unpausing pipelines (as to functionally contrast **warning** below).
 
-**Warning**: For actions to be doen carfully (but that are typically reversible).
+**Warning**: For actions to be done carfully (but that are typically reversible).
 Examples would be: Editing an element or pausing a pipeline.
 
 **Danger**: For deleting elements or other risky (typically irreversible) actions.
@@ -81,7 +81,7 @@ Examples would be: Editing an element or pausing a pipeline.
 
 When it comes to placement from left to right or up to down, the buttons are ordered by function.
 Since these functions have designated colors,
-we can also say, that the buttons are therfore ordered by color.
+we can also say, that the buttons are therefore ordered by color.
 
 With that in mind, the order is as follows:
 
