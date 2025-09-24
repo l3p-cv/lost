@@ -50,9 +50,10 @@ const SiaWrapper = () => {
         useState<PolygonOperationResult>([])
 
     // save the selected annotation for polygon edit events
-    // THIS IS A SHADOW COPY THAT IS NOT READ FROM INSIDE SIA
-    const [currentlySelectedAnnotation, setCurrentlySelectedAnnotation] =
-        useState<Annotation>()
+    // THIS IS A SHADOW COPY THAT IS NOT USED FROM INSIDE SIA
+    const [currentlySelectedAnnotation, setCurrentlySelectedAnnotation] = useState<
+        Annotation | undefined
+    >()
 
     const { mutate: inferAnnotations, isLoading: isInferenceLoading } =
         useTritonInference()
@@ -253,9 +254,14 @@ const SiaWrapper = () => {
         }
     }
 
-    const getNextImage = () => {
+    const resetWrapper = () => {
+        setAnnotationIdMapping([])
         setPolygonEditMode(PolygonEditMode.NONE)
         setImageBlob(undefined)
+    }
+
+    const getNextImage = () => {
+        resetWrapper()
         setAnnotationRequestData({
             direction: 'next',
             imageId: imageRequestData!.imageId!,
@@ -265,8 +271,7 @@ const SiaWrapper = () => {
     }
 
     const getPreviousImage = () => {
-        setPolygonEditMode(PolygonEditMode.NONE)
-        setImageBlob(undefined)
+        resetWrapper()
         setAnnotationRequestData({
             direction: 'prev',
             imageId: imageRequestData!.imageId!,
@@ -447,6 +452,8 @@ const SiaWrapper = () => {
                         // we only need the created event since it already contains all coordinates
                         if (polygonEditMode !== PolygonEditMode.NONE) return
 
+                        setCurrentlySelectedAnnotation(annotation)
+
                         const newAnnotation = { ...annotation }
 
                         if (
@@ -489,6 +496,7 @@ const SiaWrapper = () => {
                     onAnnoCreationFinished={(annotation) => {
                         // reset polygon edit mode
                         setPolygonEditMode(PolygonEditMode.NONE)
+                        setCurrentlySelectedAnnotation(annotation)
 
                         const newAnnotation = {
                             ...annotation,
@@ -526,6 +534,16 @@ const SiaWrapper = () => {
                             ...annotation,
                             status: AnnotationStatus.DELETED,
                         }
+
+                        // search the mapping if annotation has no external id
+                        // annotations that are deleted right after they were created
+                        if (deletedAnnotation.externalId == '') {
+                            const externalAnnoId =
+                                annotationIdMapping[deletedAnnotation.internalId]
+                            if (externalAnnoId)
+                                deletedAnnotation.externalId = externalAnnoId
+                        }
+
                         const annotationInOldFormat =
                             legacyHelper.convertAnnoToOldFormat(deletedAnnotation)
                         const deleteAnnotationData = {
@@ -533,6 +551,7 @@ const SiaWrapper = () => {
                             imageEditData: imageData,
                         }
                         deleteAnnotation(deleteAnnotationData)
+                        setCurrentlySelectedAnnotation(undefined)
                     }}
                     onIsImageJunk={(newJunkState) => {
                         const currentImageData = annoData.image
@@ -542,6 +561,7 @@ const SiaWrapper = () => {
                             isJunk: newJunkState,
                         }
                         junkImage(imageData)
+                        setCurrentlySelectedAnnotation(undefined)
                     }}
                     onSelectAnnotation={(annotation: Annotation) => {
                         // if we have a polygon edit mode selected we are currently searching for the second polygon to calculate
