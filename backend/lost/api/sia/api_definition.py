@@ -229,3 +229,10 @@ sia_polygon_operations_response = api.model('SIA Polygon Operations Response', {
 error_model = api.model("Error", {
     "error": fields.String(description="Error message")
 })
+
+image_filters = api.model('ImageFilters', {
+    'filters': fields.List(fields.Nested(api.model('ImageFilter', {
+        'name': fields.String(required=True, description='Name of the filter (e.g., cannyEdge, clahe)'),
+        'configuration': fields.Raw(description='Filter-specific configuration (e.g., {"lowerThreshold": 100, "upperThreshold": 200} for cannyEdge and {"clipLimit": 2.0} for clahe)')
+    })), description='List of filters to apply in order')
+})

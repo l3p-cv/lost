@@ -9,6 +9,7 @@ from shapely.geometry import Polygon
 from shapely.ops import unary_union
 from shapely.errors import ShapelyError, TopologicalError
 import math
+import cv2
 
 __author__ = "Gereon Reus"
 
@@ -1103,3 +1104,61 @@ def perform_polygon_difference(data):
     response = {"resultantPolygon": result_coords}
     flask.current_app.logger.info(f"Returning success response: {response}")
     return response
+
+def apply_canny_edge(image, config):
+    if not all(k in config for k in ("lowerThreshold", "upperThreshold")):
+        raise ValueError("Both lowerThreshold and upperThreshold are required for cannyEdge filter")
+
+    lower_threshold = config["lowerThreshold"]
+    upper_threshold = config["upperThreshold"]
+
+    if not all(isinstance(v, (int, float)) and math.isfinite(v) for v in [lower_threshold, upper_threshold]):
+        raise ValueError("Threshold values must be numeric and finite")
+    if not (0 <= lower_threshold <= 255 and 0 <= upper_threshold <= 255):
+        raise ValueError("Threshold values must be between 0 and 255")
+    if upper_threshold <= lower_threshold:
+        raise ValueError("upperThreshold must be greater than lowerThreshold")
+
+    return cv2.Canny(image, lower_threshold, upper_threshold)
+
+
+def apply_clahe(image, config):
+    if "clipLimit" not in config:
+        raise ValueError("clipLimit is required for clahe filter")
+    
+    clip_limit = config["clipLimit"]
+
+    if not isinstance(clip_limit, (int, float)) or not math.isfinite(clip_limit) or clip_limit <= 0:
+        raise ValueError("clipLimit must be a positive finite number")
+
+    if len(image.shape) == 3:
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    clahe = cv2.createCLAHE(clipLimit=clip_limit)
+    return clahe.apply(image)
+
+FILTERS = {
+    # Implemented in this way because of potential future additional filters
+    "cannyEdge": apply_canny_edge,
+    "clahe": apply_clahe
+}
+
+def apply_filters(image, filters):
+    processed_image = image.copy()
+    applied_filters = set()
+
+    for filter_item in filters:
+        filter_name = filter_item.get("name")
+        config = filter_item.get("configuration", {})
+
+        if filter_name in applied_filters:
+            raise ValueError(f"Filter {filter_name} cannot be applied more than once")
+
+        filter_func = FILTERS.get(filter_name)
+        if not filter_func:
+            raise ValueError(f"Unsupported filter: {filter_name}")
+
+        processed_image = filter_func(processed_image, config)
+        applied_filters.add(filter_name)
+
+    return processed_image
