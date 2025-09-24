@@ -566,6 +566,18 @@ const SiaWrapper = () => {
                     onSelectAnnotation={(annotation: Annotation) => {
                         // if we have a polygon edit mode selected we are currently searching for the second polygon to calculate
                         if (polygonEditMode != PolygonEditMode.NONE) {
+                            // check if both annotations are polygons
+                            if (
+                                currentlySelectedAnnotation?.type !==
+                                    AnnotationTool.Polygon ||
+                                annotation?.type !== AnnotationTool.Polygon
+                            ) {
+                                // there's an imposter - abort mission
+                                setPolygonEditMode(PolygonEditMode.NONE)
+
+                                return
+                            }
+
                             calculatePolygonOperation(
                                 currentlySelectedAnnotation,
                                 annotation,
