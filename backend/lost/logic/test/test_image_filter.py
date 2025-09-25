@@ -85,7 +85,7 @@ class TestImageFilters:
         assert processed_img is not None
         assert processed_img.shape == expected_img.shape, "Shape mismatch between processed and expected image"
 
-        similarity, _ = ssim(processed_img, expected_img, multichannel=True, full=True)
+        similarity, _ = ssim(processed_img, expected_img, channel_axis=-1, full=True)
         assert similarity > 0.98, f"Images differ: SSIM={similarity:.2f}"
 
     def test_tc11_apply_filters_clahe(self, image_data):
@@ -95,7 +95,7 @@ class TestImageFilters:
         assert processed_img is not None
         assert processed_img.shape == expected_img.shape, "Shape mismatch between processed and expected image"
 
-        similarity, _ = ssim(processed_img, expected_img, multichannel=True, full=True)
+        similarity, _ = ssim(processed_img, expected_img, channel_axis=-1, full=True)
         assert similarity > 0.99, f"Images differ: SSIM={similarity:.2f}"
 
 
@@ -109,5 +109,13 @@ class TestImageFilters:
 
         assert processed_img.shape == expected_img.shape, "Shape mismatch between processed and expected image"
 
-        similarity, _ = ssim(processed_img, expected_img, multichannel=True, full=True)
+        similarity, _ = ssim(processed_img, expected_img, channel_axis=-1, full=True)
         assert similarity > 0.98, f"Images differ: SSIM={similarity:.2f}"
+
+    def test_tc14_apply_no_filters_returns_original(self, image_data):
+        filters = []
+        processed_img = sia.apply_filters(image_data, filters)
+        assert processed_img.shape == image_data.shape, "Shape mismatch between processed and original image"
+
+        similarity, _ = ssim(processed_img, image_data, channel_axis=-1, full=True)
+        assert similarity > 0.99, f"Images differ: SSIM={similarity:.3f}"
