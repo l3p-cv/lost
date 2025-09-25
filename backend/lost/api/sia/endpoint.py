@@ -169,6 +169,7 @@ class ImageFilters(Resource):
     @api.expect(image_filters)
     @api.response(200, 'Successfully returns base64-encoded JPEG data URI (e.g., "data:img/jpg;base64,<base64_string>").')
     @api.response(403, 'Forbidden', error_model)
+    @api.response(400, 'Bad Request', error_model)
     @api.response(500, 'Internal Server Error', error_model)
     @jwt_required()
     def post(self, image_id):
@@ -195,6 +196,10 @@ class ImageFilters(Resource):
             data64 = base64.b64encode(data.tobytes())
             dbm.close_session()
             return "data:img/jpg;base64," + data64.decode("utf-8")
+        except ValueError as ve:
+            flask.current_app.logger.warning(f"ValueError applying filters: {str(ve)}")
+            dbm.close_session()
+            return {"error": str(ve)}, 400
         except Exception as e:
             flask.current_app.logger.error(f"Error applying filters: {str(e)}")
             dbm.close_session()
