@@ -119,3 +119,45 @@ class TestImageFilters:
 
         similarity, _ = ssim(processed_img, image_data, channel_axis=-1, full=True)
         assert similarity > 0.99, f"Images differ: SSIM={similarity:.3f}"
+
+    def test_tc15_apply_multiple_filters_with_bilateral(self, image_data):
+        filters = [
+            {"name": "bilateral", "configuration": {"diameter": 9, "sigmaColor": 75, "sigmaSpace": 75}},
+            {"name": "clahe", "configuration": {"clipLimit": 4.0}},
+            {"name": "cannyEdge", "configuration": {"lowerThreshold": 10, "upperThreshold": 150}}
+        ]
+        processed_img = sia.apply_filters(image_data, filters)
+        expected_img = load_image("test_filter_images/test_tc15_image_405.png")
+
+        assert processed_img.shape == expected_img.shape, "Shape mismatch between processed and expected image"
+
+        similarity, _ = ssim(processed_img, expected_img, channel_axis=-1, full=True)
+        assert similarity == 1, f"Images differ: SSIM={similarity:.2f}"
+
+    def test_tc16_bilateral_missing_parameters(self, image_data):
+        config = {"diameter": 9, "sigmaColor": 75}
+        with pytest.raises(ValueError, match="diameter, sigmaColor, and sigmaSpace are required"):
+            sia.apply_bilateral_blurr(image_data, config=config)
+
+    def test_tc17_bilateral_invalid_parameters(self, image_data):
+        config = {"diameter": -5, "sigmaColor": 75, "sigmaSpace": 75}
+        with pytest.raises(ValueError, match="diameter, sigmaColor, and sigmaSpace must be positive"):
+            sia.apply_bilateral_blurr(image_data, config=config)
+
+        config = {"diameter": 9, "sigmaColor": -10, "sigmaSpace": 75}
+        with pytest.raises(ValueError, match="diameter, sigmaColor, and sigmaSpace must be positive"):
+            sia.apply_bilateral_blurr(image_data, config=config)
+
+        config = {"diameter": 9, "sigmaColor": 75, "sigmaSpace": float('inf')}
+        with pytest.raises(ValueError, match="diameter, sigmaColor, and sigmaSpace must be numeric and finite"):
+            sia.apply_bilateral_blurr(image_data, config=config)
+
+    def test_tc18_apply_only_bilateral_filter(self, image_data):
+        filters = [{"name": "bilateral", "configuration": {"diameter": 9, "sigmaColor": 75, "sigmaSpace": 75}}]
+        processed_img = sia.apply_filters(image_data, filters)
+        expected_img = load_image("test_filter_images/test_tc18_image_405.png")
+
+        assert processed_img.shape == expected_img.shape, "Shape mismatch between processed and expected image"
+
+        similarity, _ = ssim(processed_img, expected_img, channel_axis=-1, full=True)
+        assert similarity > 0.99, f"Images differ: SSIM={similarity:.2f}"

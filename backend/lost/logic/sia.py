@@ -1137,10 +1137,29 @@ def apply_clahe(image, config):
     clahe = cv2.createCLAHE(clipLimit=clip_limit)
     return clahe.apply(image)
 
+def apply_bilateral_blurr(image, config):
+    if not all(k in config for k in ("diameter", "sigmaColor", "sigmaSpace")):
+        raise ValueError("diameter, sigmaColor, and sigmaSpace are required for bilateral blurr filter")
+    
+    diameter = config["diameter"]
+    sigma_color = config["sigmaColor"]
+    sigma_space = config["sigmaSpace"]
+
+    if not all(isinstance(v, (int, float)) and math.isfinite(v) for v in [diameter, sigma_color, sigma_space]):
+        raise ValueError("diameter, sigmaColor, and sigmaSpace must be numeric and finite")
+    if diameter <= 0 or sigma_color <= 0 or sigma_space <= 0:
+        raise ValueError("diameter, sigmaColor, and sigmaSpace must be positive")
+
+    if len(image.shape) == 3:
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    return cv2.bilateralFilter(image, int(diameter), float(sigma_color), float(sigma_space))
+
 FILTERS = {
     # Implemented in this way because of potential future additional filters
     "cannyEdge": apply_canny_edge,
-    "clahe": apply_clahe
+    "clahe": apply_clahe,
+    "bilateral": apply_bilateral_blurr,
 }
 
 def apply_filters(image, filters):

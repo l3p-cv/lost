@@ -233,6 +233,6 @@ error_model = api.model("Error", {
 image_filters = api.model('ImageFilters', {
     'filters': fields.List(fields.Nested(api.model('ImageFilter', {
         'name': fields.String(required=True, description='Name of the filter (e.g., cannyEdge, clahe)'),
-        'configuration': fields.Raw(description='Filter-specific configuration (e.g., {"lowerThreshold": 100, "upperThreshold": 200} for cannyEdge and {"clipLimit": 2.0} for clahe)')
+        'configuration': fields.Raw(description='Filter-specific configuration (e.g., {"lowerThreshold": 100, "upperThreshold": 200} for cannyEdge, {"clipLimit": 2.0} for clahe) and {"diameter": 9, "sigmaColor": 75, "sigmaSpace": 75} for bilateral')
     })), description='List of filters to apply in order')
 })
