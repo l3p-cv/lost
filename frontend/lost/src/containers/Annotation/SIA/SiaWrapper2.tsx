@@ -16,7 +16,7 @@ import {
 
 import { Sia2, notificationType, PolygonOperationResult } from 'lost-sia'
 import { useNavigate } from 'react-router-dom'
-import { CBadge, CButton } from '@coreui/react'
+import { CBadge, CButton, CCol } from '@coreui/react'
 import {
     INFERENCE_MODEL_TYPE,
     useTritonInference,
@@ -493,30 +493,34 @@ const SiaWrapper = () => {
                     polygonOperationResult={polygonOperationResult}
                     additionalButtons={
                         <>
-                            <PolygonEditButtons
-                                polygonEditMode={polygonEditMode}
-                                onPolygonEditModeChanged={setPolygonEditMode}
-                            />
-                            &nbsp; &nbsp;
-                            <ImageFilterButton
-                                isDisabled={isSiaLoading}
-                                onFiltersChanged={(newFilters) => {
-                                    // update filters in image request
-                                    // the request will automatically refetched
-                                    setImageRequestData({
-                                        ...imageRequestData,
-                                        appliedFilters: newFilters,
-                                    })
-                                }}
-                            />
-                            &nbsp; &nbsp;
-                            <NavigationButtons
-                                isFirstImage={annoData?.image?.isFirst}
-                                isLastImage={annoData?.image?.isLast}
-                                onNextImagePressed={getNextImage}
-                                onPreviousImagePressed={getPreviousImage}
-                                onSubmitAnnotask={submitAnnotask}
-                            />
+                            <CCol xs={6} sm={3} xl={2}>
+                                <PolygonEditButtons
+                                    polygonEditMode={polygonEditMode}
+                                    onPolygonEditModeChanged={setPolygonEditMode}
+                                />
+                            </CCol>
+                            <CCol xs={2} md={1}>
+                                <ImageFilterButton
+                                    isDisabled={isSiaLoading}
+                                    onFiltersChanged={(newFilters) => {
+                                        // update filters in image request
+                                        // the request will automatically refetched
+                                        setImageRequestData({
+                                            ...imageRequestData,
+                                            appliedFilters: newFilters,
+                                        })
+                                    }}
+                                />
+                            </CCol>
+                            <CCol xs={4} sm={2} xxl={1}>
+                                <NavigationButtons
+                                    isFirstImage={annoData?.image?.isFirst}
+                                    isLastImage={annoData?.image?.isLast}
+                                    onNextImagePressed={getNextImage}
+                                    onPreviousImagePressed={getPreviousImage}
+                                    onSubmitAnnotask={submitAnnotask}
+                                />
+                            </CCol>
                         </>
                     }
                     onAnnoChanged={(annotation) => {
