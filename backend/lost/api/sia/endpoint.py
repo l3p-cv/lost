@@ -4,7 +4,7 @@ from flask import request
 from flask_restx import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from lost.api.api import api
-from lost.api.sia.api_definition import sia_anno, sia_config, labels, sia_polygon_operations_response, error_model, sia_polygon_union, sia_polygon_intersection, sia_polygon_difference
+from lost.api.sia.api_definition import sia_anno, sia_config, labels, sia_polygon_operations_response, error_model, sia_polygon_union, sia_polygon_intersection, sia_polygon_difference, image_filters
 from lost.db import roles, access
 from lost.settings import LOST_CONFIG, DATA_URL
 from lost.logic import sia
@@ -161,6 +161,44 @@ class Filter(Resource):
             data64 = base64.b64encode(data.tobytes())
             dbm.close_session()
             return "data:img/jpg;base64," + data64.decode("utf-8")
+
+@namespace.route("/image/<int:image_id>/filters")
+@api.doc(security="apikey")
+class ImageFilters(Resource):
+    @api.doc(security="apikey", description="Get an Image with applied filters")
+    @api.expect(image_filters)
+    @api.response(200, 'Successfully returns base64-encoded JPEG data URI (e.g., "data:img/jpg;base64,<base64_string>").')
+    @api.response(403, 'Forbidden', error_model)
+    @api.response(500, 'Internal Server Error', error_model)
+    @jwt_required()
+    def post(self, image_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.ANNOTATOR):
+            dbm.close_session()
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
+
+        try:
+            data = json.loads(request.data)
+            filters = data.get('filters', [])
+
+            img = dbm.get_image_anno(image_id)
+            flask.current_app.logger.info(f"img.img_path: {img.img_path}")
+            flask.current_app.logger.info(f"img.fs.name: {img.fs.name}")
+            fs = FileMan(fs_db=img.fs)
+            img_data = fs.load_img(img.img_path, color_type="gray" if any(f['name'] == 'cannyEdge' for f in filters) else "color")
+
+            img_data = sia.apply_filters(img_data, filters)
+
+            _, data = cv2.imencode(".jpg", img_data)
+            data64 = base64.b64encode(data.tobytes())
+            dbm.close_session()
+            return "data:img/jpg;base64," + data64.decode("utf-8")
+        except Exception as e:
+            flask.current_app.logger.error(f"Error applying filters: {str(e)}")
+            dbm.close_session()
+            return {"error": str(e)}, 500
 
 
 @namespace.route("/allowedExampler")
