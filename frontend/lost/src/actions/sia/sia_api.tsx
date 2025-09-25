@@ -52,14 +52,16 @@ export const useGetSiaImage = (imageRequestData: SiaImageRequest) => {
         ['getsiaimage', imageRequestData],
         () =>
             axios
-                .get(`${API_URL}/data/image/${imageRequestData!.imageId}?type=imageBased`)
-                .then((res) => res.data),
-
+                .post(`${API_URL}/sia/image/${imageRequestData!.imageId}/filters`, {
+                    filters: imageRequestData.appliedFilters,
+                })
+                .then((res) => res.data)
+                .catch((error) => error.response.data),
         // @TODO fiters are skipped for now. Wait for backend implementation
         {
             // only fetch when imageId is available
             // request will automatically refetch when value changes
-            enabled: !!imageRequestData?.imageId,
+            enabled: !!imageRequestData?.imageId && imageRequestData?.imageId != -1,
             refetchOnWindowFocus: false,
         },
     )

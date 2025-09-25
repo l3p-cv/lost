@@ -14,7 +14,7 @@ type ImageFilterUiProps = {
 const ImageFilterUi = ({ onFiltersChanged }: ImageFilterUiProps) => {
     const [isHistogramActive, setIsHistogramActive] = useState<boolean>(false)
     const [isCannyActive, setIsCannyActive] = useState<boolean>(false)
-    const [claheClipLimit, setClaheClipLimit] = useState<number>(0)
+    const [claheClipLimit, setClaheClipLimit] = useState<number>(1)
     const [cannyThreshholds, setCannyThreshholds] = useState({ min: 0, max: 100 })
 
     const sendFilterUpdate = () => {
@@ -22,18 +22,18 @@ const ImageFilterUi = ({ onFiltersChanged }: ImageFilterUiProps) => {
 
         if (isCannyActive)
             newFilterData.push({
-                id: 'cannyEdge',
+                name: 'cannyEdge',
                 configuration: {
-                    lowerThreshhold: cannyThreshholds.min,
-                    upperThreshhold: cannyThreshholds.max,
+                    lowerThreshold: cannyThreshholds.min,
+                    upperThreshold: cannyThreshholds.max,
                 },
             })
 
         if (isHistogramActive)
             newFilterData.push({
-                id: 'histogram',
+                name: 'clahe',
                 configuration: {
-                    cliplimit: claheClipLimit,
+                    clipLimit: claheClipLimit,
                 },
             })
 

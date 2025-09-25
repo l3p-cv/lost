@@ -92,7 +92,18 @@ const SiaWrapper = () => {
     // changing the image does also reinitialize SIA
     // do this only when possible labels are fetched
     useEffect(() => {
-        if (possibleLabels === undefined) return
+        if (possibleLabels === undefined || imageBlobRequest === undefined) return
+
+        if (
+            typeof imageBlobRequest !== 'string' &&
+            imageBlobRequest.error !== undefined
+        ) {
+            return handleNotification({
+                title: 'Image filter error',
+                message: imageBlobRequest.error,
+                type: notificationType.ERROR,
+            })
+        }
 
         setImageBlob(imageBlobRequest)
         setIsSiaLoading(false)
@@ -173,15 +184,12 @@ const SiaWrapper = () => {
     useEffect(() => {
         if (createAnnotationResponse === undefined) return
 
-        // we got an external id assigned from the server
-        // update the mapping
-        console.log('createAnnotationResponse', createAnnotationResponse)
-
         // remove the 'new-' prefix
         const siaInternalAnnoId = parseInt(
             createAnnotationResponse.tempId.replace('new-', ''),
         )
 
+        // we got an external id assigned from the server
         // update the mapping to include the new annotation
         const newAnnotationIdMapping = { ...annotationIdMapping }
         newAnnotationIdMapping[siaInternalAnnoId] = createAnnotationResponse.dbId

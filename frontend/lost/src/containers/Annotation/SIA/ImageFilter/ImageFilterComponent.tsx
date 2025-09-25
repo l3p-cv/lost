@@ -43,10 +43,10 @@ const ImageFilterComponent = ({
                     <input
                         className="classic-range-slider"
                         type="range"
-                        min={0}
+                        min={1}
                         max={40}
                         value={filterValue}
-                        onChange={(e) => onFilterValueChange(e.target.value)}
+                        onChange={(e) => onFilterValueChange(parseInt(e.target.value))}
                         // onMouseUp={(e) => onFilterValueUpdated(e.target.value)}
                     />
                 </CCol>
