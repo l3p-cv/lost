@@ -1,7 +1,6 @@
 import {
     faEdit,
     faFolderOpen,
-    faTimes,
     faTrash,
     faUserPlus,
 } from '@fortawesome/free-solid-svg-icons'
@@ -9,11 +8,10 @@ import React, { useEffect, useState } from 'react'
 import { createColumnHelper } from '@tanstack/react-table'
 import BaseModal from '../../components/BaseModal'
 import LostFileBrowser from '../../components/FileBrowser/LostFileBrowser'
-import IconButton from '../../components/IconButton'
 import * as Notification from '../../components/Notification'
 import EditDSModal from './EditDSModal'
 // import { deleteFs } from '../../access/fb'
-import { CBadge, CCol, CRow } from '@coreui/react'
+import { CBadge } from '@coreui/react'
 import * as fbAPI from '../../actions/fb/fb_api'
 import BaseContainer from '../../components/BaseContainer'
 import CoreDataTable from '../../components/CoreDataTable'
@@ -21,7 +19,7 @@ import CoreIconButton from '../../components/CoreIconButton'
 import TableHeader from '../../components/TableHeader'
 import ErrorBoundary from '../../components/ErrorBoundary'
 
-export const DSTable = ({ visLevel, headline="Datasources" }) => {
+export const DSTable = ({ visLevel, headline = 'Datasources' }) => {
     const [isNewDS, setIsNewDS] = useState(false)
     // const [fsList, setFSList] = useState([])
     // const [possibleFsTypes, setPossibleFsTypes] = useState([])
@@ -65,7 +63,7 @@ export const DSTable = ({ visLevel, headline="Datasources" }) => {
         }
     }, [deleteStatus])
 
-    useEffect(() => { }, [possibleFsTypes])
+    useEffect(() => {}, [possibleFsTypes])
     // control modal close
     const [isDsEditOpenControl, setIsDsEditOpenControl] = useState(false)
     const [selectedDs, setSelectedDs] = useState()
@@ -123,7 +121,7 @@ export const DSTable = ({ visLevel, headline="Datasources" }) => {
             },
             option2: {
                 text: 'NO!',
-                callback: () => { },
+                callback: () => {},
             },
         })
     }
@@ -139,7 +137,7 @@ export const DSTable = ({ visLevel, headline="Datasources" }) => {
             },
             option2: {
                 text: 'Cancel',
-                callback: () => { },
+                callback: () => {},
             },
         })
     }
@@ -166,7 +164,6 @@ export const DSTable = ({ visLevel, headline="Datasources" }) => {
         return false
     }
 
-
     const fsListSafe = Array.isArray(fsList) ? fsList : []
     const [tableData, setTableData] = React.useState(() => [...fsListSafe])
     // update the table when the parameter data changes
@@ -188,11 +185,12 @@ export const DSTable = ({ visLevel, headline="Datasources" }) => {
                             <div className="small text-muted">
                                 {`ID: ${props.row.original.id}`}
                             </div>
-                        </>)
-                }
+                        </>
+                    )
+                },
             }),
             columnHelper.accessor('fsType', {
-                header: 'Type'
+                header: 'Type',
             }),
             // columnHelper.accessor('rootPath', {
             //     header: 'Root Path'
@@ -215,34 +213,34 @@ export const DSTable = ({ visLevel, headline="Datasources" }) => {
                 cell: (props) => {
                     return (
                         <>
-                        <CoreIconButton
-                            style={{'margin-right': '5px'}}
-                            icon={faFolderOpen}
-                            color="info"
-                            onClick={() => onOpenFileBrowser(props.row.original)}
-                            toolTip="Browse Datasource"
-                        // isOutline={false}
-                        />
-                        <CoreIconButton
-                            style={{'margin-right': '5px'}}
-                            icon={faEdit}
-                            color="warning"
-                            onClick={() => onEditDs(props.row)}
-                            disabled={checkEditable(props.row)}
-                            toolTip="Edit Datasource"
-                        // isOutline={false}
-                        />
-                        <CoreIconButton
-                            style={{'margin-right': '5px'}}
-                            icon={faTrash}
-                            color="danger"
-                            onClick={() => onDeleteDs(props)}
-                            disabled={checkEditable(props)}
-                            toolTip="Delete Datasource"
-                        />
+                            <CoreIconButton
+                                style={{ 'margin-right': '5px' }}
+                                icon={faFolderOpen}
+                                color="info"
+                                onClick={() => onOpenFileBrowser(props.row.original)}
+                                toolTip="Browse Datasource"
+                                // isOutline={false}
+                            />
+                            <CoreIconButton
+                                style={{ 'margin-right': '5px' }}
+                                icon={faEdit}
+                                color="warning"
+                                onClick={() => onEditDs(props.row)}
+                                disabled={checkEditable(props.row)}
+                                toolTip="Edit Datasource"
+                                // isOutline={false}
+                            />
+                            <CoreIconButton
+                                style={{ 'margin-right': '5px' }}
+                                icon={faTrash}
+                                color="danger"
+                                onClick={() => onDeleteDs(props)}
+                                disabled={checkEditable(props)}
+                                toolTip="Delete Datasource"
+                            />
                         </>
                     )
-                }
+                },
             }),
         ]
         return columns
@@ -274,12 +272,12 @@ export const DSTable = ({ visLevel, headline="Datasources" }) => {
                 headline="Datasources"
                 buttonStyle={{ marginTop: 15, marginBottom: 20 }}
                 icon={faUserPlus}
-                buttonText='Add Datasource'
+                buttonText="Add Datasource"
                 onClick={createNewDS}
             />
             <BaseContainer>
                 <ErrorBoundary>
-                <CoreDataTable columns={defineColumns()} tableData={tableData} />
+                    <CoreDataTable columns={defineColumns()} tableData={tableData} />
                 </ErrorBoundary>
             </BaseContainer>
         </>
