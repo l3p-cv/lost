@@ -28,6 +28,7 @@ import {
     showWarning,
 } from '../../../components/Notification'
 import NavigationButtons from './NavigationButtons'
+import * as Notification from '../../../components/Notification'
 
 import { Annotation, AnnotationStatus, AnnotationTool } from 'lost-sia/models'
 
@@ -330,9 +331,19 @@ const SiaWrapper = () => {
     }
 
     const submitAnnotask = () => {
-        console.log('@TODO implement finish annotask logic here')
-        // @TODO prompt
-        // finishAnnotask()
+        Notification.showDecision({
+            title: 'Do you really want to finish the annotation task?',
+            option1: {
+                text: 'YES',
+                callback: () => {
+                    finishAnnotask()
+                },
+            },
+            option2: {
+                text: 'NO!',
+                callback: () => {},
+            },
+        })
     }
 
     const failedToLoadImage = () => {
