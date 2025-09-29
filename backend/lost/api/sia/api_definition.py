@@ -229,3 +229,31 @@ sia_polygon_operations_response = api.model('SIA Polygon Operations Response', {
 error_model = api.model("Error", {
     "error": fields.String(description="Error message")
 })
+
+image_filters = api.model('ImageFilters', {
+    'filters': fields.List(fields.Nested(api.model('ImageFilter', {
+        'name': fields.String(required=True, description='Name of the filter (e.g., cannyEdge, clahe, bilateral)'),
+        'configuration': fields.Raw(description='Filter-specific configuration (e.g., {"lowerThreshold": 100, "upperThreshold": 200} for cannyEdge, {"clipLimit": 2.0} for clahe) and {"diameter": 9, "sigmaColor": 75, "sigmaSpace": 75} for bilateral')
+    })), description='List of filters to apply in order')
+})
+
+sia_bbox_from_points = api.model('SIA BBox From Points', {
+    'data': fields.List(
+        fields.List(fields.Nested(point_data, description='2-D coordinates of a point'), min_items=3, max_items=4),
+        description='A list of point sets, each containing 3 or 4 points for bounding box computation',
+        required=True
+    )
+})
+
+sia_bbox_from_points_response = api.model('SIA BBox From Points Response', {
+    'data': fields.Nested(
+        api.model('BBox Data Response', {
+            'h': fields.Float(description='Relative value of box height'),
+            'w': fields.Float(description='Relative value of box width'),
+            'x': fields.Float(description='Relative and centered value of x'),
+            'y': fields.Float(description='Relative and centered value of y')
+        }),
+        description='Computed bounding box for the input point set',
+        required=True
+    )
+})

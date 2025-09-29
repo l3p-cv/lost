@@ -5,10 +5,12 @@ from lost.db import dtype, state, model
 from lost.db.access import DBMan
 from lost.logic.anno_task import set_finished, update_anno_task
 from datetime import datetime
-from shapely.geometry import Polygon
+from shapely.geometry import Polygon, LineString
 from shapely.ops import unary_union
 from shapely.errors import ShapelyError, TopologicalError
 import math
+import cv2
+import numpy as np
 
 __author__ = "Gereon Reus"
 
@@ -1103,3 +1105,129 @@ def perform_polygon_difference(data):
     response = {"resultantPolygon": result_coords}
     flask.current_app.logger.info(f"Returning success response: {response}")
     return response
+
+def apply_canny_edge(image, config):
+    if not all(k in config for k in ("lowerThreshold", "upperThreshold")):
+        raise ValueError("Both lowerThreshold and upperThreshold are required for cannyEdge filter")
+
+    lower_threshold = config["lowerThreshold"]
+    upper_threshold = config["upperThreshold"]
+
+    if not all(isinstance(v, (int, float)) and math.isfinite(v) for v in [lower_threshold, upper_threshold]):
+        raise ValueError("Threshold values must be numeric and finite")
+    if not (0 <= lower_threshold <= 255 and 0 <= upper_threshold <= 255):
+        raise ValueError("Threshold values must be between 0 and 255")
+    if upper_threshold <= lower_threshold:
+        raise ValueError("upperThreshold must be greater than lowerThreshold")
+
+    return cv2.Canny(image, lower_threshold, upper_threshold)
+
+
+def apply_clahe(image, config):
+    if "clipLimit" not in config:
+        raise ValueError("clipLimit is required for clahe filter")
+    
+    clip_limit = config["clipLimit"]
+
+    if not isinstance(clip_limit, (int, float)) or not math.isfinite(clip_limit) or clip_limit <= 0:
+        raise ValueError("clipLimit must be a positive finite number")
+
+    if len(image.shape) == 3:
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    clahe = cv2.createCLAHE(clipLimit=clip_limit)
+    return clahe.apply(image)
+
+def apply_bilateral_blurr(image, config):
+    if not all(k in config for k in ("diameter", "sigmaColor", "sigmaSpace")):
+        raise ValueError("diameter, sigmaColor, and sigmaSpace are required for bilateral blurr filter")
+    
+    diameter = config["diameter"]
+    sigma_color = config["sigmaColor"]
+    sigma_space = config["sigmaSpace"]
+
+    if not all(isinstance(v, (int, float)) and math.isfinite(v) for v in [diameter, sigma_color, sigma_space]):
+        raise ValueError("diameter, sigmaColor, and sigmaSpace must be numeric and finite")
+    if diameter <= 0 or sigma_color <= 0 or sigma_space <= 0:
+        raise ValueError("diameter, sigmaColor, and sigmaSpace must be positive")
+
+    if len(image.shape) == 3:
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    return cv2.bilateralFilter(image, int(diameter), float(sigma_color), float(sigma_space))
+
+FILTERS = {
+    # Implemented in this way because of potential future additional filters
+    "cannyEdge": apply_canny_edge,
+    "clahe": apply_clahe,
+    "bilateral": apply_bilateral_blurr,
+}
+
+def apply_filters(image, filters):
+    processed_image = image.copy()
+    applied_filters = set()
+
+    for filter_item in filters:
+        filter_name = filter_item.get("name")
+        config = filter_item.get("configuration", {})
+
+        if filter_name in applied_filters:
+            raise ValueError(f"Filter {filter_name} cannot be applied more than once")
+
+        filter_func = FILTERS.get(filter_name)
+        if not filter_func:
+            raise ValueError(f"Unsupported filter: {filter_name}")
+
+        processed_image = filter_func(processed_image, config)
+        applied_filters.add(filter_name)
+
+    return processed_image
+
+def compute_bboxes_from_points(db_man, data, image_shape=None):
+    if not isinstance(data, dict) or "data" not in data:
+        flask.current_app.logger.info("Input must be a dictionary with a 'data' key")
+        raise PolygonOperationError("Input must be a dictionary with a 'data' key")
+
+    all_point_sets = data["data"]
+    if not isinstance(all_point_sets, list):
+        raise PolygonOperationError("The 'data' key must contain a list of point sets")
+
+    results = []
+    for point_set in all_point_sets:
+        if not isinstance(point_set, list) or not (3 <= len(point_set) <= 4):
+            raise PolygonOperationError("Each point set must contain 3 or 4 points")
+
+        for point in point_set:
+            if not isinstance(point, dict) or "x" not in point or "y" not in point:
+                raise PolygonOperationError("Each point must be a dict with 'x' and 'y'")
+            if not (isinstance(point["x"], (int, float)) and isinstance(point["y"], (int, float))):
+                raise PolygonOperationError("All coordinates must be numeric")
+            if not (0 <= point["x"] <= 1 and 0 <= point["y"] <= 1):
+                raise PolygonOperationError("Coordinates must be in [0,1]")
+
+        xs = [p["x"] for p in point_set]
+        ys = [p["y"] for p in point_set]
+
+        xmin, xmax = min(xs), max(xs)
+        ymin, ymax = min(ys), max(ys)
+
+        w = xmax - xmin
+        h = ymax - ymin
+        xc = xmin + w / 2
+        yc = ymin + h / 2
+        size = max(w, h)
+        half = size / 2
+
+        xc = min(max(xc, half), 1 - half)
+        yc = min(max(yc, half), 1 - half)
+
+        bbox = {
+            "h": round(float(size), 8),
+            "w": round(float(size), 8),
+            "x": round(float(xc), 8),
+            "y": round(float(yc), 8)
+        }
+        results.append(bbox)
+        flask.current_app.logger.info(f"Computed bbox: {bbox}")
+
+    return results
