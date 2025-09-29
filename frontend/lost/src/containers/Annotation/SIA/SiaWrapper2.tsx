@@ -14,7 +14,7 @@ import {
     usePolygonUnion,
 } from '../../../actions/sia/sia_api'
 
-import { Sia2, notificationType, PolygonOperationResult } from 'lost-sia'
+import { Sia2, PolygonOperationResult, SIANotification } from 'lost-sia'
 import { useNavigate } from 'react-router-dom'
 import { CBadge, CButton, CCol } from '@coreui/react'
 import {
@@ -22,15 +22,20 @@ import {
     useTritonInference,
 } from '../../../actions/inference-model/model-api'
 import {
+    showDecision,
     showError,
     showInfo,
     showSuccess,
     showWarning,
 } from '../../../components/Notification'
 import NavigationButtons from './NavigationButtons'
-import * as Notification from '../../../components/Notification'
 
-import { Annotation, AnnotationStatus, AnnotationTool } from 'lost-sia/models'
+import {
+    Annotation,
+    AnnotationStatus,
+    AnnotationTool,
+    NotificationType,
+} from 'lost-sia/models'
 
 import legacyHelper, { LegacyAnnotation, LegacyAnnotationResponse } from './legacyHelper'
 import ImageFilterButton from './ImageFilterButton'
@@ -102,7 +107,7 @@ const SiaWrapper = () => {
             return handleNotification({
                 title: 'Image filter error',
                 message: imageBlobRequest.error,
-                type: notificationType.ERROR,
+                type: NotificationType.ERROR,
             })
         }
 
@@ -245,7 +250,7 @@ const SiaWrapper = () => {
             handleNotification({
                 title: 'Invalid selection',
                 message: 'Merge can only be done with polygon annotations',
-                type: notificationType.ERROR,
+                type: NotificationType.ERROR,
             })
 
             return
@@ -257,7 +262,7 @@ const SiaWrapper = () => {
             handleNotification({
                 title: 'Invalid selection',
                 message: 'Cannot merge polygon with itself',
-                type: notificationType.ERROR,
+                type: NotificationType.ERROR,
             })
             return
         }
@@ -285,19 +290,19 @@ const SiaWrapper = () => {
         }
     }
 
-    const handleNotification = (messageObj) => {
+    const handleNotification = (messageObj: SIANotification) => {
         switch (messageObj.type) {
-            case notificationType.WARNING:
-                showWarning(messageObj.message)
-                break
-            case notificationType.INFO:
+            case NotificationType.INFO:
                 showInfo(messageObj.message)
                 break
-            case notificationType.ERROR:
-                showError(messageObj.message)
-                break
-            case notificationType.SUCCESS:
+            case NotificationType.SUCCESS:
                 showSuccess(messageObj.message)
+                break
+            case NotificationType.WARNING:
+                showWarning(messageObj.message)
+                break
+            case NotificationType.ERROR:
+                showError(messageObj.message)
                 break
             default:
                 break
@@ -331,7 +336,7 @@ const SiaWrapper = () => {
     }
 
     const submitAnnotask = () => {
-        Notification.showDecision({
+        showDecision({
             title: 'Do you really want to finish the annotation task?',
             option1: {
                 text: 'YES',
@@ -350,7 +355,7 @@ const SiaWrapper = () => {
         const message = {
             title: 'Load image error',
             message: 'Failed to load image',
-            type: notificationType.ERROR,
+            type: NotificationType.ERROR,
         }
         handleNotification(message)
         return undefined
@@ -427,7 +432,7 @@ const SiaWrapper = () => {
             handleNotification({
                 title: 'Invalid selection',
                 message: response.error,
-                type: notificationType.ERROR,
+                type: NotificationType.ERROR,
             })
             setIsSiaLoading(false)
             setPolygonEditMode(PolygonEditMode.NONE)
@@ -654,6 +659,7 @@ const SiaWrapper = () => {
                         junkImage(imageData)
                         setCurrentlySelectedAnnotation(undefined)
                     }}
+                    onNotification={handleNotification}
                     onSelectAnnotation={(annotation: Annotation) => {
                         // if we have a polygon edit mode selected we are currently searching for the second polygon to calculate
                         if (polygonEditMode != PolygonEditMode.NONE) {
