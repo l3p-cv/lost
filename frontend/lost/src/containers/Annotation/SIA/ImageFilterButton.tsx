@@ -7,11 +7,13 @@ import { ImageFilter } from '../../../types/SiaTypes'
 
 type ImageFilterButtonProps = {
     isDisabled?: boolean
+    appliedFilters?: ImageFilter[]
     onFiltersChanged: (filters: ImageFilter[]) => void
 }
 
 const ImageFilterButton = ({
     isDisabled = false,
+    appliedFilters = [],
     onFiltersChanged = () => {},
 }: ImageFilterButtonProps) => {
     const customPopoverStyle = {
@@ -21,7 +23,12 @@ const ImageFilterButton = ({
     return (
         <CPopover
             placement="bottom"
-            content={<ImageFilterUi onFiltersChanged={onFiltersChanged} />}
+            content={
+                <ImageFilterUi
+                    appliedFilters={appliedFilters}
+                    onFiltersChanged={onFiltersChanged}
+                />
+            }
             style={customPopoverStyle}
         >
             <CButton color="primary" disabled={isDisabled} variant="outline">

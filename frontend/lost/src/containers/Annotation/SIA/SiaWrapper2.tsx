@@ -39,7 +39,11 @@ import {
 
 import legacyHelper, { LegacyAnnotation, LegacyAnnotationResponse } from './legacyHelper'
 import ImageFilterButton from './ImageFilterButton'
-import { AnnotationCoordinates, SiaImageRequest } from '../../../types/SiaTypes'
+import {
+    AnnotationCoordinates,
+    ImageFilter,
+    SiaImageRequest,
+} from '../../../types/SiaTypes'
 import PolygonEditButtons from './PolygonEditButtons'
 import PolygonEditMode from '../../../models/PolygonEditMode'
 
@@ -81,10 +85,12 @@ const SiaWrapper = () => {
     })
 
     // image id in filesystem
-    const [imageRequestData, setImageRequestData] = useState<SiaImageRequest>({
-        imageId: -1,
-        appliedFilters: [],
-    })
+    const [appliedImageFilters, setAppliedImageFilters] = useState<ImageFilter[]>([])
+    const [imageId, setImageId] = useState<number>(-1)
+    const imageRequestData: SiaImageRequest = {
+        imageId,
+        appliedFilters: appliedImageFilters,
+    }
 
     const { data: possibleLabels } = useGetSiaPossibleLabels()
     const { data: siaConfiguration } = useGetSiaConfiguration()
@@ -179,12 +185,9 @@ const SiaWrapper = () => {
         // request the image from the backend
         const imageId = annoData.image.id
 
-        // update the image id in the request data
-        // request will automatically refetched
-        setImageRequestData({
-            ...imageRequestData!,
-            imageId,
-        })
+        // update the image id
+        // the request will automatically refetch
+        setImageId(imageId)
     }, [annoData])
 
     useEffect(() => {
@@ -518,14 +521,8 @@ const SiaWrapper = () => {
                             <CCol xs={2} md={1}>
                                 <ImageFilterButton
                                     isDisabled={isSiaLoading}
-                                    onFiltersChanged={(newFilters) => {
-                                        // update filters in image request
-                                        // the request will automatically refetched
-                                        setImageRequestData({
-                                            ...imageRequestData,
-                                            appliedFilters: newFilters,
-                                        })
-                                    }}
+                                    appliedFilters={appliedImageFilters}
+                                    onFiltersChanged={setAppliedImageFilters}
                                 />
                             </CCol>
                             <CCol xs={4} sm={2} xxl={1}>
