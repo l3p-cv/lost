@@ -189,48 +189,40 @@ labels = api.model('Labels', {
     'labels': fields.List(fields.Nested(label_leaf)) 
 })
 
-annotation = api.model('Annotation', {
-    'type': fields.String(
-        required=True,
-        enum=['polygon', 'bbox'],
-        description='Type of annotation'
-    ),
-    'coordinates': fields.Raw(
-        required=True,
-        description='Polygon → list of points [{x, y}, ...], BBox → {x, y, w, h}'
-    )
-})
 
 sia_polygon_union = api.model('SIA Polygon Union', {
     'annotations': fields.List(
-        fields.Nested(annotation),
+        fields.Raw(required=True, description='Each annotation: {"type": "polygon|bbox", "coordinates": [...] or {...}}'),
         required=True,
-        min_items=2,
-        description='At least 2 annotations (polygon or bbox) for union operation'
+        min_items=2
     )
 })
 
 sia_polygon_intersection = api.model('SIA Polygon Intersection', {
     'annotations': fields.List(
-        fields.Nested(annotation),
+        fields.Raw(
+            required=True,
+            description='Each annotation: {"type": "polygon|bbox", "coordinates": [...] or {...}}'
+        ),
+        description='Exactly 2 annotations (polygon or bbox) for intersection operation',
         required=True,
         min_items=2,
-        max_items=2,
-        description='Exactly 2 annotations (polygon or bbox) for intersection operation'
+        max_items=2
     )
 })
 
 sia_polygon_difference = api.model('SIA Polygon Difference', {
-    'selectedPolygon': fields.Nested(
-        annotation,
+    'selectedPolygon': fields.Raw(
         required=True,
-        description='Selected annotation (polygon or bbox)'
+        description='Selected annotation: {"type": "polygon|bbox", "coordinates": [...] or {...}}'
     ),
     'polygonModifiers': fields.List(
-        fields.Nested(annotation),
+        fields.Raw(
+            required=True,
+            description='List of modifier annotations: each {"type": "polygon|bbox", "coordinates": [...] or {...}}'
+        ),
         required=True,
-        min_items=1,
-        description='List of modifier annotations (polygon or bbox)'
+        min_items=1
     )
 })
 
