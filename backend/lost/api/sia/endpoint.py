@@ -280,7 +280,8 @@ class PolygonUnion(Resource):
             return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
         try:
             data = json.loads(request.data)
-            flask.current_app.logger.info(f"Received payload for union: {data}")
+            data = sia.normalize_annotations(data)
+            flask.current_app.logger.info(f"Normalized payload for union: {data}")
             response = sia.perform_polygon_union(data)
             dbm.close_session()
             return response, 200
@@ -316,7 +317,8 @@ class PolygonIntersection(Resource):
             return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
         try:
             data = json.loads(request.data)
-            flask.current_app.logger.info(f"Received payload for intersection: {data}")
+            data = sia.normalize_annotations(data)
+            flask.current_app.logger.info(f"Normalized payload for union: {data}")
             response = sia.perform_polygon_intersection(data)
             dbm.close_session()
             return response, 200
@@ -353,6 +355,13 @@ class PolygonDifference(Resource):
         try:
             data = json.loads(request.data)
             flask.current_app.logger.info(f"Received payload for difference: {data}")
+
+            data = sia.normalize_annotations({
+                "annotations": [data["selectedPolygon"]] + data.get("polygonModifiers", [])
+            })
+            data["selectedPolygon"] = data["annotations"][0]["polygonCoordinates"]
+            data["polygonModifiers"] = [ann["polygonCoordinates"] for ann in data["annotations"][1:]]
+
             response = sia.perform_polygon_difference(data)
             dbm.close_session()
             return response, 200

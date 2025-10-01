@@ -189,40 +189,53 @@ labels = api.model('Labels', {
     'labels': fields.List(fields.Nested(label_leaf)) 
 })
 
+annotation = api.model('Annotation', {
+    'type': fields.String(
+        required=True,
+        enum=['polygon', 'bbox'],
+        description='Type of annotation'
+    ),
+    'coordinates': fields.Raw(
+        required=True,
+        description='Polygon → list of points [{x, y}, ...], BBox → {x, y, w, h}'
+    )
+})
 
 sia_polygon_union = api.model('SIA Polygon Union', {
-    'polygons': fields.List(
-        fields.List(fields.Nested(point_data, description='2-D coordinates of a polygon')),
-        description='List of at least 2 polygons for union operation',
-        required=True
+    'annotations': fields.List(
+        fields.Nested(annotation),
+        required=True,
+        min_items=2,
+        description='At least 2 annotations (polygon or bbox) for union operation'
     )
 })
 
 sia_polygon_intersection = api.model('SIA Polygon Intersection', {
-    'polygons': fields.List(
-        fields.List(fields.Nested(point_data, description='2-D coordinates of a polygon')),
-        description='Exactly 2 polygons for intersection operation',
+    'annotations': fields.List(
+        fields.Nested(annotation),
         required=True,
-        max_length=2,
-        min_length=2
+        min_items=2,
+        max_items=2,
+        description='Exactly 2 annotations (polygon or bbox) for intersection operation'
     )
 })
 
 sia_polygon_difference = api.model('SIA Polygon Difference', {
-    'selectedPolygon': fields.List(
-        fields.Nested(point_data, description='2-D coordinates of the selected polygon'),
-        description='Selected polygon for difference operation',
-        required=True
+    'selectedPolygon': fields.Nested(
+        annotation,
+        required=True,
+        description='Selected annotation (polygon or bbox)'
     ),
     'polygonModifiers': fields.List(
-        fields.List(fields.Nested(point_data, description='2-D coordinates of a modifier polygon')),
-        description='List of at least 1 modifier polygon for difference operation',
+        fields.Nested(annotation),
         required=True,
-        min_length=1
+        min_items=1,
+        description='List of modifier annotations (polygon or bbox)'
     )
 })
 
 sia_polygon_operations_response = api.model('SIA Polygon Operations Response', {
+    'type': fields.String(required=True, description='Result type: polygon or bbox'),
     'resultantPolygon': fields.List(fields.Nested(point_data), description='Coordinates of the resulting polygon', required=True)
 })
 
