@@ -948,17 +948,35 @@ def remove_duplicate_polygons(polygons):
     return unique_polys
 
 def normalize_annotations(data):
-    if "annotations" in data:
-        for ann in data["annotations"]:
-            ann["originalType"] = ann.get("type")
-            if ann.get("type") == "bbox":
-                ann["polygonCoordinates"] = bbox_to_polygon(ann["coordinates"])
-            elif ann.get("type") == "polygon":
-                ann["polygonCoordinates"] = ann["coordinates"]
+    if "annotations" not in data or not isinstance(data["annotations"], list):
+        raise PolygonOperationError("Missing or invalid 'annotations' field")
 
-        unique_polys = remove_duplicate_polygons([ann["polygonCoordinates"] for ann in data["annotations"]])
-        data["annotations"] = [{"type": "polygon", "polygonCoordinates": poly} for poly in unique_polys]
+    normalized_annotations = []
+    for ann in data["annotations"]:
+        if "polygonCoordinates" in ann and "originalType" in ann:
+            normalized_annotations.append(ann)
+            continue
+        new_ann = {"originalType": ann.get("type"), "type": "polygon"}
+        if ann.get("type") == "bbox":
+            new_ann["coordinates"] = ann["coordinates"]  
+            new_ann["polygonCoordinates"] = bbox_to_polygon(ann["coordinates"])
+        elif ann.get("type") == "polygon":
+            new_ann["coordinates"] = ann["coordinates"]
+            new_ann["polygonCoordinates"] = ann["coordinates"]
+        else:
+            raise PolygonOperationError(f"Unsupported annotation type: {ann.get('type')}")
+        normalized_annotations.append(new_ann)
 
+    unique_polys = remove_duplicate_polygons([ann["polygonCoordinates"] for ann in normalized_annotations])
+    data["annotations"] = [
+        {
+            "type": "polygon",
+            "polygonCoordinates": poly,
+            "originalType": ann["originalType"],
+            "coordinates": ann.get("coordinates")
+        }
+        for poly, ann in zip(unique_polys, normalized_annotations)
+    ]
     return data
 
 def intersect_bboxes(bbox1, bbox2):
@@ -1045,8 +1063,8 @@ def perform_polygon_intersection(data):
     if len(annotations) != 2:
         raise PolygonOperationError("Exactly 2 annotations required for intersection")
 
-    if all(ann.get("originalType") == "bbox" for ann in annotations):
-        result_bbox = intersect_bboxes( annotations[0]["coordinates"], annotations[1]["coordinates"])
+    if (len(annotations) == 2 and all(ann.get("originalType") == "bbox" and "coordinates" in ann for ann in annotations)):
+        result_bbox = intersect_bboxes(annotations[0]["coordinates"], annotations[1]["coordinates"])
         return {"type": "bbox", "resultantBBox": result_bbox}
 
     polygons = [ann["polygonCoordinates"] for ann in annotations]

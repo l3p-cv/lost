@@ -318,7 +318,6 @@ class PolygonIntersection(Resource):
         try:
             data = json.loads(request.data)
             data = sia.normalize_annotations(data)
-            flask.current_app.logger.info(f"Normalized payload for union: {data}")
             response = sia.perform_polygon_intersection(data)
             dbm.close_session()
             return response, 200
