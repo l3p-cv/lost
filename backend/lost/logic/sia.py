@@ -1156,6 +1156,13 @@ def perform_polygon_difference(data):
         except (ShapelyError, TopologicalError) as e:
             raise PolygonOperationError(f"Invalid polygon geometry: {str(e)}")
     try:
+        has_overlap = any(
+            shapely_polygons[0].intersects(mod) and not shapely_polygons[0].intersection(mod).is_empty
+            for mod in shapely_polygons[1:]
+        )
+        if not has_overlap:
+            raise PolygonOperationError("No overlap detected between selected polygon and modifiers")
+
         result_poly = shapely_polygons[0]
         for modifier in shapely_polygons[1:]:
             result_poly = result_poly.difference(modifier)

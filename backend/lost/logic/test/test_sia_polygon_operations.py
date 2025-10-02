@@ -258,3 +258,201 @@ class TestPolygonOperations:
         assert result["type"] == "polygon"
         assert "resultantPolygon" in result
         assert compare_polygons(result["resultantPolygon"], EXPECTED_INTERSECTION_BBOX_POLYGON_RESULT["resultantPolygon"])
+
+    def test_union_with_self_intersecting_polygon(self):
+        """Test that intersection fails when a self-intersecting polygon is included."""
+        bad_request = {
+            "annotations": [
+                {
+                    "type": "polygon",
+                    "coordinates": [
+                        {"x": 0.5445484739598239, "y": 0.4714587835275131},
+                        {"x": 0.5823014179935729, "y": 0.6330413839919591},
+                        {"x": 0.7453941362193689, "y": 0.5907580866741601},
+                        {"x": 0.7000906033788701, "y": 0.45937784143671334}
+                    ]
+                },
+                {
+                    "type": "bbox",
+                    "coordinates": {
+                        "x": 0.5483237683631988,
+                        "y": 0.6519178560088337,
+                        "w": 0.12836000971474684,
+                        "h": 0.14346118732824645
+                    }
+                },
+                {
+                    "type": "polygon",
+                    "coordinates": [
+                        {"x": 0.18005404557306592, "y": 0.1402603911752251},
+                        {"x": 0.3311225768379906, "y": 0.1378039922928686},
+                        {"x": 0.2611152086908304, "y": 0.22254975373416783},
+                        {"x": 0.3679685600733381, "y": 0.2864161246754368},
+                        {"x": 0.19602063830838315, "y": 0.2901007229989716},
+                        {"x": 0.2611152086908304, "y": 0.22254975373416783}
+                    ]
+                }
+            ]
+        }
+
+        data = sia.normalize_annotations(bad_request)
+        with pytest.raises(sia.PolygonOperationError) as excinfo:
+            sia.perform_polygon_union(data)
+
+        assert "Invalid polygon geometry: Self-intersection" in str(excinfo.value)
+
+    def test_intersection_with_self_intersecting_polygon(self):
+        """Test that intersection fails when a self-intersecting polygon is included."""
+        bad_request = {
+            "annotations": [
+                {
+                    "type": "bbox",
+                    "coordinates": {
+                        "x": 0.5483237683631988,
+                        "y": 0.6519178560088337,
+                        "w": 0.12836000971474684,
+                        "h": 0.14346118732824645
+                    }
+                },
+                {
+                    "type": "polygon",
+                    "coordinates": [
+                        {
+                            "x": 0.18005404557306592,
+                            "y": 0.1402603911752251
+                        },
+                        {
+                            "x": 0.3311225768379906,
+                            "y": 0.1378039922928686
+                        },
+                        {
+                            "x": 0.2611152086908304,
+                            "y": 0.22254975373416783
+                        },
+                        {
+                            "x": 0.3679685600733381,
+                            "y": 0.2864161246754368
+                        },
+                        {
+                            "x": 0.19602063830838315,
+                            "y": 0.2901007229989716
+                        },
+                        {
+                            "x": 0.2611152086908304,
+                            "y": 0.22254975373416783
+                        }
+                    ]
+                }
+            ]
+        }
+
+        data = sia.normalize_annotations(bad_request)
+        with pytest.raises(sia.PolygonOperationError) as excinfo:
+            sia.perform_polygon_intersection(data)
+
+        assert "Invalid polygon geometry: Self-intersection" in str(excinfo.value)
+
+    def test_difference_with_non_overlapping_polygons(self):
+        """Test difference operation with non-overlapping polygons."""
+        payload = {
+            "selectedPolygon": {
+                "type": "polygon",
+                "coordinates": [
+                    {
+                        "x": 0.18005404557306592,
+                        "y": 0.1402603911752251
+                    },
+                    {
+                        "x": 0.3311225768379906,
+                        "y": 0.1378039922928686
+                    },
+                    {
+                        "x": 0.2611152086908304,
+                        "y": 0.22254975373416783
+                    },
+                    {
+                        "x": 0.3679685600733381,
+                        "y": 0.2864161246754368
+                    },
+                    {
+                        "x": 0.19602063830838315,
+                        "y": 0.2901007229989716
+                    },
+                    {
+                        "x": 0.26111711639889107,
+                        "y": 0.22254361273696188
+                    }
+                ]
+            },
+            "polygonModifiers": [
+                {
+                    "type": "polygon",
+                    "coordinates": [
+                        {
+                            "x": 0.5445484739598239,
+                            "y": 0.4714587835275131
+                        },
+                        {
+                            "x": 0.5823014179935729,
+                            "y": 0.6330413839919591
+                        },
+                        {
+                            "x": 0.7453941362193689,
+                            "y": 0.5907580866741601
+                        },
+                        {
+                            "x": 0.7000906033788701,
+                            "y": 0.45937784143671334
+                        }
+                    ]
+                },
+                {
+                    "type": "polygon",
+                    "coordinates": [
+                        {
+                            "x": 0.5445484739598239,
+                            "y": 0.4714587835275131
+                        },
+                        {
+                            "x": 0.5823014179935729,
+                            "y": 0.6330413839919591
+                        },
+                        {
+                            "x": 0.7453941362193689,
+                            "y": 0.5907580866741601
+                        },
+                        {
+                            "x": 0.7000906033788701,
+                            "y": 0.45937784143671334
+                        }
+                    ]
+                },
+                {
+                    "type": "polygon",
+                    "coordinates": [
+                        {
+                            "x": 0.36484446035917834,
+                            "y": 0.7040169187754073
+                        },
+                        {
+                            "x": 0.5309574141076743,
+                            "y": 0.7704621002748057
+                        },
+                        {
+                            "x": 0.5294472963463243,
+                            "y": 0.6541830326508585
+                        }
+                    ]
+                }
+            ]
+        }
+        data = sia.normalize_annotations({
+            "annotations": [payload["selectedPolygon"]] + payload["polygonModifiers"]
+        })
+        data["selectedPolygon"] = data["annotations"][0]["polygonCoordinates"]
+        data["polygonModifiers"] = [ann["polygonCoordinates"] for ann in data["annotations"][1:]]
+
+        with pytest.raises(sia.PolygonOperationError) as excinfo:
+            sia.perform_polygon_difference(data)
+
+        assert "No overlap detected between selected polygon and modifiers" in str(excinfo.value)
