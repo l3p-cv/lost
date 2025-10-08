@@ -61,6 +61,8 @@ const SiaWrapper = () => {
     const [polygonOperationResult, setPolygonOperationResult] =
         useState<PolygonOperationResult>([])
 
+    const [defaultLabelId, setDefaultLabelId] = useState<number>()
+
     // save the selected annotation for polygon edit events
     // THIS IS A SHADOW COPY THAT IS NOT USED FROM INSIDE SIA
     const [currentlySelectedAnnotation, setCurrentlySelectedAnnotation] = useState<
@@ -501,8 +503,10 @@ const SiaWrapper = () => {
                     </CButton>
                 </div>
             )}
+
             <div style={{ height: '100%', width: '100%' }}>
                 <Sia2
+                    defaultLabelId={defaultLabelId}
                     image={imageBlob}
                     initialAnnotations={initialAnnotations}
                     initialIsImageJunk={annoData?.image?.isJunk}
@@ -546,6 +550,13 @@ const SiaWrapper = () => {
                         if (polygonEditMode !== PolygonEditMode.NONE) return
 
                         setCurrentlySelectedAnnotation(annotation)
+
+                        // remember annotation label (set it as the default label when switching the image)
+                        if (
+                            annotation.labelIds !== undefined &&
+                            annotation.labelIds.length > 0
+                        )
+                            setDefaultLabelId(annotation.labelIds[0])
 
                         const newAnnotation = { ...annotation }
 
