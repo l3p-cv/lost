@@ -30,6 +30,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added bilateral blur filter support: implemented apply_bilateral_blurr with parameter validation, updated image_filters model, and included expected images for test validation.  
 - Added comprehensive tests for bilateral blur and multiple filter application scenarios.
 - Added /compute_bboxes endpoint to calculate bounding boxes from point sets.
+- Added /polygon_operations endpoint with perform_polygon_operations for union, intersection, and difference of polygons and bounding boxes, including validations.
+- Added Swagger UI documentation for the new polygon operations API
+- Added pytest coverage for polygon operations including mixed polygon and bbox scenarios
 ### Changed
 - Replaced all usages of reactstrap and semantic-ui with CoreUI components and/or generic solutions 
 - moved quick_setup.py into main directory
