@@ -162,6 +162,49 @@ class Filter(Resource):
             dbm.close_session()
             return "data:img/jpg;base64," + data64.decode("utf-8")
 
+@namespace.route("/image/<int:image_id>/filters")
+@api.doc(security="apikey")
+class ImageFilters(Resource):
+    @api.doc(security="apikey", description="Get an Image with applied filters")
+    @api.expect(image_filters)
+    @api.response(200, 'Successfully returns base64-encoded JPEG data URI (e.g., "data:img/jpg;base64,<base64_string>").')
+    @api.response(403, 'Forbidden', error_model)
+    @api.response(400, 'Bad Request', error_model)
+    @api.response(500, 'Internal Server Error', error_model)
+    @jwt_required()
+    def post(self, image_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.ANNOTATOR):
+            dbm.close_session()
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
+
+        try:
+            data = json.loads(request.data)
+            filters = data.get('filters', [])
+
+            img = dbm.get_image_anno(image_id)
+            flask.current_app.logger.info(f"img.img_path: {img.img_path}")
+            flask.current_app.logger.info(f"img.fs.name: {img.fs.name}")
+            fs = FileMan(fs_db=img.fs)
+            img_data = fs.load_img(img.img_path, color_type="gray" if any(f['name'] == 'cannyEdge' for f in filters) else "color")
+
+            img_data = sia.apply_filters(img_data, filters)
+
+            _, data = cv2.imencode(".jpg", img_data)
+            data64 = base64.b64encode(data.tobytes())
+            dbm.close_session()
+            return "data:img/jpg;base64," + data64.decode("utf-8")
+        except ValueError as ve:
+            flask.current_app.logger.warning(f"ValueError applying filters: {str(ve)}")
+            dbm.close_session()
+            return {"error": str(ve)}, 400
+        except Exception as e:
+            flask.current_app.logger.error(f"Error applying filters: {str(e)}")
+            dbm.close_session()
+            return {"error": str(e)}, 500
+
 
 @namespace.route("/allowedExampler")
 @api.doc(security="apikey")
