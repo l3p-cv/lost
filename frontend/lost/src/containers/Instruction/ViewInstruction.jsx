@@ -81,9 +81,6 @@ const ViewInstruction = ({ instructionData, onClose, onEdit }) => {
             <CButton color="info" size="sm" onClick={toggleFullScreen} className="me-2">
               {isFullScreen ? <FaCompress /> : <FaExpand />}
             </CButton>
-            <CButton color="secondary" size="sm" onClick={onClose}>
-              Close
-            </CButton>
           </div>
         </div>
       </CModalHeader>
