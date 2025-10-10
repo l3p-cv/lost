@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { KeyboardEvent, useEffect, useState } from 'react'
 import {
     useGetSiaAnnos,
     useGetSiaImage,
@@ -315,6 +315,7 @@ const SiaWrapper = () => {
     }
 
     const resetWrapper = () => {
+        window.removeEventListener('keydown', (e) => handleWrapperKeydown(e))
         setAnnotationIdMapping([])
         setPolygonEditMode(PolygonEditMode.NONE)
         setImageBlob(undefined)
@@ -430,6 +431,20 @@ const SiaWrapper = () => {
         setSamBBox(null)
     }
 
+    // handle image switching
+    const handleWrapperKeydown = (e: KeyboardEvent) => {
+        if (e.repeat) return
+
+        switch (e.key) {
+            case 'ArrowLeft':
+                getPreviousImage()
+                break
+            case 'ArrowRight':
+                getNextImage()
+                break
+        }
+    }
+
     // handles response after we did a polygon operation (HTTP request)
     const handlePolygonOperationResponse = (response) => {
         // show errors to user
@@ -441,6 +456,16 @@ const SiaWrapper = () => {
             })
             setIsSiaLoading(false)
             setPolygonEditMode(PolygonEditMode.NONE)
+            return
+        } else if (response?.errors) {
+            // the response can contain multiple errors at once
+            Object.keys(response.errors).forEach((errorTitle) =>
+                handleNotification({
+                    title: errorTitle,
+                    message: response.errors[errorTitle],
+                    type: NotificationType.ERROR,
+                }),
+            )
             return
         }
 
@@ -504,7 +529,11 @@ const SiaWrapper = () => {
                 </div>
             )}
 
-            <div style={{ height: '100%', width: '100%' }}>
+            <div
+                style={{ height: '100%', width: '100%' }}
+                onKeyDown={handleWrapperKeydown}
+                tabindex="0"
+            >
                 <Sia2
                     defaultLabelId={defaultLabelId}
                     image={imageBlob}
