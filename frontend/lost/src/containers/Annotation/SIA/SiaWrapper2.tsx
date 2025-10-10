@@ -244,10 +244,12 @@ const SiaWrapper = () => {
         firstAnnotation: Annotation,
         secondAnnotation: Annotation,
     ) => {
+        const possibleAnnotationTypes = [AnnotationTool.Polygon, AnnotationTool.BBox]
+
         // check if both annotations are polygons
         if (
-            firstAnnotation?.type !== AnnotationTool.Polygon ||
-            secondAnnotation?.type !== AnnotationTool.Polygon
+            !possibleAnnotationTypes.includes(firstAnnotation.type) ||
+            !possibleAnnotationTypes.includes(secondAnnotation.type)
         ) {
             // there's an imposter - abort mission
             setPolygonEditMode(PolygonEditMode.NONE)
@@ -272,24 +274,29 @@ const SiaWrapper = () => {
             return
         }
 
+        // convert annotations into the legacy format to be supported by the backend
+        const firstLegacyAnnotation = legacyHelper.convertAnnoToOldFormat(firstAnnotation)
+        const secondLegacyAnnotation =
+            legacyHelper.convertAnnoToOldFormat(secondAnnotation)
+
         setIsSiaLoading(true)
         switch (polygonEditMode) {
             case PolygonEditMode.MERGE:
                 mergePolygons({
-                    firstPolygon: firstAnnotation.coordinates,
-                    secondPolygon: secondAnnotation.coordinates,
+                    firstPolygon: firstLegacyAnnotation,
+                    secondPolygon: secondLegacyAnnotation,
                 })
                 break
             case PolygonEditMode.INTERSECT:
                 intersectPolygons({
-                    firstPolygon: firstAnnotation.coordinates,
-                    secondPolygon: secondAnnotation.coordinates,
+                    firstPolygon: firstLegacyAnnotation,
+                    secondPolygon: secondLegacyAnnotation,
                 })
                 break
             case PolygonEditMode.DIFFERENCE:
                 diffPolygons({
-                    firstPolygon: firstAnnotation.coordinates,
-                    secondPolygon: secondAnnotation.coordinates,
+                    firstPolygon: firstLegacyAnnotation,
+                    secondPolygon: secondLegacyAnnotation,
                 })
                 break
         }
@@ -470,6 +477,8 @@ const SiaWrapper = () => {
         }
 
         if (response?.resultantPolygon === undefined) return
+
+        if (response?.type !== 'polygon') return
 
         const { resultantPolygon } = response
 

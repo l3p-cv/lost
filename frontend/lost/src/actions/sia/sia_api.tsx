@@ -23,8 +23,8 @@ type editAnnotationData = {
 }
 
 type PolygonData = {
-    firstPolygon: Point[]
-    secondPolygon: Point[]
+    firstPolygon: Annotation
+    secondPolygon: Annotation
 }
 
 export const useGetSiaAnnos = (annotationRequestData) => {
@@ -155,7 +155,7 @@ export const usePolygonDifference = () => {
 export const usePolygonIntersection = () => {
     return useMutation((polygonData: PolygonData) => {
         const requestData = {
-            polygons: [polygonData.firstPolygon, polygonData.secondPolygon],
+            annotations: [polygonData.firstPolygon, polygonData.secondPolygon],
         }
 
         return axios
@@ -168,7 +168,7 @@ export const usePolygonIntersection = () => {
 export const usePolygonUnion = () => {
     return useMutation((polygonData: PolygonData) => {
         const requestData = {
-            polygons: [polygonData.firstPolygon, polygonData.secondPolygon],
+            annotations: [polygonData.firstPolygon, polygonData.secondPolygon],
         }
 
         return axios
