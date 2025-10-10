@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
 import { IconProp } from '@fortawesome/fontawesome-svg-core'
+import BilateralFilterComponent from './BilateralFilterComponent'
 
 type ImageFilterUiProps = {
     appliedFilters?: ImageFilter[]
@@ -18,8 +19,15 @@ const ImageFilterUi = ({
 }: ImageFilterUiProps) => {
     const [isHistogramActive, setIsHistogramActive] = useState<boolean>(false)
     const [isCannyActive, setIsCannyActive] = useState<boolean>(false)
+    const [isBilateralActive, setIsBilateralActive] = useState<boolean>(false)
     const [claheClipLimit, setClaheClipLimit] = useState<number>(1)
     const [cannyThreshholds, setCannyThreshholds] = useState({ min: 0, max: 100 })
+    const [bilateralFilterConfig, setBilateralFilterConfig] =
+        useState<BilateralFilterConfig>({
+            diameter: 1,
+            sigmaColor: 1,
+            sigmaSpace: 1,
+        })
 
     useEffect(() => {
         if (appliedFilters.length === 0) return
@@ -58,6 +66,12 @@ const ImageFilterUi = ({
                 },
             })
 
+        if (isBilateralActive)
+            newFilterData.push({
+                name: 'bilateral',
+                configuration: bilateralFilterConfig,
+            })
+
         onFiltersChanged(newFilterData)
     }
 
@@ -82,6 +96,14 @@ const ImageFilterUi = ({
                     isActive={isCannyActive}
                     onActiveChanged={setIsCannyActive}
                     onThreshholdChange={setCannyThreshholds}
+                />
+            </CRow>
+            <CRow className="mb-3">
+                <BilateralFilterComponent
+                    filterConfig={bilateralFilterConfig}
+                    isActive={isBilateralActive}
+                    onActiveChanged={setIsBilateralActive}
+                    onFilterValueChange={setBilateralFilterConfig}
                 />
             </CRow>
             <CRow>

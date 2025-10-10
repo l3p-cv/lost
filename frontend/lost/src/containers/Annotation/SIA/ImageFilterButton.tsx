@@ -18,11 +18,13 @@ const ImageFilterButton = ({
 }: ImageFilterButtonProps) => {
     const customPopoverStyle = {
         '--cui-popover-max-width': '300px',
+        zIndex: 7000,
     }
 
     return (
         <CPopover
             placement="bottom"
+            trigger="click" // closes when clicking somewhere else
             content={
                 <ImageFilterUi
                     appliedFilters={appliedFilters}

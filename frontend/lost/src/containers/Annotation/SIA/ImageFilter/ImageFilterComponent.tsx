@@ -4,7 +4,7 @@ import { faGripVertical } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import './ClassicalRangeSlider.css'
 
-type ImageFilterComponentProps = {
+export type ImageFilterComponentProps = {
     filterValue: number
     isActive: boolean
     onActiveChanged: (value: boolean) => void
