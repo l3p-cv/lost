@@ -5,11 +5,12 @@ from lost.db import dtype, state, model
 from lost.db.access import DBMan
 from lost.logic.anno_task import set_finished, update_anno_task
 from datetime import datetime
-from shapely.geometry import Polygon
+from shapely.geometry import Polygon, LineString
 from shapely.ops import unary_union
 from shapely.errors import ShapelyError, TopologicalError
 import math
 import cv2
+import numpy as np
 
 __author__ = "Gereon Reus"
 
@@ -928,15 +929,87 @@ class PolygonOperationError(Exception):
         super().__init__(message)
         self.message = message
 
+def bbox_to_polygon(bbox):
+    x, y, w, h = bbox["x"], bbox["y"], bbox["w"], bbox["h"]
+    half_w, half_h = w / 2, h / 2
+    return [
+        {"x": x - half_w, "y": y - half_h},
+        {"x": x + half_w, "y": y - half_h},
+        {"x": x + half_w, "y": y + half_h},
+        {"x": x - half_w, "y": y + half_h},
+    ]
+
+def remove_duplicate_polygons(polygons):
+    unique_polys = []
+    seen = set()
+    for poly in polygons:
+        key = tuple((round(p["x"], 8), round(p["y"], 8)) for p in poly)
+        if key not in seen:
+            seen.add(key)
+            unique_polys.append(poly)
+    return unique_polys
+
+def normalize_annotations(data):
+    if "annotations" not in data or not isinstance(data["annotations"], list):
+        raise PolygonOperationError("Missing or invalid 'annotations' field")
+
+    normalized_annotations = []
+    for ann in data["annotations"]:
+        if "polygonCoordinates" in ann and "originalType" in ann:
+            normalized_annotations.append(ann)
+            continue
+        new_ann = {"originalType": ann.get("type"), "type": "polygon"}
+        if ann.get("type") == "bbox":
+            new_ann["coordinates"] = ann["coordinates"]  
+            new_ann["polygonCoordinates"] = bbox_to_polygon(ann["coordinates"])
+        elif ann.get("type") == "polygon":
+            new_ann["coordinates"] = ann["coordinates"]
+            new_ann["polygonCoordinates"] = ann["coordinates"]
+        else:
+            raise PolygonOperationError(f"Unsupported annotation type: {ann.get('type')}")
+        normalized_annotations.append(new_ann)
+
+    unique_polys = remove_duplicate_polygons([ann["polygonCoordinates"] for ann in normalized_annotations])
+    data["annotations"] = [
+        {
+            "type": "polygon",
+            "polygonCoordinates": poly,
+            "originalType": ann["originalType"],
+            "coordinates": ann.get("coordinates")
+        }
+        for poly, ann in zip(unique_polys, normalized_annotations)
+    ]
+    return data
+
+def intersect_bboxes(bbox1, bbox2):
+    x1_min, y1_min = bbox1["x"] - bbox1["w"] / 2, bbox1["y"] - bbox1["h"] / 2
+    x1_max, y1_max = bbox1["x"] + bbox1["w"] / 2, bbox1["y"] + bbox1["h"] / 2
+    x2_min, y2_min = bbox2["x"] - bbox2["w"] / 2, bbox2["y"] - bbox2["h"] / 2
+    x2_max, y2_max = bbox2["x"] + bbox2["w"] / 2, bbox2["y"] + bbox2["h"] / 2
+
+    ix_min, iy_min = max(x1_min, x2_min), max(y1_min, y2_min)
+    ix_max, iy_max = min(x1_max, x2_max), min(y1_max, y2_max)
+
+    if ix_min >= ix_max or iy_min >= iy_max:
+        raise PolygonOperationError("Intersection of bboxes resulted in empty region")
+
+    return {
+        "x": (ix_min + ix_max) / 2,
+        "y": (iy_min + iy_max) / 2,
+        "w": ix_max - ix_min,
+        "h": iy_max - iy_min
+    }
+
 def perform_polygon_union(data):
-    if "polygons" not in data or not isinstance(data["polygons"], list):
-        flask.current_app.logger.info("Missing or invalid 'polygons' field")
-        raise PolygonOperationError("Missing or invalid 'polygons' field")
-    if len(data["polygons"]) < 2:
+    if "annotations" not in data or not isinstance(data["annotations"], list):
+        flask.current_app.logger.info("Missing or invalid 'annotations' field")
+        raise PolygonOperationError("Missing or invalid 'annotations' field")
+
+    polygons = [ann["polygonCoordinates"] for ann in data["annotations"] if "polygonCoordinates" in ann]
+
+    if len(polygons) < 2:
         flask.current_app.logger.info("At least 2 polygons required for union")
         raise PolygonOperationError("At least 2 polygons required for union")
-    polygons = data["polygons"]
-    
     shapely_polygons = []
     for poly in polygons:
         if len(poly) < 3:
@@ -976,52 +1049,53 @@ def perform_polygon_union(data):
         raise PolygonOperationError(f"Unexpected geometry type: {result_poly.geom_type}")
     
     result_coords = [{"x": float(x), "y": float(y)} for x, y in result_poly.exterior.coords[:-1]]
-    
-    response = {"resultantPolygon": result_coords}
+
+    response = {
+        "type": "polygon",
+        "resultantPolygon": result_coords
+    }
     flask.current_app.logger.info(f"Returning success response: {response}")
     return response
 
 def perform_polygon_intersection(data):
-    if "polygons" not in data or not isinstance(data["polygons"], list):
-        flask.current_app.logger.info("Missing or invalid 'polygons' field")
-        raise PolygonOperationError("Missing or invalid 'polygons' field")
-    if len(data["polygons"]) != 2:
-        flask.current_app.logger.info("Exactly 2 polygons required for intersection")
-        raise PolygonOperationError("Exactly 2 polygons required for intersection")
-    polygons = data["polygons"]
-    
+    if "annotations" not in data or not isinstance(data["annotations"], list):
+        raise PolygonOperationError("Missing or invalid 'annotations' field")
+
+    annotations = data["annotations"]
+    if len(annotations) != 2:
+        raise PolygonOperationError("Exactly 2 annotations required for intersection")
+
+    if (len(annotations) == 2 and all(ann.get("originalType") == "bbox" and "coordinates" in ann for ann in annotations)):
+        result_bbox = intersect_bboxes(annotations[0]["coordinates"], annotations[1]["coordinates"])
+        return {"type": "bbox", "resultantBBox": result_bbox}
+
+    polygons = [ann["polygonCoordinates"] for ann in annotations]
+
     shapely_polygons = []
     for poly in polygons:
         if len(poly) < 3:
-            flask.current_app.logger.info("Insufficient vertices")
             raise PolygonOperationError("Each polygon must have at least 3 vertices")
         coords = []
         for p in poly:
             if not (isinstance(p.get("x"), (int, float)) and isinstance(p.get("y"), (int, float))):
-                flask.current_app.logger.info("Non-numeric coordinates detected")
                 raise PolygonOperationError("All coordinates must be numeric")
             if math.isnan(p["x"]) or math.isinf(p["x"]) or math.isnan(p["y"]) or math.isinf(p["y"]):
-                flask.current_app.logger.info("Invalid coordinates (NaN or inf)")
                 raise PolygonOperationError("Coordinates cannot be NaN or infinite")
             coords.append((p["x"], p["y"]))
         try:
             shapely_poly = Polygon(coords)
             if not shapely_poly.is_valid:
-                flask.current_app.logger.info("Self-intersecting polygon detected")
                 raise PolygonOperationError("Invalid polygon geometry: Self-intersection")
             shapely_polygons.append(shapely_poly)
         except (ShapelyError, TopologicalError) as e:
-            flask.current_app.logger.error(f"Invalid geometry: {str(e)}")
             raise PolygonOperationError(f"Invalid polygon geometry: {str(e)}")
     
     try:
         result_poly = shapely_polygons[0].intersection(shapely_polygons[1])
     except (ShapelyError, TopologicalError) as e:
-        flask.current_app.logger.error(f"Topology error in intersection: {str(e)}")
         raise PolygonOperationError(f"Topology error during intersection: {str(e)}")
     
     if result_poly.is_empty:
-        flask.current_app.logger.info("Empty result polygon")
         raise PolygonOperationError("Intersection resulted in an empty polygon")
     
     if result_poly.geom_type == "Polygon":
@@ -1032,30 +1106,37 @@ def perform_polygon_intersection(data):
     elif result_poly.geom_type == "GeometryCollection":
         valid_polygons = [geom for geom in result_poly.geoms if geom.geom_type == "Polygon"]
         if not valid_polygons:
-            flask.current_app.logger.info("No valid polygons in GeometryCollection")
-            raise PolygonOperationError("No valid polygons found in GeometryCollection")
+            raise PolygonOperationError("Intersection resulted in no valid polygons")
         largest_poly = max(valid_polygons, key=lambda p: p.area)
         result_coords = [{"x": float(x), "y": float(y)} for x, y in largest_poly.exterior.coords[:-1]]
     else:
-        flask.current_app.logger.info(f"Unsupported geometry: {result_poly.geom_type}")
         raise PolygonOperationError(f"Unsupported geometry type: {result_poly.geom_type}")
-    
-    response = {"resultantPolygon": result_coords}
-    flask.current_app.logger.info(f"Returning success response: {response}")
-    return response
+
+    return {"type": "polygon", "resultantPolygon": result_coords}
 
 def perform_polygon_difference(data):
+    if "selectedPolygon" not in data or not isinstance(data["selectedPolygon"], (dict, list)):
+        raise PolygonOperationError("Missing or invalid 'selectedPolygon' field")
+    if "polygonModifiers" not in data or not isinstance(data["polygonModifiers"], list):
+        raise PolygonOperationError("Missing or invalid 'polygonModifiers' field")
     if "selectedPolygon" not in data or "polygonModifiers" not in data:
-        flask.current_app.logger.info("Missing 'selectedPolygon' or 'polygonModifiers' field")
         raise PolygonOperationError("Missing 'selectedPolygon' or 'polygonModifiers' field")
-    if not isinstance(data["selectedPolygon"], list) or not isinstance(data["polygonModifiers"], list):
-        flask.current_app.logger.info("Invalid 'selectedPolygon' or 'polygonModifiers' format")
-        raise PolygonOperationError("Invalid 'selectedPolygon' or 'polygonModifiers' format")
-    if not data["polygonModifiers"]:
-        flask.current_app.logger.info("At least one modifier polygon required")
-        raise PolygonOperationError("At least one modifier polygon required")
+    elif "selectedPolygon" in data and isinstance(data["selectedPolygon"], dict):
+        sel = data["selectedPolygon"]
+        if sel.get("type") == "bbox":
+            data["selectedPolygon"] = bbox_to_polygon(sel["coordinates"])
+        elif sel.get("type") == "polygon":
+            data["selectedPolygon"] = sel["coordinates"]
+
+    for i, mod in enumerate(data.get("polygonModifiers", [])):
+        if isinstance(mod, dict):
+            if mod.get("type") == "bbox":
+                data["polygonModifiers"][i] = bbox_to_polygon(mod["coordinates"])
+            elif mod.get("type") == "polygon":
+                data["polygonModifiers"][i] = mod["coordinates"]
+
     polygons = [data["selectedPolygon"]] + data["polygonModifiers"]
-    
+
     shapely_polygons = []
     for poly in polygons:
         if len(poly) < 3:
@@ -1067,29 +1148,30 @@ def perform_polygon_difference(data):
                 flask.current_app.logger.info("Non-numeric coordinates detected")
                 raise PolygonOperationError("All coordinates must be numeric")
             if math.isnan(p["x"]) or math.isinf(p["x"]) or math.isnan(p["y"]) or math.isinf(p["y"]):
-                flask.current_app.logger.info("Invalid coordinates (NaN or inf)")
                 raise PolygonOperationError("Coordinates cannot be NaN or infinite")
             coords.append((p["x"], p["y"]))
         try:
             shapely_poly = Polygon(coords)
             if not shapely_poly.is_valid:
-                flask.current_app.logger.info("Self-intersecting polygon detected")
                 raise PolygonOperationError("Invalid polygon geometry: Self-intersection")
             shapely_polygons.append(shapely_poly)
         except (ShapelyError, TopologicalError) as e:
-            flask.current_app.logger.error(f"Invalid geometry: {str(e)}")
             raise PolygonOperationError(f"Invalid polygon geometry: {str(e)}")
-    
     try:
+        has_overlap = any(
+            shapely_polygons[0].intersects(mod) and not shapely_polygons[0].intersection(mod).is_empty
+            for mod in shapely_polygons[1:]
+        )
+        if not has_overlap:
+            raise PolygonOperationError("No overlap detected between selected polygon and modifiers")
+
         result_poly = shapely_polygons[0]
         for modifier in shapely_polygons[1:]:
             result_poly = result_poly.difference(modifier)
     except (ShapelyError, TopologicalError) as e:
-        flask.current_app.logger.error(f"Topology error in difference: {str(e)}")
         raise PolygonOperationError(f"Topology error during difference: {str(e)}")
     
     if result_poly.is_empty:
-        flask.current_app.logger.info("Empty result polygon")
         raise PolygonOperationError("Difference resulted in an empty polygon")
     
     if result_poly.geom_type == "Polygon":
@@ -1098,12 +1180,9 @@ def perform_polygon_difference(data):
         largest_poly = max(result_poly.geoms, key=lambda p: p.area)
         result_coords = [{"x": float(x), "y": float(y)} for x, y in largest_poly.exterior.coords[:-1]]
     else:
-        flask.current_app.logger.info(f"Unsupported geometry: {result_poly.geom_type}")
         raise PolygonOperationError(f"Unsupported geometry type: {result_poly.geom_type}")
-    
-    response = {"resultantPolygon": result_coords}
-    flask.current_app.logger.info(f"Returning success response: {response}")
-    return response
+
+    return {"type": "polygon", "resultantPolygon": result_coords}
 
 def apply_canny_edge(image, config):
     if not all(k in config for k in ("lowerThreshold", "upperThreshold")):
@@ -1137,10 +1216,29 @@ def apply_clahe(image, config):
     clahe = cv2.createCLAHE(clipLimit=clip_limit)
     return clahe.apply(image)
 
+def apply_bilateral_blurr(image, config):
+    if not all(k in config for k in ("diameter", "sigmaColor", "sigmaSpace")):
+        raise ValueError("diameter, sigmaColor, and sigmaSpace are required for bilateral blurr filter")
+    
+    diameter = config["diameter"]
+    sigma_color = config["sigmaColor"]
+    sigma_space = config["sigmaSpace"]
+
+    if not all(isinstance(v, (int, float)) and math.isfinite(v) for v in [diameter, sigma_color, sigma_space]):
+        raise ValueError("diameter, sigmaColor, and sigmaSpace must be numeric and finite")
+    if diameter <= 0 or sigma_color <= 0 or sigma_space <= 0:
+        raise ValueError("diameter, sigmaColor, and sigmaSpace must be positive")
+
+    if len(image.shape) == 3:
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    return cv2.bilateralFilter(image, int(diameter), float(sigma_color), float(sigma_space))
+
 FILTERS = {
     # Implemented in this way because of potential future additional filters
     "cannyEdge": apply_canny_edge,
-    "clahe": apply_clahe
+    "clahe": apply_clahe,
+    "bilateral": apply_bilateral_blurr,
 }
 
 def apply_filters(image, filters):
@@ -1162,3 +1260,53 @@ def apply_filters(image, filters):
         applied_filters.add(filter_name)
 
     return processed_image
+
+def compute_bboxes_from_points(db_man, data, image_shape=None):
+    if not isinstance(data, dict) or "data" not in data:
+        flask.current_app.logger.info("Input must be a dictionary with a 'data' key")
+        raise PolygonOperationError("Input must be a dictionary with a 'data' key")
+
+    all_point_sets = data["data"]
+    if not isinstance(all_point_sets, list):
+        raise PolygonOperationError("The 'data' key must contain a list of point sets")
+
+    results = []
+    for point_set in all_point_sets:
+        if not isinstance(point_set, list) or not (3 <= len(point_set) <= 4):
+            raise PolygonOperationError("Each point set must contain 3 or 4 points")
+
+        for point in point_set:
+            if not isinstance(point, dict) or "x" not in point or "y" not in point:
+                raise PolygonOperationError("Each point must be a dict with 'x' and 'y'")
+            if not (isinstance(point["x"], (int, float)) and isinstance(point["y"], (int, float))):
+                raise PolygonOperationError("All coordinates must be numeric")
+            if not (0 <= point["x"] <= 1 and 0 <= point["y"] <= 1):
+                raise PolygonOperationError("Coordinates must be in [0,1]")
+
+        xs = [p["x"] for p in point_set]
+        ys = [p["y"] for p in point_set]
+
+        xmin, xmax = min(xs), max(xs)
+        ymin, ymax = min(ys), max(ys)
+
+        w = xmax - xmin
+        h = ymax - ymin
+        xc = xmin + w / 2
+        yc = ymin + h / 2
+        size = max(w, h)
+        half = size / 2
+
+        xc = min(max(xc, half), 1 - half)
+        yc = min(max(yc, half), 1 - half)
+
+        bbox = {
+            "h": round(float(size), 8),
+            "w": round(float(size), 8),
+            "x": round(float(xc), 8),
+            "y": round(float(yc), 8)
+        }
+        results.append(bbox)
+        flask.current_app.logger.info(f"Computed bbox: {bbox}")
+
+    return results
+

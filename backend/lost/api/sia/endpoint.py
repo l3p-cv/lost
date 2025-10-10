@@ -4,7 +4,7 @@ from flask import request
 from flask_restx import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from lost.api.api import api
-from lost.api.sia.api_definition import sia_anno, sia_config, labels, sia_polygon_operations_response, error_model, sia_polygon_union, sia_polygon_intersection, sia_polygon_difference, image_filters
+from lost.api.sia.api_definition import sia_anno, sia_config, labels, sia_polygon_operations_response, error_model, sia_polygon_union, sia_polygon_intersection, sia_polygon_difference, image_filters, sia_bbox_from_points, sia_bbox_from_points_response
 from lost.db import roles, access
 from lost.settings import LOST_CONFIG, DATA_URL
 from lost.logic import sia
@@ -323,7 +323,8 @@ class PolygonUnion(Resource):
             return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
         try:
             data = json.loads(request.data)
-            flask.current_app.logger.info(f"Received payload for union: {data}")
+            data = sia.normalize_annotations(data)
+            flask.current_app.logger.info(f"Normalized payload for union: {data}")
             response = sia.perform_polygon_union(data)
             dbm.close_session()
             return response, 200
@@ -359,7 +360,7 @@ class PolygonIntersection(Resource):
             return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
         try:
             data = json.loads(request.data)
-            flask.current_app.logger.info(f"Received payload for intersection: {data}")
+            data = sia.normalize_annotations(data)
             response = sia.perform_polygon_intersection(data)
             dbm.close_session()
             return response, 200
@@ -396,6 +397,13 @@ class PolygonDifference(Resource):
         try:
             data = json.loads(request.data)
             flask.current_app.logger.info(f"Received payload for difference: {data}")
+
+            data = sia.normalize_annotations({
+                "annotations": [data["selectedPolygon"]] + data.get("polygonModifiers", [])
+            })
+            data["selectedPolygon"] = data["annotations"][0]["polygonCoordinates"]
+            data["polygonModifiers"] = [ann["polygonCoordinates"] for ann in data["annotations"][1:]]
+
             response = sia.perform_polygon_difference(data)
             dbm.close_session()
             return response, 200
@@ -409,5 +417,39 @@ class PolygonDifference(Resource):
             return {"error": str(e)}, 400
         except Exception as e:
             flask.current_app.logger.error(f"Unexpected error in polygon difference: {str(e)}")
+            dbm.close_session()
+            return {"error": str(e)}, 500
+        
+@namespace.route("/bboxFromPoints")
+@api.doc(security="apikey")
+class BBoxFromPoints(Resource):
+    @api.doc(security="apikey", description="Compute tightest bounding boxes from multiple point sets.")
+    @api.expect(sia_bbox_from_points)
+    @api.response(200, "Success", sia_bbox_from_points_response)
+    @api.response(400, "Bad Request", error_model)
+    @api.response(403, "Forbidden", error_model)
+    @api.response(500, "Internal Server Error", error_model)
+    @jwt_required()
+    def post(self):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = int(get_jwt_identity())
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.ANNOTATOR):
+            dbm.close_session()
+            return api.abort(403, f"You need to be {roles.ANNOTATOR} in order to perform this request.")
+        try:
+            data = json.loads(request.data)
+            flask.current_app.logger.info(f"Received payload for bounding box computation: {data}")
+
+            response = sia.compute_bboxes_from_points(dbm, data)
+
+            dbm.close_session()
+            return {"data": response}, 200
+        except sia.PolygonOperationError as e:
+            flask.current_app.logger.error(f"Validation error in bounding box computation: {str(e)}")
+            dbm.close_session()
+            return {"error": str(e)}, 400
+        except Exception as e:
+            flask.current_app.logger.error(f"Unexpected error in bounding box computation: {str(e)}")
             dbm.close_session()
             return {"error": str(e)}, 500
