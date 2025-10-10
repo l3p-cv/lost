@@ -177,3 +177,16 @@ export const usePolygonUnion = () => {
             .catch((error) => error.response.data)
     })
 }
+
+export const useBBoxCreation = () => {
+    return useMutation((points: Point[]) => {
+        const requestData = {
+            data: [points],
+        }
+
+        return axios
+            .post(API_URL + `/sia/bboxFromPoints`, requestData)
+            .then((res) => res.data)
+            .catch((error) => error.response.data)
+    })
+}

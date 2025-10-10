@@ -12,9 +12,10 @@ import {
     usePolygonDifference,
     usePolygonIntersection,
     usePolygonUnion,
+    useBBoxCreation,
 } from '../../../actions/sia/sia_api'
 
-import { Sia2, PolygonOperationResult, SIANotification } from 'lost-sia'
+import { Sia2, PolygonOperationResult, SIANotification, ToolCoordinates } from 'lost-sia'
 import { useNavigate } from 'react-router-dom'
 import { CBadge, CButton, CCol } from '@coreui/react'
 import {
@@ -37,7 +38,11 @@ import {
     NotificationType,
 } from 'lost-sia/models'
 
-import legacyHelper, { LegacyAnnotation, LegacyAnnotationResponse } from './legacyHelper'
+import legacyHelper, {
+    LegacyAnnotation,
+    LegacyAnnotationResponse,
+    LegacyBboxData,
+} from './legacyHelper'
 import ImageFilterButton from './ImageFilterButton'
 import {
     AnnotationCoordinates,
@@ -46,6 +51,7 @@ import {
 } from '../../../types/SiaTypes'
 import PolygonEditButtons from './PolygonEditButtons'
 import PolygonEditMode from '../../../models/PolygonEditMode'
+import { selectAnnotation } from '../../../actions/sia/sia'
 
 const SiaWrapper = () => {
     const navigate = useNavigate()
@@ -137,6 +143,7 @@ const SiaWrapper = () => {
     const { data: polygonIntersectionReponse, mutate: intersectPolygons } =
         usePolygonIntersection()
     const { data: polygonUnionReponse, mutate: mergePolygons } = usePolygonUnion()
+    const { data: bboxCreationResponse, mutate: createBBox } = useBBoxCreation()
 
     useEffect(() => {
         // react query throws a state update with undefined right before the actual data is set when the query cache is disabled
@@ -146,40 +153,9 @@ const SiaWrapper = () => {
         const annotationsByType: LegacyAnnotationResponse = annoData.annotations
         const collectedAnnoData = Object.entries(annotationsByType).flatMap(
             ([type, items]: [string, LegacyAnnotation[]]) =>
-                items.map((annotation) => {
-                    const convertedAnnoType = legacyHelper.convertAnnoToolType(type)
-
-                    let newCoords: AnnotationCoordinates = annotation.data
-
-                    if (convertedAnnoType === AnnotationTool.BBox) {
-                        // the old format saved the CENTER of the BBox, not the top left corner...
-                        const centerPoint = { x: newCoords.x, y: newCoords.y }
-                        const topLeftPoint = {
-                            x: centerPoint.x - newCoords.w / 2,
-                            y: centerPoint.y - newCoords.h / 2,
-                        }
-                        const bottomRightPoint = {
-                            x: centerPoint.x + newCoords.w / 2,
-                            y: centerPoint.y + newCoords.h / 2,
-                        }
-
-                        newCoords = [topLeftPoint, bottomRightPoint]
-                    }
-
-                    if (convertedAnnoType === AnnotationTool.Point) {
-                        newCoords = [annotation.data]
-                    }
-
-                    return {
-                        ...annotation,
-                        id: null,
-                        data: null,
-                        externalId: annotation.id,
-                        coordinates: newCoords,
-                        type: convertedAnnoType,
-                        status: AnnotationStatus.DATABASE,
-                    }
-                }),
+                items.map((annotation) =>
+                    legacyHelper.convertAnnoToNewFormat(annotation, type),
+                ),
         )
 
         setInitialAnnotations(collectedAnnoData)
@@ -452,6 +428,50 @@ const SiaWrapper = () => {
         }
     }
 
+    const handleBBoxReponse = (response) => {
+        // show errors to user
+        if (response?.error) {
+            handleNotification({
+                title: 'Invalid selection',
+                message: response.error,
+                type: NotificationType.ERROR,
+            })
+            setIsSiaLoading(false)
+            setPolygonEditMode(PolygonEditMode.NONE)
+            return
+        } else if (response?.errors) {
+            // the response can contain multiple errors at once
+            Object.keys(response.errors).forEach((errorTitle) =>
+                handleNotification({
+                    title: errorTitle,
+                    message: response.errors[errorTitle],
+                    type: NotificationType.ERROR,
+                }),
+            )
+            return
+        }
+
+        if (response?.data === undefined) return
+
+        const newBoxesInOldFormat: LegacyBboxData[] = response!.data
+        const toolCoordinates: ToolCoordinates[] = newBoxesInOldFormat.map(
+            (legacyBox: LegacyBboxData) => {
+                return {
+                    type: AnnotationTool.BBox,
+                    coordinates: legacyHelper.convertBboxFormat(legacyBox),
+                }
+            },
+        )
+
+        const newPolygonOperationResult: PolygonOperationResult = {
+            polygonsToCreate: toolCoordinates,
+            annotationsToDelete: [],
+        }
+
+        setPolygonOperationResult(newPolygonOperationResult)
+        setIsSiaLoading(false)
+    }
+
     // handles response after we did a polygon operation (HTTP request)
     const handlePolygonOperationResponse = (response) => {
         // show errors to user
@@ -482,8 +502,13 @@ const SiaWrapper = () => {
 
         const { resultantPolygon } = response
 
+        const toolCoordinates: ToolCoordinates = {
+            type: AnnotationTool.Polygon,
+            coordinates: resultantPolygon,
+        }
+
         const newPolygonOperationResult: PolygonOperationResult = {
-            polygonsToCreate: [resultantPolygon],
+            polygonsToCreate: [toolCoordinates],
             annotationsToDelete: [currentlySelectedAnnotation],
         }
 
@@ -506,6 +531,11 @@ const SiaWrapper = () => {
         if (polygonUnionReponse === undefined) return
         handlePolygonOperationResponse(polygonUnionReponse)
     }, [polygonUnionReponse])
+
+    useEffect(() => {
+        if (bboxCreationResponse === undefined) return
+        handleBBoxReponse(bboxCreationResponse)
+    }, [bboxCreationResponse])
 
     return (
         <>
@@ -554,10 +584,29 @@ const SiaWrapper = () => {
                     polygonOperationResult={polygonOperationResult}
                     additionalButtons={
                         <>
-                            <CCol xs={6} sm={3} xl={2}>
+                            <CCol xs={6} sm={4} xl={3}>
                                 <PolygonEditButtons
                                     polygonEditMode={polygonEditMode}
-                                    onPolygonEditModeChanged={setPolygonEditMode}
+                                    onPolygonEditModeChanged={(
+                                        polygonEditMode: PolygonEditMode,
+                                    ) => {
+                                        // bbox calc only needs one annotation
+                                        // trigger the bbox creation right away if theres already an anno selected
+                                        if (
+                                            polygonEditMode === PolygonEditMode.BBOX &&
+                                            currentlySelectedAnnotation !== undefined &&
+                                            currentlySelectedAnnotation.type !==
+                                                AnnotationTool.BBOX
+                                        ) {
+                                            const legacyAnnotation =
+                                                legacyHelper.convertAnnoToOldFormat(
+                                                    currentlySelectedAnnotation,
+                                                )
+                                            createBBox(legacyAnnotation.data)
+                                        }
+
+                                        setPolygonEditMode(polygonEditMode)
+                                    }}
                                 />
                             </CCol>
                             <CCol xs={2} md={1}>

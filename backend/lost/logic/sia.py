@@ -959,12 +959,12 @@ def normalize_annotations(data):
             normalized_annotations.append(ann)
             continue
         new_ann = {"originalType": ann.get("type"), "type": "polygon"}
-        if ann.get("type") == "bbox":
-            new_ann["coordinates"] = ann["coordinates"]  
-            new_ann["polygonCoordinates"] = bbox_to_polygon(ann["coordinates"])
+        if str.lower(ann.get("type")) == "bbox":
+            new_ann["data"] = ann["data"]
+            new_ann["polygonCoordinates"] = bbox_to_polygon(ann["data"])
         elif ann.get("type") == "polygon":
-            new_ann["coordinates"] = ann["coordinates"]
-            new_ann["polygonCoordinates"] = ann["coordinates"]
+            new_ann["data"] = ann["data"]
+            new_ann["polygonCoordinates"] = ann["data"]
         else:
             raise PolygonOperationError(f"Unsupported annotation type: {ann.get('type')}")
         normalized_annotations.append(new_ann)
@@ -975,7 +975,7 @@ def normalize_annotations(data):
             "type": "polygon",
             "polygonCoordinates": poly,
             "originalType": ann["originalType"],
-            "coordinates": ann.get("coordinates")
+            "coordinates": ann.get("data")
         }
         for poly, ann in zip(unique_polys, normalized_annotations)
     ]

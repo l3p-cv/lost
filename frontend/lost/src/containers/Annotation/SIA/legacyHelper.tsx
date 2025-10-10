@@ -1,12 +1,7 @@
 // @TODO convert old API/backend style to new SIA format
 
-import {
-    Annotation,
-    AnnotationMode,
-    AnnotationStatus,
-    AnnotationTool,
-    // Point,
-} from 'lost-sia/models'
+import { Annotation, AnnotationStatus, AnnotationTool } from 'lost-sia/models'
+import { AnnotationCoordinates, Point } from 'lost-sia'
 
 export type LegacyBboxData = {
     x: number
@@ -133,9 +128,63 @@ const convertAnnoToOldFormat = (annotation: Annotation) => {
     return annotationInOldFormat
 }
 
+const convertBboxFormat = (box: LegacyBboxData): Point[] => {
+    const centerPoint = { x: box.x, y: box.y }
+    const topLeftPoint = {
+        x: centerPoint.x - box.w / 2,
+        y: centerPoint.y - box.h / 2,
+    }
+    const bottomRightPoint = {
+        x: centerPoint.x + box.w / 2,
+        y: centerPoint.y + box.h / 2,
+    }
+
+    return [topLeftPoint, bottomRightPoint]
+}
+
+const convertAnnoToNewFormat = (
+    legacyAnnotation: LegacyAnnotation,
+    legacyAnnotationType: string,
+): Annotation => {
+    const convertedAnnoType = convertAnnoToolType(legacyAnnotationType)
+
+    let newCoords: AnnotationCoordinates = legacyAnnotation.data
+
+    if (convertedAnnoType === AnnotationTool.BBox) {
+        // the old format saved the CENTER of the BBox, not the top left corner...
+        const centerPoint = { x: newCoords.x, y: newCoords.y }
+        const topLeftPoint = {
+            x: centerPoint.x - newCoords.w / 2,
+            y: centerPoint.y - newCoords.h / 2,
+        }
+        const bottomRightPoint = {
+            x: centerPoint.x + newCoords.w / 2,
+            y: centerPoint.y + newCoords.h / 2,
+        }
+
+        newCoords = [topLeftPoint, bottomRightPoint]
+    }
+
+    if (convertedAnnoType === AnnotationTool.Point) {
+        newCoords = [legacyAnnotation.data]
+    }
+
+    return {
+        ...legacyAnnotation,
+        id: null,
+        data: null,
+        externalId: `${legacyAnnotation.id}`,
+        coordinates: newCoords,
+        type: convertedAnnoType,
+        status: AnnotationStatus.DATABASE,
+    }
+}
+
 export default {
     convertAnnoToolType,
+    convertAnnoToNewFormat,
     convertAnnoToOldFormat,
+    convertBboxFormat,
     unconvertAnnoToolType,
     unconvertAnnotationStatus,
 }

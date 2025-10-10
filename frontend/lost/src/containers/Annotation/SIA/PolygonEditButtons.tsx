@@ -2,6 +2,7 @@ import { CButton, CButtonGroup } from '@coreui/react'
 import { IconProp } from '@fortawesome/fontawesome-svg-core'
 import {
     faCodeMerge,
+    faExpand,
     faObjectUngroup,
     faScissors,
 } from '@fortawesome/free-solid-svg-icons'
@@ -52,6 +53,14 @@ const PolygonEditButtons = ({
                 onClick={() => changeMode(PolygonEditMode.DIFFERENCE)}
             >
                 <FontAwesomeIcon icon={faScissors as IconProp} size="lg" />
+            </CButton>
+
+            <CButton
+                color="primary"
+                variant={polygonEditMode == PolygonEditMode.BBOX ? undefined : 'outline'}
+                onClick={() => changeMode(PolygonEditMode.BBOX)}
+            >
+                <FontAwesomeIcon icon={faExpand as IconProp} size="lg" />
             </CButton>
         </CButtonGroup>
     )

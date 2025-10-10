@@ -3,6 +3,7 @@ enum PolygonEditMode {
     MERGE,
     INTERSECT,
     DIFFERENCE,
+    BBOX,
 }
 
 export default PolygonEditMode
