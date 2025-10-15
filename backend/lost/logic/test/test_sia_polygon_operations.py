@@ -18,7 +18,7 @@ UNION_PAYLOAD = {
     "annotations": [
         {
             "type": "polygon",
-            "coordinates": [
+            "data": [
                 {"x": 0.5445484739598239, "y": 0.4714587835275131},
                 {"x": 0.5823014179935729, "y": 0.6330413839919591},
                 {"x": 0.7453941362193689, "y": 0.5907580866741601},
@@ -27,7 +27,7 @@ UNION_PAYLOAD = {
         },
         {
             "type": "polygon",
-            "coordinates": [
+            "data": [
                 {"x": 0.36484446035917834, "y": 0.7040169187754073},
                 {"x": 0.5309574141076743, "y": 0.7704621002748057},
                 {"x": 0.5294472963463243, "y": 0.6541830326508585}
@@ -35,7 +35,7 @@ UNION_PAYLOAD = {
         },
         {
             "type": "bbox",
-            "coordinates": {
+            "data": {
                 "x": 0.5483237683631988,
                 "y": 0.6519178560088337,
                 "w": 0.12836,
@@ -66,7 +66,7 @@ EXPECTED_UNION_RESULT = {
 DIFFERENCE_PAYLOAD = {
     "selectedPolygon": {
         "type": "bbox",
-        "coordinates": {
+        "data": {
             "x": 0.5483237683631988,
             "y": 0.6519178560088337,
             "w": 0.12836000971474684,
@@ -76,7 +76,7 @@ DIFFERENCE_PAYLOAD = {
     "polygonModifiers": [
         {
             "type": "polygon",
-            "coordinates": [
+            "data": [
                 {"x": 0.5445484739598239, "y": 0.4714587835275131},
                 {"x": 0.5823014179935729, "y": 0.6330413839919591},
                 {"x": 0.7453941362193689, "y": 0.5907580866741601},
@@ -85,7 +85,7 @@ DIFFERENCE_PAYLOAD = {
         },
         {
             "type": "polygon",
-            "coordinates": [
+            "data": [
                 {"x": 0.5445484739598239, "y": 0.4714587835275131},
                 {"x": 0.5823014179935729, "y": 0.6330413839919591},
                 {"x": 0.7453941362193689, "y": 0.5907580866741601},
@@ -94,7 +94,7 @@ DIFFERENCE_PAYLOAD = {
         },
         {
             "type": "polygon",
-            "coordinates": [
+            "data": [
                 {"x": 0.36484446035917834, "y": 0.7040169187754073},
                 {"x": 0.5309574141076743, "y": 0.7704621002748057},
                 {"x": 0.5294472963463243, "y": 0.6541830326508585}
@@ -122,7 +122,7 @@ INTERSECTION_BBOX_PAYLOAD = {
     "annotations": [
         {
             "type": "bbox",
-            "coordinates": {
+            "data": {
                 "x": 0.5483237683631988,
                 "y": 0.6519178560088337,
                 "w": 0.12836000971474684,
@@ -131,7 +131,7 @@ INTERSECTION_BBOX_PAYLOAD = {
         },
         {
             "type": "bbox",
-            "coordinates": {
+            "data": {
                 "x": 0.4350649362619516,
                 "y": 0.5477197304756862,
                 "w": 0.23406825300924422,
@@ -155,7 +155,7 @@ INTERSECTION_BBOX_POLYGON_PAYLOAD = {
     "annotations": [
         {
             "type": "polygon",
-            "coordinates": [
+            "data": [
                 {
                     "x": 0.5445484739598239,
                     "y": 0.4714587835275131
@@ -176,7 +176,7 @@ INTERSECTION_BBOX_POLYGON_PAYLOAD = {
         },
         {
             "type": "bbox",
-            "coordinates": {
+            "data": {
                 "x": 0.5483237683631988,
                 "y": 0.6519178560088337,
                 "w": 0.12836000971474684,
@@ -265,7 +265,7 @@ class TestPolygonOperations:
             "annotations": [
                 {
                     "type": "polygon",
-                    "coordinates": [
+                    "data": [
                         {"x": 0.5445484739598239, "y": 0.4714587835275131},
                         {"x": 0.5823014179935729, "y": 0.6330413839919591},
                         {"x": 0.7453941362193689, "y": 0.5907580866741601},
@@ -274,7 +274,7 @@ class TestPolygonOperations:
                 },
                 {
                     "type": "bbox",
-                    "coordinates": {
+                    "data": {
                         "x": 0.5483237683631988,
                         "y": 0.6519178560088337,
                         "w": 0.12836000971474684,
@@ -283,7 +283,7 @@ class TestPolygonOperations:
                 },
                 {
                     "type": "polygon",
-                    "coordinates": [
+                    "data": [
                         {"x": 0.18005404557306592, "y": 0.1402603911752251},
                         {"x": 0.3311225768379906, "y": 0.1378039922928686},
                         {"x": 0.2611152086908304, "y": 0.22254975373416783},
@@ -307,7 +307,7 @@ class TestPolygonOperations:
             "annotations": [
                 {
                     "type": "bbox",
-                    "coordinates": {
+                    "data": {
                         "x": 0.5483237683631988,
                         "y": 0.6519178560088337,
                         "w": 0.12836000971474684,
@@ -316,7 +316,7 @@ class TestPolygonOperations:
                 },
                 {
                     "type": "polygon",
-                    "coordinates": [
+                    "data": [
                         {
                             "x": 0.18005404557306592,
                             "y": 0.1402603911752251
@@ -357,7 +357,7 @@ class TestPolygonOperations:
         payload = {
             "selectedPolygon": {
                 "type": "polygon",
-                "coordinates": [
+                "data": [
                     {
                         "x": 0.18005404557306592,
                         "y": 0.1402603911752251
@@ -387,7 +387,7 @@ class TestPolygonOperations:
             "polygonModifiers": [
                 {
                     "type": "polygon",
-                    "coordinates": [
+                    "data": [
                         {
                             "x": 0.5445484739598239,
                             "y": 0.4714587835275131
@@ -408,7 +408,7 @@ class TestPolygonOperations:
                 },
                 {
                     "type": "polygon",
-                    "coordinates": [
+                    "data": [
                         {
                             "x": 0.5445484739598239,
                             "y": 0.4714587835275131
@@ -429,7 +429,7 @@ class TestPolygonOperations:
                 },
                 {
                     "type": "polygon",
-                    "coordinates": [
+                    "data": [
                         {
                             "x": 0.36484446035917834,
                             "y": 0.7040169187754073
@@ -456,3 +456,58 @@ class TestPolygonOperations:
             sia.perform_polygon_difference(data)
 
         assert "No overlap detected between selected polygon and modifiers" in str(excinfo.value)
+
+def compare_bboxes(actual, expected, tolerance=1e-6):
+    for key in ['x', 'y', 'w', 'h']:
+        if not abs(actual[key] - expected[key]) < tolerance:
+            return False
+    return True
+
+def test_compute_bboxes_from_points_valid():
+        """Test bounding box computation from a valid point set with 8 points."""
+        payload = {
+            "data": [
+                [
+                    {"x": 0.20201015188684168, "y": 0.5913626320093255},
+                    {"x": 0.0843630930633123,  "y": 0.5913626320093255},
+                    {"x": 0.0843630930633123,  "y": 0.6749090940724116},
+                    {"x": 0.15216530090296987, "y": 0.6749090940724116},
+                    {"x": 0.15216530090296987, "y": 0.8067954138177009},
+                    {"x": 0.3521653009029699,  "y": 0.8067954138177009},
+                    {"x": 0.3521653009029699,  "y": 0.619105729248221},
+                    {"x": 0.20201015188684168, "y": 0.619105729248221}
+                ]
+            ]
+        }
+
+        expected_bbox = {
+            "x": 0.2182642,
+            "y": 0.69907902,
+            "w": 0.26780221,
+            "h": 0.26780221
+        }
+
+        result = sia.compute_bboxes_from_points(payload)
+
+        assert isinstance(result, list)
+        assert len(result) == 1
+
+        bbox = result[0]
+        assert set(bbox.keys()) == {"x", "y", "w", "h"}
+        assert compare_bboxes(bbox, expected_bbox), f"BBox mismatch: {bbox} != {expected_bbox}"
+
+def test_compute_bboxes_from_points_insufficient_points():
+    """Test that compute_bboxes_from_points raises error for point sets with fewer than 3 points."""
+    payload = {
+        "data": [
+            [
+                {"x": 0.43413780496681637, "y": 0.4264308609697573},
+                {"x": 0.5142778185036971, "y": 0.4460820520286093}
+            ]
+        ]
+    }
+
+    with pytest.raises(sia.PolygonOperationError) as excinfo:
+        sia.compute_bboxes_from_points(payload)
+    
+    assert "Each point set must contain at least 3 points" in str(excinfo.value)

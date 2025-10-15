@@ -441,7 +441,7 @@ class BBoxFromPoints(Resource):
             data = json.loads(request.data)
             flask.current_app.logger.info(f"Received payload for bounding box computation: {data}")
 
-            response = sia.compute_bboxes_from_points(dbm, data)
+            response = sia.compute_bboxes_from_points(data)
 
             dbm.close_session()
             return {"data": response}, 200
