@@ -76,7 +76,6 @@ const Toolbar = (props) => {
             {/* TODO: add tooltips */}
             <CoreIconButton
                 className="pipeline-running-toolbar-button"
-                id="pipeline-button-download-start-definition"
                 onClick={() => {
                     downloadJSON(
                         props.data.startDefinition,

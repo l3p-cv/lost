@@ -1,7 +1,36 @@
-import { faArrowLeft, faArrowRight, faSync } from '@fortawesome/free-solid-svg-icons'
+import {
+    faArrowLeft,
+    faArrowRight,
+    faSync,
+    IconDefinition,
+} from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import PropTypes from 'prop-types'
 import { CButton, CTooltip } from '@coreui/react'
+import { CSSProperties } from 'react'
+import { SizeProp } from '@fortawesome/fontawesome-svg-core'
+
+type CoreIconButtonProps = {
+    isBack?: boolean
+    loadingSize?: SizeProp
+    isLoading?: boolean
+    isForward?: boolean
+    margin?: number
+    icon?: IconDefinition
+    text?: string
+    size: 'sm' | 'lg' | undefined
+    isTextLeft?: boolean
+    style?: CSSProperties
+    id?: string
+    type?: 'button' | 'submit' | 'reset' | undefined
+    disabled?: boolean
+    onClick?: () => void
+    className?: string
+    color?: string
+    isOutline?: boolean
+    toolTip?: string
+    tTipPlacement?: 'top' | 'left' | 'right' | 'auto' | 'bottom' | undefined
+    shape?: string
+}
 
 const CoreIconButton = ({
     isBack = false,
@@ -9,32 +38,30 @@ const CoreIconButton = ({
     isLoading = false,
     isForward = false,
     margin = 5,
-    icon = null,
-    text = "",
+    icon,
+    text = '',
     size,
     isTextLeft = false,
-    style = null,
-    id=undefined,
+    style = {},
+    id = undefined,
     type = 'button',
     disabled = false,
     onClick,
     className = '',
     color = 'primary',
     isOutline = true,
-    toolTip = "",
-    tTipPlacement="top",
-    shape=""
-}) => {
-    let iconButtonIcon
+    toolTip = '',
+    tTipPlacement = 'top',
+    shape = '',
+}: CoreIconButtonProps) => {
+    let iconButtonIcon: IconDefinition | undefined = icon
     if (isBack) {
         iconButtonIcon = faArrowLeft
     } else if (isForward) {
         iconButtonIcon = faArrowRight
-    } else {
-        iconButtonIcon = icon
     }
 
-    const buttonVariant = (isOutline ? "outline" : "")
+    const buttonVariant: 'ghost' | 'outline' = isOutline ? 'outline' : 'ghost'
 
     const renderContent = () => {
         if (isLoading) {
@@ -50,9 +77,14 @@ const CoreIconButton = ({
                 </div>
             )
         }
-        const ic = (iconButtonIcon && iconButtonIcon.iconName && iconButtonIcon.prefix)
-            ? <FontAwesomeIcon key="icon" icon={iconButtonIcon} size={loadingSize || '2x'} />
-            : null
+        const ic =
+            iconButtonIcon && iconButtonIcon.iconName && iconButtonIcon.prefix ? (
+                <FontAwesomeIcon
+                    key="icon"
+                    icon={iconButtonIcon}
+                    size={loadingSize || '2x'}
+                />
+            ) : null
         const iconButtonText = text ? (
             <span key="text" style={{ marginLeft: margin, marginRight: margin }}>
                 {text}
@@ -65,7 +97,7 @@ const CoreIconButton = ({
     }
 
     // Because visible=false does not seem to work...
-    if (toolTip != "") {
+    if (toolTip != '') {
         return (
             <CTooltip content={toolTip} placement={tTipPlacement}>
                 <CButton
@@ -108,21 +140,6 @@ const CoreIconButton = ({
             } */}
         </CButton>
     )
-}
-
-CoreIconButton.propTypes = {
-    style: PropTypes.object,
-    disabled: PropTypes.bool,
-    color: PropTypes.string,
-    onClick: PropTypes.func,
-    icon: PropTypes.object,
-    margin: PropTypes.number,
-    isOutline: PropTypes.bool,
-    text: PropTypes.string,
-    isBack: PropTypes.bool,
-    isForward: PropTypes.bool,
-    isTextLeft: PropTypes.bool,
-    size: PropTypes.string,
 }
 
 export default CoreIconButton

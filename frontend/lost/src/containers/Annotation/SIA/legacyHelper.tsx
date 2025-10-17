@@ -11,7 +11,7 @@ export type LegacyBboxData = {
 }
 
 export type LegacyAnnotation = {
-    id: number
+    id: string
     annoTime: number
     data: LegacyBboxData
     labelIds: number[]
@@ -75,22 +75,22 @@ const unconvertAnnotationStatus = (annotationStatus: AnnotationStatus): string =
 }
 
 // convert an annotation from SIA into the older Database format
-const convertAnnoToOldFormat = (annotation: Annotation) => {
+const convertAnnoToOldFormat = (annotation: Annotation): LegacyAnnotation => {
+    // remove the coordinates and externalId attributes without modifying the original object
+    const tmpAnnotation = { ...annotation, coordinates: null, externalId: null }
+
     // copy without reference
-    const annotationInOldFormat: Annotation = { ...annotation }
-
-    // rename external id
-    annotationInOldFormat.id = annotationInOldFormat.externalId
-    annotationInOldFormat.externalId = null
-
-    // default (just rename coordinates key)
-    annotationInOldFormat.data = annotation.coordinates
+    const annotationInOldFormat: LegacyAnnotation = {
+        ...tmpAnnotation,
+        id: annotation.externalId, // rename external id
+        data: annotation.coordinates, // default (just rename coordinates key)
+    }
 
     // handle special annotation types that were used in the old format
     if (annotation.type === AnnotationTool.BBox) {
         // get top left point + height and width instead of just two points
-        const topLeft = annotationInOldFormat.coordinates[0]
-        const downRight = annotationInOldFormat.coordinates[1]
+        const topLeft = annotation.coordinates[0]
+        const downRight = annotation.coordinates[1]
 
         const width = downRight.x - topLeft.x
         const height = downRight.y - topLeft.y
@@ -115,9 +115,6 @@ const convertAnnoToOldFormat = (annotation: Annotation) => {
         // list -> single point
         annotationInOldFormat.data = annotation.coordinates[0]
     }
-
-    // finish renaming
-    annotationInOldFormat.coordinates = null
 
     // change the type value back
     annotationInOldFormat.type = unconvertAnnoToolType(annotation.type)

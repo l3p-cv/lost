@@ -37,28 +37,39 @@ export const useUpdateInstruction = () => {
                 .then((res) => res.data.message),
         {
             onSuccess: (message) => {
-                showSuccess('Instruction successfully saved!');
+                showSuccess('Instruction successfully saved!')
             },
             onError: (error) => {
-                showError('An error occurred while saving the instruction.');
+                showError('An error occurred while saving the instruction.')
             },
-        }
-    );
-};
+        },
+    )
+}
+
+export const useGetCurrentAnnotask = () => {
+    return useQuery(
+        ['getcurrentannotask'],
+        () => axios.get(`${API_URL}/annotasks/working`).then((res) => res.data),
+        {
+            refetchOnWindowFocus: false,
+            cacheTime: 0,
+            staleTime: 0,
+        },
+    )
+}
 
 export const useGetCurrentInstruction = (annotaskId) => {
     return useQuery(
         ['getCurrentInstruction', annotaskId],
         () =>
             axios
-                .get(`${API_URL}/annotasks/${annotaskId}/instruction`) 
+                .get(`${API_URL}/annotasks/${annotaskId}/instruction`)
                 .then((res) => res.data),
         {
             enabled: !!annotaskId,
-        }
-    );
-};
-
+        },
+    )
+}
 
 export const useGenerateExport = () => {
     return useMutation((data) =>

@@ -1,9 +1,9 @@
 import axios from 'axios'
 import { useMutation, useQuery } from 'react-query'
 import { API_URL } from '../../lost_settings'
-import { Annotation } from 'lost-sia/models'
 import { Point } from 'lost-sia'
 import { SiaImageRequest } from '../../types/SiaTypes'
+import { LegacyAnnotation } from '../../containers/Annotation/SIA/legacyHelper'
 
 type ImageEditData = {
     imgId: number
@@ -17,14 +17,14 @@ type ImageJunkData = {
     isJunk: boolean
 }
 
-type editAnnotationData = {
-    annotation: Annotation
+export type EditAnnotationData = {
+    annotation: LegacyAnnotation
     imageEditData: ImageEditData
 }
 
 type PolygonData = {
-    firstPolygon: Annotation
-    secondPolygon: Annotation
+    firstPolygon: LegacyAnnotation
+    secondPolygon: LegacyAnnotation
 }
 
 export const useGetSiaAnnos = (annotationRequestData) => {
@@ -88,7 +88,7 @@ export const useGetSiaConfiguration = () => {
 }
 
 export const useCreateAnnotation = () => {
-    return useMutation(({ annotation, imageEditData }: editAnnotationData) => {
+    return useMutation(({ annotation, imageEditData }: EditAnnotationData) => {
         const requestData = {
             action: 'annoCreated',
             anno: annotation,
@@ -100,7 +100,7 @@ export const useCreateAnnotation = () => {
 }
 
 export const useEditAnnotation = () => {
-    return useMutation(({ annotation, imageEditData }: editAnnotationData) => {
+    return useMutation(({ annotation, imageEditData }: EditAnnotationData) => {
         const requestData = {
             action: 'annoEdited',
             anno: annotation,
@@ -112,7 +112,7 @@ export const useEditAnnotation = () => {
 }
 
 export const useDeleteAnnotation = () => {
-    return useMutation(({ annotation, imageEditData }: editAnnotationData) => {
+    return useMutation(({ annotation, imageEditData }: EditAnnotationData) => {
         const requestData = {
             action: 'annoDeleted',
             anno: annotation,
