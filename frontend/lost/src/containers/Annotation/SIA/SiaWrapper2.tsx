@@ -1,4 +1,4 @@
-import { KeyboardEvent, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
     useGetSiaAnnos,
     useGetSiaImage,
@@ -13,11 +13,19 @@ import {
     usePolygonIntersection,
     usePolygonUnion,
     useBBoxCreation,
+    EditAnnotationData,
 } from '../../../actions/sia/sia_api'
 
-import { Sia2, PolygonOperationResult, SIANotification, ToolCoordinates } from 'lost-sia'
+import type {
+    Point,
+    PolygonOperationResult,
+    SIANotification,
+    ToolCoordinates,
+} from 'lost-sia'
+
+import { Sia2 } from 'lost-sia'
 import { useNavigate } from 'react-router-dom'
-import { CBadge, CButton, CCol } from '@coreui/react'
+import { CBadge, CButton, CButtonGroup, CCol } from '@coreui/react'
 import {
     INFERENCE_MODEL_TYPE,
     useTritonInference,
@@ -44,16 +52,24 @@ import legacyHelper, {
     LegacyBboxData,
 } from './legacyHelper'
 import ImageFilterButton from './ImageFilterButton'
-import {
-    AnnotationCoordinates,
-    ImageFilter,
-    SiaImageRequest,
-} from '../../../types/SiaTypes'
+import { ImageFilter, SiaImageRequest } from '../../../types/SiaTypes'
 import PolygonEditButtons from './PolygonEditButtons'
 import PolygonEditMode from '../../../models/PolygonEditMode'
-import { selectAnnotation } from '../../../actions/sia/sia'
+import SIAImageSearchModal from '../../Datasets/SIAImageSearchModal'
+import CoreIconButton from '../../../components/CoreIconButton'
+import { faSearch } from '@fortawesome/free-solid-svg-icons'
 
-const SiaWrapper = () => {
+type SiaWrapperProps = {
+    annotaskId: number
+    isDatasetMode?: boolean
+    isImageSearchEnabled?: boolean
+}
+
+const SiaWrapper = ({
+    annotaskId,
+    isDatasetMode = false,
+    isImageSearchEnabled = false,
+}: SiaWrapperProps) => {
     const navigate = useNavigate()
 
     const [samPoints, setSamPoints] = useState([])
@@ -64,8 +80,14 @@ const SiaWrapper = () => {
         PolygonEditMode.NONE,
     )
 
-    const [polygonOperationResult, setPolygonOperationResult] =
-        useState<PolygonOperationResult>([])
+    // image search state
+    const [isImageSearchActive, setIsImageSearchActive] = useState(false)
+    const [isImgSearchModalVisible, setIsImgSearchModalVisible] = useState(false)
+    const [filteredImageIds, setFilteredImageIds] = useState<number[]>([])
+
+    const [polygonOperationResult, setPolygonOperationResult] = useState<
+        PolygonOperationResult | undefined
+    >()
 
     const [defaultLabelId, setDefaultLabelId] = useState<number>()
 
@@ -80,7 +102,9 @@ const SiaWrapper = () => {
 
     // only the initial annotations (the ones we got from the server) are stored in this component
     // the modified annotations are stored inside SIA and handed to us using events
-    const [initialAnnotations, setInitialAnnotations] = useState<Annotation[]>()
+    const [initialAnnotations, setInitialAnnotations] = useState<
+        Annotation[] | undefined
+    >()
 
     // Annotations that are just created in SIA have never been stored in the backend and therefore don't have an externalId yet.
     // To identify them later on, we store a mapping between the external and SIAs internal id for freshly created annos
@@ -130,14 +154,16 @@ const SiaWrapper = () => {
     }, [imageBlobRequest, possibleLabels])
 
     // @TODO check if request worked
-    const { data: createAnnotationResponse, mutate: createAnnotation } =
+    const { data: createAnnotationResponse, mutate: sendCreateAnnotation } =
         useCreateAnnotation()
-    const { data: editAnnotationResponse, mutate: editAnnotation } = useEditAnnotation()
-    const { data: deleteAnnotationResponse, mutate: deleteAnnotation } =
+    const { data: editAnnotationResponse, mutate: sendEditAnnotation } =
+        useEditAnnotation()
+    const { data: deleteAnnotationResponse, mutate: sendDeleteAnnotation } =
         useDeleteAnnotation()
-    const { data: imageJunkResponse, mutate: junkImage } = useImageJunk()
+    const { data: imageJunkResponse, mutate: sendJunkImage } = useImageJunk()
 
-    const { data: finishAnnotaskResponse, mutate: finishAnnotask } = useFinishAnnotask()
+    const { data: finishAnnotaskResponse, mutate: sindFinishAnnotask } =
+        useFinishAnnotask()
 
     const { data: polygonDiffReponse, mutate: diffPolygons } = usePolygonDifference()
     const { data: polygonIntersectionReponse, mutate: intersectPolygons } =
@@ -251,9 +277,12 @@ const SiaWrapper = () => {
         }
 
         // convert annotations into the legacy format to be supported by the backend
-        const firstLegacyAnnotation = legacyHelper.convertAnnoToOldFormat(firstAnnotation)
-        const secondLegacyAnnotation =
+        const firstLegacyAnnotation: LegacyAnnotation =
+            legacyHelper.convertAnnoToOldFormat(firstAnnotation)
+        const secondLegacyAnnotation: LegacyAnnotation =
             legacyHelper.convertAnnoToOldFormat(secondAnnotation)
+
+        console.log('TEST', firstLegacyAnnotation)
 
         setIsSiaLoading(true)
         switch (polygonEditMode) {
@@ -278,6 +307,124 @@ const SiaWrapper = () => {
         }
     }
 
+    const createAnnotation = (annotation: Annotation) => {
+        // reset polygon edit mode
+        setPolygonEditMode(PolygonEditMode.NONE)
+        setCurrentlySelectedAnnotation(annotation)
+
+        const newAnnotation: Annotation = {
+            ...annotation,
+            status: AnnotationStatus.CREATING, // mark as new so the anno is created at the server
+        }
+        const annotationInOldFormat: LegacyAnnotation =
+            legacyHelper.convertAnnoToOldFormat(newAnnotation)
+
+        const currentImageData = annoData.image
+        const imageData = {
+            imgId: currentImageData.id,
+            imgActions: currentImageData.imgActions,
+            annoTime: currentImageData.annoTime, // @TODO
+        }
+
+        const createAnnotationData: EditAnnotationData = {
+            annotation: {
+                ...annotationInOldFormat,
+                // special case for created annos: the server saves the anno and returns this id back as 'tempId'
+                // use SIAs internalId for identifying the annotation when the response arrived
+                id: `new-${newAnnotation.internalId}`,
+            },
+            imageEditData: imageData,
+        }
+        sendCreateAnnotation(createAnnotationData)
+    }
+
+    const deleteAnnotation = (annotation: Annotation) => {
+        const currentImageData = annoData.image
+        const imageData = {
+            imgId: currentImageData.id,
+            imgActions: currentImageData.imgActions,
+            annoTime: currentImageData.annoTime, // @TODO
+        }
+        const deletedAnnotation = {
+            ...annotation,
+            status: AnnotationStatus.DELETED,
+        }
+
+        // search the mapping if annotation has no external id
+        // annotations that are deleted right after they were created
+        if (deletedAnnotation.externalId == '') {
+            const externalAnnoId = annotationIdMapping[deletedAnnotation.internalId]
+            if (externalAnnoId) deletedAnnotation.externalId = externalAnnoId
+        }
+
+        const annotationInOldFormat =
+            legacyHelper.convertAnnoToOldFormat(deletedAnnotation)
+        const deleteAnnotationData = {
+            annotation: annotationInOldFormat,
+            imageEditData: imageData,
+        }
+        sendDeleteAnnotation(deleteAnnotationData)
+        setCurrentlySelectedAnnotation(undefined)
+    }
+
+    const editAnnotation = (annotation) => {
+        // do nothing when still creating annotation
+        // @TODO adapt backend to support partly-finished annotations
+        if (annotation.status === AnnotationStatus.CREATING) return
+
+        // the polygon result throws the created and changed event at the same time
+        // we only need the created event since it already contains all coordinates
+        if (polygonEditMode !== PolygonEditMode.NONE) return
+
+        setCurrentlySelectedAnnotation(annotation)
+
+        // remember annotation label (set it as the default label when switching the image)
+        if (annotation.labelIds !== undefined && annotation.labelIds.length > 0)
+            setDefaultLabelId(annotation.labelIds[0])
+
+        const newAnnotation = { ...annotation }
+
+        if (
+            [AnnotationStatus.DATABASE, AnnotationStatus.CREATED].includes(
+                annotation.status,
+            )
+        ) {
+            // mark annoation only as changed if it made contact with the server once
+            // (keeps new annotations new)
+            newAnnotation.status = AnnotationStatus.CHANGED
+
+            // search for an external anno id in the mapping
+            const externalAnnoId = annotationIdMapping[newAnnotation.internalId]
+            if (externalAnnoId) newAnnotation.externalId = externalAnnoId
+        }
+
+        const annotationInOldFormat = legacyHelper.convertAnnoToOldFormat(newAnnotation)
+
+        const currentImageData = annoData.image
+        const imageData = {
+            imgId: currentImageData.id,
+            imgActions: currentImageData.imgActions,
+            annoTime: currentImageData.annoTime, // @TODO
+        }
+
+        const editAnnotationData = {
+            annotation: annotationInOldFormat,
+            imageEditData: imageData,
+        }
+        sendEditAnnotation(editAnnotationData)
+    }
+
+    const junkImage = (newJunkState) => {
+        const currentImageData = annoData.image
+        const imageData = {
+            imgId: currentImageData.id,
+            annoTime: currentImageData.annoTime,
+            isJunk: newJunkState,
+        }
+        sendJunkImage(imageData)
+        setCurrentlySelectedAnnotation(undefined)
+    }
+
     const handleNotification = (messageObj: SIANotification) => {
         switch (messageObj.type) {
             case NotificationType.INFO:
@@ -298,17 +445,60 @@ const SiaWrapper = () => {
     }
 
     const resetWrapper = () => {
-        window.removeEventListener('keydown', (e) => handleWrapperKeydown(e))
+        window.removeEventListener('keydown', (e) => handleWrapperKeydown(e.key))
         setAnnotationIdMapping([])
         setPolygonEditMode(PolygonEditMode.NONE)
         setImageBlob(undefined)
     }
 
+    const getSearchImageId = (currentId: number, isDirectionNext: boolean): number => {
+        // next image
+        if (isDirectionNext) {
+            // catch last image
+            if (filteredImageIds.indexOf(currentId) === filteredImageIds.length - 1)
+                return -1
+
+            return filteredImageIds[filteredImageIds.indexOf(currentId) + 1]
+        }
+
+        // previous image
+        // catch first image
+        if (filteredImageIds.indexOf(currentId) === 0) return -1
+
+        return filteredImageIds[filteredImageIds.indexOf(currentId) - 1]
+    }
+
+    const getSpecificImage = (imageId: number) => {
+        resetWrapper()
+
+        setAnnotationRequestData({
+            direction: 'current',
+            imageId: imageId,
+        })
+        setIsImageSearchActive(true)
+
+        handleClearSamHelperAnnos()
+    }
+
     const getNextImage = () => {
         resetWrapper()
+
+        const currentImageId: number = imageRequestData!.imageId
+
+        // stay in image search filter (if applied)
+        if (isImageSearchActive) {
+            const nextImageIdInFilter: number = getSearchImageId(currentImageId, true)
+
+            setAnnotationRequestData({
+                direction: 'current',
+                imageId: nextImageIdInFilter,
+            })
+            return
+        }
+
         setAnnotationRequestData({
             direction: 'next',
-            imageId: imageRequestData!.imageId!,
+            imageId: currentImageId,
         })
 
         handleClearSamHelperAnnos()
@@ -316,9 +506,23 @@ const SiaWrapper = () => {
 
     const getPreviousImage = () => {
         resetWrapper()
+
+        const currentImageId: number = imageRequestData!.imageId
+
+        // stay in image search filter (if applied)
+        if (isImageSearchActive) {
+            const nextImageIdInFilter: number = getSearchImageId(currentImageId, false)
+
+            setAnnotationRequestData({
+                direction: 'current',
+                imageId: nextImageIdInFilter,
+            })
+            return
+        }
+
         setAnnotationRequestData({
             direction: 'prev',
-            imageId: imageRequestData!.imageId!,
+            imageId: currentImageId,
         })
 
         handleClearSamHelperAnnos()
@@ -330,7 +534,7 @@ const SiaWrapper = () => {
             option1: {
                 text: 'YES',
                 callback: () => {
-                    finishAnnotask()
+                    sindFinishAnnotask()
                 },
             },
             option2: {
@@ -389,25 +593,25 @@ const SiaWrapper = () => {
         }
     }
 
-    const handleSamPointClick = (x, y, normX, normY, type) => {
-        // @ts-expect-error disabling type check since it is a jsx file
-        setSamPoints((prev) => [
-            ...prev,
-            {
-                x: Math.round(x),
-                y: Math.round(y),
-                type,
-                normX,
-                normY,
-            },
-        ])
-    }
+    // const handleSamPointClick = (x, y, normX, normY, type) => {
+    //     // @ts-expect-error disabling type check since it is a jsx file
+    //     setSamPoints((prev) => [
+    //         ...prev,
+    //         {
+    //             x: Math.round(x),
+    //             y: Math.round(y),
+    //             type,
+    //             normX,
+    //             normY,
+    //         },
+    //     ])
+    // }
 
-    const handleUpdateSamBBox = (bbox) => {
-        setSamBBox({
-            ...bbox,
-        })
-    }
+    // const handleUpdateSamBBox = (bbox) => {
+    //     setSamBBox({
+    //         ...bbox,
+    //     })
+    // }
 
     const handleClearSamHelperAnnos = () => {
         setSamPoints([])
@@ -415,10 +619,8 @@ const SiaWrapper = () => {
     }
 
     // handle image switching
-    const handleWrapperKeydown = (e: KeyboardEvent) => {
-        if (e.repeat) return
-
-        switch (e.key) {
+    const handleWrapperKeydown = (key: string) => {
+        switch (key) {
             case 'ArrowLeft':
                 getPreviousImage()
                 break
@@ -507,14 +709,50 @@ const SiaWrapper = () => {
             coordinates: resultantPolygon,
         }
 
+        const annotationsToDelete: Annotation[] =
+            currentlySelectedAnnotation !== undefined ? [currentlySelectedAnnotation] : []
+
         const newPolygonOperationResult: PolygonOperationResult = {
             polygonsToCreate: [toolCoordinates],
-            annotationsToDelete: [currentlySelectedAnnotation],
+            annotationsToDelete,
         }
 
         // write update to SIA
         setPolygonOperationResult(newPolygonOperationResult)
         setIsSiaLoading(false)
+    }
+
+    const handleSelectAnnotation = (annotation: Annotation) => {
+        // if we have a polygon edit mode selected we are currently searching for the second polygon to calculate
+        if (
+            polygonEditMode != PolygonEditMode.NONE &&
+            currentlySelectedAnnotation !== undefined
+        ) {
+            calculatePolygonOperation(currentlySelectedAnnotation, annotation)
+        } else {
+            setCurrentlySelectedAnnotation(annotation)
+        }
+    }
+
+    const handleSwitchSIAImage = (annotaskId: number, imageAnnoId: number) => {
+        // const data = {
+        //     direction: 'specificImage',
+        //     annotaskIdx: annotaskId,
+        //     imageAnnoId: imageAnnoId,
+        //     iteration: null,
+        // }
+
+        // do not reload, when the image stays the same
+        if (imageAnnoId == imageId) {
+            return
+        }
+        // loadNextReviewPage([id, data])
+
+        setAnnotationRequestData({
+            direction: 'next',
+            imageId: imageAnnoId,
+        })
+        setIsImageSearchActive(true)
     }
 
     useEffect(() => {
@@ -537,41 +775,108 @@ const SiaWrapper = () => {
         handleBBoxReponse(bboxCreationResponse)
     }, [bboxCreationResponse])
 
+    const renderAdditionalButtons = () => {
+        return (
+            <>
+                <CCol xs={6} sm={4} xl={3}>
+                    <PolygonEditButtons
+                        polygonEditMode={polygonEditMode}
+                        onPolygonEditModeChanged={(polygonEditMode: PolygonEditMode) => {
+                            // bbox calc only needs one annotation
+                            // trigger the bbox creation right away if theres already an anno selected
+                            if (
+                                polygonEditMode === PolygonEditMode.BBOX &&
+                                currentlySelectedAnnotation !== undefined &&
+                                currentlySelectedAnnotation.type !== AnnotationTool.BBox
+                            ) {
+                                const legacyAnnotation =
+                                    legacyHelper.convertAnnoToOldFormat(
+                                        currentlySelectedAnnotation,
+                                    )
+                                const pointData: Point[] = legacyAnnotation.data
+
+                                createBBox(pointData)
+                            }
+
+                            setPolygonEditMode(polygonEditMode)
+                        }}
+                    />
+                </CCol>
+                <CCol xs={2} md={1}>
+                    <CButtonGroup>
+                        <ImageFilterButton
+                            isDisabled={isSiaLoading}
+                            appliedFilters={appliedImageFilters}
+                            onFiltersChanged={setAppliedImageFilters}
+                        />
+
+                        {isImageSearchEnabled && (
+                            <CoreIconButton
+                                icon={faSearch}
+                                isOutline={!isImageSearchActive}
+                                toolTip="Open image search"
+                                onClick={() => {
+                                    if (isImageSearchActive) setIsImageSearchActive(false)
+                                    else setIsImgSearchModalVisible(true)
+                                }}
+                            />
+                        )}
+                    </CButtonGroup>
+                </CCol>
+                <CCol xs={4} sm={2} xxl={1}>
+                    <NavigationButtons
+                        isFirstImage={annoData?.image?.isFirst}
+                        isLastImage={annoData?.image?.isLast}
+                        onNextImagePressed={getNextImage}
+                        onPreviousImagePressed={getPreviousImage}
+                        onSubmitAnnotask={submitAnnotask}
+                    />
+                </CCol>
+
+                {siaConfiguration?.inferenceModel?.id && (
+                    <CCol>
+                        <CBadge color="dark">
+                            Inference Model:
+                            {' ' + siaConfiguration.inferenceModel.displayName}
+                        </CBadge>
+                        <CButton
+                            onClick={handleAddAnnotation}
+                            disabled={
+                                isInferenceLoading ||
+                                (siaConfiguration.inferenceModel.modelType ===
+                                    INFERENCE_MODEL_TYPE.SAM &&
+                                    samPoints.length === 0 &&
+                                    (samBBox === null || samBBox.width === 0))
+                            }
+                        >
+                            Infer Annotation
+                        </CButton>
+                    </CCol>
+                )}
+            </>
+        )
+    }
+
     return (
         <>
-            {siaConfiguration?.inferenceModel?.id && (
-                <div
-                    style={{
-                        paddingBottom: '10px',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        gap: '10px',
-                    }}
-                >
-                    <CBadge color="dark">
-                        Inference Model:
-                        {' ' + siaConfiguration.inferenceModel.displayName}
-                    </CBadge>
-                    <CButton
-                        onClick={handleAddAnnotation}
-                        disabled={
-                            isInferenceLoading ||
-                            (siaConfiguration.inferenceModel.modelType ===
-                                INFERENCE_MODEL_TYPE.SAM &&
-                                samPoints.length === 0 &&
-                                (samBBox === null || samBBox.width === 0))
-                        }
-                    >
-                        Infer Annotation
-                    </CButton>
-                </div>
+            {isImageSearchEnabled && (
+                <SIAImageSearchModal
+                    isAnnotaskReview={!isDatasetMode}
+                    id={annotaskId}
+                    isVisible={isImgSearchModalVisible}
+                    setIsVisible={setIsImgSearchModalVisible}
+                    onChooseImage={(_, imageId) => getSpecificImage(imageId)}
+                    possibleAnnotaskLabels={possibleLabels}
+                    onSearchResult={setFilteredImageIds}
+                />
             )}
 
             <div
                 style={{ height: '100%', width: '100%' }}
-                onKeyDown={handleWrapperKeydown}
-                tabindex="0"
+                onKeyDown={(e) => {
+                    if (!e.repeat) handleWrapperKeydown(e.key)
+                }}
+                tabIndex={0}
             >
                 <Sia2
                     defaultLabelId={defaultLabelId}
@@ -582,190 +887,18 @@ const SiaWrapper = () => {
                     isPolygonSelectionMode={polygonEditMode !== PolygonEditMode.NONE}
                     possibleLabels={possibleLabels}
                     polygonOperationResult={polygonOperationResult}
-                    additionalButtons={
-                        <>
-                            <CCol xs={6} sm={4} xl={3}>
-                                <PolygonEditButtons
-                                    polygonEditMode={polygonEditMode}
-                                    onPolygonEditModeChanged={(
-                                        polygonEditMode: PolygonEditMode,
-                                    ) => {
-                                        // bbox calc only needs one annotation
-                                        // trigger the bbox creation right away if theres already an anno selected
-                                        if (
-                                            polygonEditMode === PolygonEditMode.BBOX &&
-                                            currentlySelectedAnnotation !== undefined &&
-                                            currentlySelectedAnnotation.type !==
-                                                AnnotationTool.BBOX
-                                        ) {
-                                            const legacyAnnotation =
-                                                legacyHelper.convertAnnoToOldFormat(
-                                                    currentlySelectedAnnotation,
-                                                )
-                                            createBBox(legacyAnnotation.data)
-                                        }
-
-                                        setPolygonEditMode(polygonEditMode)
-                                    }}
-                                />
-                            </CCol>
-                            <CCol xs={2} md={1}>
-                                <ImageFilterButton
-                                    isDisabled={isSiaLoading}
-                                    appliedFilters={appliedImageFilters}
-                                    onFiltersChanged={setAppliedImageFilters}
-                                />
-                            </CCol>
-                            <CCol xs={4} sm={2} xxl={1}>
-                                <NavigationButtons
-                                    isFirstImage={annoData?.image?.isFirst}
-                                    isLastImage={annoData?.image?.isLast}
-                                    onNextImagePressed={getNextImage}
-                                    onPreviousImagePressed={getPreviousImage}
-                                    onSubmitAnnotask={submitAnnotask}
-                                />
-                            </CCol>
-                        </>
-                    }
-                    onAnnoChanged={(annotation) => {
-                        // do nothing when still creating annotation
-                        // @TODO adapt backend to support partly-finished annotations
-                        if (annotation.status === AnnotationStatus.CREATING) return
-
-                        // the polygon result throws the created and changed event at the same time
-                        // we only need the created event since it already contains all coordinates
-                        if (polygonEditMode !== PolygonEditMode.NONE) return
-
-                        setCurrentlySelectedAnnotation(annotation)
-
-                        // remember annotation label (set it as the default label when switching the image)
-                        if (
-                            annotation.labelIds !== undefined &&
-                            annotation.labelIds.length > 0
-                        )
-                            setDefaultLabelId(annotation.labelIds[0])
-
-                        const newAnnotation = { ...annotation }
-
-                        if (
-                            [
-                                AnnotationStatus.DATABASE,
-                                AnnotationStatus.CREATED,
-                            ].includes(annotation.status)
-                        ) {
-                            // mark annoation only as changed if it made contact with the server once
-                            // (keeps new annotations new)
-                            newAnnotation.status = AnnotationStatus.CHANGED
-
-                            // search for an external anno id in the mapping
-                            const externalAnnoId =
-                                annotationIdMapping[newAnnotation.internalId]
-                            if (externalAnnoId) newAnnotation.externalId = externalAnnoId
-                        }
-
-                        const annotationInOldFormat =
-                            legacyHelper.convertAnnoToOldFormat(newAnnotation)
-
-                        const currentImageData = annoData.image
-                        const imageData = {
-                            imgId: currentImageData.id,
-                            imgActions: currentImageData.imgActions,
-                            annoTime: currentImageData.annoTime, // @TODO
-                        }
-
-                        const editAnnotationData = {
-                            annotation: annotationInOldFormat,
-                            imageEditData: imageData,
-                        }
-                        editAnnotation(editAnnotationData)
-                    }}
+                    additionalButtons={renderAdditionalButtons()}
+                    onAnnoChanged={editAnnotation}
                     onAnnoCreated={(annotation) => {
                         // do nothing when initially creating an annotation
                         // @TODO adapt backend to support partly-finished annotations
                         console.log('ANNO CREATED', annotation)
                     }}
-                    onAnnoCreationFinished={(annotation) => {
-                        // reset polygon edit mode
-                        setPolygonEditMode(PolygonEditMode.NONE)
-                        setCurrentlySelectedAnnotation(annotation)
-
-                        const newAnnotation = {
-                            ...annotation,
-                            status: AnnotationStatus.CREATING, // mark as new so the anno is created at the server
-                        }
-                        const annotationInOldFormat =
-                            legacyHelper.convertAnnoToOldFormat(newAnnotation)
-
-                        const currentImageData = annoData.image
-                        const imageData = {
-                            imgId: currentImageData.id,
-                            imgActions: currentImageData.imgActions,
-                            annoTime: currentImageData.annoTime, // @TODO
-                        }
-
-                        const createAnnotationData = {
-                            annotation: {
-                                ...annotationInOldFormat,
-                                // special case for created annos: the server saves the anno and returns this id back as 'tempId'
-                                // use SIAs internalId for identifying the annotation when the response arrived
-                                id: `new-${newAnnotation.internalId}`,
-                            },
-                            imageEditData: imageData,
-                        }
-                        createAnnotation(createAnnotationData)
-                    }}
-                    onAnnoDeleted={(annotation) => {
-                        const currentImageData = annoData.image
-                        const imageData = {
-                            imgId: currentImageData.id,
-                            imgActions: currentImageData.imgActions,
-                            annoTime: currentImageData.annoTime, // @TODO
-                        }
-                        const deletedAnnotation = {
-                            ...annotation,
-                            status: AnnotationStatus.DELETED,
-                        }
-
-                        // search the mapping if annotation has no external id
-                        // annotations that are deleted right after they were created
-                        if (deletedAnnotation.externalId == '') {
-                            const externalAnnoId =
-                                annotationIdMapping[deletedAnnotation.internalId]
-                            if (externalAnnoId)
-                                deletedAnnotation.externalId = externalAnnoId
-                        }
-
-                        const annotationInOldFormat =
-                            legacyHelper.convertAnnoToOldFormat(deletedAnnotation)
-                        const deleteAnnotationData = {
-                            annotation: annotationInOldFormat,
-                            imageEditData: imageData,
-                        }
-                        deleteAnnotation(deleteAnnotationData)
-                        setCurrentlySelectedAnnotation(undefined)
-                    }}
-                    onIsImageJunk={(newJunkState) => {
-                        const currentImageData = annoData.image
-                        const imageData = {
-                            imgId: currentImageData.id,
-                            annoTime: currentImageData.annoTime,
-                            isJunk: newJunkState,
-                        }
-                        junkImage(imageData)
-                        setCurrentlySelectedAnnotation(undefined)
-                    }}
+                    onAnnoCreationFinished={createAnnotation}
+                    onAnnoDeleted={deleteAnnotation}
+                    onIsImageJunk={junkImage}
                     onNotification={handleNotification}
-                    onSelectAnnotation={(annotation: Annotation) => {
-                        // if we have a polygon edit mode selected we are currently searching for the second polygon to calculate
-                        if (polygonEditMode != PolygonEditMode.NONE) {
-                            calculatePolygonOperation(
-                                currentlySelectedAnnotation,
-                                annotation,
-                            )
-                        } else {
-                            setCurrentlySelectedAnnotation(annotation)
-                        }
-                    }}
+                    onSelectAnnotation={handleSelectAnnotation}
                 />
             </div>
         </>
