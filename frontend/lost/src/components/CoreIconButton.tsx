@@ -17,7 +17,7 @@ type CoreIconButtonProps = {
     margin?: number
     icon?: IconDefinition
     text?: string
-    size: 'sm' | 'lg' | undefined
+    size?: 'sm' | 'lg' | undefined
     isTextLeft?: boolean
     style?: CSSProperties
     id?: string
@@ -61,7 +61,9 @@ const CoreIconButton = ({
         iconButtonIcon = faArrowRight
     }
 
-    const buttonVariant: 'ghost' | 'outline' = isOutline ? 'outline' : 'ghost'
+    const buttonVariant: 'ghost' | 'outline' | undefined = isOutline
+        ? 'outline'
+        : undefined
 
     const renderContent = () => {
         if (isLoading) {

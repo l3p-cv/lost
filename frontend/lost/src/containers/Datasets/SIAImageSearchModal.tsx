@@ -20,7 +20,6 @@ import {
     useReactTable,
 } from '@tanstack/react-table'
 import { Fragment, useEffect, useState } from 'react'
-import IconButton from '../../components/IconButton'
 import {
     faAngleLeft,
     faAngleRight,
@@ -28,69 +27,92 @@ import {
     faSearch,
 } from '@fortawesome/free-solid-svg-icons'
 
-import {
-    faSquare,
-    faSquareCheck,
-} from '@fortawesome/free-regular-svg-icons'
-import TagLabel from '../../components/TagLabel'
+import { faSquare, faSquareCheck } from '@fortawesome/free-regular-svg-icons'
 import * as datasetReviewApi from '../../actions/dataset/dataset_review_api'
+import { Label, TagLabel } from 'lost-sia'
+import CoreIconButton from '../../components/CoreIconButton'
+
+type SIAImageSearchModalProps = {
+    isAnnotaskReview: boolean
+    id: number
+    isVisible: boolean
+    possibleAnnotaskLabels: Label[]
+    setIsVisible: (isVisible: boolean) => void
+    onChooseImage: (annotationId: number, imageId: number) => void
+    onSearchResult: (imageIdList: number[]) => void
+}
 
 const SIAImageSearchModal = ({
     isAnnotaskReview,
     id,
     isVisible,
+    possibleAnnotaskLabels,
     setIsVisible,
     onChooseImage,
-    possibleAnnotaskLabels,
-    onSearchResult = () => {}
-}) => {
-    const { data: possibleDatasetLabels,
-        refetch: reloadPossibleDatasetLabels
-    } = datasetReviewApi.useGetPossibleLabels(id)
+    onSearchResult = () => {},
+}: SIAImageSearchModalProps) => {
+    const { data: possibleDatasetLabels, refetch: reloadPossibleDatasetLabels } =
+        datasetReviewApi.useGetPossibleLabels(id)
     const { data: searchResults, mutate: doSearch } =
         datasetReviewApi.useImageSearch(isAnnotaskReview)
     const [enteredSearch, setEnteredSearch] = useState('')
     const [isFirstSearch, setIsFirstSearch] = useState(true)
     const [tableData, setTableData] = useState(() => [])
-    const [selectedFilterLabels, setSelectedFilterLabels] = useState(() => [])
-    const [possibleImageLabels, setPossibleImageLabels] = useState([])
+    const [selectedFilterLabels, setSelectedFilterLabels] = useState<number[]>(() => [])
+    const [possibleImageLabels, setPossibleImageLabels] = useState<Label[]>([])
 
-    useEffect(()=>{
+    useEffect(() => {
         // dataset review: get a list of all possible labels from all annotasks in the dataset
         // labels for single annotation tasks can be retrieved by the annotation options
-        if(!isAnnotaskReview) reloadPossibleDatasetLabels()
+        if (!isAnnotaskReview) reloadPossibleDatasetLabels()
     }, [])
 
     useEffect(() => {
         // use getPossibleLabels for datasets
-        if(isAnnotaskReview || possibleDatasetLabels === undefined || possibleDatasetLabels.length === 0) return        
+        if (
+            isAnnotaskReview ||
+            possibleDatasetLabels === undefined ||
+            possibleDatasetLabels.length === 0
+        )
+            return
         setPossibleImageLabels(possibleDatasetLabels)
     }, [possibleDatasetLabels])
 
     useEffect(() => {
         // use annotask options -> possible labels for single annotation tasks
-        if(!isAnnotaskReview || possibleAnnotaskLabels === undefined || possibleAnnotaskLabels.length === 0) return
+        if (
+            !isAnnotaskReview ||
+            possibleAnnotaskLabels === undefined ||
+            possibleAnnotaskLabels.length === 0
+        )
+            return
         setPossibleImageLabels(possibleAnnotaskLabels)
     }, [possibleAnnotaskLabels])
 
-    useEffect(()=> {
-        if(possibleImageLabels === undefined || possibleImageLabels.length === 0) return
+    useEffect(() => {
+        if (possibleImageLabels === undefined || possibleImageLabels.length === 0) return
 
         // activate all labels by default
-        const allLabelIds = []
+        const allLabelIds: number[] = []
         possibleImageLabels.forEach((label) => allLabelIds.push(label.id))
         setSelectedFilterLabels(allLabelIds)
     }, [possibleImageLabels])
 
     useEffect(() => {
-        if(searchResults === undefined) return
+        if (searchResults === undefined) return
         setTableData(searchResults)
-        const imageIdList = searchResults.map(result => result.imageId)
+        const imageIdList = searchResults.map((result) => result.imageId)
         onSearchResult(imageIdList)
-
     }, [searchResults])
 
-    const columnHelper = createColumnHelper()
+    type ColumnShape = {
+        imageId: number
+        imageName: string
+        annotationId: number
+        annotationName: string
+    }
+
+    const columnHelper = createColumnHelper<ColumnShape>()
 
     const columns = [
         columnHelper.accessor('imageId', {
@@ -100,16 +122,19 @@ const SIAImageSearchModal = ({
             header: 'Image name',
             cell: (props) => {
                 return (
-                    <div style={{
-                        width: "320px",              // width constraint
-                        whiteSpace: "normal",        // Allow wrapping
-                        wordBreak: "break-all",      // Force long strings to break
-                        overflowWrap: "break-word",  // Backup for compatibility
-                      }}>
-                {/* <div className="w-72 whitespace-normal break-all"> */}
-                    {props.row.original.imageName}
-                </div>)
-            }
+                    <div
+                        style={{
+                            width: '320px', // width constraint
+                            whiteSpace: 'normal', // Allow wrapping
+                            wordBreak: 'break-all', // Force long strings to break
+                            overflowWrap: 'break-word', // Backup for compatibility
+                        }}
+                    >
+                        {/* <div className="w-72 whitespace-normal break-all"> */}
+                        {props.row.original.imageName}
+                    </div>
+                )
+            },
         }),
         columnHelper.accessor('annotationId', {
             header: 'AnnoTask ID',
@@ -121,7 +146,7 @@ const SIAImageSearchModal = ({
             id: 'chooseImage',
             header: () => 'Choose Image',
             cell: (props) => (
-                <IconButton
+                <CoreIconButton
                     icon={faArrowRight}
                     color="primary"
                     isOutline={false}
@@ -139,7 +164,6 @@ const SIAImageSearchModal = ({
     const table = useReactTable({
         data: tableData,
         columns,
-        getSubRows: (row) => row.children,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
@@ -164,8 +188,8 @@ const SIAImageSearchModal = ({
 
         if (_selectedFilterLabels.includes(labelId)) {
             // remove item from list
-            const index = _selectedFilterLabels.indexOf(labelId);
-            if (index > -1) _selectedFilterLabels.splice(index, 1);
+            const index = _selectedFilterLabels.indexOf(labelId)
+            if (index > -1) _selectedFilterLabels.splice(index, 1)
         } else {
             _selectedFilterLabels.push(labelId)
         }
@@ -181,17 +205,17 @@ const SIAImageSearchModal = ({
             const labelColor = selectedFilterLabels.includes(label.id) ? color : '#95a5a6'
 
             return (
-            <TagLabel
-                key={label.id}
-                label={label.name}
-                color={labelColor}
-                onClick={() => toggleSelectLabel(label.id)}
-                style={{
-                marginTop: 5,
-                marginLeft: 30,
-                // color: getContrastColor(labelColor),
-                }}
-            />
+                <TagLabel
+                    key={label.id}
+                    name={label.name}
+                    color={labelColor}
+                    onClick={() => toggleSelectLabel(label.id)}
+                    style={{
+                        marginTop: 5,
+                        marginLeft: 30,
+                        color: getContrastColor(labelColor),
+                    }}
+                />
             )
         })
     }
@@ -259,7 +283,7 @@ const SIAImageSearchModal = ({
                         <CRow>
                             <CCol>
                                 {
-                                    <IconButton
+                                    <CoreIconButton
                                         icon={faAngleLeft}
                                         text="Previous"
                                         onClick={() => table.previousPage()}
@@ -294,7 +318,7 @@ const SIAImageSearchModal = ({
                             </CCol>
                             <CCol>
                                 {
-                                    <IconButton
+                                    <CoreIconButton
                                         icon={faAngleRight}
                                         text="Next"
                                         onClick={() => table.nextPage()}
@@ -333,24 +357,24 @@ const SIAImageSearchModal = ({
                 <div>&nbsp;</div>
                 <CRow>
                     <CCol sm="2">Filter Labels:</CCol>
-                    <CCol sm="6">
-                        {renderPossibleLabels()}
-                    </CCol>
+                    <CCol sm="6">{renderPossibleLabels()}</CCol>
                     <CCol sm="2">
-                        <IconButton
+                        <CoreIconButton
                             isOutline={true}
                             color="primary"
                             icon={faSquareCheck}
                             text="Select all"
                             onClick={() => {
-                                const allLabelIds = []
-                                possibleImageLabels.forEach((label) => allLabelIds.push(label.id))
+                                const allLabelIds: number[] = []
+                                possibleImageLabels.forEach((label: Label) =>
+                                    allLabelIds.push(label.id),
+                                )
                                 setSelectedFilterLabels(allLabelIds)
                             }}
                             style={{ marginTop: '15px' }}
-                        ></IconButton>
+                        />
                         &nbsp;
-                        <IconButton
+                        <CoreIconButton
                             isOutline={true}
                             color="primary"
                             icon={faSquare}
@@ -359,23 +383,27 @@ const SIAImageSearchModal = ({
                                 setSelectedFilterLabels([])
                             }}
                             style={{ marginTop: '15px' }}
-                        ></IconButton>
+                        />
                     </CCol>
                 </CRow>
                 <CRow>
                     <CCol sm="2">&nbsp;</CCol>
                     <CCol sm="6">
-                        <IconButton
+                        <CoreIconButton
                             isOutline={false}
                             color="primary"
                             icon={faSearch}
                             text="Search"
                             onClick={() => {
                                 setIsFirstSearch(false)
-                                doSearch([id, enteredSearch, selectedFilterLabels])
+                                doSearch({
+                                    id,
+                                    query: enteredSearch,
+                                    selectedFilterLabels,
+                                })
                             }}
                             style={{ marginTop: '15px' }}
-                        ></IconButton>
+                        />
                     </CCol>
                 </CRow>
                 <div style={{ marginTop: '25px' }}>&nbsp;</div>

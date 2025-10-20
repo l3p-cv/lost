@@ -68,12 +68,19 @@ export const useGetUIConfig = () => {
     return uiConfig
 }
 
+export type ImageSearchRequestData = {
+    id: number
+    query: string
+    selectedFilterLabels: number[]
+}
+
 export const useImageSearch = (isAnnotaskReview) => {
     const reviewType = isAnnotaskReview ? 'annotasks' : 'datasets'
 
-    return useMutation((requestData) => {
+    return useMutation((requestData: ImageSearchRequestData) => {
         // annotaskId task or datasetId (depends on review mode)
-        const [id, query, selectedFilterLabels] = requestData
+        const { id, query, selectedFilterLabels } = requestData
+
         return axios
             .get(
                 `${API_URL}/${reviewType}/${id}/review/images?filter=${query}&labels=${selectedFilterLabels}`,

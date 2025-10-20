@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
     useGetSiaAnnos,
     useGetSiaImage,
@@ -8,7 +8,7 @@ import {
     useFinishAnnotask,
     useImageJunk,
     useGetSiaPossibleLabels,
-    useGetSiaConfiguration,
+    // useGetSiaConfiguration,
     usePolygonDifference,
     usePolygonIntersection,
     usePolygonUnion,
@@ -17,6 +17,7 @@ import {
 } from '../../../actions/sia/sia_api'
 
 import type {
+    ExternalAnnotation,
     Point,
     PolygonOperationResult,
     SIANotification,
@@ -25,11 +26,11 @@ import type {
 
 import { Sia2 } from 'lost-sia'
 import { useNavigate } from 'react-router-dom'
-import { CBadge, CButton, CButtonGroup, CCol } from '@coreui/react'
-import {
-    INFERENCE_MODEL_TYPE,
-    useTritonInference,
-} from '../../../actions/inference-model/model-api'
+import { CButtonGroup, CCol } from '@coreui/react'
+// import {
+//     INFERENCE_MODEL_TYPE,
+//     useTritonInference,
+// } from '../../../actions/inference-model/model-api'
 import {
     showDecision,
     showError,
@@ -65,6 +66,25 @@ type SiaWrapperProps = {
     isImageSearchEnabled?: boolean
 }
 
+// type SamBBox = {
+//     x: number
+//     y: number
+//     width: number
+//     height: number
+//     xMinNorm?: number
+//     yMinNorm?: number
+//     xMaxNorm?: number
+//     yMaxNorm?: number
+// }
+
+// type SamPoint = {
+//     x: number
+//     y: number
+//     type: any
+//     normX: number
+//     normY: number
+// }
+
 const SiaWrapper = ({
     annotaskId,
     isDatasetMode = false,
@@ -72,8 +92,8 @@ const SiaWrapper = ({
 }: SiaWrapperProps) => {
     const navigate = useNavigate()
 
-    const [samPoints, setSamPoints] = useState([])
-    const [samBBox, setSamBBox] = useState(null)
+    // const [samPoints, setSamPoints] = useState<SamPoint[]>([])
+    // const [samBBox, setSamBBox] = useState<SamBBox | undefined>()
 
     const [isSiaLoading, setIsSiaLoading] = useState<boolean>(true)
     const [polygonEditMode, setPolygonEditMode] = useState<PolygonEditMode>(
@@ -97,13 +117,13 @@ const SiaWrapper = ({
         Annotation | undefined
     >()
 
-    const { mutate: inferAnnotations, isLoading: isInferenceLoading } =
-        useTritonInference()
+    // const { mutate: inferAnnotations, isLoading: isInferenceLoading } =
+    //     useTritonInference()
 
     // only the initial annotations (the ones we got from the server) are stored in this component
     // the modified annotations are stored inside SIA and handed to us using events
     const [initialAnnotations, setInitialAnnotations] = useState<
-        Annotation[] | undefined
+        ExternalAnnotation[] | undefined
     >()
 
     // Annotations that are just created in SIA have never been stored in the backend and therefore don't have an externalId yet.
@@ -125,7 +145,7 @@ const SiaWrapper = ({
     }
 
     const { data: possibleLabels } = useGetSiaPossibleLabels()
-    const { data: siaConfiguration } = useGetSiaConfiguration()
+    // const { data: siaConfiguration } = useGetSiaConfiguration()
 
     // requests will automatically refetched when their state (parameter) changes
     const { data: annoData } = useGetSiaAnnos(annotationRequestData)
@@ -210,37 +230,47 @@ const SiaWrapper = ({
         setAnnotationIdMapping(newAnnotationIdMapping)
     }, [createAnnotationResponse])
 
-    // const handleAnnoSaveEventResponse = (saveData) => {
-    //     console.log('SiaWrapper -> handleAnnoSaveEvent', saveData)
-    //     props.siaUpdateOneThing(saveData).then((response) => {
-    //         if (response === 'error') {
-    //             handleNotification({
-    //                 title: 'Anno save failed',
-    //                 message: 'Error while saving annotation.',
-    //                 type: notificationType.ERROR,
-    //             })
-    //         } else {
-    //             console.log('handleAnnoSaveResponse ', response.data)
-    //             setAnnoSaveResponse(response.data)
-    //             if (localTaskFinished) {
-    //                 props.siaSetTaskFinished()
-    //                 props.siaSendFinishToBackend().then(() => {
-    //                     navigate('/annotation')
-    //                 })
-    //             }
-    //         }
-    //     })
-    // }
+    const handleResponse = useCallback((response: object | string): boolean => {
+        if (response !== 'error') return true
 
-    const handleFinishAnnotaskResponse = () => {
-        // @TODO if success
-        navigate('/annotation')
-    }
+        handleNotification({
+            title: 'Anno save failed',
+            message: 'Error while saving annotation.',
+            type: NotificationType.ERROR,
+        })
+
+        return false
+    }, [])
+
+    useEffect(() => {
+        if (editAnnotationResponse === undefined) return
+
+        handleResponse(editAnnotationResponse)
+    }, [editAnnotationResponse, handleResponse])
+
+    useEffect(() => {
+        if (createAnnotationResponse === undefined) return
+
+        handleResponse(createAnnotationResponse)
+    }, [createAnnotationResponse, handleResponse])
+
+    useEffect(() => {
+        if (deleteAnnotationResponse === undefined) return
+
+        handleResponse(deleteAnnotationResponse)
+    }, [deleteAnnotationResponse, handleResponse])
+
+    useEffect(() => {
+        if (imageJunkResponse === undefined) return
+
+        handleResponse(imageJunkResponse)
+    }, [imageJunkResponse, handleResponse])
 
     useEffect(() => {
         if (finishAnnotaskResponse === undefined) return
-        handleFinishAnnotaskResponse()
-    }, [finishAnnotaskResponse])
+
+        if (handleResponse(finishAnnotaskResponse)) navigate('/annotation')
+    }, [finishAnnotaskResponse, handleResponse, navigate])
 
     const calculatePolygonOperation = (
         firstAnnotation: Annotation,
@@ -384,11 +414,7 @@ const SiaWrapper = ({
 
         const newAnnotation = { ...annotation }
 
-        if (
-            [AnnotationStatus.DATABASE, AnnotationStatus.CREATED].includes(
-                annotation.status,
-            )
-        ) {
+        if (annotation.status === AnnotationStatus.CREATED) {
             // mark annoation only as changed if it made contact with the server once
             // (keeps new annotations new)
             newAnnotation.status = AnnotationStatus.CHANGED
@@ -477,7 +503,7 @@ const SiaWrapper = ({
         })
         setIsImageSearchActive(true)
 
-        handleClearSamHelperAnnos()
+        // handleClearSamHelperAnnos()
     }
 
     const getNextImage = () => {
@@ -501,7 +527,7 @@ const SiaWrapper = ({
             imageId: currentImageId,
         })
 
-        handleClearSamHelperAnnos()
+        // handleClearSamHelperAnnos()
     }
 
     const getPreviousImage = () => {
@@ -525,7 +551,7 @@ const SiaWrapper = ({
             imageId: currentImageId,
         })
 
-        handleClearSamHelperAnnos()
+        // handleClearSamHelperAnnos()
     }
 
     const submitAnnotask = () => {
@@ -544,54 +570,44 @@ const SiaWrapper = ({
         })
     }
 
-    const failedToLoadImage = () => {
-        const message = {
-            title: 'Load image error',
-            message: 'Failed to load image',
-            type: NotificationType.ERROR,
-        }
-        handleNotification(message)
-        return undefined
-    }
-
-    const handleAddAnnotation = () => {
-        if (annoData?.image?.id) {
-            inferAnnotations(
-                {
-                    imageId: annoData.image.id,
-                    modelId: siaConfiguration.inferenceModel.id,
-                    prompts: {
-                        points: samPoints.map((point) => ({
-                            x: point.normX,
-                            y: point.normY,
-                            label: point.type,
-                        })),
-                        bbox: samBBox
-                            ? {
-                                  xMin: samBBox.xMinNorm,
-                                  yMin: samBBox.yMinNorm,
-                                  xMax: samBBox.xMaxNorm,
-                                  yMax: samBBox.yMaxNorm,
-                              }
-                            : undefined,
-                    },
-                },
-                {
-                    onSuccess: () => {
-                        showSuccess('Annotations inferred successfully!')
-                        setSamBBox(null) // reset SAM bounding box
-                        // getNewImage(image.id, 'current')
-                        // props.getSiaAnnos(image.id, 'current')
-                    },
-                    onError: () => {
-                        showError('An error occurred while inferring annotations!')
-                    },
-                },
-            )
-        } else {
-            console.warn('No image id found!')
-        }
-    }
+    // const handleAddAnnotation = () => {
+    //     if (annoData?.image?.id) {
+    //         inferAnnotations(
+    //             {
+    //                 imageId: annoData.image.id,
+    //                 modelId: siaConfiguration.inferenceModel.id,
+    //                 prompts: {
+    //                     points: samPoints.map((point: SamPoint) => ({
+    //                         x: point.normX,
+    //                         y: point.normY,
+    //                         label: point.type,
+    //                     })),
+    //                     bbox: samBBox
+    //                         ? {
+    //                               xMin: samBBox.xMinNorm,
+    //                               yMin: samBBox.yMinNorm,
+    //                               xMax: samBBox.xMaxNorm,
+    //                               yMax: samBBox.yMaxNorm,
+    //                           }
+    //                         : undefined,
+    //                 },
+    //             },
+    //             {
+    //                 onSuccess: () => {
+    //                     showSuccess('Annotations inferred successfully!')
+    //                     setSamBBox(undefined) // reset SAM bounding box
+    //                     // getNewImage(image.id, 'current')
+    //                     // props.getSiaAnnos(image.id, 'current')
+    //                 },
+    //                 onError: () => {
+    //                     showError('An error occurred while inferring annotations!')
+    //                 },
+    //             },
+    //         )
+    //     } else {
+    //         console.warn('No image id found!')
+    //     }
+    // }
 
     // const handleSamPointClick = (x, y, normX, normY, type) => {
     //     // @ts-expect-error disabling type check since it is a jsx file
@@ -613,10 +629,10 @@ const SiaWrapper = ({
     //     })
     // }
 
-    const handleClearSamHelperAnnos = () => {
-        setSamPoints([])
-        setSamBBox(null)
-    }
+    // const handleClearSamHelperAnnos = () => {
+    //     setSamPoints([])
+    //     setSamBBox(undefined)
+    // }
 
     // handle image switching
     const handleWrapperKeydown = (key: string) => {
@@ -630,7 +646,7 @@ const SiaWrapper = ({
         }
     }
 
-    const handleBBoxReponse = (response) => {
+    const handleBBoxReponse = useCallback((response) => {
         // show errors to user
         if (response?.error) {
             handleNotification({
@@ -672,55 +688,60 @@ const SiaWrapper = ({
 
         setPolygonOperationResult(newPolygonOperationResult)
         setIsSiaLoading(false)
-    }
+    }, [])
 
     // handles response after we did a polygon operation (HTTP request)
-    const handlePolygonOperationResponse = (response) => {
-        // show errors to user
-        if (response?.error) {
-            handleNotification({
-                title: 'Invalid selection',
-                message: response.error,
-                type: NotificationType.ERROR,
-            })
-            setIsSiaLoading(false)
-            setPolygonEditMode(PolygonEditMode.NONE)
-            return
-        } else if (response?.errors) {
-            // the response can contain multiple errors at once
-            Object.keys(response.errors).forEach((errorTitle) =>
+    const handlePolygonOperationResponse = useCallback(
+        (response) => {
+            // show errors to user
+            if (response?.error) {
                 handleNotification({
-                    title: errorTitle,
-                    message: response.errors[errorTitle],
+                    title: 'Invalid selection',
+                    message: response.error,
                     type: NotificationType.ERROR,
-                }),
-            )
-            return
-        }
+                })
+                setIsSiaLoading(false)
+                setPolygonEditMode(PolygonEditMode.NONE)
+                return
+            } else if (response?.errors) {
+                // the response can contain multiple errors at once
+                Object.keys(response.errors).forEach((errorTitle) =>
+                    handleNotification({
+                        title: errorTitle,
+                        message: response.errors[errorTitle],
+                        type: NotificationType.ERROR,
+                    }),
+                )
+                return
+            }
 
-        if (response?.resultantPolygon === undefined) return
+            if (response?.resultantPolygon === undefined) return
 
-        if (response?.type !== 'polygon') return
+            if (response?.type !== 'polygon') return
 
-        const { resultantPolygon } = response
+            const { resultantPolygon } = response
 
-        const toolCoordinates: ToolCoordinates = {
-            type: AnnotationTool.Polygon,
-            coordinates: resultantPolygon,
-        }
+            const toolCoordinates: ToolCoordinates = {
+                type: AnnotationTool.Polygon,
+                coordinates: resultantPolygon,
+            }
 
-        const annotationsToDelete: Annotation[] =
-            currentlySelectedAnnotation !== undefined ? [currentlySelectedAnnotation] : []
+            const annotationsToDelete: Annotation[] =
+                currentlySelectedAnnotation !== undefined
+                    ? [currentlySelectedAnnotation]
+                    : []
 
-        const newPolygonOperationResult: PolygonOperationResult = {
-            polygonsToCreate: [toolCoordinates],
-            annotationsToDelete,
-        }
+            const newPolygonOperationResult: PolygonOperationResult = {
+                polygonsToCreate: [toolCoordinates],
+                annotationsToDelete,
+            }
 
-        // write update to SIA
-        setPolygonOperationResult(newPolygonOperationResult)
-        setIsSiaLoading(false)
-    }
+            // write update to SIA
+            setPolygonOperationResult(newPolygonOperationResult)
+            setIsSiaLoading(false)
+        },
+        [currentlySelectedAnnotation],
+    )
 
     const handleSelectAnnotation = (annotation: Annotation) => {
         // if we have a polygon edit mode selected we are currently searching for the second polygon to calculate
@@ -734,46 +755,25 @@ const SiaWrapper = ({
         }
     }
 
-    const handleSwitchSIAImage = (annotaskId: number, imageAnnoId: number) => {
-        // const data = {
-        //     direction: 'specificImage',
-        //     annotaskIdx: annotaskId,
-        //     imageAnnoId: imageAnnoId,
-        //     iteration: null,
-        // }
-
-        // do not reload, when the image stays the same
-        if (imageAnnoId == imageId) {
-            return
-        }
-        // loadNextReviewPage([id, data])
-
-        setAnnotationRequestData({
-            direction: 'next',
-            imageId: imageAnnoId,
-        })
-        setIsImageSearchActive(true)
-    }
-
     useEffect(() => {
         if (polygonDiffReponse === undefined) return
         handlePolygonOperationResponse(polygonDiffReponse)
-    }, [polygonDiffReponse])
+    }, [polygonDiffReponse, handlePolygonOperationResponse])
 
     useEffect(() => {
         if (polygonIntersectionReponse === undefined) return
         handlePolygonOperationResponse(polygonIntersectionReponse)
-    }, [polygonIntersectionReponse])
+    }, [polygonIntersectionReponse, handlePolygonOperationResponse])
 
     useEffect(() => {
         if (polygonUnionReponse === undefined) return
         handlePolygonOperationResponse(polygonUnionReponse)
-    }, [polygonUnionReponse])
+    }, [polygonUnionReponse, handlePolygonOperationResponse])
 
     useEffect(() => {
         if (bboxCreationResponse === undefined) return
         handleBBoxReponse(bboxCreationResponse)
-    }, [bboxCreationResponse])
+    }, [bboxCreationResponse, handleBBoxReponse])
 
     const renderAdditionalButtons = () => {
         return (
@@ -787,13 +787,18 @@ const SiaWrapper = ({
                             if (
                                 polygonEditMode === PolygonEditMode.BBOX &&
                                 currentlySelectedAnnotation !== undefined &&
-                                currentlySelectedAnnotation.type !== AnnotationTool.BBox
+                                ![AnnotationTool.BBox, AnnotationTool.Point].includes(
+                                    currentlySelectedAnnotation.type,
+                                )
                             ) {
                                 const legacyAnnotation =
                                     legacyHelper.convertAnnoToOldFormat(
                                         currentlySelectedAnnotation,
                                     )
-                                const pointData: Point[] = legacyAnnotation.data
+
+                                // conversion possible since we are limiting anno types
+                                const pointData: Point[] =
+                                    legacyAnnotation.data as Point[]
 
                                 createBBox(pointData)
                             }
@@ -833,7 +838,7 @@ const SiaWrapper = ({
                     />
                 </CCol>
 
-                {siaConfiguration?.inferenceModel?.id && (
+                {/* {siaConfiguration?.inferenceModel?.id && (
                     <CCol>
                         <CBadge color="dark">
                             Inference Model:
@@ -852,7 +857,7 @@ const SiaWrapper = ({
                             Infer Annotation
                         </CButton>
                     </CCol>
-                )}
+                )} */}
             </>
         )
     }
@@ -866,7 +871,7 @@ const SiaWrapper = ({
                     isVisible={isImgSearchModalVisible}
                     setIsVisible={setIsImgSearchModalVisible}
                     onChooseImage={(_, imageId) => getSpecificImage(imageId)}
-                    possibleAnnotaskLabels={possibleLabels}
+                    possibleAnnotaskLabels={possibleLabels!}
                     onSearchResult={setFilteredImageIds}
                 />
             )}
@@ -885,7 +890,7 @@ const SiaWrapper = ({
                     initialIsImageJunk={annoData?.image?.isJunk}
                     isLoading={isSiaLoading}
                     isPolygonSelectionMode={polygonEditMode !== PolygonEditMode.NONE}
-                    possibleLabels={possibleLabels}
+                    possibleLabels={possibleLabels!}
                     polygonOperationResult={polygonOperationResult}
                     additionalButtons={renderAdditionalButtons()}
                     onAnnoChanged={editAnnotation}

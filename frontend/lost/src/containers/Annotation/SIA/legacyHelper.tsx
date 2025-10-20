@@ -1,7 +1,12 @@
 // @TODO convert old API/backend style to new SIA format
 
-import { Annotation, AnnotationStatus, AnnotationTool } from 'lost-sia/models'
-import { AnnotationCoordinates, Point } from 'lost-sia'
+import {
+    Annotation,
+    AnnotationMode,
+    AnnotationStatus,
+    AnnotationTool,
+} from 'lost-sia/models'
+import type { ExternalAnnotation, Point } from 'lost-sia'
 
 export type LegacyBboxData = {
     x: number
@@ -10,15 +15,30 @@ export type LegacyBboxData = {
     h: number
 }
 
-export type LegacyAnnotation = {
-    id: string
-    annoTime: number
-    data: LegacyBboxData
-    labelIds: number[]
+export type AnnotationCoordinates = LegacyBboxData | Point | Point[]
+
+// legacy annotation but some parameters are optional for converting it into an annotation
+type ConvertingAnnotation = {
+    id?: string
+    annoTime?: number
+    data?: AnnotationCoordinates
+    labelIds?: number[]
     mode: AnnotationMode // do we even need this globally? - only really used inside AnnotationComponent
     selectedNode: number
     status: AnnotationStatus
-    type: AnnotationTool
+    type: string
+    timestamp: DOMHighResTimeStamp
+}
+
+export type LegacyAnnotation = {
+    id: string
+    annoTime?: number
+    data: AnnotationCoordinates
+    labelIds?: number[]
+    mode: AnnotationMode // do we even need this globally? - only really used inside AnnotationComponent
+    selectedNode: number
+    status: string
+    type: string
     timestamp: DOMHighResTimeStamp
 }
 
@@ -41,6 +61,9 @@ const convertAnnoToolType = (annotationTypeString: string): AnnotationTool => {
         case 'polygons':
             return AnnotationTool.Polygon
     }
+
+    // just to satisfy linter. This should never be actually called
+    return AnnotationTool.Point
 }
 
 const unconvertAnnoToolType = (annotationType: AnnotationTool): string => {
@@ -64,7 +87,7 @@ const unconvertAnnotationStatus = (annotationStatus: AnnotationStatus): string =
             return 'new'
         case AnnotationStatus.DELETED:
             return 'deleted'
-        case AnnotationStatus.DATABASE:
+        // case AnnotationStatus.DATABASE:
         case AnnotationStatus.CREATED:
             return 'database'
         case AnnotationStatus.CHANGED:
@@ -82,7 +105,7 @@ const convertAnnoToOldFormat = (annotation: Annotation): LegacyAnnotation => {
     // copy without reference
     const annotationInOldFormat: LegacyAnnotation = {
         ...tmpAnnotation,
-        id: annotation.externalId, // rename external id
+        id: `${annotation.externalId}`, // rename external id
         data: annotation.coordinates, // default (just rename coordinates key)
     }
 
@@ -142,39 +165,36 @@ const convertBboxFormat = (box: LegacyBboxData): Point[] => {
 const convertAnnoToNewFormat = (
     legacyAnnotation: LegacyAnnotation,
     legacyAnnotationType: string,
-): Annotation => {
+): ExternalAnnotation => {
     const convertedAnnoType = convertAnnoToolType(legacyAnnotationType)
 
-    let newCoords: AnnotationCoordinates = legacyAnnotation.data
+    let newCoords: Point[]
 
-    if (convertedAnnoType === AnnotationTool.BBox) {
-        // the old format saved the CENTER of the BBox, not the top left corner...
-        const centerPoint = { x: newCoords.x, y: newCoords.y }
-        const topLeftPoint = {
-            x: centerPoint.x - newCoords.w / 2,
-            y: centerPoint.y - newCoords.h / 2,
-        }
-        const bottomRightPoint = {
-            x: centerPoint.x + newCoords.w / 2,
-            y: centerPoint.y + newCoords.h / 2,
-        }
+    switch (convertedAnnoType) {
+        case AnnotationTool.BBox:
+            newCoords = convertBboxFormat(legacyAnnotation.data as LegacyBboxData)
+            break
 
-        newCoords = [topLeftPoint, bottomRightPoint]
+        case AnnotationTool.Point:
+            newCoords = [legacyAnnotation.data as Point]
+            break
+        default:
+            newCoords = legacyAnnotation.data as Point[]
     }
 
-    if (convertedAnnoType === AnnotationTool.Point) {
-        newCoords = [legacyAnnotation.data]
-    }
+    const convertingAnnotation: ConvertingAnnotation = { ...legacyAnnotation }
+    delete convertingAnnotation.id
+    delete convertingAnnotation.data
 
-    return {
-        ...legacyAnnotation,
-        id: null,
-        data: null,
+    const newAnnotation: ExternalAnnotation = {
+        ...convertingAnnotation,
         externalId: `${legacyAnnotation.id}`,
         coordinates: newCoords,
         type: convertedAnnoType,
-        status: AnnotationStatus.DATABASE,
+        status: AnnotationStatus.LOADED,
     }
+
+    return newAnnotation
 }
 
 export default {

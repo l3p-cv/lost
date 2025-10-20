@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { useMutation, useQuery } from 'react-query'
 import { API_URL } from '../../lost_settings'
-import { Point } from 'lost-sia'
+import { Label, Point } from 'lost-sia'
 import { SiaImageRequest } from '../../types/SiaTypes'
 import { LegacyAnnotation } from '../../containers/Annotation/SIA/legacyHelper'
 
@@ -70,7 +70,7 @@ export const useGetSiaImage = (imageRequestData: SiaImageRequest) => {
 export const useGetSiaPossibleLabels = () => {
     return useQuery(
         'getsiaPossibleLabels',
-        () => axios.get(`${API_URL}/sia/label`).then((res) => res.data.labels),
+        () => axios.get(`${API_URL}/sia/label`).then((res): Label[] => res.data.labels),
         {
             refetchOnWindowFocus: false,
         },
