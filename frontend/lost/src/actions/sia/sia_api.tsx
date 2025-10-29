@@ -15,7 +15,7 @@ export type ImageData = {
     annoTime: number
     isFirst: boolean
     isLast: boolean
-    labelIds: Label[]
+    labelIds: number[]
     isJunk: boolean
     description: string | undefined
     imgActions: string[]
@@ -38,10 +38,18 @@ export type SiaResponse = {
     annotations: LegacyAnnotationResponse
 }
 
-type ImageEditData = {
+export type ImageEditData = {
     imgId: number
     imgActions: string[]
     annoTime: number
+}
+
+export type ImageLabelData = {
+    imgId: number
+    imgActions: string[]
+    annoTime: number
+    imgLabelChanged: boolean
+    imgLabelIds: number[]
 }
 
 type ImageJunkData = {
@@ -149,6 +157,17 @@ export const useDeleteAnnotation = () => {
         const requestData = {
             action: 'annoDeleted',
             anno: annotation,
+            img: imageEditData,
+        }
+
+        return axios.patch(API_URL + `/sia`, requestData).then((res) => res.data)
+    })
+}
+
+export const useUpdateImageLabel = () => {
+    return useMutation((imageEditData: ImageLabelData) => {
+        const requestData = {
+            action: 'imgLabelUpdate',
             img: imageEditData,
         }
 

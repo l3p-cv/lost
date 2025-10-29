@@ -14,6 +14,8 @@ import {
     EditAnnotationData,
     SiaResponse,
     ImageSwitchData,
+    useUpdateImageLabel,
+    ImageLabelData,
 } from '../../../actions/sia/sia_api'
 
 import type {
@@ -178,6 +180,8 @@ const SiaWrapper = ({
         useEditAnnotation()
     const { data: deleteAnnotationResponse, mutate: sendDeleteAnnotation } =
         useDeleteAnnotation()
+    const { data: updateImageLabelResponse, mutate: sendUpdateImageLabel } =
+        useUpdateImageLabel()
     const { data: imageJunkResponse, mutate: sendJunkImage } = useImageJunk()
 
     const { data: finishAnnotaskResponse, mutate: sindFinishAnnotask } =
@@ -309,8 +313,6 @@ const SiaWrapper = ({
             legacyHelper.convertAnnoToOldFormat(firstAnnotation)
         const secondLegacyAnnotation: LegacyAnnotation =
             legacyHelper.convertAnnoToOldFormat(secondAnnotation)
-
-        console.log('TEST', firstLegacyAnnotation)
 
         setIsSiaLoading(true)
         switch (polygonEditMode) {
@@ -445,6 +447,22 @@ const SiaWrapper = ({
             imageEditData: imageData,
         }
         sendEditAnnotation(editAnnotationData)
+    }
+
+    const handleImageLabelsChanged = (selectedImageIds: number[]) => {
+        // satisfy linter
+        if (annoData === undefined) return
+
+        const currentImageData = annoData.image
+        const imageData: ImageLabelData = {
+            imgId: currentImageData.id,
+            imgActions: currentImageData.imgActions,
+            imgLabelIds: selectedImageIds,
+            imgLabelChanged: true,
+            annoTime: currentImageData.annoTime, // @TODO
+        }
+
+        sendUpdateImageLabel(imageData)
     }
 
     const junkImage = (newJunkState) => {
@@ -894,6 +912,7 @@ const SiaWrapper = ({
                     defaultLabelId={defaultLabelId}
                     image={imageBlob}
                     initialAnnotations={initialAnnotations}
+                    initialImageLabelIds={annoData?.image.labelIds}
                     initialIsImageJunk={annoData?.image?.isJunk}
                     isLoading={isSiaLoading}
                     isPolygonSelectionMode={polygonEditMode !== PolygonEditMode.NONE}
@@ -908,6 +927,7 @@ const SiaWrapper = ({
                     }}
                     onAnnoCreationFinished={createAnnotation}
                     onAnnoDeleted={deleteAnnotation}
+                    onImageLabelsChanged={handleImageLabelsChanged}
                     onIsImageJunk={junkImage}
                     onNotification={handleNotification}
                     onSelectAnnotation={handleSelectAnnotation}
