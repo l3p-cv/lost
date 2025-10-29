@@ -687,7 +687,7 @@ class AnnotaskReview(Resource):
         annotask = dbm.get_anno_task(anno_task_id=annotask_id)
         direction = data["direction"]
         current_idx = data["imageAnnoId"]
-        iteration = data["iteration"]
+        iteration = data.get("iteration", None)
 
         first_annotation = dbm.get_sia_review_first(annotask.idx, iteration)
 
@@ -700,10 +700,10 @@ class AnnotaskReview(Resource):
         elif direction == "next":
             # get the next image of the same annotation task
             image_anno = dbm.get_sia_review_next(annotask.idx, current_idx, iteration)
-        elif direction == "previous":
+        elif direction == "prev":
             # get the previous image of the same annotation task
             image_anno = dbm.get_sia_review_prev(current_annotask.idx, current_idx, iteration)
-        elif direction == "specificImage":
+        elif direction == "specificImage" or direction == "current":
             image_anno = dbm.get_sia_review_id(annotask_id, current_idx, iteration)
 
         if not image_anno:

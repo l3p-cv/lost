@@ -493,7 +493,7 @@ class DatasetReview(Resource):
             all_dataset_children.extend(dataset_children)
         return all_dataset_children
 
-    def __generate_annotask_list(self, dbm, dataset_id):
+    def __generate_annotask_list(self, dbm, dataset_id: int):
         """create a list with all annotation tasks needed for a given dataset"""
 
         # create a list with all datasets we need the annotasks of
@@ -509,7 +509,7 @@ class DatasetReview(Resource):
 
         return annotasks_list
 
-    def __review(self, dbm, dataset_id, user_id, data):
+    def __review(self, dbm, dataset_id: int, user_id: int, data):
         annotasks_list = self.__generate_annotask_list(dbm, dataset_id)
         annotask_lengths = {}
         annotask_keys = []
@@ -517,7 +517,7 @@ class DatasetReview(Resource):
         # use annotask idx as key
         annotasks = {}
         # get length of review by summarizing all images
-        total_image_amount = 0
+        total_image_amount: int = 0
         for annotask in annotasks_list:
             annotasks[annotask.idx] = annotask
             annotask_keys.append(annotask.idx)
@@ -527,23 +527,27 @@ class DatasetReview(Resource):
             total_image_amount = total_image_amount + annotask_length
 
         direction = data["direction"]
-        current_idx = data["imageAnnoId"]
-        iteration = data["iteration"]
+        iteration = data.get("iteration", None)
         is_first_image = False
 
         first_annotask_key = annotask_keys[0]
         first_annotask = dbm.get_sia_review_first(first_annotask_key, iteration)
 
-        # get annotask selected by user or the first one if he didn't select one
-        current_annotask_idx = data["annotaskIdx"] if "annotaskIdx" in data else first_annotask_key
-        current_annotask = annotasks[current_annotask_idx]
+        current_idx = data.get("imageAnnoId", None)
+
+        # read the current anno task by checking the current image
+        image_anno = dbm.get_image_anno(current_idx)
 
         if direction == "first":
+            current_annotask_idx = first_annotask.anno_task_id
             image_anno = first_annotask
         elif direction == "next":
+            current_annotask_idx = image_anno.anno_task_id
+            current_annotask = annotasks[current_annotask_idx]
+
             # get progress of current annotation task
             anno_current_image_number, anno_total_image_amount = get_image_progress(
-                dbm, annotasks[current_annotask_idx], current_idx, iteration
+                dbm, current_annotask, current_idx, iteration
             )
 
             # check if current image is the last image of current annotask
@@ -558,7 +562,10 @@ class DatasetReview(Resource):
             else:
                 # get the next image of the same annotation task
                 image_anno = dbm.get_sia_review_next(current_annotask.idx, current_idx, iteration)
-        elif direction == "previous":
+        elif direction == "prev":
+            current_annotask_idx = image_anno.anno_task_id
+            current_annotask = annotasks[current_annotask_idx]
+
             # get progress of current annotation task
             anno_current_image_number, anno_total_image_amount = get_image_progress(
                 dbm, annotasks[current_annotask_idx], current_idx, iteration
@@ -577,11 +584,12 @@ class DatasetReview(Resource):
             else:
                 # get the previous image of the same annotation task
                 image_anno = dbm.get_sia_review_prev(current_annotask.idx, current_idx, iteration)
-        elif direction == "specificImage":
-            image_anno = dbm.get_sia_review_id(current_annotask_idx, current_idx, iteration)
+        elif direction == "specificImage" or direction == "current":
+            image_anno = dbm.get_image_anno(current_idx)
+            current_annotask_idx = image_anno.anno_task_id
 
         if not image_anno:
-            return "no annotation found"
+            return "no annotation found", 400
 
         anno_current_image_number, anno_total_image_amount = get_image_progress(
             dbm, annotasks[current_annotask_idx], image_anno.idx, iteration
