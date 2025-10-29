@@ -1,10 +1,19 @@
-import { CSSProperties } from 'react'
+import { CSSProperties, useState } from 'react'
 
 import WorkingOnSIA from './AnnoTask/WorkingOnSIA'
-import SiaWrapper from './SIA/SiaWrapper2'
+import SiaWrapper from './SIA/SiaWrapper'
 import * as annotaskApi from '../../actions/annoTask/anno_task_api'
+import { SiaAnnotationChangeRequest, useGetSiaAnnos } from '../../actions/sia/sia_api'
 
 const SingleImageAnnotation = () => {
+    // image nr in annotask
+    const [annotationRequestData, setAnnotationRequestData] =
+        useState<SiaAnnotationChangeRequest>({
+            direction: 'next',
+            imageId: -1,
+        })
+
+    const { data: annoData } = useGetSiaAnnos(annotationRequestData)
     const { data: currentAnnotask } = annotaskApi.useGetCurrentAnnotask()
 
     // method to get the available height of the page without scrolling
@@ -32,9 +41,11 @@ const SingleImageAnnotation = () => {
             <div style={contentRootStyle}>
                 <div style={middleStyle}>
                     <SiaWrapper
-                        annotaskId={currentAnnotask.id}
+                        taskId={currentAnnotask.id}
                         isDatasetMode={false}
-                        isImageSearchEnabled={true}
+                        isImageSearchEnabled={false}
+                        annoData={annoData}
+                        onSetAnnotationRequestData={setAnnotationRequestData}
                     />
                 </div>
             </div>

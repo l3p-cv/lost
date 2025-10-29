@@ -1,6 +1,4 @@
-import React from 'react'
 import { getColor } from './utils'
-import IconButton from '../../../components/IconButton'
 
 import { useNavigate } from 'react-router-dom'
 import { faFastForward } from '@fortawesome/free-solid-svg-icons'
@@ -84,17 +82,6 @@ const WorkingOn = ({ annoTask }) => {
                         text="Continue"
                     />
                 </CCol>
-                {annoTask.type === 'SIA' && (
-                    <CCol xs="7" className="mt-5">
-                        <CoreIconButton
-                            onClick={() => navigate(`/sia2`)}
-                            color="primary"
-                            isOutline={true}
-                            icon={faFastForward}
-                            text="Continue using the new SIA"
-                        />
-                    </CCol>
-                )}
             </CRow>
         </>
     )

@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
 import {
-    useGetSiaAnnos,
     useGetSiaImage,
     useEditAnnotation,
     useCreateAnnotation,
@@ -8,12 +7,13 @@ import {
     useFinishAnnotask,
     useImageJunk,
     useGetSiaPossibleLabels,
-    // useGetSiaConfiguration,
     usePolygonDifference,
     usePolygonIntersection,
     usePolygonUnion,
     useBBoxCreation,
     EditAnnotationData,
+    SiaResponse,
+    ImageSwitchData,
 } from '../../../actions/sia/sia_api'
 
 import type {
@@ -56,14 +56,18 @@ import ImageFilterButton from './ImageFilterButton'
 import { ImageFilter, SiaImageRequest } from '../../../types/SiaTypes'
 import PolygonEditButtons from './PolygonEditButtons'
 import PolygonEditMode from '../../../models/PolygonEditMode'
-import SIAImageSearchModal from '../../Datasets/SIAImageSearchModal'
+import SIAImageSearchModal, {
+    ImageSearchResult,
+} from '../../Datasets/SIAImageSearchModal'
 import CoreIconButton from '../../../components/CoreIconButton'
 import { faSearch } from '@fortawesome/free-solid-svg-icons'
 
 type SiaWrapperProps = {
-    annotaskId: number
+    annoData: SiaResponse | undefined
+    taskId: number // annotationTaskID or DatasetId
     isDatasetMode?: boolean
     isImageSearchEnabled?: boolean
+    onSetAnnotationRequestData: (changeRequest: ImageSwitchData) => void
 }
 
 // type SamBBox = {
@@ -86,9 +90,11 @@ type SiaWrapperProps = {
 // }
 
 const SiaWrapper = ({
-    annotaskId,
+    annoData,
+    taskId,
     isDatasetMode = false,
     isImageSearchEnabled = false,
+    onSetAnnotationRequestData,
 }: SiaWrapperProps) => {
     const navigate = useNavigate()
 
@@ -103,7 +109,7 @@ const SiaWrapper = ({
     // image search state
     const [isImageSearchActive, setIsImageSearchActive] = useState(false)
     const [isImgSearchModalVisible, setIsImgSearchModalVisible] = useState(false)
-    const [filteredImageIds, setFilteredImageIds] = useState<number[]>([])
+    const [filteredImageIds, setFilteredImageIds] = useState<ImageSearchResult[]>([])
 
     const [polygonOperationResult, setPolygonOperationResult] = useState<
         PolygonOperationResult | undefined
@@ -130,12 +136,6 @@ const SiaWrapper = ({
     // To identify them later on, we store a mapping between the external and SIAs internal id for freshly created annos
     const [annotationIdMapping, setAnnotationIdMapping] = useState({})
 
-    // image nr in annotask
-    const [annotationRequestData, setAnnotationRequestData] = useState({
-        direction: 'next',
-        imageId: -1,
-    })
-
     // image id in filesystem
     const [appliedImageFilters, setAppliedImageFilters] = useState<ImageFilter[]>([])
     const [imageId, setImageId] = useState<number>(-1)
@@ -145,10 +145,8 @@ const SiaWrapper = ({
     }
 
     const { data: possibleLabels } = useGetSiaPossibleLabels()
-    // const { data: siaConfiguration } = useGetSiaConfiguration()
 
-    // requests will automatically refetched when their state (parameter) changes
-    const { data: annoData } = useGetSiaAnnos(annotationRequestData)
+    // request will automatically refetch when its state (parameter) changes
     const { data: imageBlobRequest } = useGetSiaImage(imageRequestData)
     const [imageBlob, setImageBlob] = useState<string | undefined>()
 
@@ -349,6 +347,9 @@ const SiaWrapper = ({
         const annotationInOldFormat: LegacyAnnotation =
             legacyHelper.convertAnnoToOldFormat(newAnnotation)
 
+        // satisfy linter
+        if (annoData === undefined) return
+
         const currentImageData = annoData.image
         const imageData = {
             imgId: currentImageData.id,
@@ -369,6 +370,9 @@ const SiaWrapper = ({
     }
 
     const deleteAnnotation = (annotation: Annotation) => {
+        // satisfy linter
+        if (annoData === undefined) return
+
         const currentImageData = annoData.image
         const imageData = {
             imgId: currentImageData.id,
@@ -426,6 +430,9 @@ const SiaWrapper = ({
 
         const annotationInOldFormat = legacyHelper.convertAnnoToOldFormat(newAnnotation)
 
+        // satisfy linter
+        if (annoData === undefined) return
+
         const currentImageData = annoData.image
         const imageData = {
             imgId: currentImageData.id,
@@ -441,6 +448,9 @@ const SiaWrapper = ({
     }
 
     const junkImage = (newJunkState) => {
+        // satisfy linter
+        if (annoData === undefined) return
+
         const currentImageData = annoData.image
         const imageData = {
             imgId: currentImageData.id,
@@ -477,27 +487,35 @@ const SiaWrapper = ({
         setImageBlob(undefined)
     }
 
-    const getSearchImageId = (currentId: number, isDirectionNext: boolean): number => {
+    const getSearchImageId = (
+        currentId: number,
+        isDirectionNext: boolean,
+    ): ImageSearchResult => {
+        // get position in list to determine if its the first or last entry
+        const currentIndex: number = filteredImageIds.findIndex(
+            (result: ImageSearchResult) => result.imageId === currentId,
+        )
+
         // next image
         if (isDirectionNext) {
             // catch last image
-            if (filteredImageIds.indexOf(currentId) === filteredImageIds.length - 1)
-                return -1
+            if (currentIndex === filteredImageIds.length - 1)
+                return { imageId: -1, annotaskId: -1 }
 
-            return filteredImageIds[filteredImageIds.indexOf(currentId) + 1]
+            return filteredImageIds[currentIndex + 1]
         }
 
         // previous image
         // catch first image
-        if (filteredImageIds.indexOf(currentId) === 0) return -1
+        if (currentIndex === 0) return { imageId: -1, annotaskId: -1 }
 
-        return filteredImageIds[filteredImageIds.indexOf(currentId) - 1]
+        return filteredImageIds[currentIndex - 1]
     }
 
     const getSpecificImage = (imageId: number) => {
         resetWrapper()
 
-        setAnnotationRequestData({
+        onSetAnnotationRequestData({
             direction: 'current',
             imageId: imageId,
         })
@@ -506,52 +524,41 @@ const SiaWrapper = ({
         // handleClearSamHelperAnnos()
     }
 
-    const getNextImage = () => {
+    const handleNewImage = (isForward: boolean) => {
         resetWrapper()
 
         const currentImageId: number = imageRequestData!.imageId
+        let newAnnotationRequestData: ImageSwitchData
 
         // stay in image search filter (if applied)
         if (isImageSearchActive) {
-            const nextImageIdInFilter: number = getSearchImageId(currentImageId, true)
+            const nextImageIdInFilter: ImageSearchResult = getSearchImageId(
+                currentImageId,
+                isForward,
+            )
 
-            setAnnotationRequestData({
+            newAnnotationRequestData = {
                 direction: 'current',
-                imageId: nextImageIdInFilter,
-            })
-            return
+                imageId: nextImageIdInFilter.imageId,
+            }
+        } else {
+            newAnnotationRequestData = {
+                direction: isForward ? 'next' : 'prev',
+                imageId: currentImageId,
+            }
         }
 
-        setAnnotationRequestData({
-            direction: 'next',
-            imageId: currentImageId,
-        })
+        onSetAnnotationRequestData(newAnnotationRequestData as ImageSwitchData)
 
         // handleClearSamHelperAnnos()
     }
 
+    const getNextImage = () => {
+        handleNewImage(true)
+    }
+
     const getPreviousImage = () => {
-        resetWrapper()
-
-        const currentImageId: number = imageRequestData!.imageId
-
-        // stay in image search filter (if applied)
-        if (isImageSearchActive) {
-            const nextImageIdInFilter: number = getSearchImageId(currentImageId, false)
-
-            setAnnotationRequestData({
-                direction: 'current',
-                imageId: nextImageIdInFilter,
-            })
-            return
-        }
-
-        setAnnotationRequestData({
-            direction: 'prev',
-            imageId: currentImageId,
-        })
-
-        // handleClearSamHelperAnnos()
+        handleNewImage(false)
     }
 
     const submitAnnotask = () => {
@@ -867,10 +874,10 @@ const SiaWrapper = ({
             {isImageSearchEnabled && (
                 <SIAImageSearchModal
                     isAnnotaskReview={!isDatasetMode}
-                    id={annotaskId}
+                    id={taskId}
                     isVisible={isImgSearchModalVisible}
                     setIsVisible={setIsImgSearchModalVisible}
-                    onChooseImage={(_, imageId) => getSpecificImage(imageId)}
+                    onChooseImage={getSpecificImage}
                     possibleAnnotaskLabels={possibleLabels!}
                     onSearchResult={setFilteredImageIds}
                 />

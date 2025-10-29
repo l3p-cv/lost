@@ -25,9 +25,9 @@ type ConvertingAnnotation = {
     labelIds?: number[]
     mode: AnnotationMode // do we even need this globally? - only really used inside AnnotationComponent
     selectedNode: number
-    status: AnnotationStatus
-    type: string
-    timestamp: DOMHighResTimeStamp
+    status: string | AnnotationStatus
+    type: string | AnnotationTool
+    timestamp?: DOMHighResTimeStamp
 }
 
 export type LegacyAnnotation = {
@@ -39,7 +39,7 @@ export type LegacyAnnotation = {
     selectedNode: number
     status: string
     type: string
-    timestamp: DOMHighResTimeStamp
+    timestamp?: DOMHighResTimeStamp
 }
 
 export type LegacyAnnotationResponse = {
@@ -77,8 +77,6 @@ const unconvertAnnoToolType = (annotationType: AnnotationTool): string => {
         case AnnotationTool.Polygon:
             return 'polygon'
     }
-
-    return ''
 }
 
 const unconvertAnnotationStatus = (annotationStatus: AnnotationStatus): string => {
@@ -87,14 +85,12 @@ const unconvertAnnotationStatus = (annotationStatus: AnnotationStatus): string =
             return 'new'
         case AnnotationStatus.DELETED:
             return 'deleted'
-        // case AnnotationStatus.DATABASE:
+        case AnnotationStatus.LOADED:
         case AnnotationStatus.CREATED:
             return 'database'
         case AnnotationStatus.CHANGED:
             return 'changed'
     }
-
-    return ''
 }
 
 // convert an annotation from SIA into the older Database format
@@ -107,6 +103,8 @@ const convertAnnoToOldFormat = (annotation: Annotation): LegacyAnnotation => {
         ...tmpAnnotation,
         id: `${annotation.externalId}`, // rename external id
         data: annotation.coordinates, // default (just rename coordinates key)
+        status: '', // satisfy typescript linter (will be replaced later)
+        type: '', // satisfy typescript linter (will be replaced later)
     }
 
     // handle special annotation types that were used in the old format
@@ -192,6 +190,7 @@ const convertAnnoToNewFormat = (
         coordinates: newCoords,
         type: convertedAnnoType,
         status: AnnotationStatus.LOADED,
+        labelIds: legacyAnnotation.labelIds ? legacyAnnotation.labelIds : [],
     }
 
     return newAnnotation

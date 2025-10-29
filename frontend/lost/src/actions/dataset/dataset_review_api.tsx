@@ -4,17 +4,47 @@ import { API_URL } from '../../lost_settings'
 
 import { uiConfig, SIA_INITIAL_UI_CONFIG } from 'lost-sia/utils'
 
-export const useReview = (isAnnotaskReview) => {
-    return useMutation((requestArguments) => {
-        const reviewType = isAnnotaskReview ? 'annotasks' : 'datasets'
+import { ImageData } from '../sia/sia_api'
+import { LegacyAnnotationResponse } from '../../containers/Annotation/SIA/legacyHelper'
 
-        // destructure arguments array (useMutation only accepts one data parameter)
-        // annotaskId task or datasetId (depends on review mode)
-        const [id, data] = requestArguments
-        return axios
-            .post(`${API_URL}/${reviewType}/${id}/review`, data)
-            .then((res) => res.data)
-    })
+export type SiaDatasetResponse = {
+    image: ImageData
+    annotations: LegacyAnnotationResponse
+    current_annotask_idx: number
+}
+
+type DatasetImageSwitchData = {
+    direction: 'first' | 'next' | 'prev' | 'specificImage' | 'current'
+    imageAnnoId: number | null
+    iteration: number | null | undefined
+}
+
+export type ReviewData = {
+    isAnnotaskReview: boolean
+    taskId: number
+    data: DatasetImageSwitchData
+}
+
+export const useReview = (annotationRequestData: ReviewData) => {
+    return useQuery(
+        ['getsiareviewannos', annotationRequestData],
+        () => {
+            const { isAnnotaskReview, taskId, data } = annotationRequestData
+            const reviewType: string = isAnnotaskReview ? 'annotasks' : 'datasets'
+
+            return axios
+                .post(`${API_URL}/${reviewType}/${taskId}/review`, data)
+                .then((res): SiaDatasetResponse => res.data)
+        },
+        {
+            // only fetch when annotationRequestData is available
+            // request will automatically refetch when value changes
+            enabled: !!annotationRequestData,
+            refetchOnWindowFocus: false,
+            cacheTime: 0,
+            staleTime: 0,
+        },
+    )
 }
 
 export const useReviewOptions = () => {

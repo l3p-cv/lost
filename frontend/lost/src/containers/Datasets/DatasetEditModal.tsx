@@ -3,11 +3,27 @@ import { faSave, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { useEffect, useState } from 'react'
 import Swal from 'sweetalert2'
 import * as datasetApi from '../../actions/dataset/dataset_api'
-import IconButton from '../../components/IconButton'
 import { showError, showSuccess } from '../../components/Notification'
-import FilterableDropdown from '../../components/FilterableDropdown'
+import FilterableDropdown, { FilterItem } from '../../components/FilterableDropdown'
+import CoreIconButton from '../../components/CoreIconButton'
 
 const NOTIFICATION_TIMEOUT_MS = 5000
+
+export type Dataset = {
+    idx: number
+    name: string
+    description: string
+    parentId: number
+    datastore_id: number
+}
+
+type DatasetEditModalProps = {
+    isVisible: boolean
+    setIsVisible: (isVisible: boolean) => void
+    editedDatasetObj?: Dataset
+    flatDatasetList: Map<number, string>
+    onDatasetCreated: (datasetId: number) => void
+}
 
 const DatasetEditModal = ({
     isVisible,
@@ -15,7 +31,7 @@ const DatasetEditModal = ({
     editedDatasetObj = undefined,
     flatDatasetList,
     onDatasetCreated,
-}) => {
+}: DatasetEditModalProps) => {
     const { mutate: createDatasetApi, data: createResponse } =
         datasetApi.useCreateDataset()
     const { mutate: updateDatasetApi, data: updateResponse } =
@@ -26,8 +42,8 @@ const DatasetEditModal = ({
     const [idx, setIdx] = useState(-1)
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
-    const [parentDataset, setParentDataset] = useState(undefined)
-    const [parentDatasetOptions, setParentDatasetOptions] = useState([])
+    const [parentDataset, setParentDataset] = useState<FilterItem | undefined>(undefined)
+    const [parentDatasetOptions, setParentDatasetOptions] = useState<FilterItem[]>([])
     // const [datastoreId, setDatastoreId] = useState("0")
     // const [datastoreDropdownOptions, setDatastoreDropdownOptions] = useState([])
 
@@ -48,9 +64,11 @@ const DatasetEditModal = ({
     //     converDatastoreToDropdownOptions(datastoreList)
     // }, [datastoreList])
 
-    const convertDatasetListToDropdownOptions = (datasetList) => {
+    const convertDatasetListToDropdownOptions = (
+        flatDatasetList: Map<number, string>,
+    ) => {
         // default entry in case dataset shouldn't have a parent
-        const options = [
+        const options: FilterItem[] = [
             {
                 key: -1,
                 value: -1,
@@ -58,13 +76,19 @@ const DatasetEditModal = ({
             },
         ]
 
-        Object.keys(datasetList).forEach((datasetId) => {
-            options.push({
-                key: datasetId,
-                value: datasetId,
-                text: datasetList[datasetId],
-            })
+        // Object.keys uses string for value
+        Object.keys(flatDatasetList).forEach((datasetId: string) => {
+            // back to number
+            const nDatasetId: number = parseInt(datasetId)
+
+            const newFilterItem: FilterItem = {
+                key: nDatasetId,
+                value: nDatasetId,
+                text: flatDatasetList[nDatasetId],
+            }
+            options.push(newFilterItem)
         })
+
         setParentDatasetOptions(options)
     }
 
@@ -89,7 +113,7 @@ const DatasetEditModal = ({
                 : editedDatasetObj.parentId
 
         // get the parent dataset with the matching id
-        const newParentDataset = parentDatasetOptions.filter(
+        const newParentDataset: FilterItem = parentDatasetOptions.filter(
             (dataset) => dataset.value == parentId,
         )[0]
 
@@ -97,10 +121,10 @@ const DatasetEditModal = ({
     }, [editedDatasetObj, parentDatasetOptions])
 
     const showApiResponse = (
-        apiResponse,
-        msgSuccessVerb,
-        msgErrorVerb,
-        onSuccessCallback,
+        apiResponse: datasetApi.DatasetResponse | undefined,
+        msgSuccessVerb: string,
+        msgErrorVerb: string,
+        onSuccessCallback?: (response: object) => void,
     ) => {
         if (apiResponse === undefined) return
 
@@ -138,7 +162,7 @@ const DatasetEditModal = ({
     }, [deleteDatasetResponse])
 
     const updateDataset = () => {
-        const dataset = {
+        const dataset: datasetApi.Dataset = {
             id: idx,
             name,
             description,
@@ -150,10 +174,10 @@ const DatasetEditModal = ({
     }
 
     const createDataset = () => {
-        const dataset = {
+        const dataset: datasetApi.Dataset = {
             name,
             description,
-            parentDatasetId: parentDataset.value,
+            parentDatasetId: parentDataset?.value,
             // datastoreId: parseInt(datastoreId)
         }
 
@@ -172,13 +196,12 @@ const DatasetEditModal = ({
         }).then((result) => {
             if (result.isConfirmed) {
                 deleteDataset(idx)
-            } else {
             }
         })
     }
 
     const renderDeleteDatasetButton = () => (
-        <IconButton
+        <CoreIconButton
             isOutline={false}
             color="danger"
             icon={faTrash}
@@ -254,7 +277,7 @@ const DatasetEditModal = ({
                     <CCol sm="6">
                         {idx !== -1 ? renderDeleteDatasetButton() : ''}
 
-                        <IconButton
+                        <CoreIconButton
                             isOutline={false}
                             color="primary"
                             icon={faSave}

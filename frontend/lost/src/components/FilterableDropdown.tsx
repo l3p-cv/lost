@@ -1,17 +1,39 @@
-import React, { useState } from 'react'
-import { CDropdown, CDropdownMenu, CDropdownItem, CFormInput } from '@coreui/react'
-import IconButton from './IconButton'
+import { useState } from 'react'
+import {
+    CDropdown,
+    CDropdownMenu,
+    CDropdownItem,
+    CFormInput,
+    CDropdownToggle,
+} from '@coreui/react'
 import { faCaretDown } from '@fortawesome/free-solid-svg-icons'
+import CoreIconButton from './CoreIconButton'
 
-const FilterableDropdown = ({ items, selectedItem, onChange }) => {
-    const [filter, setFilter] = useState('')
-    const [visible, setVisible] = useState(false)
+export type FilterItem = {
+    key: number
+    text: string
+    value: number
+}
 
-    const filteredItems = items.filter((item) =>
+type FilterableDropdownProps = {
+    items: FilterItem[]
+    selectedItem: FilterItem | undefined
+    onChange: (item: FilterItem) => void
+}
+
+const FilterableDropdown = ({
+    items,
+    selectedItem,
+    onChange,
+}: FilterableDropdownProps) => {
+    const [filter, setFilter] = useState<string>('')
+    const [visible, setVisible] = useState<boolean>(false)
+
+    const filteredItems = items.filter((item: FilterItem) =>
         item.text.toLowerCase().includes(filter.toLowerCase()),
     )
 
-    const handleSelect = (item) => {
+    const handleSelect = (item: FilterItem) => {
         onChange(item)
         setVisible(false)
 
@@ -21,18 +43,12 @@ const FilterableDropdown = ({ items, selectedItem, onChange }) => {
 
     return (
         <div>
-            <IconButton
-                text={
-                    selectedItem !== undefined && selectedItem.text
-                        ? selectedItem.text
-                        : 'Choose an item'
-                }
-                isTextLeft={true}
-                icon={faCaretDown}
-                onClick={() => setVisible(true)}
-            />
-
             <CDropdown visible={visible}>
+                <CDropdownToggle variant="outline" color="primary">
+                    {selectedItem !== undefined && selectedItem.text
+                        ? selectedItem.text
+                        : 'Choose an item'}
+                </CDropdownToggle>
                 <CDropdownMenu
                     style={{ minWidth: '250px', position: 'absolute', left: '-80px' }}
                 >
@@ -45,7 +61,7 @@ const FilterableDropdown = ({ items, selectedItem, onChange }) => {
                         />
                     </div>
                     {filteredItems.length > 0 ? (
-                        filteredItems.map((item) => (
+                        filteredItems.map((item: FilterItem) => (
                             <CDropdownItem
                                 key={item.key}
                                 onClick={() => handleSelect(item)}
@@ -54,7 +70,7 @@ const FilterableDropdown = ({ items, selectedItem, onChange }) => {
                             </CDropdownItem>
                         ))
                     ) : (
-                        <CDropdownItem disabled>Keine Treffer</CDropdownItem>
+                        <CDropdownItem disabled>No Results</CDropdownItem>
                     )}
                 </CDropdownMenu>
             </CDropdown>

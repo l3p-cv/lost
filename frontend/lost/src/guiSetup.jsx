@@ -4,7 +4,6 @@ import AnnotationTableComponent from './containers/Annotation/AnnotationTable'
 import MiaComponent from './containers/Annotation/MultiImageAnnotation'
 import SiaReviewComponent from './containers/Annotation/SIAReviewAnnotation'
 import SiaComponent from './containers/Annotation/SingleImageAnnotation'
-import SiaComponent2 from './containers/Annotation/SingleImageAnnotation2'
 import DataSourcesComponent from './containers/DataSources/DataSources'
 import DatasetsComponent from './containers/Datasets/Datasets'
 import DatasetsReviewComponent from './containers/Datasets/ReviewPage'
@@ -83,11 +82,6 @@ const InstructionRoute = {
     icon: <FaFileAlt {...iconProps} />,
 }
 
-const TitleInstruction = {
-    title: true,
-    name: 'Instruction',
-}
-
 const Labels = {
     name: 'Labels',
     to: '/labels',
@@ -130,11 +124,6 @@ const Annotation = {
 const Sia = {
     path: '/sia/*',
     component: SiaComponent,
-}
-
-const Sia2 = {
-    path: '/sia2/*',
-    component: SiaComponent2,
 }
 
 const SiaReview = {
@@ -190,7 +179,6 @@ const MyProfile = {
 const guiSetup = {
     additionalRoutes: [
         Sia,
-        Sia2,
         Mia,
         MyProfile,
         SiaReview,

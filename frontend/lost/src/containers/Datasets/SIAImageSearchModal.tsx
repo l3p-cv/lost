@@ -32,14 +32,19 @@ import * as datasetReviewApi from '../../actions/dataset/dataset_review_api'
 import { Label, TagLabel } from 'lost-sia'
 import CoreIconButton from '../../components/CoreIconButton'
 
+export type ImageSearchResult = {
+    imageId: number
+    annotaskId: number
+}
+
 type SIAImageSearchModalProps = {
     isAnnotaskReview: boolean
     id: number
     isVisible: boolean
     possibleAnnotaskLabels: Label[]
     setIsVisible: (isVisible: boolean) => void
-    onChooseImage: (annotationId: number, imageId: number) => void
-    onSearchResult: (imageIdList: number[]) => void
+    onChooseImage: (imageId: number) => void
+    onSearchResult: (imageIdList: ImageSearchResult[]) => void
 }
 
 const SIAImageSearchModal = ({
@@ -101,8 +106,15 @@ const SIAImageSearchModal = ({
     useEffect(() => {
         if (searchResults === undefined) return
         setTableData(searchResults)
-        const imageIdList = searchResults.map((result) => result.imageId)
-        onSearchResult(imageIdList)
+        const imageResultList: ImageSearchResult[] = searchResults.map((result) => {
+            const newResult: ImageSearchResult = {
+                imageId: result.imageId,
+                annotaskId: result.annotationId,
+            }
+            return newResult
+        })
+
+        onSearchResult(imageResultList)
     }, [searchResults])
 
     type ColumnShape = {
@@ -153,7 +165,7 @@ const SIAImageSearchModal = ({
                     onClick={() => {
                         setIsVisible(false)
                         const rowData = props.row.original
-                        onChooseImage(rowData.annotationId, rowData.imageId)
+                        onChooseImage(rowData.imageId)
                     }}
                     disabled={false}
                 />

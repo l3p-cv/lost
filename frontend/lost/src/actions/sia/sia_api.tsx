@@ -3,11 +3,44 @@ import { useMutation, useQuery } from 'react-query'
 import { API_URL } from '../../lost_settings'
 import { Label, Point } from 'lost-sia'
 import { SiaImageRequest } from '../../types/SiaTypes'
-import { LegacyAnnotation } from '../../containers/Annotation/SIA/legacyHelper'
+import {
+    LegacyAnnotation,
+    LegacyAnnotationResponse,
+} from '../../containers/Annotation/SIA/legacyHelper'
+
+export type ImageData = {
+    id: number
+    number: number
+    amount: number
+    annoTime: number
+    isFirst: boolean
+    isLast: boolean
+    labelIds: Label[]
+    isJunk: boolean
+    description: string | undefined
+    imgActions: string[]
+}
+
+export type ImageSwitchData = {
+    // sia api uses previous while dataset api uses prev
+    direction: 'first' | 'next' | 'prev' | 'specificImage' | 'current'
+    imageId: number | null
+    iteration?: number | null
+}
+
+export type SiaAnnotationChangeRequest = {
+    direction: 'next' | 'prev' | 'current'
+    imageId: number
+}
+
+export type SiaResponse = {
+    image: ImageData
+    annotations: LegacyAnnotationResponse
+}
 
 type ImageEditData = {
     imgId: number
-    imgActions: string
+    imgActions: string[]
     annoTime: number
 }
 
@@ -27,7 +60,7 @@ type PolygonData = {
     secondPolygon: LegacyAnnotation
 }
 
-export const useGetSiaAnnos = (annotationRequestData) => {
+export const useGetSiaAnnos = (annotationRequestData: SiaAnnotationChangeRequest) => {
     return useQuery(
         ['getsiaannos', annotationRequestData],
         () =>
@@ -35,7 +68,7 @@ export const useGetSiaAnnos = (annotationRequestData) => {
                 .get(
                     `${API_URL}/sia?direction=${annotationRequestData.direction}&lastImgId=${annotationRequestData.imageId}`,
                 )
-                .then((res) => res.data),
+                .then((res): SiaResponse => res.data),
         {
             // only fetch when annotationRequestData is available
             // request will automatically refetch when value changes

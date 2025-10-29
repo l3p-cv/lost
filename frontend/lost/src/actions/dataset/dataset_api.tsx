@@ -2,6 +2,14 @@ import axios from 'axios'
 import { useMutation, useQuery } from 'react-query'
 import { API_URL } from '../../lost_settings'
 
+export type Dataset = {
+    id?: number
+    name: string
+    description: string
+    parentDatasetId: number | undefined
+}
+export type DatasetResponse = [requestSuccessful: boolean, response: object]
+
 export const useDatasets = () => {
     return useQuery(
         ['datasets'],
@@ -26,16 +34,17 @@ export const useFlatDatasets = (select) => {
 export const useDatasetsPaged = (page_index, page_size) => {
     return useQuery(
         ['datasetsPaged', page_index, page_size],
-        () => axios
-            .get(`${API_URL}/datasets/paged/${page_index}/${page_size}`)
-            .then((res) => res.data),
+        () =>
+            axios
+                .get(`${API_URL}/datasets/paged/${page_index}/${page_size}`)
+                .then((res) => res.data),
         {
             keepPreviousData: true,
             staleTime: 3000,
             onError: () => {
                 console.error('An error occurred when fetching paged datasets')
             },
-        }
+        },
     )
 }
 
@@ -50,28 +59,28 @@ export const useDatastoreKeys = () => {
 }
 
 export const useCreateDataset = () => {
-    return useMutation((data) =>
+    return useMutation((data: Dataset) =>
         axios
             .post(`${API_URL}/datasets`, data)
-            .then((res) => [true, res.data])
-            .catch((error) => [false, error.response]),
+            .then((res): DatasetResponse => [true, res.data])
+            .catch((error): DatasetResponse => [false, error.response]),
     )
 }
 
 export const useUpdateDataset = () => {
-    return useMutation((data) =>
+    return useMutation((data: Dataset) =>
         axios
             .patch(`${API_URL}/datasets`, data)
-            .then((res) => [true, res.data])
-            .catch((error) => [false, error.response]),
+            .then((res): DatasetResponse => [true, res.data])
+            .catch((error): DatasetResponse => [false, error.response]),
     )
 }
 
 export const useDeleteDataset = () => {
-    return useMutation((datasetId) =>
+    return useMutation((datasetId: number) =>
         axios
             .delete(`${API_URL}/datasets/${datasetId}`)
-            .then((res) => [true, res.data])
-            .catch((error) => [false, error.response]),
+            .then((res): DatasetResponse => [true, res.data])
+            .catch((error): DatasetResponse => [false, error.response]),
     )
 }

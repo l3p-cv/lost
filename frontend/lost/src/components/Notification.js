@@ -61,7 +61,7 @@ export const showDecision = ({
     html = '',
     option1,
     option2,
-    target = document.getElementById('popup-root'),
+    target= document.getElementById('form-modal'),
 }) => {
     Swal.fire({
         target,
