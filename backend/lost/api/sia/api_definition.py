@@ -192,7 +192,7 @@ labels = api.model('Labels', {
 
 sia_polygon_union = api.model('SIA Polygon Union', {
     'annotations': fields.List(
-        fields.Raw(required=True, description='Each annotation: {"type": "polygon|bbox", "coordinates": [...] or {...}}'),
+        fields.Raw(required=True, description='Each annotation: {"type": "polygon|bbox", "data": [...] or {...}}'),
         required=True,
         min_items=2
     )
@@ -202,7 +202,7 @@ sia_polygon_intersection = api.model('SIA Polygon Intersection', {
     'annotations': fields.List(
         fields.Raw(
             required=True,
-            description='Each annotation: {"type": "polygon|bbox", "coordinates": [...] or {...}}'
+            description='Each annotation: {"type": "polygon|bbox", "data": [...] or {...}}'
         ),
         description='Exactly 2 annotations (polygon or bbox) for intersection operation',
         required=True,
@@ -214,12 +214,12 @@ sia_polygon_intersection = api.model('SIA Polygon Intersection', {
 sia_polygon_difference = api.model('SIA Polygon Difference', {
     'selectedPolygon': fields.Raw(
         required=True,
-        description='Selected annotation: {"type": "polygon|bbox", "coordinates": [...] or {...}}'
+        description='Selected annotation: {"type": "polygon|bbox", "data": [...] or {...}}'
     ),
     'polygonModifiers': fields.List(
         fields.Raw(
             required=True,
-            description='List of modifier annotations: each {"type": "polygon|bbox", "coordinates": [...] or {...}}'
+            description='List of modifier annotations: each {"type": "polygon|bbox", "data": [...] or {...}}'
         ),
         required=True,
         min_items=1
@@ -244,7 +244,7 @@ image_filters = api.model('ImageFilters', {
 
 sia_bbox_from_points = api.model('SIA BBox From Points', {
     'data': fields.List(
-        fields.List(fields.Nested(point_data, description='2-D coordinates of a point'), min_items=3, max_items=4),
+        fields.List(fields.Nested(point_data, description='2-D coordinates of a point')),
         description='A list of point sets, each containing 3 or 4 points for bounding box computation',
         required=True
     )

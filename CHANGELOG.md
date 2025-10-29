@@ -29,7 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added pytest for polygon operation validation comprehensive test coverage.
 - Added bilateral blur filter support: implemented apply_bilateral_blurr with parameter validation, updated image_filters model, and included expected images for test validation.  
 - Added comprehensive tests for bilateral blur and multiple filter application scenarios.
-- Added /compute_bboxes endpoint to calculate bounding boxes from point sets.
+- Added /bboxFromPoints endpoint to calculate bounding boxes from point sets.
 - Added /polygon_operations endpoint with perform_polygon_operations for union, intersection, and difference of polygons and bounding boxes, including validations.
 - Added Swagger UI documentation for the new polygon operations API
 - Added pytest coverage for polygon operations including mixed polygon and bbox scenarios
@@ -50,6 +50,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated pipeline description handling in tour guide step(mandatory message)
 - Big update of LOST Documentation (now with docusaurus)
 - Moved development.md from documentation to new frontend_development
+- Changed the polygon operations endpoints to use data instead of coordinates.
 ### Fixed
 - Removed centered spinner of CoreDataTable, when faced with empty data, to not block the rest of the page
 - Fixed execution of DBPatcher at wrong place on start up
@@ -64,6 +65,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved positioning of step dialogs (now waits for rendering)
 - Resolved issue with image folder selection during tours
 - Re-added rendering of footer for component BaseModal
+- Fixed and removed contraint over the input payload point set to use only 4 points as max limit in `/bboxFromPoints`. 
 ### Removed
 - Removed all instances of reactstrap library
 - Removed all instances of semantic-ui library

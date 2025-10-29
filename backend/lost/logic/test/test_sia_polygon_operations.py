@@ -356,3 +356,53 @@ class TestPolygonOperations:
             sia.perform_polygon_difference(data)
 
         assert "No overlap detected between selected polygon and modifiers" in str(excinfo.value)
+
+
+def compare_bboxes(actual, expected, tolerance=1e-6):
+    for key in ["x", "y", "w", "h"]:
+        if not abs(actual[key] - expected[key]) < tolerance:
+            return False
+    return True
+
+
+def test_compute_bboxes_from_points_valid():
+    """Test bounding box computation from a valid point set with 8 points."""
+    payload = {
+        "data": [
+            [
+                {"x": 0.20201015188684168, "y": 0.5913626320093255},
+                {"x": 0.0843630930633123, "y": 0.5913626320093255},
+                {"x": 0.0843630930633123, "y": 0.6749090940724116},
+                {"x": 0.15216530090296987, "y": 0.6749090940724116},
+                {"x": 0.15216530090296987, "y": 0.8067954138177009},
+                {"x": 0.3521653009029699, "y": 0.8067954138177009},
+                {"x": 0.3521653009029699, "y": 0.619105729248221},
+                {"x": 0.20201015188684168, "y": 0.619105729248221},
+            ]
+        ]
+    }
+
+    expected_bbox = {"x": 0.2182642, "y": 0.69907902, "w": 0.26780221, "h": 0.26780221}
+
+    result = sia.compute_bboxes_from_points(payload)
+
+    assert isinstance(result, list)
+    assert len(result) == 1
+
+    bbox = result[0]
+    assert set(bbox.keys()) == {"x", "y", "w", "h"}
+    assert compare_bboxes(bbox, expected_bbox), f"BBox mismatch: {bbox} != {expected_bbox}"
+
+
+def test_compute_bboxes_from_points_insufficient_points():
+    """Test that compute_bboxes_from_points raises error for point sets with fewer than 3 points."""
+    payload = {
+        "data": [
+            [{"x": 0.43413780496681637, "y": 0.4264308609697573}, {"x": 0.5142778185036971, "y": 0.4460820520286093}]
+        ]
+    }
+
+    with pytest.raises(sia.PolygonOperationError) as excinfo:
+        sia.compute_bboxes_from_points(payload)
+
+    assert "Each point set must contain at least 3 points" in str(excinfo.value)

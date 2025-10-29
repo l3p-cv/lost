@@ -57,7 +57,6 @@ proposals that are presented to an annotator inside the annotation tool.
 
 ### Documentation
 
-LOST 2 was just recently released.
 A lot of new features have been added and improvements have been made compared to version 1 (see [Changelog](./CHANGELOG.md)).
 The adaptation of the documentation is currently still in progress.
 

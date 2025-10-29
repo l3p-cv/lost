@@ -975,7 +975,7 @@ def normalize_annotations(data):
             "type": "polygon",
             "polygonCoordinates": poly,
             "originalType": ann["originalType"],
-            "coordinates": ann.get("data")
+            "data": ann.get("data")
         }
         for poly, ann in zip(unique_polys, normalized_annotations)
     ]
@@ -1065,8 +1065,8 @@ def perform_polygon_intersection(data):
     if len(annotations) != 2:
         raise PolygonOperationError("Exactly 2 annotations required for intersection")
 
-    if (len(annotations) == 2 and all(ann.get("originalType") == "bbox" and "coordinates" in ann for ann in annotations)):
-        result_bbox = intersect_bboxes(annotations[0]["coordinates"], annotations[1]["coordinates"])
+    if (len(annotations) == 2 and all(ann.get("originalType") == "bbox" and "data" in ann for ann in annotations)):
+        result_bbox = intersect_bboxes(annotations[0]["data"], annotations[1]["data"])
         return {"type": "bbox", "resultantBBox": result_bbox}
 
     polygons = [ann["polygonCoordinates"] for ann in annotations]
@@ -1119,21 +1119,20 @@ def perform_polygon_difference(data):
         raise PolygonOperationError("Missing or invalid 'selectedPolygon' field")
     if "polygonModifiers" not in data or not isinstance(data["polygonModifiers"], list):
         raise PolygonOperationError("Missing or invalid 'polygonModifiers' field")
-    if "selectedPolygon" not in data or "polygonModifiers" not in data:
-        raise PolygonOperationError("Missing 'selectedPolygon' or 'polygonModifiers' field")
-    elif "selectedPolygon" in data and isinstance(data["selectedPolygon"], dict):
-        sel = data["selectedPolygon"]
+    
+    sel = data["selectedPolygon"]
+    if isinstance(sel, dict):
         if sel.get("type") == "bbox":
-            data["selectedPolygon"] = bbox_to_polygon(sel["coordinates"])
+            data["selectedPolygon"] = bbox_to_polygon(sel["data"])
         elif sel.get("type") == "polygon":
-            data["selectedPolygon"] = sel["coordinates"]
+            data["selectedPolygon"] = sel["data"]
 
     for i, mod in enumerate(data.get("polygonModifiers", [])):
         if isinstance(mod, dict):
             if mod.get("type") == "bbox":
-                data["polygonModifiers"][i] = bbox_to_polygon(mod["coordinates"])
+                data["polygonModifiers"][i] = bbox_to_polygon(mod["data"])
             elif mod.get("type") == "polygon":
-                data["polygonModifiers"][i] = mod["coordinates"]
+                data["polygonModifiers"][i] = mod["data"]
 
     polygons = [data["selectedPolygon"]] + data["polygonModifiers"]
 
@@ -1261,7 +1260,7 @@ def apply_filters(image, filters):
 
     return processed_image
 
-def compute_bboxes_from_points(db_man, data, image_shape=None):
+def compute_bboxes_from_points(data):
     if not isinstance(data, dict) or "data" not in data:
         flask.current_app.logger.info("Input must be a dictionary with a 'data' key")
         raise PolygonOperationError("Input must be a dictionary with a 'data' key")
@@ -1272,8 +1271,8 @@ def compute_bboxes_from_points(db_man, data, image_shape=None):
 
     results = []
     for point_set in all_point_sets:
-        if not isinstance(point_set, list) or not (3 <= len(point_set) <= 4):
-            raise PolygonOperationError("Each point set must contain 3 or 4 points")
+        if not isinstance(point_set, list) or len(point_set) < 3:
+            raise PolygonOperationError("Each point set must contain at least 3 points")
 
         for point in point_set:
             if not isinstance(point, dict) or "x" not in point or "y" not in point:
