@@ -33,9 +33,7 @@ namespace = api.namespace("datasets", description="Dataset API")
 datasetModelCreate = api.model(
     "DatasetCreate",
     {
-        "name": fields.String(
-            description="Name of the dataset", example="My dataset"
-        ),
+        "name": fields.String(description="Name of the dataset", example="My dataset"),
         "description": fields.String(
             description="Short description what the dataset is about",
             example="Dataset containing all the fancy stuff",
@@ -81,9 +79,7 @@ datasetReviewRequestModel = api.model(
 datasetReviewOptionsModel = api.model(
     "DatasetReviewOptions",
     {
-        "max_iterations": fields.Integer(
-            description="maximum amount of iterations", example="1"
-        ),
+        "max_iterations": fields.Integer(description="maximum amount of iterations", example="1"),
         # "possible_labels": fields.List(description="List of all labels allowed for the annotation process"),
     },
 )
@@ -108,16 +104,12 @@ errorMessage = api.model(
     },
 )
 
-imageWithAnnotation = api.inherit(
-    "ImageWithAnnotation", image, {"annotations": annotations}
-)
+imageWithAnnotation = api.inherit("ImageWithAnnotation", image, {"annotations": annotations})
 
 reviewUpdateAnnotation = api.model(
     "ReviewUpdateAnnotation",
     {
-        "annotaskId": fields.Integer(
-            description="ID of the annotation task", example="1"
-        ),
+        "annotaskId": fields.Integer(description="ID of the annotation task", example="1"),
         "annotationChanges": imageWithAnnotation,
     },
 )
@@ -127,9 +119,7 @@ reviewUpdateAnnotation = api.model(
 @namespace.route("")
 @api.doc(security="apikey")
 class Datasets(Resource):
-    @api.doc(
-        description="Lists all available datasets with children and annotation tasks."
-    )
+    @api.doc(description="Lists all available datasets with children and annotation tasks.")
     @api.response(200, "success", [datasetModel])
     @jwt_required()
     def get(self):
@@ -139,9 +129,7 @@ class Datasets(Resource):
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
             return (
-                "You need to be {} in order to perform this request.".format(
-                    roles.DESIGNER
-                ),
+                "You need to be {} in order to perform this request.".format(roles.DESIGNER),
                 401,
             )
 
@@ -213,9 +201,7 @@ class Datasets(Resource):
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
             return (
-                "You need to be {} in order to perform this request.".format(
-                    roles.DESIGNER
-                ),
+                "You need to be {} in order to perform this request.".format(roles.DESIGNER),
                 401,
             )
 
@@ -261,9 +247,7 @@ class Datasets(Resource):
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
             return (
-                "You need to be {} in order to perform this request.".format(
-                    roles.DESIGNER
-                ),
+                "You need to be {} in order to perform this request.".format(roles.DESIGNER),
                 401,
             )
 
@@ -293,9 +277,7 @@ class Datasets(Resource):
             if dataset_id == parent_id:
                 return ("Dataset can't have itself as its parent", 400)
 
-            has_valid_parent = self.__check_selected_parent_is_not_in_children(
-                db_dataset, parent_id
-            )
+            has_valid_parent = self.__check_selected_parent_is_not_in_children(db_dataset, parent_id)
 
             if not has_valid_parent:
                 return (
@@ -318,10 +300,7 @@ class Datasets(Resource):
                 return False
 
             # check if one of the child's children has the parentId
-            if (
-                self.__check_selected_parent_is_not_in_children(child, parentId)
-                == False
-            ):
+            if self.__check_selected_parent_is_not_in_children(child, parentId) == False:
                 return False
 
         # no children left to check - parent is not a child
@@ -341,9 +320,7 @@ class DatasetReview(Resource):
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
             return (
-                "You need to be {} in order to perform this request.".format(
-                    roles.DESIGNER
-                ),
+                "You need to be {} in order to perform this request.".format(roles.DESIGNER),
                 401,
             )
 
@@ -361,12 +338,13 @@ class DatasetReview(Resource):
         # save all changes
         dbm.session.commit()
 
-@namespace.route('/paged/<int:page_index>/<int:page_size>')
-@namespace.param('page_index', 'Zero-based index of the page.')
-@namespace.param('page_size', 'Number of elements per page.')
-@api.doc(security='apikey')
+
+@namespace.route("/paged/<int:page_index>/<int:page_size>")
+@namespace.param("page_index", "Zero-based index of the page.")
+@namespace.param("page_size", "Number of elements per page.")
+@api.doc(security="apikey")
 class DatasetListPaged(Resource):
-    @api.doc(security='apikey',description='Get all datasets paged')
+    @api.doc(security="apikey", description="Get all datasets paged")
     @jwt_required()
     def get(self, page_index, page_size):
         dbm = access.DBMan(LOST_CONFIG)
@@ -375,14 +353,14 @@ class DatasetListPaged(Resource):
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
             return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
-        else: 
+        else:
             ds_no_parent_page, pages = dbm.get_datasets_paged(page_index, page_size)
             datasets_json = []
             for dataset in ds_no_parent_page:
                 datasets_json.append(self.__build_dataset_children_tree_dict(dataset))
 
             # Only add Annotasks without DS for final page
-            if (page_index +1  == pages):
+            if page_index + 1 == pages:
                 annotasks_without_dataset = dbm.get_annotasks_without_dataset()
                 annotasks_without_dataset_json = []
                 for annotask in annotasks_without_dataset:
@@ -399,9 +377,8 @@ class DatasetListPaged(Resource):
                 }
                 datasets_json.append(meta_ds)
 
-            return jsonify({'datasets': datasets_json,
-                    'pages': pages})
-        
+            return jsonify({"datasets": datasets_json, "pages": pages})
+
     def __build_dataset_children_tree_dict(self, dataset):
         dataset.is_reviewable = False
         children_dicts = []
@@ -419,10 +396,9 @@ class DatasetListPaged(Resource):
             children_dicts.append(annotask.to_dict())
 
         dataset_dict = dataset.to_dict()
-        dataset_dict['children'] = children_dicts
+        dataset_dict["children"] = children_dicts
 
         return dataset_dict
-
 
 
 @namespace.route("/flat/")
@@ -439,9 +415,7 @@ class DatasetsFlat(Resource):
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
             return (
-                "You need to be {} in order to perform this request.".format(
-                    roles.DESIGNER
-                ),
+                "You need to be {} in order to perform this request.".format(roles.DESIGNER),
                 401,
             )
 
@@ -469,9 +443,7 @@ class DatasetReview(Resource):
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
             return (
-                "You need to be {} in order to perform this request.".format(
-                    roles.DESIGNER
-                ),
+                "You need to be {} in order to perform this request.".format(roles.DESIGNER),
                 401,
             )
 
@@ -538,7 +510,6 @@ class DatasetReview(Resource):
         return annotasks_list
 
     def __review(self, dbm, dataset_id, user_id, data):
-
         annotasks_list = self.__generate_annotask_list(dbm, dataset_id)
         annotask_lengths = {}
         annotask_keys = []
@@ -564,70 +535,50 @@ class DatasetReview(Resource):
         first_annotask = dbm.get_sia_review_first(first_annotask_key, iteration)
 
         # get annotask selected by user or the first one if he didn't select one
-        current_annotask_idx = (
-            data["annotaskIdx"] if "annotaskIdx" in data else first_annotask_key
-        )
+        current_annotask_idx = data["annotaskIdx"] if "annotaskIdx" in data else first_annotask_key
         current_annotask = annotasks[current_annotask_idx]
 
         if direction == "first":
             image_anno = first_annotask
         elif direction == "next":
             # get progress of current annotation task
-            anno_current_image_number, anno_total_image_amount = (
-                get_image_progress(
-                    dbm, annotasks[current_annotask_idx], current_idx, iteration
-                )
+            anno_current_image_number, anno_total_image_amount = get_image_progress(
+                dbm, annotasks[current_annotask_idx], current_idx, iteration
             )
 
             # check if current image is the last image of current annotask
             # then we should move to the next annotask
             if anno_current_image_number == anno_total_image_amount:
                 # get the next annotation task
-                current_annotask_idx = self.__next_annotask_index(
-                    annotask_keys, current_annotask_idx
-                )
+                current_annotask_idx = self.__next_annotask_index(annotask_keys, current_annotask_idx)
                 current_annotask = annotasks[current_annotask_idx]
 
                 # switch to the first image of the annotask
-                image_anno = dbm.get_sia_review_first(
-                    current_annotask.idx, iteration
-                )
+                image_anno = dbm.get_sia_review_first(current_annotask.idx, iteration)
             else:
                 # get the next image of the same annotation task
-                image_anno = dbm.get_sia_review_next(
-                    current_annotask.idx, current_idx, iteration
-                )
+                image_anno = dbm.get_sia_review_next(current_annotask.idx, current_idx, iteration)
         elif direction == "previous":
             # get progress of current annotation task
-            anno_current_image_number, anno_total_image_amount = (
-                get_image_progress(
-                    dbm, annotasks[current_annotask_idx], current_idx, iteration
-                )
+            anno_current_image_number, anno_total_image_amount = get_image_progress(
+                dbm, annotasks[current_annotask_idx], current_idx, iteration
             )
 
             # check if current image is the first image of current annotask
             # then we should move to the previous annotask
             if anno_current_image_number == 1:
                 # get the previous annotation task
-                current_annotask_idx = self.__prev_annotask_index(
-                    annotask_keys, current_annotask_idx
-                )
+                current_annotask_idx = self.__prev_annotask_index(annotask_keys, current_annotask_idx)
                 current_annotask = annotasks[current_annotask_idx]
 
                 # switch to the last image of the annotask
-                image_anno = dbm.get_sia_review_last(
-                    current_annotask.idx, iteration
-                )
+                image_anno = dbm.get_sia_review_last(current_annotask.idx, iteration)
 
             else:
                 # get the previous image of the same annotation task
-                image_anno = dbm.get_sia_review_prev(
-                    current_annotask.idx, current_idx, iteration
-                )
+                image_anno = dbm.get_sia_review_prev(current_annotask.idx, current_idx, iteration)
         elif direction == "specificImage":
-            image_anno = dbm.get_sia_review_id(
-                current_annotask_idx, current_idx, iteration
-            )
+            image_anno = dbm.get_sia_review_id(current_annotask_idx, current_idx, iteration)
 
         if not image_anno:
             return "no annotation found"
@@ -639,16 +590,10 @@ class DatasetReview(Resource):
 
         # convert progress of annotask to progress of dataset / all annotasks
         # add the image count of previous annotasks to image number
-        prev_annotask_idx = self.__prev_annotask_index(
-            annotask_keys, current_annotask_idx
-        )
+        prev_annotask_idx = self.__prev_annotask_index(annotask_keys, current_annotask_idx)
         while prev_annotask_idx:
-            current_image_number = (
-                current_image_number + annotask_lengths[prev_annotask_idx]
-            )
-            prev_annotask_idx = self.__prev_annotask_index(
-                annotask_keys, prev_annotask_idx
-            )
+            current_image_number = current_image_number + annotask_lengths[prev_annotask_idx]
+            prev_annotask_idx = self.__prev_annotask_index(annotask_keys, prev_annotask_idx)
 
         # check if user moved to the first of all images
         is_first_image = False
@@ -677,15 +622,15 @@ class DatasetReview(Resource):
 
         return json_response
 
-@namespace.route('/<int:dataset_id>/review/images')
-@api.doc(security='apikey')
+
+@namespace.route("/<int:dataset_id>/review/images")
+@api.doc(security="apikey")
 class DatasetReviewImageSearch(Resource):
     @api.doc(description="Get data for the next dataset review annotation")
-    @api.param('filter', 'String to search for')
-    @api.param('labels', 'String to search for')
-
+    @api.param("filter", "String to search for")
+    @api.param("labels", "String to search for")
     # @api.expect(datasetImageSearchRequestModel)
-    @api.response(200, 'success', [datasetModel])
+    @api.response(200, "success", [datasetModel])
     @jwt_required()
     def get(self, dataset_id):
         dbm = access.DBMan(LOST_CONFIG)
@@ -694,17 +639,14 @@ class DatasetReviewImageSearch(Resource):
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
             return api.abort(403, "You need to be {} in order to perform this request.".format(roles.DESIGNER))
-        
+
         # data = request.json
         # search_str = data['filter']
-        search_str = request.args.get('filter')
-        labels = request.args.get('labels')
-        
+        search_str = request.args.get("filter")
+        labels = request.args.get("labels")
 
         anno_task_ids = get_all_annotask_ids_for_ds(dbm, dataset_id)
-        db_result = dbm.get_search_images_in_annotask_list(
-            anno_task_ids, search_str
-        )
+        db_result = dbm.get_search_images_in_annotask_list(anno_task_ids, search_str)
 
         found_image_ids: list[int] = []
         found_images: list[dict[str, any]] = []
@@ -712,48 +654,37 @@ class DatasetReviewImageSearch(Resource):
         for entry in db_result:
             # prepare list of image ids for label filter (we can't iterate multiple times through db_result)
             found_image_ids.append(entry.idx)
-            
-            # prepare list for response
-            found_images.append(
-                {
-                    "imageId": entry.idx,
-                    "imageName": entry.img_path,
-                    "annotationId": entry.anno_task_id,
-                    "annotationName": entry.name,
-                }
-            )
 
+            # prepare list for response
+            found_images.append({
+                "imageId": entry.idx,
+                "imageName": entry.img_path,
+                "annotationId": entry.anno_task_id,
+                "annotationName": entry.name,
+            })
 
         # filter for images annotated with specific labels if labels are in the request
         if labels is not None:
             if labels == "":
                 search_labels = []
             else:
-                search_labels = list(map(int, labels.split(','))) # TODO: error here if empty
+                search_labels = list(map(int, labels.split(",")))  # TODO: error here if empty
 
             # no labels -> all images in task
             if len(search_labels) == 0:
                 pass
             else:
                 # found_image_ids = [entry.idx for entry in db_result]
-                img_with_label_db_result = dbm.get_all_images_with_labels(
-                    found_image_ids, search_labels
-                )
-                img_ids_with_label = [
-                    entry.img_anno_id for entry in img_with_label_db_result
-                ]
+                img_with_label_db_result = dbm.get_all_images_with_labels(found_image_ids, search_labels)
+                img_ids_with_label = [entry.img_anno_id for entry in img_with_label_db_result]
 
                 # filter original response list: only select images that have one of the searched labels
-                found_img_with_label = [
-                    img
-                    for img in found_images
-                    if img["imageId"] in img_ids_with_label
-                ]
+                found_img_with_label = [img for img in found_images if img["imageId"] in img_ids_with_label]
 
                 # replace list with label filtered list
                 found_images = found_img_with_label
 
-        return {'images':found_images}
+        return {"images": found_images}
 
 
 @namespace.route("/<int:dataset_id>/review/possibleLabels")
@@ -769,9 +700,7 @@ class DatasetReviewImageSearch(Resource):
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
             return (
-                "You need to be {} in order to perform this request.".format(
-                    roles.DESIGNER
-                ),
+                "You need to be {} in order to perform this request.".format(roles.DESIGNER),
                 401,
             )
 
@@ -780,13 +709,11 @@ class DatasetReviewImageSearch(Resource):
 
         labels = []
         for entry in db_result:
-            labels.append(
-                {
-                    "id": entry.idx,
-                    "name": entry.name,
-                    "color": entry.color,
-                }
-            )
+            labels.append({
+                "id": entry.idx,
+                "name": entry.name,
+                "color": entry.color,
+            })
 
         return labels
 
@@ -803,9 +730,7 @@ class DatasetParquetExport(Resource):
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
             return (
-                "You need to be {} in order to perform this request.".format(
-                    roles.DESIGNER
-                ),
+                "You need to be {} in order to perform this request.".format(roles.DESIGNER),
                 401,
             )
         data = request.json
@@ -818,17 +743,16 @@ class DatasetParquetExport(Resource):
         if "store_path" in data:
             path = data["store_path"]
         else:
-            fs_db = dbm.get_user_default_fs(user.idx)    
+            fs_db = dbm.get_user_default_fs(user.idx)
             ufa = UserFileAccess(dbm, user, fs_db)
             path = ufa.get_whole_export_ds_path()
-            file_name = re.sub(r'\W+', '_', dataset.name).lower()
+            file_name = re.sub(r"\W+", "_", dataset.name).lower()
             path = os.path.join(path, f"{file_name}_{dataset_id}_{datetime.now().strftime('%Y%m%d%H%M%S')}.parquet")
-        
+
         if "fs_id" in data:
             fs_id = int(data["fs_id"])
         else:
             fs_id = dbm.get_fs(name=user.user_name).idx
-
 
         annotated_only = True
         if "annotated_only" in data:
@@ -859,25 +783,19 @@ class DatasetExports(Resource):
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
             return (
-                "You need to be {} in order to perform this request.".format(
-                    roles.DESIGNER
-                ),
+                "You need to be {} in order to perform this request.".format(roles.DESIGNER),
                 401,
             )
         exports = dbm.get_all_dataset_exports_by_dataset_id(dataset_id)
         exports_json = []
         for export in exports:
-            exports_json.append(
-                {
-                    "id": export.idx,
-                    "datasetId": export.dataset_id, 
-                    "filePath": export.file_path,
-                    "progress": export.progress,
-                }
-            )
-        return jsonify({
-            "exports": exports_json
-        })
+            exports_json.append({
+                "id": export.idx,
+                "datasetId": export.dataset_id,
+                "filePath": export.file_path,
+                "progress": export.progress,
+            })
+        return jsonify({"exports": exports_json})
 
 
 @namespace.route("/ds_exports/<int:export_id>")
@@ -891,9 +809,7 @@ class DatasetExport(Resource):
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
             return (
-                "You need to be {} in order to perform this request.".format(
-                    roles.DESIGNER
-                ),
+                "You need to be {} in order to perform this request.".format(roles.DESIGNER),
                 401,
             )
         export = dbm.get_dataset_export_by_id(export_id)
@@ -912,9 +828,7 @@ class DatasetExport(Resource):
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
             return (
-                "You need to be {} in order to perform this request.".format(
-                    roles.DESIGNER
-                ),
+                "You need to be {} in order to perform this request.".format(roles.DESIGNER),
                 401,
             )
         export = dbm.get_dataset_export_by_id(export_id)
@@ -924,7 +838,7 @@ class DatasetExport(Resource):
         my_file = ufa.load_file(export.file_path)
         export_name = os.path.basename(export.file_path)
 
-        response = Response(my_file, content_type='application/octet-stream')
+        response = Response(my_file, content_type="application/octet-stream")
         response.headers["Content-Disposition"] = f"attachment; filename={export_name}"
         dbm.close_session()
         return response

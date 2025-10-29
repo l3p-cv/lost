@@ -4,7 +4,19 @@ from flask import request
 from flask_restx import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from lost.api.api import api
-from lost.api.sia.api_definition import sia_anno, sia_config, labels, sia_polygon_operations_response, error_model, sia_polygon_union, sia_polygon_intersection, sia_polygon_difference, image_filters, sia_bbox_from_points, sia_bbox_from_points_response
+from lost.api.sia.api_definition import (
+    sia_anno,
+    sia_config,
+    labels,
+    sia_polygon_operations_response,
+    error_model,
+    sia_polygon_union,
+    sia_polygon_intersection,
+    sia_polygon_difference,
+    image_filters,
+    sia_bbox_from_points,
+    sia_bbox_from_points_response,
+)
 from lost.db import roles, access
 from lost.settings import LOST_CONFIG, DATA_URL
 from lost.logic import sia
@@ -20,7 +32,7 @@ namespace = api.namespace("sia", description="SIA Annotation API.")
 
 @namespace.route("")
 @api.doc(security="apikey")
-@api.param("direction", 'One of "next","prev" or "first"')
+@api.param("direction", 'One of "next","prev" "current" or "first"')
 @api.param("lastImgId", "ID of the last image")
 class First(Resource):
     @api.doc(security="apikey", description="Get SIA information")
@@ -162,15 +174,18 @@ class Filter(Resource):
             dbm.close_session()
             return "data:img/jpg;base64," + data64.decode("utf-8")
 
+
 @namespace.route("/image/<int:image_id>/filters")
 @api.doc(security="apikey")
 class ImageFilters(Resource):
     @api.doc(security="apikey", description="Get an Image with applied filters")
     @api.expect(image_filters)
-    @api.response(200, 'Successfully returns base64-encoded JPEG data URI (e.g., "data:img/jpg;base64,<base64_string>").')
-    @api.response(403, 'Forbidden', error_model)
-    @api.response(400, 'Bad Request', error_model)
-    @api.response(500, 'Internal Server Error', error_model)
+    @api.response(
+        200, 'Successfully returns base64-encoded JPEG data URI (e.g., "data:img/jpg;base64,<base64_string>").'
+    )
+    @api.response(403, "Forbidden", error_model)
+    @api.response(400, "Bad Request", error_model)
+    @api.response(500, "Internal Server Error", error_model)
     @jwt_required()
     def post(self, image_id):
         dbm = access.DBMan(LOST_CONFIG)
@@ -182,13 +197,15 @@ class ImageFilters(Resource):
 
         try:
             data = json.loads(request.data)
-            filters = data.get('filters', [])
+            filters = data.get("filters", [])
 
             img = dbm.get_image_anno(image_id)
             flask.current_app.logger.info(f"img.img_path: {img.img_path}")
             flask.current_app.logger.info(f"img.fs.name: {img.fs.name}")
             fs = FileMan(fs_db=img.fs)
-            img_data = fs.load_img(img.img_path, color_type="gray" if any(f['name'] == 'cannyEdge' for f in filters) else "color")
+            img_data = fs.load_img(
+                img.img_path, color_type="gray" if any(f["name"] == "cannyEdge" for f in filters) else "color"
+            )
 
             img_data = sia.apply_filters(img_data, filters)
 
@@ -304,6 +321,7 @@ class Configuration(Resource):
             dbm.close_session()
             return re
 
+
 @namespace.route("/polygonOperations/union")
 @api.doc(security="apikey")
 class PolygonUnion(Resource):
@@ -341,6 +359,7 @@ class PolygonUnion(Resource):
             dbm.close_session()
             return {"error": str(e)}, 500
 
+
 @namespace.route("/polygonOperations/intersection")
 @api.doc(security="apikey")
 class PolygonIntersection(Resource):
@@ -377,10 +396,14 @@ class PolygonIntersection(Resource):
             dbm.close_session()
             return {"error": str(e)}, 500
 
+
 @namespace.route("/polygonOperations/difference")
 @api.doc(security="apikey")
 class PolygonDifference(Resource):
-    @api.doc(security="apikey", description="Perform difference operation on a selected polygon and a list of modifier polygons.")
+    @api.doc(
+        security="apikey",
+        description="Perform difference operation on a selected polygon and a list of modifier polygons.",
+    )
     @api.expect(sia_polygon_difference)
     @api.response(200, "Success", sia_polygon_operations_response)
     @api.response(400, "Bad Request", error_model)
@@ -419,7 +442,8 @@ class PolygonDifference(Resource):
             flask.current_app.logger.error(f"Unexpected error in polygon difference: {str(e)}")
             dbm.close_session()
             return {"error": str(e)}, 500
-        
+
+
 @namespace.route("/bboxFromPoints")
 @api.doc(security="apikey")
 class BBoxFromPoints(Resource):
