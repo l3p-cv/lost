@@ -63,6 +63,7 @@ import SIAImageSearchModal, {
 } from '../../Datasets/SIAImageSearchModal'
 import CoreIconButton from '../../../components/CoreIconButton'
 import { faSearch } from '@fortawesome/free-solid-svg-icons'
+import { TimeUtils } from 'lost-sia/utils'
 
 type SiaWrapperProps = {
     annoData: SiaResponse | undefined
@@ -119,6 +120,11 @@ const SiaWrapper = ({
 
     const [defaultLabelId, setDefaultLabelId] = useState<number>()
 
+    // measure time spent on image
+    const [imageLoadedTimestamp, setImageLoadedTimestamp] = useState<number>(
+        performance.now(),
+    )
+
     // save the selected annotation for polygon edit events
     // THIS IS A SHADOW COPY THAT IS NOT USED FROM INSIDE SIA
     const [currentlySelectedAnnotation, setCurrentlySelectedAnnotation] = useState<
@@ -171,6 +177,7 @@ const SiaWrapper = ({
 
         setImageBlob(imageBlobRequest)
         setIsSiaLoading(false)
+        setImageLoadedTimestamp(performance.now())
     }, [imageBlobRequest, possibleLabels])
 
     // @TODO check if request worked
@@ -269,6 +276,17 @@ const SiaWrapper = ({
     }, [imageJunkResponse, handleResponse])
 
     useEffect(() => {
+        if (updateImageLabelResponse === undefined || updateImageLabelResponse === null)
+            return
+
+        handleNotification({
+            title: 'Update image Label failed',
+            message: 'Error updating image label.',
+            type: NotificationType.ERROR,
+        })
+    }, [updateImageLabelResponse])
+
+    useEffect(() => {
         if (finishAnnotaskResponse === undefined) return
 
         if (handleResponse(finishAnnotaskResponse)) navigate('/annotation')
@@ -352,11 +370,21 @@ const SiaWrapper = ({
         // satisfy linter
         if (annoData === undefined) return
 
+        // get the time spent on the image (rounded by 2 decimals)
+        const imageEditTime: number = TimeUtils.getRoundedDuration(
+            imageLoadedTimestamp,
+            performance.now(),
+        )
+
         const currentImageData = annoData.image
+
+        // add the time it took the user to edit the anno to the image time
+        const newAnnoTime: number = currentImageData.annoTime + imageEditTime
+
         const imageData = {
             imgId: currentImageData.id,
             imgActions: currentImageData.imgActions,
-            annoTime: currentImageData.annoTime, // @TODO
+            annoTime: newAnnoTime,
         }
 
         const createAnnotationData: EditAnnotationData = {
@@ -375,12 +403,23 @@ const SiaWrapper = ({
         // satisfy linter
         if (annoData === undefined) return
 
+        // get the time spent on the image (rounded by 2 decimals)
+        const imageEditTime: number = TimeUtils.getRoundedDuration(
+            imageLoadedTimestamp,
+            performance.now(),
+        )
+
         const currentImageData = annoData.image
+
+        // add the time it took the user to edit the anno to the image time
+        const newAnnoTime: number = currentImageData.annoTime + imageEditTime
+
         const imageData = {
             imgId: currentImageData.id,
             imgActions: currentImageData.imgActions,
-            annoTime: currentImageData.annoTime, // @TODO
+            annoTime: newAnnoTime,
         }
+
         const deletedAnnotation = {
             ...annotation,
             status: AnnotationStatus.DELETED,
@@ -435,11 +474,21 @@ const SiaWrapper = ({
         // satisfy linter
         if (annoData === undefined) return
 
+        // get the time spent on the image (rounded by 2 decimals)
+        const imageEditTime: number = TimeUtils.getRoundedDuration(
+            imageLoadedTimestamp,
+            performance.now(),
+        )
+
         const currentImageData = annoData.image
+
+        // add the time it took the user to edit the anno to the image time
+        const newAnnoTime: number = currentImageData.annoTime + imageEditTime
+
         const imageData = {
             imgId: currentImageData.id,
             imgActions: currentImageData.imgActions,
-            annoTime: currentImageData.annoTime, // @TODO
+            annoTime: newAnnoTime,
         }
 
         const editAnnotationData = {
@@ -453,13 +502,23 @@ const SiaWrapper = ({
         // satisfy linter
         if (annoData === undefined) return
 
+        // get the time spent on the image (rounded by 2 decimals)
+        const imageEditTime: number = TimeUtils.getRoundedDuration(
+            imageLoadedTimestamp,
+            performance.now(),
+        )
+
         const currentImageData = annoData.image
+
+        // add the time it took the user to edit the anno to the image time
+        const newAnnoTime: number = currentImageData.annoTime + imageEditTime
+
         const imageData: ImageLabelData = {
             imgId: currentImageData.id,
             imgActions: currentImageData.imgActions,
             imgLabelIds: selectedImageIds,
             imgLabelChanged: true,
-            annoTime: currentImageData.annoTime, // @TODO
+            annoTime: newAnnoTime,
         }
 
         sendUpdateImageLabel(imageData)
@@ -469,10 +528,20 @@ const SiaWrapper = ({
         // satisfy linter
         if (annoData === undefined) return
 
+        // get the time spent on the image (rounded by 2 decimals)
+        const imageEditTime: number = TimeUtils.getRoundedDuration(
+            imageLoadedTimestamp,
+            performance.now(),
+        )
+
         const currentImageData = annoData.image
+
+        // add the time it took the user to edit the anno to the image time
+        const newAnnoTime: number = currentImageData.annoTime + imageEditTime
+
         const imageData = {
             imgId: currentImageData.id,
-            annoTime: currentImageData.annoTime,
+            annoTime: newAnnoTime,
             isJunk: newJunkState,
         }
         sendJunkImage(imageData)

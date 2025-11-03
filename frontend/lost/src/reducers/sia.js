@@ -1,6 +1,6 @@
 import TYPES from '../types/index'
 
-import { uiConfig } from 'lost-sia/utils'
+// import { uiConfig } from 'lost-sia/utils'
 
 const INITIAL_STATE = {
     annos: {},
@@ -11,7 +11,7 @@ const INITIAL_STATE = {
     },
     keyUp: undefined,
     keyDown: undefined,
-    uiConfig: uiConfig,
+    // uiConfig: uiConfig,
     showSingleAnno: undefined,
     selectedTool: undefined,
     showLabelInput: false,
