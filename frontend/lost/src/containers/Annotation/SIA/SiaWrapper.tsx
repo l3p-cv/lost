@@ -403,7 +403,7 @@ const SiaWrapper = ({
         setCurrentlySelectedAnnotation(undefined)
     }
 
-    const editAnnotation = (annotation) => {
+    const editAnnotation = (annotation: Annotation) => {
         // do nothing when still creating annotation
         // @TODO adapt backend to support partly-finished annotations
         if (annotation.status === AnnotationStatus.CREATING) return

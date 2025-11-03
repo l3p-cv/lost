@@ -20,7 +20,7 @@ export type AnnotationCoordinates = LegacyBboxData | Point | Point[]
 // legacy annotation but some parameters are optional for converting it into an annotation
 type ConvertingAnnotation = {
     id?: string
-    annoTime?: number
+    annoTime: number
     data?: AnnotationCoordinates
     labelIds?: number[]
     mode: AnnotationMode // do we even need this globally? - only really used inside AnnotationComponent
@@ -32,7 +32,7 @@ type ConvertingAnnotation = {
 
 export type LegacyAnnotation = {
     id: string
-    annoTime?: number
+    annoTime: number
     data: AnnotationCoordinates
     labelIds?: number[]
     mode: AnnotationMode // do we even need this globally? - only really used inside AnnotationComponent
