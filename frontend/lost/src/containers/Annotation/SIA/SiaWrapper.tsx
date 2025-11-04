@@ -269,6 +269,18 @@ const SiaWrapper = ({
     }, [imageJunkResponse, handleResponse])
 
     useEffect(() => {
+        // a sucessful request just returns null
+        if (updateImageLabelResponse === undefined || updateImageLabelResponse === null)
+            return
+
+        handleNotification({
+            title: 'Error updating image label',
+            message: 'Error updating image label',
+            type: NotificationType.ERROR,
+        })
+    }, [updateImageLabelResponse])
+
+    useEffect(() => {
         if (finishAnnotaskResponse === undefined) return
 
         if (handleResponse(finishAnnotaskResponse)) navigate('/annotation')
