@@ -88,7 +88,7 @@ const TabStorageSettings = ({ annotaskId }) => {
     }, [updateStorageSettingsResponse])
 
     const updateSelectedDatasetID = (datasetId) => {
-        console.log("UPDATE with data: ", datasetId)
+        console.log('UPDATE with data: ', datasetId)
         const data = {
             annotaskId,
             datasetId: datasetId,
@@ -140,10 +140,14 @@ const TabStorageSettings = ({ annotaskId }) => {
                                         <CFormSelect
                                             placeholder="Select Dataset"
                                             options={[
-                                                { label: 'Select an option', value: '', disabled: true },
+                                                {
+                                                    label: 'Select an option',
+                                                    value: '',
+                                                    disabled: true,
+                                                },
                                                 ...datasetDropdownOptions.map((opt) => ({
-                                                label: opt.text,
-                                                value: opt.value,
+                                                    label: opt.text,
+                                                    value: opt.value,
                                                 })),
                                             ]}
                                             value={selectedDatasetID}
@@ -154,10 +158,9 @@ const TabStorageSettings = ({ annotaskId }) => {
                                             //     datasetDropdownOptions.length == null
                                             //         ? datasetDropdownOptions[0]
                                             //         : ""
-                                                    
+
                                             // }
-                                        >
-                                        </CFormSelect>
+                                        ></CFormSelect>
                                     </CCol>
                                 </CRow>
                                 <CRow>
@@ -182,6 +185,7 @@ const TabStorageSettings = ({ annotaskId }) => {
             <DatasetEditModal
                 isVisible={isCreateDatasetModalOpen}
                 setIsVisible={setIsCreateDatasetModalOpen}
+                editedDatasetObj={{}}
                 flatDatasetList={flatDatasetList}
                 onDatasetCreated={(datasetId) => {
                     reloadFlatDatasetList()
