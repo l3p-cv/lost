@@ -57,7 +57,7 @@ const SIAImageSearchModal = ({
     onSearchResult = () => {},
 }: SIAImageSearchModalProps) => {
     const { data: possibleDatasetLabels, refetch: reloadPossibleDatasetLabels } =
-        datasetReviewApi.useGetPossibleLabels(id)
+        datasetReviewApi.useGetDatasetPossibleLabels(id)
     const { data: searchResults, mutate: doSearch } =
         datasetReviewApi.useImageSearch(isAnnotaskReview)
     const [enteredSearch, setEnteredSearch] = useState('')
@@ -210,7 +210,7 @@ const SIAImageSearchModal = ({
     }
 
     const renderPossibleLabels = () => {
-        if (!possibleImageLabels) return null
+        if (!possibleImageLabels || possibleImageLabels.length === 0) return null
 
         return possibleImageLabels.map((label) => {
             const color = label.color || '#50b897'

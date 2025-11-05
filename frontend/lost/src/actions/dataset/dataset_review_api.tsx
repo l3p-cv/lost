@@ -4,8 +4,14 @@ import { API_URL } from '../../lost_settings'
 
 import { uiConfig, SIA_INITIAL_UI_CONFIG } from 'lost-sia/utils'
 
-import { ImageData } from '../sia/sia_api'
+import {
+    EditAnnotationData,
+    EditAnnotationResponse,
+    ImageData,
+    ImageLabelData,
+} from '../sia/sia_api'
 import { LegacyAnnotationResponse } from '../../containers/Annotation/SIA/legacyHelper'
+import { Label } from 'lost-sia'
 
 export type SiaDatasetResponse = {
     image: ImageData
@@ -70,23 +76,52 @@ export const useGetImage = () => {
     })
 }
 
-export const useGetAnnotations = () => {
-    return useMutation((datasetId, annotationId) =>
-        axios
-            .post(`${API_URL}/datasets/${datasetId}/review`, annotationId)
-            .then((res) => res.data),
+export const useCreateAnnotation = () => {
+    return useMutation(
+        ({ annoTaskId, annotation, imageEditData }: EditAnnotationData) => {
+            const requestData = {
+                action: 'annoCreated',
+                anno: annotation,
+                img: imageEditData,
+            }
+
+            return axios
+                .patch(API_URL + `/annotasks/${annoTaskId}/annotation`, requestData)
+                .then((res): EditAnnotationResponse => res.data)
+        },
     )
 }
 
-export const useUpdateAnnotation = () => {
-    return useMutation((requestData) => {
-        const [annotaskId, annotationData] = requestData
+export const useEditAnnotation = () => {
+    return useMutation(
+        ({ annoTaskId, annotation, imageEditData }: EditAnnotationData) => {
+            const requestData = {
+                action: 'annoEdited',
+                anno: annotation,
+                img: imageEditData,
+            }
 
-        return axios
-            .patch(`${API_URL}/annotasks/${annotaskId}/annotation`, annotationData)
-            .then((res) => [true, res.data])
-            .catch((error) => [false, error])
-    })
+            return axios
+                .patch(API_URL + `/annotasks/${annoTaskId}/annotation`, requestData)
+                .then((res): EditAnnotationResponse => res.data)
+        },
+    )
+}
+
+export const useDeleteAnnotation = () => {
+    return useMutation(
+        ({ annoTaskId, annotation, imageEditData }: EditAnnotationData) => {
+            const requestData = {
+                action: 'annoDeleted',
+                anno: annotation,
+                img: imageEditData,
+            }
+
+            return axios
+                .patch(API_URL + `/annotasks/${annoTaskId}/annotation`, requestData)
+                .then((res): EditAnnotationResponse => res.data)
+        },
+    )
 }
 
 export const useGetUIConfig = () => {
@@ -122,16 +157,49 @@ export const useImageSearch = (isAnnotaskReview) => {
     })
 }
 
-export const useGetPossibleLabels = (datasetId) => {
+const useGetPossibleLabels = (annoTaskId: number) => {
+    return useQuery(
+        ['getsiaReviewPossibleLabels', annoTaskId],
+        () =>
+            axios
+                .get(`${API_URL}/annotasks/${annoTaskId}/review/labels`)
+                .then((res): Label[] => res.data.labels),
+        {
+            refetchOnWindowFocus: false,
+            enabled: !!annoTaskId && annoTaskId > 0,
+        },
+    )
+}
+
+export const useGetDatasetPossibleLabels = (datasetId) => {
     return useQuery(
         ['useGetPossibleLabels'],
         () =>
             axios
                 .get(`${API_URL}/datasets/${datasetId}/review/possibleLabels`)
-                .then((res) => res.data),
+                .then((res): Label[] => res.data),
         {
             refetchOnWindowFocus: false,
             enabled: false,
         },
     )
+}
+
+export const useUpdateImageLabel = () => {
+    return useMutation((imageEditData: ImageLabelData) => {
+        const requestData = {
+            action: 'imgLabelUpdate',
+            img: imageEditData,
+        }
+
+        return axios.patch(API_URL + `/sia`, requestData).then((res) => res.data)
+    })
+}
+
+export default {
+    useCreateAnnotation,
+    useEditAnnotation,
+    useDeleteAnnotation,
+    useGetPossibleLabels,
+    useUpdateImageLabel,
 }

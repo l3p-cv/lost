@@ -430,7 +430,7 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
                                     onChange={(e) => {
                                         setFilteredName(e.target.value)
                                     }}
-                                    relatedId={[1]}
+                                    // relatedId={[1]}
                                     placeholder="Name"
                                 />
                                 <CoreIconButton

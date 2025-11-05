@@ -1,22 +1,17 @@
 import { useCallback, useEffect, useState } from 'react'
+import type {
+    SiaApi,
+    EditAnnotationData,
+    ImageLabelData,
+    ImageSwitchData,
+    SiaResponse,
+} from '../../../actions/sia/sia_api'
 import {
     useGetSiaImage,
-    useEditAnnotation,
-    useCreateAnnotation,
-    useDeleteAnnotation,
     useFinishAnnotask,
     useImageJunk,
-    useGetSiaPossibleLabels,
-    usePolygonDifference,
-    usePolygonIntersection,
-    usePolygonUnion,
-    useBBoxCreation,
-    EditAnnotationData,
-    SiaResponse,
-    ImageSwitchData,
-    useUpdateImageLabel,
-    ImageLabelData,
 } from '../../../actions/sia/sia_api'
+import polygonOperationApi from '../../../actions/sia/polygonOperationApi'
 
 import type {
     ExternalAnnotation,
@@ -66,9 +61,11 @@ import { faSearch } from '@fortawesome/free-solid-svg-icons'
 
 type SiaWrapperProps = {
     annoData: SiaResponse | undefined
-    taskId: number // annotationTaskID or DatasetId
+    datasetId?: number
+    annoTaskId: number
     isDatasetMode?: boolean
     isImageSearchEnabled?: boolean
+    siaApi: SiaApi
     onSetAnnotationRequestData: (changeRequest: ImageSwitchData) => void
 }
 
@@ -93,9 +90,11 @@ type SiaWrapperProps = {
 
 const SiaWrapper = ({
     annoData,
-    taskId,
+    datasetId,
+    annoTaskId,
     isDatasetMode = false,
     isImageSearchEnabled = false,
+    siaApi,
     onSetAnnotationRequestData,
 }: SiaWrapperProps) => {
     const navigate = useNavigate()
@@ -145,8 +144,7 @@ const SiaWrapper = ({
         imageId,
         appliedFilters: appliedImageFilters,
     }
-
-    const { data: possibleLabels } = useGetSiaPossibleLabels()
+    const { data: possibleLabels } = siaApi.useGetPossibleLabels(annoTaskId)
 
     // request will automatically refetch when its state (parameter) changes
     const { data: imageBlobRequest } = useGetSiaImage(imageRequestData)
@@ -175,23 +173,26 @@ const SiaWrapper = ({
 
     // @TODO check if request worked
     const { data: createAnnotationResponse, mutate: sendCreateAnnotation } =
-        useCreateAnnotation()
+        siaApi.useCreateAnnotation()
     const { data: editAnnotationResponse, mutate: sendEditAnnotation } =
-        useEditAnnotation()
+        siaApi.useEditAnnotation()
     const { data: deleteAnnotationResponse, mutate: sendDeleteAnnotation } =
-        useDeleteAnnotation()
+        siaApi.useDeleteAnnotation()
     const { data: updateImageLabelResponse, mutate: sendUpdateImageLabel } =
-        useUpdateImageLabel()
+        siaApi.useUpdateImageLabel()
     const { data: imageJunkResponse, mutate: sendJunkImage } = useImageJunk()
 
     const { data: finishAnnotaskResponse, mutate: sindFinishAnnotask } =
         useFinishAnnotask()
 
-    const { data: polygonDiffReponse, mutate: diffPolygons } = usePolygonDifference()
+    const { data: polygonDiffReponse, mutate: diffPolygons } =
+        polygonOperationApi.usePolygonDifference()
     const { data: polygonIntersectionReponse, mutate: intersectPolygons } =
-        usePolygonIntersection()
-    const { data: polygonUnionReponse, mutate: mergePolygons } = usePolygonUnion()
-    const { data: bboxCreationResponse, mutate: createBBox } = useBBoxCreation()
+        polygonOperationApi.usePolygonIntersection()
+    const { data: polygonUnionReponse, mutate: mergePolygons } =
+        polygonOperationApi.usePolygonUnion()
+    const { data: bboxCreationResponse, mutate: createBBox } =
+        polygonOperationApi.useBBoxCreation()
 
     useEffect(() => {
         // react query throws a state update with undefined right before the actual data is set when the query cache is disabled
@@ -217,7 +218,8 @@ const SiaWrapper = ({
     }, [annoData])
 
     useEffect(() => {
-        if (createAnnotationResponse === undefined) return
+        if (createAnnotationResponse === undefined || createAnnotationResponse === null)
+            return
 
         // remove the 'new-' prefix
         const siaInternalAnnoId = parseInt(
@@ -245,19 +247,22 @@ const SiaWrapper = ({
     }, [])
 
     useEffect(() => {
-        if (editAnnotationResponse === undefined) return
+        if (editAnnotationResponse === undefined || editAnnotationResponse === null)
+            return
 
         handleResponse(editAnnotationResponse)
     }, [editAnnotationResponse, handleResponse])
 
     useEffect(() => {
-        if (createAnnotationResponse === undefined) return
+        if (createAnnotationResponse === undefined || createAnnotationResponse === null)
+            return
 
         handleResponse(createAnnotationResponse)
     }, [createAnnotationResponse, handleResponse])
 
     useEffect(() => {
-        if (deleteAnnotationResponse === undefined) return
+        if (deleteAnnotationResponse === undefined || deleteAnnotationResponse === null)
+            return
 
         handleResponse(deleteAnnotationResponse)
     }, [deleteAnnotationResponse, handleResponse])
@@ -372,6 +377,7 @@ const SiaWrapper = ({
         }
 
         const createAnnotationData: EditAnnotationData = {
+            annoTaskId,
             annotation: {
                 ...annotationInOldFormat,
                 // special case for created annos: the server saves the anno and returns this id back as 'tempId'
@@ -380,6 +386,7 @@ const SiaWrapper = ({
             },
             imageEditData: imageData,
         }
+
         sendCreateAnnotation(createAnnotationData)
     }
 
@@ -407,7 +414,8 @@ const SiaWrapper = ({
 
         const annotationInOldFormat =
             legacyHelper.convertAnnoToOldFormat(deletedAnnotation)
-        const deleteAnnotationData = {
+        const deleteAnnotationData: EditAnnotationData = {
+            annoTaskId,
             annotation: annotationInOldFormat,
             imageEditData: imageData,
         }
@@ -454,7 +462,8 @@ const SiaWrapper = ({
             annoTime: currentImageData.annoTime, // @TODO
         }
 
-        const editAnnotationData = {
+        const editAnnotationData: EditAnnotationData = {
+            annoTaskId,
             annotation: annotationInOldFormat,
             imageEditData: imageData,
         }
@@ -904,7 +913,7 @@ const SiaWrapper = ({
             {isImageSearchEnabled && (
                 <SIAImageSearchModal
                     isAnnotaskReview={!isDatasetMode}
-                    id={taskId}
+                    id={isDatasetMode ? datasetId : annoTaskId}
                     isVisible={isImgSearchModalVisible}
                     setIsVisible={setIsImgSearchModalVisible}
                     onChooseImage={getSpecificImage}

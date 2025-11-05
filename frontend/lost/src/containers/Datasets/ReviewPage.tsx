@@ -1,12 +1,13 @@
 import { CCol, CRow } from '@coreui/react'
 import { useParams } from 'react-router-dom'
 import SiaWrapper from '../Annotation/SIA/SiaWrapper'
-import { CSSProperties, useState } from 'react'
-import { ReviewData, useReview } from '../../actions/dataset/dataset_review_api'
+import { CSSProperties, useEffect, useState } from 'react'
+import siaApi, { ReviewData, useReview } from '../../actions/dataset/dataset_review_api'
 import { ImageSwitchData } from '../../actions/sia/sia_api'
 
 const DatasetsReviewComponent = () => {
     const { datasetId } = useParams()
+    const [currentAnnotaskId, setCurrentAnnotaskId] = useState<number>(-1)
 
     // image nr in annotask
     const [annotationRequestData, setAnnotationRequestData] = useState<ReviewData>({
@@ -20,6 +21,11 @@ const DatasetsReviewComponent = () => {
     })
 
     const { data: annoData } = useReview(annotationRequestData)
+
+    useEffect(() => {
+        if (annoData === undefined) return
+        setCurrentAnnotaskId(annoData.current_annotask_idx)
+    }, [annoData])
 
     if (datasetId === undefined || isNaN(parseInt(datasetId)))
         return <h2>Incorrect Dataset Id</h2>
@@ -52,9 +58,11 @@ const DatasetsReviewComponent = () => {
                             <div style={middleStyle}>
                                 <SiaWrapper
                                     annoData={annoData}
-                                    taskId={nDatasetId}
+                                    datasetId={nDatasetId}
+                                    annoTaskId={currentAnnotaskId}
                                     isDatasetMode={true}
                                     isImageSearchEnabled={true}
+                                    siaApi={siaApi}
                                     onSetAnnotationRequestData={(
                                         imageSwitchData: ImageSwitchData,
                                     ) => {

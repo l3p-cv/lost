@@ -3,7 +3,10 @@ import { CSSProperties, useState } from 'react'
 import WorkingOnSIA from './AnnoTask/WorkingOnSIA'
 import SiaWrapper from './SIA/SiaWrapper'
 import * as annotaskApi from '../../actions/annoTask/anno_task_api'
-import { SiaAnnotationChangeRequest, useGetSiaAnnos } from '../../actions/sia/sia_api'
+import siaApi, {
+    SiaAnnotationChangeRequest,
+    useGetSiaAnnos,
+} from '../../actions/sia/sia_api'
 
 const SingleImageAnnotation = () => {
     // image nr in annotask
@@ -46,6 +49,7 @@ const SingleImageAnnotation = () => {
                         isImageSearchEnabled={false}
                         annoData={annoData}
                         onSetAnnotationRequestData={setAnnotationRequestData}
+                        siaApi={siaApi}
                     />
                 </div>
             </div>

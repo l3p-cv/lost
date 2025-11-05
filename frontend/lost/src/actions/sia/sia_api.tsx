@@ -1,12 +1,20 @@
 import axios from 'axios'
-import { useMutation, useQuery } from 'react-query'
+import { useMutation, UseMutationResult, useQuery, UseQueryResult } from 'react-query'
 import { API_URL } from '../../lost_settings'
-import { Label, Point } from 'lost-sia'
+import { Label } from 'lost-sia'
 import { SiaImageRequest } from '../../types/SiaTypes'
 import {
     LegacyAnnotation,
     LegacyAnnotationResponse,
 } from '../../containers/Annotation/SIA/legacyHelper'
+
+export type SiaApi = {
+    useGetPossibleLabels: (annoTaskId: number) => UseQueryResult
+    useCreateAnnotation: () => UseMutationResult
+    useEditAnnotation: () => UseMutationResult
+    useDeleteAnnotation: () => UseMutationResult
+    useUpdateImageLabel: () => UseMutationResult
+}
 
 export type ImageData = {
     id: number
@@ -59,13 +67,15 @@ type ImageJunkData = {
 }
 
 export type EditAnnotationData = {
+    annoTaskId: number // annotaskId or datasetId
     annotation: LegacyAnnotation
     imageEditData: ImageEditData
 }
 
-type PolygonData = {
-    firstPolygon: LegacyAnnotation
-    secondPolygon: LegacyAnnotation
+export type EditAnnotationResponse = {
+    tempId: string
+    dbId: number
+    newStatus: string
 }
 
 export const useGetSiaAnnos = (annotationRequestData: SiaAnnotationChangeRequest) => {
@@ -108,9 +118,11 @@ export const useGetSiaImage = (imageRequestData: SiaImageRequest) => {
     )
 }
 
-export const useGetSiaPossibleLabels = () => {
+// current backend does not use the annotaskId
+// keep it here for compliance reasons (the dataset review api needs it)
+export const useGetPossibleLabels = (annoTaskId: number) => {
     return useQuery(
-        'getsiaPossibleLabels',
+        ['getsiaPossibleLabels', annoTaskId],
         () => axios.get(`${API_URL}/sia/label`).then((res): Label[] => res.data.labels),
         {
             refetchOnWindowFocus: false,
@@ -136,7 +148,9 @@ export const useCreateAnnotation = () => {
             img: imageEditData,
         }
 
-        return axios.patch(API_URL + `/sia`, requestData).then((res) => res.data)
+        return axios
+            .patch(API_URL + `/sia`, requestData)
+            .then((res): EditAnnotationResponse => res.data)
     })
 }
 
@@ -148,7 +162,9 @@ export const useEditAnnotation = () => {
             img: imageEditData,
         }
 
-        return axios.patch(API_URL + `/sia`, requestData).then((res) => res.data)
+        return axios
+            .patch(API_URL + `/sia`, requestData)
+            .then((res): EditAnnotationResponse => res.data)
     })
 }
 
@@ -160,7 +176,9 @@ export const useDeleteAnnotation = () => {
             img: imageEditData,
         }
 
-        return axios.patch(API_URL + `/sia`, requestData).then((res) => res.data)
+        return axios
+            .patch(API_URL + `/sia`, requestData)
+            .then((res): EditAnnotationResponse => res.data)
     })
 }
 
@@ -190,55 +208,11 @@ export const useFinishAnnotask = () => {
     return useMutation(() => axios.post(API_URL + `/sia/finish`).then((res) => res.data))
 }
 
-export const usePolygonDifference = () => {
-    return useMutation((polygonData: PolygonData) => {
-        const requestData = {
-            selectedPolygon: polygonData.firstPolygon,
-            polygonModifiers: [polygonData.secondPolygon],
-        }
-
-        return axios
-            .post(API_URL + `/sia/polygonOperations/difference`, requestData)
-            .then((res) => res.data)
-            .catch((error) => error.response.data)
-    })
-}
-
-export const usePolygonIntersection = () => {
-    return useMutation((polygonData: PolygonData) => {
-        const requestData = {
-            annotations: [polygonData.firstPolygon, polygonData.secondPolygon],
-        }
-
-        return axios
-            .post(API_URL + `/sia/polygonOperations/intersection`, requestData)
-            .then((res) => res.data)
-            .catch((error) => error.response.data)
-    })
-}
-
-export const usePolygonUnion = () => {
-    return useMutation((polygonData: PolygonData) => {
-        const requestData = {
-            annotations: [polygonData.firstPolygon, polygonData.secondPolygon],
-        }
-
-        return axios
-            .post(API_URL + `/sia/polygonOperations/union`, requestData)
-            .then((res) => res.data)
-            .catch((error) => error.response.data)
-    })
-}
-
-export const useBBoxCreation = () => {
-    return useMutation((points: Point[]) => {
-        const requestData = {
-            data: [points],
-        }
-
-        return axios
-            .post(API_URL + `/sia/bboxFromPoints`, requestData)
-            .then((res) => res.data)
-            .catch((error) => error.response.data)
-    })
+// default export that is compliant with the various SIA types (annotation, annotask review, dataset review)
+export default {
+    useCreateAnnotation,
+    useEditAnnotation,
+    useDeleteAnnotation,
+    useGetPossibleLabels,
+    useUpdateImageLabel,
 }

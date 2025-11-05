@@ -3,7 +3,10 @@ import { useParams } from 'react-router-dom'
 import SiaWrapper from '../SIA/SiaWrapper'
 
 import { CSSProperties, useState } from 'react'
-import { ReviewData, useReview } from '../../../actions/dataset/dataset_review_api'
+import siaApi, {
+    ReviewData,
+    useReview,
+} from '../../../actions/dataset/dataset_review_api'
 import { ImageSwitchData } from '../../../actions/sia/sia_api'
 
 const AnnotaskReviewComponent = () => {
@@ -53,9 +56,10 @@ const AnnotaskReviewComponent = () => {
                             <div style={middleStyle}>
                                 <SiaWrapper
                                     annoData={annoData}
-                                    taskId={nAnnotaskId}
+                                    annoTaskId={nAnnotaskId}
                                     isDatasetMode={false}
                                     isImageSearchEnabled={true}
+                                    siaApi={siaApi}
                                     onSetAnnotationRequestData={(
                                         imageSwitchData: ImageSwitchData,
                                     ) => {
