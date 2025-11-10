@@ -190,6 +190,27 @@ def get_label_trees(db_man, user_id, at=None):
         label_trees["labels"] = list()
         return label_trees
 
+def get_label_trees_by_anno_task_id(db_man, anno_task_id: int):
+    """
+    :type db_man: lost.db.access.DBMan
+    """
+    label_trees_json = {}
+    label_trees_json["labels"] = []
+    for rll in db_man.get_all_required_label_leaves(anno_task_id):  # type: lost.db.model.RequiredLabelLeaf
+        for label_leaf in db_man.get_all_child_label_leaves(rll.label_leaf.idx):  # type: lost.db.model.LabelLeaf
+            label_leaf_json = {
+                "id": label_leaf.idx,
+                "label": label_leaf.name,
+                "name": label_leaf.name,
+                "nameAndClass": label_leaf.name + " (" + rll.label_leaf.name + ")",
+                "description": label_leaf.description,
+                "externalId": label_leaf.external_id,
+            }
+
+            if label_leaf.color and label_leaf.color != "":
+                label_leaf_json["color"] = label_leaf.color
+            label_trees_json["labels"].append(label_leaf_json)
+    return label_trees_json
 
 def get_configuration(db_man, user_id):
     at = get_sia_anno_task(db_man, user_id)

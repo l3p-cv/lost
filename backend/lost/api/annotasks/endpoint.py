@@ -611,6 +611,25 @@ class DatasetReviewImageSearch(Resource):
         return {"images": found_images}
 
 
+@namespace.route("/<int:annotask_id>/review/labels")
+@api.doc(security="apikey")
+class AnnotaskReviewLabels(Resource):
+    @api.doc(description="Get all possible labels for a given annotation task")
+    @api.param("annotask_id", "annotask id to get the labels for")
+    @jwt_required()
+    def get(self, annotask_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return api.abort(403, f"You need to be {roles.DESIGNER} in order to perform this request.")
+
+        labels = sia.get_label_trees_by_anno_task_id(dbm, annotask_id)
+
+        return labels
+
+
 @namespace.route("/<int:annotask_id>/annotation")
 @api.expect(patch_annotation_parser)
 @api.doc(security="apikey")
