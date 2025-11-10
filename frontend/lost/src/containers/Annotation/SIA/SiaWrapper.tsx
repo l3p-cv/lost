@@ -824,7 +824,7 @@ const SiaWrapper = ({
     const renderAdditionalButtons = () => {
         return (
             <>
-                <CCol xs={6} sm={4} xl={3}>
+                <CCol xs="auto">
                     <PolygonEditButtons
                         polygonEditMode={polygonEditMode}
                         onPolygonEditModeChanged={(polygonEditMode: PolygonEditMode) => {
@@ -853,7 +853,7 @@ const SiaWrapper = ({
                         }}
                     />
                 </CCol>
-                <CCol xs={2} md={1}>
+                <CCol xs="auto">
                     <CButtonGroup>
                         <ImageFilterButton
                             isDisabled={isSiaLoading}
@@ -874,7 +874,7 @@ const SiaWrapper = ({
                         )}
                     </CButtonGroup>
                 </CCol>
-                <CCol xs={4} sm={2} xxl={1}>
+                <CCol xs="auto">
                     <NavigationButtons
                         isFirstImage={annoData?.image?.isFirst}
                         isLastImage={annoData?.image?.isLast}

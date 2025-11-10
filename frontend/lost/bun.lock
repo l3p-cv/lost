@@ -29,7 +29,7 @@
         "i18next-http-backend": "^3.0.2",
         "jwt-decode": "^4.0.0",
         "lodash": "^4.17.21",
-        "lost-sia": "2.0.1-alpha11",
+        "lost-sia": "2.0.1-alpha12",
         "markdown-it": "^14.1.0",
         "process": "^0.11.10",
         "prop-types": "^15.8.1",
@@ -997,7 +997,7 @@
 
     "loose-envify": ["loose-envify@1.4.0", "", { "dependencies": { "js-tokens": "^3.0.0 || ^4.0.0" }, "bin": { "loose-envify": "cli.js" } }, "sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q=="],
 
-    "lost-sia": ["lost-sia@2.0.1-alpha11", "", { "dependencies": { "@fortawesome/free-regular-svg-icons": "^6.7.2", "@fortawesome/free-solid-svg-icons": "^6.7.2", "@fortawesome/react-fontawesome": "^0.2.0", "react": "^18.0.0", "react-dom": "^18.0.0", "react-draggable": "^4.4.6", "sass": "^1.89.2", "semantic-ui-css": "2.5.0", "semantic-ui-react": "^2.0.3" }, "peerDependencies": { "@coreui/react": "^5.9.1", "prop-types": "^15.5.4" } }, "sha512-i9aY3Yg9I4So9yD2G5yU6ypVESxUF6ct0dVCOzRIEI+Iu7m5Sy9zTku9icZW3PLYpuRlmoIWBDb829MpFU0bTQ=="],
+    "lost-sia": ["lost-sia@2.0.1-alpha12", "", { "dependencies": { "@fortawesome/free-regular-svg-icons": "^6.7.2", "@fortawesome/free-solid-svg-icons": "^6.7.2", "@fortawesome/react-fontawesome": "^0.2.0", "react": "^18.0.0", "react-dom": "^18.0.0", "react-draggable": "^4.4.6", "sass": "^1.89.2", "semantic-ui-css": "2.5.0", "semantic-ui-react": "^2.0.3" }, "peerDependencies": { "@coreui/react": "^5.9.1", "prop-types": "^15.5.4" } }, "sha512-6c0565zVa2XkRU3cp9GkO+0KkrYGY1eIGqNnB0JJUgNYgRUxtKq+Xa4Dv9NvGyFgFuCXJ9sWVNrZT8YtykeGtA=="],
 
     "lru-cache": ["lru-cache@5.1.1", "", { "dependencies": { "yallist": "^3.0.2" } }, "sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w=="],
 
