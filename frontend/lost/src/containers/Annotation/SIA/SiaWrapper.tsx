@@ -593,10 +593,12 @@ const SiaWrapper = ({
     }
 
     const getNextImage = () => {
+        if (annoData?.image?.isLast) return
         handleNewImage(true)
     }
 
     const getPreviousImage = () => {
+        if (annoData?.image?.isFirst) return
         handleNewImage(false)
     }
 
