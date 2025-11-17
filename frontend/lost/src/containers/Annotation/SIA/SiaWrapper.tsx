@@ -21,7 +21,7 @@ import type {
     ToolCoordinates,
 } from 'lost-sia'
 
-import { Sia2 } from 'lost-sia'
+import { Sia } from 'lost-sia'
 import { useNavigate } from 'react-router-dom'
 import { CButtonGroup, CCol } from '@coreui/react'
 // import {
@@ -931,7 +931,7 @@ const SiaWrapper = ({
                 }}
                 tabIndex={0}
             >
-                <Sia2
+                <Sia
                     defaultLabelId={defaultLabelId}
                     image={imageBlob}
                     initialAnnotations={initialAnnotations}
