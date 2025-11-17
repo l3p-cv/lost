@@ -2,7 +2,6 @@ import AdminAreaComponent from './containers/AdminArea/AdminArea'
 import AnnotasksReviewComponent from './containers/Annotation/AnnoTask/ReviewPage'
 import AnnotationTableComponent from './containers/Annotation/AnnotationTable'
 import MiaComponent from './containers/Annotation/MultiImageAnnotation'
-import SiaReviewComponent from './containers/Annotation/SIAReviewAnnotation'
 import SiaComponent from './containers/Annotation/SingleImageAnnotation'
 import DataSourcesComponent from './containers/DataSources/DataSources'
 import DatasetsComponent from './containers/Datasets/Datasets'
@@ -126,11 +125,6 @@ const Sia = {
     component: SiaComponent,
 }
 
-const SiaReview = {
-    path: '/sia-review/*',
-    component: SiaReviewComponent,
-}
-
 const Mia = {
     path: '/mia/*',
     component: MiaComponent,
@@ -181,7 +175,6 @@ const guiSetup = {
         Sia,
         Mia,
         MyProfile,
-        SiaReview,
         AnnotaskReview,
         DatasetsReview,
         PipelinePage,

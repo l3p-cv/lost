@@ -76,7 +76,7 @@ const AnnoTaskModal = (props) => {
                     style={{ marginLeft: 10, marginTop: 20, marginBottom: '1rem' }}
                     onClick={(e) =>
                         handleSiaRewiewClick(props, () => {
-                            navigate(`/sia-review/${props.id}`)
+                            navigate(`/annotasks/${props.annoTask.id}/review`)
                         })
                     }
                     text="Review Annotations"
