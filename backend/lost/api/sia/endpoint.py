@@ -1,31 +1,33 @@
+import base64
+import json
 import traceback
+
+import cv2
 import flask
 from flask import request
+from flask_jwt_extended import get_jwt_identity, jwt_required
 from flask_restx import Resource
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from shapely.errors import TopologicalError
+
 from lost.api.api import api
 from lost.api.sia.api_definition import (
-    sia_anno,
-    sia_config,
-    labels,
-    sia_polygon_operations_response,
     error_model,
-    sia_polygon_union,
-    sia_polygon_intersection,
-    sia_polygon_difference,
     image_filters,
+    labels,
+    sia_anno,
     sia_bbox_from_points,
     sia_bbox_from_points_response,
+    sia_config,
+    sia_polygon_difference,
+    sia_polygon_intersection,
+    sia_polygon_operations_response,
+    sia_polygon_union,
 )
-from lost.db import roles, access
-from lost.settings import LOST_CONFIG, DATA_URL
+from lost.db import access, roles
 from lost.logic import sia
-from lost.logic.permissions import UserPermissions
-import json
-import base64
-import cv2
 from lost.logic.file_man import FileMan
-from shapely.errors import TopologicalError
+from lost.logic.permissions import UserPermissions
+from lost.settings import DATA_URL, LOST_CONFIG
 
 namespace = api.namespace("sia", description="SIA Annotation API.")
 
@@ -44,7 +46,7 @@ class First(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
+            return api.abort(403, f"You need to be {roles.ANNOTATOR} in order to perform this request.")
         else:
             direction = request.args.get("direction")
             last_img_id = int(request.args.get("lastImgId"))
@@ -77,7 +79,7 @@ class First(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
+            return api.abort(403, f"You need to be {roles.ANNOTATOR} in order to perform this request.")
 
         else:
             try:
@@ -90,7 +92,7 @@ class First(Resource):
                 msg = traceback.format_exc()
                 msg += f"\nuser.idx: {user.idx}, user.name: {user.user_name}\n"
                 msg += f"Received data:\n{json.dumps(data, indent=4)}\n"
-                flask.current_app.logger.error("{}".format(msg))
+                flask.current_app.logger.error(f"{msg}")
                 dbm.close_session()
                 return "error updating sia anno", 500
 
@@ -103,12 +105,12 @@ class First(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
+            return api.abort(403, f"You need to be {roles.ANNOTATOR} in order to perform this request.")
         else:
             data = json.loads(request.data)
 
             try:
-                if not "anno" in data:
+                if "anno" not in data:
                     # if not 'imgLabelIds' in data['img']:
                     #     if not 'isJunk' in data['img']:
                     if data["action"] not in ["imgAnnoTimeUpdate", "imgJunkUpdate", "imgLabelUpdate"]:
@@ -134,7 +136,7 @@ class Filter(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
+            return api.abort(403, f"You need to be {roles.ANNOTATOR} in order to perform this request.")
 
         else:
             angle = request.args.get("angle")
@@ -147,8 +149,8 @@ class Filter(Resource):
                 clipLimit = int(clipLimit)
 
             img = dbm.get_image_anno(image_id)
-            flask.current_app.logger.info("img.img_path: {}".format(img.img_path))
-            flask.current_app.logger.info("img.fs.name: {}".format(img.fs.name))
+            flask.current_app.logger.info(f"img.img_path: {img.img_path}")
+            flask.current_app.logger.info(f"img.fs.name: {img.fs.name}")
             # fs_db = dbm.get_fs(img.fs_id)
             fs = FileMan(fs_db=img.fs)
             # img = PIL.Image.open('/home/lost/data/media/10_voc2012/2007_008547.jpg')
@@ -193,7 +195,7 @@ class ImageFilters(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
+            return api.abort(403, f"You need to be {roles.ANNOTATOR} in order to perform this request.")
 
         try:
             data = json.loads(request.data)
@@ -214,11 +216,11 @@ class ImageFilters(Resource):
             dbm.close_session()
             return "data:img/jpg;base64," + data64.decode("utf-8")
         except ValueError as ve:
-            flask.current_app.logger.warning(f"ValueError applying filters: {str(ve)}")
+            flask.current_app.logger.warning(f"ValueError applying filters: {ve!s}")
             dbm.close_session()
             return {"error": str(ve)}, 400
         except Exception as e:
-            flask.current_app.logger.error(f"Error applying filters: {str(e)}")
+            flask.current_app.logger.error(f"Error applying filters: {e!s}")
             dbm.close_session()
             return {"error": str(e)}, 500
 
@@ -237,7 +239,7 @@ class AllowedExampler(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
+            return api.abort(403, f"You need to be {roles.ANNOTATOR} in order to perform this request.")
 
         else:
             up = UserPermissions(dbm, user)
@@ -256,7 +258,7 @@ class NextAnnoId(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
+            return api.abort(403, f"You need to be {roles.ANNOTATOR} in order to perform this request.")
 
         else:
             # raise Exception('JJ')
@@ -276,7 +278,7 @@ class Finish(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
+            return api.abort(403, f"You need to be {roles.ANNOTATOR} in order to perform this request.")
 
         else:
             re = sia.finish(dbm, identity)
@@ -296,7 +298,7 @@ class Label(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
+            return api.abort(403, f"You need to be {roles.ANNOTATOR} in order to perform this request.")
         else:
             re = sia.get_label_trees(dbm, identity)
             dbm.close_session()
@@ -315,7 +317,7 @@ class Configuration(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
+            return api.abort(403, f"You need to be {roles.ANNOTATOR} in order to perform this request.")
         else:
             re = sia.get_configuration(dbm, identity)
             dbm.close_session()
@@ -338,7 +340,7 @@ class PolygonUnion(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
+            return api.abort(403, f"You need to be {roles.ANNOTATOR} in order to perform this request.")
         try:
             data = json.loads(request.data)
             data = sia.normalize_annotations(data)
@@ -347,15 +349,15 @@ class PolygonUnion(Resource):
             dbm.close_session()
             return response, 200
         except sia.PolygonOperationError as e:
-            flask.current_app.logger.error(f"Validation error in polygon union: {str(e)}")
+            flask.current_app.logger.error(f"Validation error in polygon union: {e!s}")
             dbm.close_session()
             return {"error": str(e)}, 400
         except TopologicalError as e:
-            flask.current_app.logger.error(f"Topology error in polygon union: {str(e)}")
+            flask.current_app.logger.error(f"Topology error in polygon union: {e!s}")
             dbm.close_session()
             return {"error": str(e)}, 400
         except Exception as e:
-            flask.current_app.logger.error(f"Unexpected error in polygon union: {str(e)}")
+            flask.current_app.logger.error(f"Unexpected error in polygon union: {e!s}")
             dbm.close_session()
             return {"error": str(e)}, 500
 
@@ -376,7 +378,7 @@ class PolygonIntersection(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
+            return api.abort(403, f"You need to be {roles.ANNOTATOR} in order to perform this request.")
         try:
             data = json.loads(request.data)
             data = sia.normalize_annotations(data)
@@ -384,15 +386,15 @@ class PolygonIntersection(Resource):
             dbm.close_session()
             return response, 200
         except sia.PolygonOperationError as e:
-            flask.current_app.logger.error(f"Validation error in polygon intersection: {str(e)}")
+            flask.current_app.logger.error(f"Validation error in polygon intersection: {e!s}")
             dbm.close_session()
             return {"error": str(e)}, 400
         except TopologicalError as e:
-            flask.current_app.logger.error(f"Topology error in polygon intersection: {str(e)}")
+            flask.current_app.logger.error(f"Topology error in polygon intersection: {e!s}")
             dbm.close_session()
             return {"error": str(e)}, 400
         except Exception as e:
-            flask.current_app.logger.error(f"Unexpected error in polygon intersection: {str(e)}")
+            flask.current_app.logger.error(f"Unexpected error in polygon intersection: {e!s}")
             dbm.close_session()
             return {"error": str(e)}, 500
 
@@ -416,7 +418,7 @@ class PolygonDifference(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
+            return api.abort(403, f"You need to be {roles.ANNOTATOR} in order to perform this request.")
         try:
             data = json.loads(request.data)
             flask.current_app.logger.info(f"Received payload for difference: {data}")
@@ -431,15 +433,15 @@ class PolygonDifference(Resource):
             dbm.close_session()
             return response, 200
         except sia.PolygonOperationError as e:
-            flask.current_app.logger.error(f"Validation error in polygon difference: {str(e)}")
+            flask.current_app.logger.error(f"Validation error in polygon difference: {e!s}")
             dbm.close_session()
             return {"error": str(e)}, 400
         except TopologicalError as e:
-            flask.current_app.logger.error(f"Topology error in polygon difference: {str(e)}")
+            flask.current_app.logger.error(f"Topology error in polygon difference: {e!s}")
             dbm.close_session()
             return {"error": str(e)}, 400
         except Exception as e:
-            flask.current_app.logger.error(f"Unexpected error in polygon difference: {str(e)}")
+            flask.current_app.logger.error(f"Unexpected error in polygon difference: {e!s}")
             dbm.close_session()
             return {"error": str(e)}, 500
 
@@ -470,10 +472,10 @@ class BBoxFromPoints(Resource):
             dbm.close_session()
             return {"data": response}, 200
         except sia.PolygonOperationError as e:
-            flask.current_app.logger.error(f"Validation error in bounding box computation: {str(e)}")
+            flask.current_app.logger.error(f"Validation error in bounding box computation: {e!s}")
             dbm.close_session()
             return {"error": str(e)}, 400
         except Exception as e:
-            flask.current_app.logger.error(f"Unexpected error in bounding box computation: {str(e)}")
+            flask.current_app.logger.error(f"Unexpected error in bounding box computation: {e!s}")
             dbm.close_session()
             return {"error": str(e)}, 500

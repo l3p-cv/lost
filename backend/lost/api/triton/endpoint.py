@@ -1,23 +1,24 @@
 from api.triton.api_definition import TritonInferenceRequest, TritonModelListResponse, TritonModelsQuery
 from api.triton.triton_service import TritonService
-from lost.logic.file_access import UserFileAccess
-from lost.api.api import api
-from flask_restx import Resource
+from flask_jwt_extended import get_jwt_identity, jwt_required
 from flask_pydantic import validate
-from flask_jwt_extended import jwt_required, get_jwt_identity
-from lost.settings import LOST_CONFIG
+from flask_restx import Resource
+
+from lost.api.api import api
 from lost.db import access
 from lost.logic import dask_session
+from lost.logic.file_access import UserFileAccess
+from lost.settings import LOST_CONFIG
+
+namespace = api.namespace("triton", description="API to interact with triton server")
 
 
-namespace = api.namespace('triton', description='API to interact with triton server')
-
-
-@namespace.route('/models')
+@namespace.route("/models")
 class TritonModelList(Resource):
     """
     API endpoint to list all models available on the Triton server.
     """
+
     # @jwt_required()
     @validate(response_by_alias=True, query=TritonModelsQuery)
     def get(self, query: TritonModelsQuery) -> TritonModelListResponse:
@@ -29,11 +30,12 @@ class TritonModelList(Resource):
         return TritonModelListResponse(models=models)
 
 
-@namespace.route('/liveness')
+@namespace.route("/liveness")
 class TritonServerLiveness(Resource):
     """
     API endpoint to check the liveness of the Triton server.
     """
+
     # @jwt_required()
     @validate(response_by_alias=True, query=TritonModelsQuery)
     def get(self, query: TritonModelsQuery) -> dict:
@@ -42,11 +44,11 @@ class TritonServerLiveness(Resource):
         """
         triton_service = TritonService(query.server_url)
         is_live = triton_service.check_server_liveness()
-        return {'isLive': is_live}
+        return {"isLive": is_live}
 
 
 def load_img(db_img, ufa, user):
-    if LOST_CONFIG.worker_management != 'dynamic':
+    if LOST_CONFIG.worker_management != "dynamic":
         # need to execute ls for s3fs (don't know why)
         try:
             ufa.fs.ls(db_img.img_path)
@@ -59,13 +61,14 @@ def load_img(db_img, ufa, user):
     return img
 
 
-@namespace.route('/infer')
+@namespace.route("/infer")
 class TritonModelInfer(Resource):
     # Note: Using POST method for inference since it may involve sending a large payload and
     # the response is not idempotent.
     """
     API endpoint to perform inference using a specific model on the Triton server.
     """
+
     @jwt_required()
     @validate(response_by_alias=True, body=TritonInferenceRequest)
     def post(self, body: TritonInferenceRequest):
@@ -84,17 +87,15 @@ class TritonModelInfer(Resource):
         # get model server url
         inference_model = dbm.get_inference_model_by_id(body.model_id)
         if inference_model is None:
-            return {'message': f'Inference Model with id {body.model_id} not found'}, 404
+            return {"message": f"Inference Model with id {body.model_id} not found"}, 404
 
         triton_service = TritonService(inference_model.server_url)
         # try:
-            # Perform inference
+        # Perform inference
         triton_service.infer(image=img, model=inference_model, inference_request=body, user_id=user.idx, dbm=dbm)
         # except Exception as e:
         #     return {'message': f'Inference failed: {str(e)}'}, 500
         # finally:
         dbm.close_session()
 
-        return {
-            'message': 'Inferred annotations saved successfully'
-        }
+        return {"message": "Inferred annotations saved successfully"}

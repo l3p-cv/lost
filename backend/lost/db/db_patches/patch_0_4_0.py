@@ -1,9 +1,11 @@
 import traceback
-import os
+
 from sqlalchemy import text
-from lostconfig import LOSTConfig
+
 from lost.db import access
-from lost.logic.file_man import FileMan 
+from lost.logic.file_man import FileMan
+from lostconfig import LOSTConfig
+
 
 def create_instruction_table(dbm):
     """Create the 'instruction' table if it doesn't exist."""
@@ -50,7 +52,8 @@ def add_instruction_id_column_if_not_exists(dbm):
     except:
         print("❌ Error adding 'instruction_id' column:\n" + traceback.format_exc())
 
-def create_instruction_media_path(dbm:access.DBMan):
+
+def create_instruction_media_path(dbm: access.DBMan):
     try:
         # check_sql = """
         #     SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
@@ -67,14 +70,15 @@ def create_instruction_media_path(dbm:access.DBMan):
         #     print("✅ Added 'pub_media_path' column to 'filesystem'.")
         # else:
         #     print("ℹ️ Column 'pub_media_path' already exists. Skipping.")
-        
+
         all_fs = dbm.get_fs()
         for fs in all_fs:
             if fs.user_default_id is not None:
                 media_path = FileMan(fs_db=fs).get_instruction_media_path()
-                print(f'Create media_path of fs: {fs.name} to {media_path} ')
+                print(f"Create media_path of fs: {fs.name} to {media_path} ")
     except:
         print("❌ Error adding 'media_path' column:\n" + traceback.format_exc())
+
 
 def drop_instruction_column_if_exists(dbm):
     """Drop 'instructions' column from 'anno_task' if it exists."""
@@ -97,15 +101,13 @@ def add_instruction_foreign_key(dbm):
     """Add FK constraint to 'anno_task.instruction_id' -> 'instruction.id'."""
     try:
         dbm.session.execute(
-            text(f"""
+            text("""
             ALTER TABLE anno_task
             ADD CONSTRAINT fk_anno_task_instruction_id_instruction_2
             FOREIGN KEY (instruction_id) REFERENCES instruction(id);
         """)
         )
-        print(
-            f"✅ Added FK on 'instruction_id' with name 'fk_anno_task_instruction_id_instruction_2'."
-        )
+        print("✅ Added FK on 'instruction_id' with name 'fk_anno_task_instruction_id_instruction_2'.")
     except:
         print("❌ Error adding FK:\n" + traceback.format_exc())
 

@@ -1,32 +1,34 @@
-from flask import jsonify, request, Response
+import os
+import re
+from datetime import datetime
+
+from flask import Response, jsonify, request
+from flask_jwt_extended import get_jwt_identity, jwt_required
 from flask_restx import Resource, fields
-from flask_jwt_extended import jwt_required, get_jwt_identity
 from werkzeug.datastructures import ImmutableMultiDict
+
 from lost.api.api import api
+from lost.api.dataset.form_validation import (
+    CreateDatasetForm,
+    UpdateDatasetForm,
+    create_validation_error_message,
+)
 from lost.api.sia.api_definition import annotations, image
 from lost.db import access, roles
+from lost.db.model import Dataset
+from lost.logic import dask_session
+from lost.logic.file_access import UserFileAccess
 from lost.logic.jobs.jobs import (
     delete_whole_ds_export,
     export_dataset_parquet,
     get_all_annotask_ids_for_ds,
 )
-from lost.logic import dask_session
-from lost.settings import LOST_CONFIG, DATA_URL
-from lost.api.dataset.form_validation import (
-    create_validation_error_message,
-    CreateDatasetForm,
-    UpdateDatasetForm,
-)
-from lost.db.model import Dataset
 from lost.logic.sia import (
     SiaSerialize,
     get_image_progress,
     get_total_image_amount,
 )
-from lost.logic.file_access import UserFileAccess
-import os
-from datetime import datetime
-import re
+from lost.settings import DATA_URL, LOST_CONFIG
 
 namespace = api.namespace("datasets", description="Dataset API")
 
@@ -129,7 +131,7 @@ class Datasets(Resource):
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
             return (
-                "You need to be {} in order to perform this request.".format(roles.DESIGNER),
+                f"You need to be {roles.DESIGNER} in order to perform this request.",
                 401,
             )
 
@@ -201,7 +203,7 @@ class Datasets(Resource):
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
             return (
-                "You need to be {} in order to perform this request.".format(roles.DESIGNER),
+                f"You need to be {roles.DESIGNER} in order to perform this request.",
                 401,
             )
 
@@ -247,7 +249,7 @@ class Datasets(Resource):
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
             return (
-                "You need to be {} in order to perform this request.".format(roles.DESIGNER),
+                f"You need to be {roles.DESIGNER} in order to perform this request.",
                 401,
             )
 
@@ -320,7 +322,7 @@ class DatasetReview(Resource):
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
             return (
-                "You need to be {} in order to perform this request.".format(roles.DESIGNER),
+                f"You need to be {roles.DESIGNER} in order to perform this request.",
                 401,
             )
 
@@ -352,7 +354,7 @@ class DatasetListPaged(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            return f"You need to be {roles.DESIGNER} in order to perform this request.", 401
         else:
             ds_no_parent_page, pages = dbm.get_datasets_paged(page_index, page_size)
             datasets_json = []
@@ -415,7 +417,7 @@ class DatasetsFlat(Resource):
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
             return (
-                "You need to be {} in order to perform this request.".format(roles.DESIGNER),
+                f"You need to be {roles.DESIGNER} in order to perform this request.",
                 401,
             )
 
@@ -443,7 +445,7 @@ class DatasetReview(Resource):
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
             return (
-                "You need to be {} in order to perform this request.".format(roles.DESIGNER),
+                f"You need to be {roles.DESIGNER} in order to perform this request.",
                 401,
             )
 
@@ -646,7 +648,7 @@ class DatasetReviewImageSearch(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.DESIGNER))
+            return api.abort(403, f"You need to be {roles.DESIGNER} in order to perform this request.")
 
         # data = request.json
         # search_str = data['filter']
@@ -708,7 +710,7 @@ class DatasetReviewImageSearch(Resource):
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
             return (
-                "You need to be {} in order to perform this request.".format(roles.DESIGNER),
+                f"You need to be {roles.DESIGNER} in order to perform this request.",
                 401,
             )
 
@@ -738,7 +740,7 @@ class DatasetParquetExport(Resource):
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
             return (
-                "You need to be {} in order to perform this request.".format(roles.DESIGNER),
+                f"You need to be {roles.DESIGNER} in order to perform this request.",
                 401,
             )
         data = request.json
@@ -791,7 +793,7 @@ class DatasetExports(Resource):
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
             return (
-                "You need to be {} in order to perform this request.".format(roles.DESIGNER),
+                f"You need to be {roles.DESIGNER} in order to perform this request.",
                 401,
             )
         exports = dbm.get_all_dataset_exports_by_dataset_id(dataset_id)
@@ -817,7 +819,7 @@ class DatasetExport(Resource):
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
             return (
-                "You need to be {} in order to perform this request.".format(roles.DESIGNER),
+                f"You need to be {roles.DESIGNER} in order to perform this request.",
                 401,
             )
         export = dbm.get_dataset_export_by_id(export_id)
@@ -836,7 +838,7 @@ class DatasetExport(Resource):
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
             return (
-                "You need to be {} in order to perform this request.".format(roles.DESIGNER),
+                f"You need to be {roles.DESIGNER} in order to perform this request.",
                 401,
             )
         export = dbm.get_dataset_export_by_id(export_id)

@@ -1,16 +1,16 @@
-import lost
 import json
+import math
+from datetime import datetime
+
+import cv2
 import flask
-from lost.db import dtype, state, model
+from shapely.errors import ShapelyError, TopologicalError
+from shapely.geometry import Polygon
+from shapely.ops import unary_union
+
+from lost.db import dtype, model, state
 from lost.db.access import DBMan
 from lost.logic.anno_task import set_finished, update_anno_task
-from datetime import datetime
-from shapely.geometry import Polygon, LineString
-from shapely.ops import unary_union
-from shapely.errors import ShapelyError, TopologicalError
-import math
-import cv2
-import numpy as np
 
 __author__ = "Gereon Reus"
 
@@ -190,6 +190,7 @@ def get_label_trees(db_man, user_id, at=None):
         label_trees["labels"] = list()
         return label_trees
 
+
 def get_label_trees_by_anno_task_id(db_man, anno_task_id: int):
     """
     :type db_man: lost.db.access.DBMan
@@ -211,6 +212,7 @@ def get_label_trees_by_anno_task_id(db_man, anno_task_id: int):
                 label_leaf_json["color"] = label_leaf.color
             label_trees_json["labels"].append(label_leaf_json)
     return label_trees_json
+
 
 def get_configuration(db_man, user_id):
     at = get_sia_anno_task(db_man, user_id)
@@ -351,7 +353,7 @@ def get_next_anno_id(dbman):
     return anno.idx
 
 
-class SiaUpdateOneThing(object):
+class SiaUpdateOneThing:
     def __init__(self, db_man, data, user_id, anno_task, sia_type="sia"):
         """
         :type db_man: lost.db.access.DBMan
@@ -564,7 +566,7 @@ class SiaUpdateOneThing(object):
         return "success"
 
 
-class SiaUpdate(object):
+class SiaUpdate:
     def __init__(self, db_man, data, user_id, anno_task, sia_type="sia"):
         """
         :type db_man: lost.db.access.DBMan
@@ -850,7 +852,7 @@ class SiaUpdate(object):
     #         json.dump(data, f)
 
 
-class SiaSerialize(object):
+class SiaSerialize:
     def __init__(
         self, image_anno, user_id, media_url, is_first_image, is_last_image, current_image_number, total_image_amount
     ):
@@ -1113,14 +1115,14 @@ def perform_polygon_union(data):
                 raise PolygonOperationError("Invalid polygon geometry: Self-intersection")
             shapely_polygons.append(shapely_poly)
         except (ShapelyError, TopologicalError) as e:
-            flask.current_app.logger.error(f"Invalid geometry: {str(e)}")
-            raise PolygonOperationError(f"Invalid polygon geometry: {str(e)}")
+            flask.current_app.logger.error(f"Invalid geometry: {e!s}")
+            raise PolygonOperationError(f"Invalid polygon geometry: {e!s}")
 
     try:
         result_poly = unary_union(shapely_polygons)
     except (ShapelyError, TopologicalError) as e:
-        flask.current_app.logger.error(f"Topology error in union: {str(e)}")
-        raise PolygonOperationError(f"Topology error during union: {str(e)}")
+        flask.current_app.logger.error(f"Topology error in union: {e!s}")
+        raise PolygonOperationError(f"Topology error during union: {e!s}")
 
     if result_poly.is_empty:
         flask.current_app.logger.info("Empty result polygon")
@@ -1168,12 +1170,12 @@ def perform_polygon_intersection(data):
                 raise PolygonOperationError("Invalid polygon geometry: Self-intersection")
             shapely_polygons.append(shapely_poly)
         except (ShapelyError, TopologicalError) as e:
-            raise PolygonOperationError(f"Invalid polygon geometry: {str(e)}")
+            raise PolygonOperationError(f"Invalid polygon geometry: {e!s}")
 
     try:
         result_poly = shapely_polygons[0].intersection(shapely_polygons[1])
     except (ShapelyError, TopologicalError) as e:
-        raise PolygonOperationError(f"Topology error during intersection: {str(e)}")
+        raise PolygonOperationError(f"Topology error during intersection: {e!s}")
 
     if result_poly.is_empty:
         raise PolygonOperationError("Intersection resulted in an empty polygon")
@@ -1236,7 +1238,7 @@ def perform_polygon_difference(data):
                 raise PolygonOperationError("Invalid polygon geometry: Self-intersection")
             shapely_polygons.append(shapely_poly)
         except (ShapelyError, TopologicalError) as e:
-            raise PolygonOperationError(f"Invalid polygon geometry: {str(e)}")
+            raise PolygonOperationError(f"Invalid polygon geometry: {e!s}")
     try:
         has_overlap = any(
             shapely_polygons[0].intersects(mod) and not shapely_polygons[0].intersection(mod).is_empty
@@ -1249,7 +1251,7 @@ def perform_polygon_difference(data):
         for modifier in shapely_polygons[1:]:
             result_poly = result_poly.difference(modifier)
     except (ShapelyError, TopologicalError) as e:
-        raise PolygonOperationError(f"Topology error during difference: {str(e)}")
+        raise PolygonOperationError(f"Topology error during difference: {e!s}")
 
     if result_poly.is_empty:
         raise PolygonOperationError("Difference resulted in an empty polygon")

@@ -1,12 +1,14 @@
 import json
+
 from flask import request
+from flask_jwt_extended import get_jwt_identity, jwt_required
 from flask_restx import Resource
-from flask_jwt_extended import jwt_required, get_jwt_identity
+
 from lost.api.api import api
-from lost.db import access, roles
-from lost.settings import LOST_CONFIG
-from lost.logic.project_config import ProjectConfigMan
 from lost.api.config.api_definition import config
+from lost.db import access, roles
+from lost.logic.project_config import ProjectConfigMan
+from lost.settings import LOST_CONFIG
 
 namespace = api.namespace("config", description="Config Interface")
 

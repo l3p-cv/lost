@@ -1,41 +1,38 @@
-import threading
-from flask import Blueprint, g, jsonify
-
-from flask_cors import CORS
-from flask_jwt_extended import JWTManager
-import json
 import logging
+import threading
 import time
 import traceback
 
+from flask import Blueprint, g, jsonify
+from flask_cors import CORS
+from flask_jwt_extended import JWTManager
+from flaskapp import app, blacklist
+
 from lost import settings
-from lost.api.api import api
-from lost.api.user.endpoint import namespace as user_namespace
-from lost.api.group.endpoint import namespace as group_namespace
-from lost.api.sia.endpoint import namespace as sia_namespace
-from lost.api.mia.endpoint import namespace as mia_namespace
-from lost.api.pipeline.endpoint import namespace as pipeline_namespace
+from lost.api.anno_example.endpoint import namespace as anno_example_namespace
 from lost.api.annotasks.endpoint import namespace as annotasks_namespace
+from lost.api.api import api
+from lost.api.config.endpoint import namespace as config_namespace
+from lost.api.data.endpoint import namespace as data_namespace
 
 # from lost.api.annotasks.endpoint import namespace as annotasks_namespace
 from lost.api.dataset.endpoint import namespace as dataset_namespace
-from lost.api.data.endpoint import namespace as data_namespace
-from lost.api.label.endpoint import namespace as label_namespace
-from lost.api.worker.endpoint import namespace as worker_namespace
 from lost.api.filebrowser.endpoint import namespace as filebrowser_namespace
+from lost.api.group.endpoint import namespace as group_namespace
+from lost.api.inference_model.endpoint import namespace as inference_model_namespace
+from lost.api.instructionmedia.endpoint import namespace as media_namespace
+from lost.api.instructions.endpoint import namespace as instructions_namespace
+from lost.api.label.endpoint import namespace as label_namespace
+from lost.api.mia.endpoint import namespace as mia_namespace
+from lost.api.pipeline.endpoint import namespace as pipeline_namespace
+from lost.api.sia.endpoint import namespace as sia_namespace
 from lost.api.statistics.endpoint import namespace as statistics_namespace
 from lost.api.system.endpoint import namespace as system_namespace
-from lost.api.config.endpoint import namespace as config_namespace
-from lost.api.anno_example.endpoint import namespace as anno_example_namespace
-from lost.api.instructions.endpoint import namespace as instructions_namespace
-from lost.api.instructionmedia.endpoint import namespace as media_namespace
-from lost.api.inference_model.endpoint import namespace as inference_model_namespace
 from lost.api.triton.endpoint import namespace as triton_namespace
-from lost.logic import dask_session
+from lost.api.user.endpoint import namespace as user_namespace
+from lost.api.worker.endpoint import namespace as worker_namespace
 from lost.db import access
-
-from flaskapp import app, blacklist
-
+from lost.logic import dask_session
 
 if settings.LOST_CONFIG.use_graylog:
     from pygelf import GelfUdpHandler

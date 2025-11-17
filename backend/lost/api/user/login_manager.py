@@ -1,8 +1,12 @@
 import datetime
-from lost.settings import LOST_CONFIG
+
 from flask_jwt_extended import create_access_token, create_refresh_token
-from lost.db.model import User as DBUser, Group, UserRoles, UserGroups, Role
+
 from lost.db import roles
+from lost.db.model import Group, Role, UserGroups, UserRoles
+from lost.db.model import User as DBUser
+from lost.settings import LOST_CONFIG
+
 
 class LoginManager:
     def __init__(self, dbm, user_name, password):
@@ -17,16 +21,13 @@ class LoginManager:
         #     except Exception:
         #         flask.current_app.logger.error('LDAP Authentication failed.')
         #         flask.current_app.logger.error(traceback.print_exc())
-        #         access_token, refresh_token = self.__authenticate_flask() 
+        #         access_token, refresh_token = self.__authenticate_flask()
         # else:
         access_token, refresh_token = self.__authenticate_flask()
 
         if access_token and refresh_token:
-            return {
-                'token': access_token,
-                'refresh_token': refresh_token
-            }, 200
-        return {'message': 'Invalid credentials'}, 401
+            return {"token": access_token, "refresh_token": refresh_token}, 200
+        return {"message": "Invalid credentials"}, 401
 
     def create_jwt(self, user_id: int, roles: list[Role], expires=None):
         if not expires:
@@ -39,11 +40,11 @@ class LoginManager:
             user_role_names.append(user_role.role.name)
 
         # add roles of user to the jwt token
-        additional_claims = {
-            "roles": user_role_names
-        }
+        additional_claims = {"roles": user_role_names}
 
-        access_token = create_access_token(identity=str(user_id), fresh=True, expires_delta=expires, additional_claims=additional_claims)
+        access_token = create_access_token(
+            identity=str(user_id), fresh=True, expires_delta=expires, additional_claims=additional_claims
+        )
         refresh_token = create_refresh_token(str(user_id), expires_delta=expires_refresh)
 
         return access_token, refresh_token
@@ -74,25 +75,30 @@ class LoginManager:
     #         # user in db -> synch with ldap
     #         user = self.__update_db_user(user_info, user)
     #     return self.__get_token(user.idx)
-    
+
     def __create_db_user(self, user_info):
-        user = DBUser(user_name=user_info['uid'], email=user_info['mail'],
-                    email_confirmed_at=datetime.datetime.now(), first_name=user_info['givenName'],
-                    last_name=user_info['sn'], is_external=True)
+        user = DBUser(
+            user_name=user_info["uid"],
+            email=user_info["mail"],
+            email_confirmed_at=datetime.datetime.now(),
+            first_name=user_info["givenName"],
+            last_name=user_info["sn"],
+            is_external=True,
+        )
         self.dbm.save_obj(user)
         anno_role = self.dbm.get_role_by_name(roles.ANNOTATOR)
         ur = UserRoles(user_id=user.idx, role_id=anno_role.idx)
         self.dbm.save_obj(ur)
         g = Group(name=user.user_name, is_user_default=True)
         self.dbm.save_obj(g)
-        ug = UserGroups(group_id=g.idx,user_id=user.idx)
+        ug = UserGroups(group_id=g.idx, user_id=user.idx)
         self.dbm.save_obj(ug)
         return user
 
     def __update_db_user(self, user_info, user):
-        user.email = user_info['mail']
-        user.first_name = user_info['givenName']
-        user.last_name = user_info['sn']
-        user.is_external=True
+        user.email = user_info["mail"]
+        user.first_name = user_info["givenName"]
+        user.last_name = user_info["sn"]
+        user.is_external = True
         self.dbm.save_obj(user)
         return user

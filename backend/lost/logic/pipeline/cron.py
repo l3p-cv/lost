@@ -1,96 +1,96 @@
-from datetime import datetime
-from lost.db import state, dtype
 import json
-from lost.logic.pipeline import pipe_model
-import os
-from lost.logic.file_man import FileMan, AppFileMan
-from lost.logic import anno_task as at_man
-from lost.pyapi import script as script_api
-import subprocess
-from lost.logic.anno_task import update_anno_task
-import traceback
 import logging
+import os
+import subprocess
+import traceback
+from datetime import datetime
+
+from lost.db import dtype, state
 from lost.db.access import DBMan
-from lostconfig import LOSTConfig
-from lost.logic.pipeline.worker import WorkerMan, CurrentWorker
+from lost.logic import anno_task as at_man
 from lost.logic import email
+from lost.logic.anno_task import update_anno_task
 from lost.logic.dask_session import ds_man, ppp_man
-from lost.logic.pipeline import exec_utils
+from lost.logic.file_man import AppFileMan
+from lost.logic.pipeline import exec_utils, pipe_model
+from lost.logic.pipeline.worker import CurrentWorker, WorkerMan
+from lost.pyapi import script as script_api
+from lostconfig import LOSTConfig
+
 
 def gen_extra_install_cmd(extra_packages, lostconfig):
     def cmd(install_cmd, packages):
-        return f'{install_cmd} {packages}'
+        return f"{install_cmd} {packages}"
+
     extra = json.loads(extra_packages)
     pip_cmd = None
     if lostconfig.allow_extra_pip:
-        if len(extra['pip']) > 1:
-            pip_cmd = cmd('pip install', extra['pip'])
+        if len(extra["pip"]) > 1:
+            pip_cmd = cmd("pip install", extra["pip"])
     conda_cmd = None
     if lostconfig.allow_extra_conda:
-        if len(extra['conda']) > 1:
-            conda_cmd = cmd('conda install', extra['conda'])
+        if len(extra["conda"]) > 1:
+            conda_cmd = cmd("conda install", extra["conda"])
     return pip_cmd, conda_cmd
+
+
 class PipeEngine(pipe_model.PipeEngine):
-    def __init__(self, dbm, pipe, lostconfig, client, logger_name=''):
-        '''
+    def __init__(self, dbm, pipe, lostconfig, client, logger_name=""):
+        """
         :type dbm: lost.db.access.DBMan
         :type pipe: lost.db.model.Pipe
-        '''
+        """
         super().__init__(dbm=dbm, pipe=pipe)
-        self.lostconfig = lostconfig #type: lost.logic.config.LOSTConfig
+        self.lostconfig = lostconfig  # type: lost.logic.config.LOSTConfig
         self.file_man = AppFileMan(self.lostconfig)
-        self.logger = logging.getLogger('{}.{}'.format(
-            logger_name, self.__class__.__name__)
-        )
+        self.logger = logging.getLogger(f"{logger_name}.{self.__class__.__name__}")
         self.client = client
 
     def process_annotask(self, pipe_e):
         anno_task = self.dbm.get_anno_task(pipe_element_id=pipe_e.idx)
-        if anno_task.state == state.AnnoTask.IN_PROGRESS or \
-           anno_task.state == state.AnnoTask.PAUSED:
-           if not at_man.has_annotation_in_iteration(self.dbm, anno_task.idx, pipe_e.iteration):
+        if anno_task.state == state.AnnoTask.IN_PROGRESS or anno_task.state == state.AnnoTask.PAUSED:
+            if not at_man.has_annotation_in_iteration(self.dbm, anno_task.idx, pipe_e.iteration):
                 at_man.set_finished(self.dbm, anno_task.idx)
-                self.logger.warning('No Annotations have been requested for AnnoTask {}'\
-                    .format(anno_task.idx))
-                self.logger.warning("%d: AnnoTask has been finished (ID: %d, Name: %s)"\
-                                %(self.pipe.idx, anno_task.idx, anno_task.name))
-       
+                self.logger.warning(f"No Annotations have been requested for AnnoTask {anno_task.idx}")
+                self.logger.warning(
+                    "%d: AnnoTask has been finished (ID: %d, Name: %s)" % (self.pipe.idx, anno_task.idx, anno_task.name)
+                )
+
         # state = finished will be set in annotation tool
         if anno_task.state == state.AnnoTask.PENDING:
             anno_task.state = state.AnnoTask.IN_PROGRESS
             self.dbm.save_obj(anno_task)
-            self.logger.info("%d: AnnoTask IN_PROGRESS (ID: %d, Name: %s)"\
-                         %(self.pipe.idx, anno_task.idx, anno_task.name))
+            self.logger.info(
+                "%d: AnnoTask IN_PROGRESS (ID: %d, Name: %s)" % (self.pipe.idx, anno_task.idx, anno_task.name)
+            )
 
     def __gen_run_cmd(self, program, pipe_e):
         # script = self.dbm.get_script(pipe_e.script_id)
         script_path = os.path.join(self.lostconfig.app_path, pipe_e.script.path)
         cmd = self.lostconfig.py3_init + " && "
-        cmd += program + " " + script_path + " --idx " + str(pipe_e.idx) 
+        cmd += program + " " + script_path + " --idx " + str(pipe_e.idx)
         return cmd
 
     def make_debug_session(self, pipe_e):
         debug_path = self.file_man.create_debug_path(pipe_element=pipe_e)
-        debug_file_path = os.path.join(debug_path, 'debug.sh')
+        debug_file_path = os.path.join(debug_path, "debug.sh")
         # init = self.lostconfig.py3_init + '\n'
-        cmd = self.__gen_run_cmd('pudb', pipe_e)
+        cmd = self.__gen_run_cmd("pudb", pipe_e)
         # script_content = init + cmd
         script_content = cmd
-        with open(debug_file_path, 'w') as dfile:
+        with open(debug_file_path, "w") as dfile:
             dfile.write(script_content)
         script_path = os.path.join(self.lostconfig.app_path, pipe_e.script.path)
         dsession_str = "For DEBUG start: bash " + debug_file_path
         dsession_str += "<br>If you want to EDIT go to: " + script_path
         pipe_e.debug_session = dsession_str
         self.dbm.save_obj(pipe_e)
-        self.logger.info('Created debug script: {}'.format(debug_file_path))
+        self.logger.info(f"Created debug script: {debug_file_path}")
         self.logger.info(pipe_e.debug_session)
 
     def __release_loop_iteration(self, pipe_e):
         pipe_e.loop.iteration += 1
-        self.logger.info('{}: Run loop with id {} in iteration {}'.format(self.pipe.idx,
-                                                                      pipe_e.loop.idx,
-                                                                      pipe_e.loop.iteration))
+        self.logger.info(f"{self.pipe.idx}: Run loop with id {pipe_e.loop.idx} in iteration {pipe_e.loop.iteration}")
         loop_pes = self.get_loop_pes(pipe_e.loop.pe_jump, pipe_e)
         for pe in loop_pes:
             pe.iteration += 1
@@ -111,83 +111,76 @@ class PipeEngine(pipe_model.PipeEngine):
         if pipe_e.loop.break_loop:
             pipe_e.state = state.PipeElement.FINISHED
             self.dbm.add(pipe_e)
-            self.logger.info('{}: Break loop with id {}'.format(self.pipe.idx,
-                                                            pipe_e.loop.idx))
+            self.logger.info(f"{self.pipe.idx}: Break loop with id {pipe_e.loop.idx}")
             return
         if pipe_e.loop.max_iteration is not None:
             if pipe_e.loop.iteration is None:
                 pipe_e.loop.iteration = 0
-            if pipe_e.loop.iteration < pipe_e.loop.max_iteration-1:
+            if pipe_e.loop.iteration < pipe_e.loop.max_iteration - 1:
                 self.__release_loop_iteration(pipe_e)
             else:
                 pipe_e.state = state.PipeElement.FINISHED
-                self.logger.info('{}: Loop ({}) terminated. Max iterations = {}'\
-                             .format(self.pipe.idx, pipe_e.loop.idx,
-                                     pipe_e.loop.max_iteration))
+                self.logger.info(
+                    f"{self.pipe.idx}: Loop ({pipe_e.loop.idx}) terminated. Max iterations = {pipe_e.loop.max_iteration}"
+                )
         else:
             self.__release_loop_iteration(pipe_e)
         self.dbm.add(pipe_e)
-        
+
     def select_env_for_script(self, pipe_e):
-        '''Select an environment where the script should be executed'''
+        """Select an environment where the script should be executed"""
         w_man = WorkerMan(self.dbm, self.lostconfig)
         if pipe_e.script.envs is not None:
             script_envs = json.loads(pipe_e.script.envs)
             if len(script_envs) == 0:
-                return 'lost'
+                return "lost"
         else:
             script_envs = list()
-            return 'lost' # Return default queue
-        worker_envs = w_man.get_worker_envs()        
+            return "lost"  # Return default queue
+        worker_envs = w_man.get_worker_envs()
         for script_env in script_envs:
             if script_env in worker_envs:
                 return script_env
-        self.logger.warning('No suitable env to execute script: {}'.format(pipe_e.script.path))
-        return None 
+        self.logger.warning(f"No suitable env to execute script: {pipe_e.script.path}")
+        return None
 
     def dask_done_callback(self, fut):
-        self.logger.info(f'fut.done: {fut.done()}')
-        self.logger.info(f'fut.cancelled: {fut.cancelled()}')
+        self.logger.info(f"fut.done: {fut.done()}")
+        self.logger.info(f"fut.cancelled: {fut.cancelled()}")
         exc = fut.exception()
         if exc is None:
             self.logger.info(fut.result())
         else:
-            self.logger.info(f'exception:\n{fut.exception()}')
-            self.logger.error('traceback:\n{}'.format(
-                ''.join(
-                    [f'{x}' for x in traceback.format_tb(fut.traceback())]
-                )
-            ))
+            self.logger.info(f"exception:\n{fut.exception()}")
+            self.logger.error("traceback:\n{}".format("".join([f"{x}" for x in traceback.format_tb(fut.traceback())])))
 
     def _install_extra_packages(self, client, packages):
         def install(cmd):
             import subprocess
-            output = subprocess.check_output(f'{cmd}',stderr=subprocess.STDOUT, shell=True)
+
+            output = subprocess.check_output(f"{cmd}", stderr=subprocess.STDOUT, shell=True)
             return output
+
         pip_cmd, conda_cmd = gen_extra_install_cmd(packages, self.lostconfig)
         if pip_cmd is not None:
-            self.logger.info(f'Start install cmd: {pip_cmd}')
+            self.logger.info(f"Start install cmd: {pip_cmd}")
             self.logger.info(client.run(install, pip_cmd))
-            self.logger.info(f'Install finished: {pip_cmd}')
+            self.logger.info(f"Install finished: {pip_cmd}")
         if conda_cmd is not None:
-            self.logger.info(f'Start install cmd: {conda_cmd}')
+            self.logger.info(f"Start install cmd: {conda_cmd}")
             self.logger.info(client.run(install, conda_cmd))
-            self.logger.info(f'Install finished: {conda_cmd}')
+            self.logger.info(f"Install finished: {conda_cmd}")
 
     def exec_dask_direct(self, client, pipe_e, worker=None):
         scr = pipe_e.script
         self._install_extra_packages(client, scr.extra_packages)
         pp_path = self.file_man.get_pipe_project_path(pipe_e.script)
-        import_name = ppp_man.prepare_import(
-            client, pp_path, pipe_e.script.name, self.logger
-        )
-        fut = client.submit(exec_utils.exec_dyn_class, pipe_e.idx, 
-            import_name, workers=worker
-        )
+        import_name = ppp_man.prepare_import(client, pp_path, pipe_e.script.name, self.logger)
+        fut = client.submit(exec_utils.exec_dyn_class, pipe_e.idx, import_name, workers=worker)
         fut.add_done_callback(self.dask_done_callback)
 
-    def start_script(self,pipe_e):
-        if self.client is not None: # Workermanagement == static
+    def start_script(self, pipe_e):
+        if self.client is not None:  # Workermanagement == static
             env = self.select_env_for_script(pipe_e)
             if env is None:
                 return
@@ -198,11 +191,11 @@ class PipeEngine(pipe_model.PipeEngine):
             user = self.dbm.get_user_by_id(self.pipe.manager_id)
             client = ds_man.get_dask_client(user)
             ds_man.refresh_user_session(user)
-            self.logger.info('Process script with dask client: {}'.format(client))
-            self.logger.info('dask_session: {}'.format(ds_man.session))
+            self.logger.info(f"Process script with dask client: {client}")
+            self.logger.info(f"dask_session: {ds_man.session}")
             worker = None
             # client.submit(exec_script_in_subprocess, pipe_e.idx)
-        if self.lostconfig.script_execution == 'subprocess':
+        if self.lostconfig.script_execution == "subprocess":
             fut = client.submit(exec_script_in_subprocess, pipe_e.idx, workers=worker)
             fut.add_done_callback(self.dask_done_callback)
         else:
@@ -210,18 +203,17 @@ class PipeEngine(pipe_model.PipeEngine):
 
     def process_pipe_element(self):
         pipe_e = self.get_next_element()
-        while (pipe_e is not None):
+        while pipe_e is not None:
             if pipe_e.dtype == dtype.PipeElement.SCRIPT:
                 if pipe_e.state != state.PipeElement.SCRIPT_ERROR:
                     if pipe_e.state == state.PipeElement.PENDING:
                         self.start_script(pipe_e)
                         pipe = pipe_e.pipe
-                        self.logger.info('PipeElementID: {} Excuting script: {}'.format(pipe_e.idx, 
-                            pipe_e.script.name))
+                        self.logger.info(f"PipeElementID: {pipe_e.idx} Excuting script: {pipe_e.script.name}")
             elif pipe_e.dtype == dtype.PipeElement.ANNO_TASK:
                 if pipe_e.state == state.PipeElement.PENDING:
                     update_anno_task(self.dbm, pipe_e.anno_task.idx)
-                    try: 
+                    try:
                         email.send_annotask_available(self.dbm, pipe_e.anno_task)
                     except:
                         msg = "Could not send Email. \n"
@@ -230,13 +222,11 @@ class PipeEngine(pipe_model.PipeEngine):
                     pipe_e.state = state.PipeElement.IN_PROGRESS
                     self.dbm.save_obj(pipe_e)
                 self.process_annotask(pipe_e)
-            elif pipe_e.dtype == dtype.PipeElement.DATASOURCE:
-                pipe_e.state = state.PipeElement.FINISHED
-                self.dbm.save_obj(pipe_e)
-            elif pipe_e.dtype == dtype.PipeElement.VISUALIZATION:
-                pipe_e.state = state.PipeElement.FINISHED
-                self.dbm.save_obj(pipe_e)
-            elif pipe_e.dtype == dtype.PipeElement.DATA_EXPORT:
+            elif (
+                pipe_e.dtype == dtype.PipeElement.DATASOURCE
+                or pipe_e.dtype == dtype.PipeElement.VISUALIZATION
+                or pipe_e.dtype == dtype.PipeElement.DATA_EXPORT
+            ):
                 pipe_e.state = state.PipeElement.FINISHED
                 self.dbm.save_obj(pipe_e)
             elif pipe_e.dtype == dtype.PipeElement.LOOP:
@@ -254,7 +244,7 @@ class PipeEngine(pipe_model.PipeEngine):
             p = self.pipe
             # print('Process pipe: {}'.format(self.pipe.name))
             if p.is_locked is None:
-               p.is_locked = False
+                p.is_locked = False
             if not p.is_locked:
                 p.is_locked = True
                 self.dbm.save_obj(p)
@@ -291,9 +281,8 @@ class PipeEngine(pipe_model.PipeEngine):
                     self.pipe.state = state.Pipe.FINISHED
                     self.pipe.timestamp_finished = datetime.now()
                     self.dbm.save_obj(self.pipe)
-                    self.logger.info("%d: Task is finished (Name: %s)"%(self.pipe.idx,
-                                                                    self.pipe.name))                                    
-                    try: 
+                    self.logger.info("%d: Task is finished (Name: %s)" % (self.pipe.idx, self.pipe.name))
+                    try:
                         email.send_pipeline_finished(self.pipe)
                     except:
                         msg = "Could not send Email. \n"
@@ -306,12 +295,12 @@ class PipeEngine(pipe_model.PipeEngine):
                 pe = self.check_candiate(candidate)
                 if pe is None:
                     continue
-                #If there is a loop under candidates, it should be executed as
-                #last possible element. Since a loop will set all other elements
-                #within the loop to pending when processed. So if the last element
-                #before the loop has subsequent elements. These elements would never
-                #be executed since the loop would set the last element in the loop
-                #to pending.
+                # If there is a loop under candidates, it should be executed as
+                # last possible element. Since a loop will set all other elements
+                # within the loop to pending when processed. So if the last element
+                # before the loop has subsequent elements. These elements would never
+                # be executed since the loop would set the last element in the loop
+                # to pending.
                 elif pe.dtype == dtype.PipeElement.LOOP:
                     pe_wait = pe
                     continue
@@ -345,12 +334,13 @@ class PipeEngine(pipe_model.PipeEngine):
                 email.send_script_error(pipe, pipe_element)
                 pipe_element.error_reported = True
                 self.dbm.add(pipe_element)
-                self.dbm.commit()    
+                self.dbm.commit()
             except:
                 pipe_element.error_reported = True
-                pipe_element.error_msg +=  traceback.format_exc()
+                pipe_element.error_msg += traceback.format_exc()
                 self.dbm.add(pipe_element)
-                self.dbm.commit()    
+                self.dbm.commit()
+
 
 def gen_run_cmd(program, pipe_e, lostconfig):
     # script = self.dbm.get_script(pipe_e.script_id)
@@ -358,12 +348,13 @@ def gen_run_cmd(program, pipe_e, lostconfig):
     # extra_packages = json.loads(pipe_e.script.extra_packages)
     pip_cmd, conda_cmd = gen_extra_install_cmd(pipe_e.script.extra_packages, lostconfig)
     if pip_cmd is not None:
-        cmd += pip_cmd + '\n'
+        cmd += pip_cmd + "\n"
     if conda_cmd is not None:
-        cmd += conda_cmd +'\n'
+        cmd += conda_cmd + "\n"
     script_path = os.path.join(lostconfig.app_path, pipe_e.script.path)
-    cmd += program + " " + script_path + " --idx " + str(pipe_e.idx) 
+    cmd += program + " " + script_path + " --idx " + str(pipe_e.idx)
     return cmd
+
 
 def exec_script_in_subprocess(pipe_element_id):
     try:
@@ -371,11 +362,11 @@ def exec_script_in_subprocess(pipe_element_id):
         dbm = DBMan(lostconfig)
         pipe_e = dbm.get_pipe_element(pipe_e_id=pipe_element_id)
         logger = logging
-        if lostconfig.worker_management == 'static':
+        if lostconfig.worker_management == "static":
             worker = CurrentWorker(dbm, lostconfig)
             if not worker.enough_resources(pipe_e.script):
                 # logger.warning('Not enough resources! Rejected {} (PipeElement ID {})'.format(pipe_e.script.path, pipe_e.idx))
-                raise Exception('Not enough resources')
+                raise Exception("Not enough resources")
         pipe_e.state = state.PipeElement.IN_PROGRESS
         dbm.save_obj(pipe_e)
         file_man = AppFileMan(lostconfig)
@@ -383,36 +374,32 @@ def exec_script_in_subprocess(pipe_element_id):
 
         cmd = gen_run_cmd("pudb", pipe_e, lostconfig)
         debug_script_path = file_man.get_debug_path(pipe_e)
-        debug_script_path = os.path.join(debug_script_path, 'debug.sh')
-        with open(debug_script_path, 'w') as sfile:
+        debug_script_path = os.path.join(debug_script_path, "debug.sh")
+        with open(debug_script_path, "w") as sfile:
             sfile.write(cmd)
 
         cmd = gen_run_cmd("python3", pipe_e, lostconfig)
         # file_man.create_debug_path(pipe_e)
         start_script_path = file_man.get_debug_path(pipe_e)
-        start_script_path = os.path.join(start_script_path, 'start.sh')
-        with open(start_script_path, 'w') as sfile:
+        start_script_path = os.path.join(start_script_path, "start.sh")
+        with open(start_script_path, "w") as sfile:
             sfile.write(cmd)
-        p = subprocess.Popen('bash {}'.format(start_script_path), stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE, shell=True)
-        logger.info("{} ({}): Started script\n{}".format(pipe.name, pipe.idx, cmd))
-        if lostconfig.worker_management == 'static':
-            worker.add_script(pipe_e, pipe_e.script)       
+        p = subprocess.Popen(f"bash {start_script_path}", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        logger.info(f"{pipe.name} ({pipe.idx}): Started script\n{cmd}")
+        if lostconfig.worker_management == "static":
+            worker.add_script(pipe_e, pipe_e.script)
         out, err = p.communicate()
-        if lostconfig.worker_management == 'static':
-            worker.remove_script(pipe_e, pipe_e.script)       
+        if lostconfig.worker_management == "static":
+            worker.remove_script(pipe_e, pipe_e.script)
         if p.returncode != 0:
-            raise Exception(err.decode('utf-8'))
-        logger.info('{} ({}): Executed script successful: {}'.format(pipe.name, 
-            pipe.idx, pipe_e.script.path))
+            raise Exception(err.decode("utf-8"))
+        logger.info(f"{pipe.name} ({pipe.idx}): Executed script successful: {pipe_e.script.path}")
         dbm.close_session()
 
     except:
         pipe = pipe_e.pipe
-        logger.info('{} ({}): Exception occurred in script: {}'.format(pipe.name, 
-            pipe.idx, pipe_e.script.path))
+        logger.info(f"{pipe.name} ({pipe.idx}): Exception occurred in script: {pipe_e.script.path}")
         msg = traceback.format_exc()
         logger.error(msg)
         script_api.report_script_err(pipe_e, pipe, dbm, msg)
         dbm.close_session()
-
