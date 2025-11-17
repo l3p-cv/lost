@@ -12,16 +12,16 @@ import DesignerStatisticsComponent from './containers/Statistics/DesignerStatist
 import InstructionDashboard from './containers/Instruction/InstructionsDashboard'
 
 import {
-    FaBox,
-    FaChartLine,
-    FaDatabase,
-    FaPaintBrush,
-    FaPlay,
-    FaTachometerAlt,
-    FaTag,
-    FaTasks,
-    FaTools,
-    FaFileAlt,
+  FaBox,
+  FaChartLine,
+  FaDatabase,
+  FaPaintBrush,
+  FaPlay,
+  FaTachometerAlt,
+  FaTag,
+  FaTasks,
+  FaTools,
+  FaFileAlt,
 } from 'react-icons/fa'
 import PersonalStatistics from './containers/Statistics/PersonalStatistics'
 import { PipelineView } from './containers/pipeline/running/PipelineView'
@@ -30,194 +30,194 @@ import { PipelineTemplatesTable } from './containers/pipeline/start/PipelineTemp
 import { TemplateView } from './containers/pipeline/start/TemplateView'
 
 const iconProps = {
-    size: 20,
-    className: 'c-sidebar-nav-icon',
-    style: {
-        marginRight: 10,
-    },
+  size: 20,
+  className: 'c-sidebar-nav-icon',
+  style: {
+    marginRight: 10,
+  },
 }
 
 const DesignerDashboard = {
-    name: 'Dashboard',
-    to: '/dashboard',
-    component: PersonalStatistics,
-    icon: <FaTachometerAlt {...iconProps} />,
+  name: 'Dashboard',
+  to: '/dashboard',
+  component: PersonalStatistics,
+  icon: <FaTachometerAlt {...iconProps} />,
 }
 
 const AnnotatorDashboard = {
-    name: 'Dashboard',
-    to: '/dashboard',
-    component: PersonalStatistics,
-    icon: <FaTachometerAlt {...iconProps} />,
+  name: 'Dashboard',
+  to: '/dashboard',
+  component: PersonalStatistics,
+  icon: <FaTachometerAlt {...iconProps} />,
 }
 
 const DesignerStatistics = {
-    name: 'Statistics',
-    to: '/statistics',
-    component: DesignerStatisticsComponent,
-    icon: <FaChartLine {...iconProps} />,
+  name: 'Statistics',
+  to: '/statistics',
+  component: DesignerStatisticsComponent,
+  icon: <FaChartLine {...iconProps} />,
 }
 
 const TitleProject = {
-    title: true,
-    name: 'Project',
+  title: true,
+  name: 'Project',
 }
 
 const TitleAdmin = {
-    title: true,
-    name: 'Administration',
+  title: true,
+  name: 'Administration',
 }
 
 const TitleAnnotation = {
-    title: true,
-    name: 'Annotation',
+  title: true,
+  name: 'Annotation',
 }
 
 const InstructionRoute = {
-    name: 'Instructions',
-    to: '/instructions',
-    component: InstructionDashboard,
-    id: 'nav-instruction',
-    icon: <FaFileAlt {...iconProps} />,
+  name: 'Instructions',
+  to: '/instructions',
+  component: InstructionDashboard,
+  id: 'nav-instruction',
+  icon: <FaFileAlt {...iconProps} />,
 }
 
 const Labels = {
-    name: 'Labels',
-    to: '/labels',
-    component: LabelsComponent,
-    id: 'nav-labels',
-    icon: <FaTag {...iconProps} />,
+  name: 'Labels',
+  to: '/labels',
+  component: LabelsComponent,
+  id: 'nav-labels',
+  icon: <FaTag {...iconProps} />,
 }
 
 const Datasets = {
-    name: 'Datasets',
-    to: '/datasets',
-    component: DatasetsComponent,
-    icon: <FaBox {...iconProps} />,
+  name: 'Datasets',
+  to: '/datasets',
+  component: DatasetsComponent,
+  icon: <FaBox {...iconProps} />,
 }
 
 const DatasetsReview = {
-    path: '/datasets/:datasetId/review',
-    component: DatasetsReviewComponent,
+  path: '/datasets/:datasetId/review',
+  component: DatasetsReviewComponent,
 }
 
 const AnnotaskReview = {
-    path: '/annotasks/:annotaskId/review',
-    component: AnnotasksReviewComponent,
+  path: '/annotasks/:annotaskId/review',
+  component: AnnotasksReviewComponent,
 }
 
 const DataSources = {
-    name: 'Datasources',
-    to: '/datasources',
-    component: DataSourcesComponent,
-    icon: <FaDatabase {...iconProps} />,
+  name: 'Datasources',
+  to: '/datasources',
+  component: DataSourcesComponent,
+  icon: <FaDatabase {...iconProps} />,
 }
 
 const Annotation = {
-    name: 'Annotation',
-    to: '/annotation',
-    component: AnnotationTableComponent,
-    icon: <FaPaintBrush {...iconProps} />,
+  name: 'Annotation',
+  to: '/annotation',
+  component: AnnotationTableComponent,
+  icon: <FaPaintBrush {...iconProps} />,
 }
 
 const Sia = {
-    path: '/sia/*',
-    component: SiaComponent,
+  path: '/sia/*',
+  component: SiaComponent,
 }
 
 const Mia = {
-    path: '/mia/*',
-    component: MiaComponent,
+  path: '/mia/*',
+  component: MiaComponent,
 }
 
 const RunningPipelinesPage = {
-    name: 'Pipelines',
-    to: '/pipelines',
-    component: RunningPipelines,
-    icon: <FaTasks {...iconProps} />,
-    id: 'nav-pipelines',
+  name: 'Pipelines',
+  to: '/pipelines',
+  component: RunningPipelines,
+  icon: <FaTasks {...iconProps} />,
+  id: 'nav-pipelines',
 }
 
 const PipelinePage = {
-    path: '/pipeline/:pipelineId',
-    // exact: true,
-    component: PipelineView,
+  path: '/pipeline/:pipelineId',
+  // exact: true,
+  component: PipelineView,
 }
 
 const PipelineTemplatesPage = {
-    name: 'Start Pipeline',
-    to: '/pipeline-templates',
-    component: PipelineTemplatesTable,
-    icon: <FaPlay {...iconProps} />,
-    id: 'nav-start-pipeline',
+  name: 'Start Pipeline',
+  to: '/pipeline-templates',
+  component: PipelineTemplatesTable,
+  icon: <FaPlay {...iconProps} />,
+  id: 'nav-start-pipeline',
 }
 
 const TemplatePage = {
-    path: '/pipeline-template/:templateId',
-    component: TemplateView,
-    exact: true,
+  path: '/pipeline-template/:templateId',
+  component: TemplateView,
+  exact: true,
 }
 
 const AdminArea = {
-    name: 'Admin Area',
-    to: '/admin_area',
-    component: AdminAreaComponent,
-    icon: <FaTools {...iconProps} />,
+  name: 'Admin Area',
+  to: '/admin_area',
+  component: AdminAreaComponent,
+  icon: <FaTools {...iconProps} />,
 }
 
 const MyProfile = {
-    path: '/my_profile/*',
-    component: MyProfileComponent,
+  path: '/my_profile/*',
+  component: MyProfileComponent,
 }
 
 const guiSetup = {
-    additionalRoutes: [
-        Sia,
-        Mia,
-        MyProfile,
-        AnnotaskReview,
-        DatasetsReview,
-        PipelinePage,
-        TemplatePage,
+  additionalRoutes: [
+    Sia,
+    Mia,
+    MyProfile,
+    AnnotaskReview,
+    DatasetsReview,
+    PipelinePage,
+    TemplatePage,
+  ],
+  Administrator: {
+    redirect: '/dashboard',
+    navItems: [
+      DesignerDashboard,
+      TitleProject,
+      RunningPipelinesPage,
+      PipelineTemplatesPage,
+      Labels,
+      Datasets,
+      DataSources,
+      InstructionRoute,
+      DesignerStatistics,
+      TitleAnnotation,
+      Annotation,
+      TitleAdmin,
+      AdminArea,
     ],
-    Administrator: {
-        redirect: '/dashboard',
-        navItems: [
-            DesignerDashboard,
-            TitleProject,
-            RunningPipelinesPage,
-            PipelineTemplatesPage,
-            Labels,
-            Datasets,
-            DataSources,
-            InstructionRoute,
-            DesignerStatistics,
-            TitleAnnotation,
-            Annotation,
-            TitleAdmin,
-            AdminArea,
-        ],
-    },
-    Designer: {
-        redirect: '/dashboard',
-        navItems: [
-            DesignerDashboard,
-            TitleProject,
-            RunningPipelinesPage,
-            PipelineTemplatesPage,
-            Labels,
-            Datasets,
-            DataSources,
-            InstructionRoute,
-            DesignerStatistics,
-            TitleAnnotation,
-            Annotation,
-        ],
-    },
-    Annotator: {
-        redirect: '/annotation',
-        navItems: [AnnotatorDashboard, Annotation],
-    },
+  },
+  Designer: {
+    redirect: '/dashboard',
+    navItems: [
+      DesignerDashboard,
+      TitleProject,
+      RunningPipelinesPage,
+      PipelineTemplatesPage,
+      Labels,
+      Datasets,
+      DataSources,
+      InstructionRoute,
+      DesignerStatistics,
+      TitleAnnotation,
+      Annotation,
+    ],
+  },
+  Annotator: {
+    redirect: '/annotation',
+    navItems: [AnnotatorDashboard, Annotation],
+  },
 }
 
 export default guiSetup

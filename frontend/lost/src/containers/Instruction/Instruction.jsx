@@ -1,166 +1,182 @@
-import React, { useEffect, useState } from 'react';
-import { useGetInstructions, useDeleteInstruction, useAddInstruction, useEditInstruction } from './instruction_api';
-import { CContainer, CRow, CCol, CSpinner, CBadge, CTooltip } from '@coreui/react';
-import BaseModal from '../../components/BaseModal';
-import IconButton from '../../components/IconButton';
-import EditInstruction from './EditInstruction';
-import ViewInstruction from './ViewInstruction';
-import BaseContainer from '../../components/BaseContainer';
-import * as Notification from '../../components/Notification';
-import { useOwnUser } from '../../actions/user/user_api';
-import { faUserPlus, faPen, faTrash, faEye } from '@fortawesome/free-solid-svg-icons';
-import CoreDataTable from '../../components/CoreDataTable';
-import { createColumnHelper } from '@tanstack/react-table';
-import CoreIconButton from '../../components/CoreIconButton';
-import TableHeader from '../../components/TableHeader';
-import ErrorBoundary from '../../components/ErrorBoundary';
+import React, { useEffect, useState } from 'react'
+import {
+  useGetInstructions,
+  useDeleteInstruction,
+  useAddInstruction,
+  useEditInstruction,
+} from './instruction_api'
+import { CContainer, CRow, CCol, CSpinner, CBadge, CTooltip } from '@coreui/react'
+import BaseModal from '../../components/BaseModal'
+import IconButton from '../../components/IconButton'
+import EditInstruction from './EditInstruction'
+import ViewInstruction from './ViewInstruction'
+import BaseContainer from '../../components/BaseContainer'
+import * as Notification from '../../components/Notification'
+import { useOwnUser } from '../../actions/user/user_api'
+import { faUserPlus, faPen, faTrash, faEye } from '@fortawesome/free-solid-svg-icons'
+import CoreDataTable from '../../components/CoreDataTable'
+import { createColumnHelper } from '@tanstack/react-table'
+import CoreIconButton from '../../components/CoreIconButton'
+import TableHeader from '../../components/TableHeader'
+import ErrorBoundary from '../../components/ErrorBoundary'
 
-const canEdit = (visLevel, instruction) => visLevel === 'global' || (visLevel === 'all' && instruction.group_id);
-const canView = (visLevel, instruction) => visLevel === 'all' && !instruction.group_id;
-const canDelete = (visLevel, instruction) => !(visLevel === 'all' && !instruction.group_id);
+const canEdit = (visLevel, instruction) =>
+  visLevel === 'global' || (visLevel === 'all' && instruction.group_id)
+const canView = (visLevel, instruction) => visLevel === 'all' && !instruction.group_id
+const canDelete = (visLevel, instruction) =>
+  !(visLevel === 'all' && !instruction.group_id)
 
 const Instruction = ({ visLevel }) => {
-  const [editingInstruction, setEditingInstruction] = useState(null);
-  const [viewingInstruction, setViewingInstruction] = useState(null);
-  const [modalOpen, setModalOpen] = useState(false);
-  const { data: instructions, isLoading } = useGetInstructions(visLevel);
-  const deleteInstructionMutation = useDeleteInstruction();
-  const addInstructionMutation = useAddInstruction();
-  const editInstructionMutation = useEditInstruction();
-  const { data: ownUser } = useOwnUser();
+  const [editingInstruction, setEditingInstruction] = useState(null)
+  const [viewingInstruction, setViewingInstruction] = useState(null)
+  const [modalOpen, setModalOpen] = useState(false)
+  const { data: instructions, isLoading } = useGetInstructions(visLevel)
+  const deleteInstructionMutation = useDeleteInstruction()
+  const addInstructionMutation = useAddInstruction()
+  const editInstructionMutation = useEditInstruction()
+  const { data: ownUser } = useOwnUser()
 
   useEffect(() => {
-    const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true';
+    const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true'
     if (joyrideRunning && instructions?.length > 10) {
-      const currentStep = parseInt(localStorage.getItem('currentStep') || '0');
+      const currentStep = parseInt(localStorage.getItem('currentStep') || '0')
       if (currentStep === 7) {
         setTimeout(() => {
           window.dispatchEvent(
-          new CustomEvent('joyride-next-step', {
-            detail: { step: 'last-row-highlight' }, 
-          })
-        );
-      }, 3000);
+            new CustomEvent('joyride-next-step', {
+              detail: { step: 'last-row-highlight' },
+            }),
+          )
+        }, 3000)
       }
-    }else if (joyrideRunning && instructions?.length <= 10) {
-      const currentStep = parseInt(localStorage.getItem('currentStep') || '0');
+    } else if (joyrideRunning && instructions?.length <= 10) {
+      const currentStep = parseInt(localStorage.getItem('currentStep') || '0')
       if (currentStep === 7) {
-          window.dispatchEvent(
+        window.dispatchEvent(
           new CustomEvent('joyride-next-step', {
-            detail: { step: 'last-row-highlight' }, 
-          })
-        );
+            detail: { step: 'last-row-highlight' },
+          }),
+        )
       }
     }
-  }, [instructions]); 
+  }, [instructions])
 
   const deleteSelectedInstruction = (id) => {
     deleteInstructionMutation.mutate(id, {
       onSuccess: () => Notification.showSuccess('Instruction deleted successfully'),
       onError: () => Notification.showError('Failed to delete instruction'),
-    });
+    })
   }
 
   const handleDelete = (id) => {
     Notification.showDecision({
-                title: 'Do you really want to delete the instruction?',
-                option1: {
-                    text: 'YES',
-                    callback: () => {
-                        deleteSelectedInstruction(id)
-                    },
-                },
-                option2: {
-                    text: 'NO!',
-                    callback: () => { },
-                },
-            })
-  };
+      title: 'Do you really want to delete the instruction?',
+      option1: {
+        text: 'YES',
+        callback: () => {
+          deleteSelectedInstruction(id)
+        },
+      },
+      option2: {
+        text: 'NO!',
+        callback: () => {},
+      },
+    })
+  }
 
   const handleAddInstruction = () => {
-    setEditingInstruction({ id: null, option: '', description: '', instruction: '', group_id: ownUser?.group_id });
-    setViewingInstruction(null);
-    setModalOpen(true);
+    setEditingInstruction({
+      id: null,
+      option: '',
+      description: '',
+      instruction: '',
+      group_id: ownUser?.group_id,
+    })
+    setViewingInstruction(null)
+    setModalOpen(true)
     const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true'
-    if(joyrideRunning){
+    if (joyrideRunning) {
       window.dispatchEvent(
         new CustomEvent('joyride-next-step', {
           detail: { step: 'add-step-clicked' },
-        })
-      );
+        }),
+      )
     }
-  };
+  }
 
   const handleEditClick = (instruction) => {
-    setEditingInstruction(instruction);
-    setViewingInstruction(null);
-    setModalOpen(true);
+    setEditingInstruction(instruction)
+    setViewingInstruction(null)
+    setModalOpen(true)
     if (instruction.isLastRow) {
       setTimeout(() => {
-      window.dispatchEvent(
-        new CustomEvent('joyride-next-step', {
-          detail: { step: 'edit-step' },
-        })
-      );
-    },400);
+        window.dispatchEvent(
+          new CustomEvent('joyride-next-step', {
+            detail: { step: 'edit-step' },
+          }),
+        )
+      }, 400)
     }
-  };
+  }
 
   const handleViewClick = (instruction) => {
-    setViewingInstruction(instruction);
-    setEditingInstruction(null);
-  };
+    setViewingInstruction(instruction)
+    setEditingInstruction(null)
+  }
 
   const handleSave = (updatedInstruction) => {
-    const mutation = updatedInstruction.id ? editInstructionMutation : addInstructionMutation;
+    const mutation = updatedInstruction.id
+      ? editInstructionMutation
+      : addInstructionMutation
     const payload = {
       ...updatedInstruction,
       visibility: visLevel === 'global' ? 'global' : 'user',
-    };
+    }
 
     mutation.mutate(payload, {
       onSuccess: () => {
-        Notification.showSuccess(updatedInstruction.id ? 'Instruction updated successfully' : 'Instruction added successfully');
-        setModalOpen(false);
+        Notification.showSuccess(
+          updatedInstruction.id
+            ? 'Instruction updated successfully'
+            : 'Instruction added successfully',
+        )
+        setModalOpen(false)
       },
       onError: () => Notification.showError('Failed to save instruction'),
-    });
-  };
+    })
+  }
 
   const filteredInstructions = instructions
     ? visLevel === 'global'
       ? instructions.filter((i) => !i.group_id)
       : instructions
-    : [];
+    : []
 
   const enhancedInstructions = filteredInstructions.map((item, idx) => ({
     ...item,
     isLastRow: idx === filteredInstructions.length - 1,
-  }));
+  }))
 
   const getRowClassName = (original) => {
-    return original.isLastRow ? 'last-row-highlight' : '';
-  };
+    return original.isLastRow ? 'last-row-highlight' : ''
+  }
 
   const defineColumns = () => {
-    const columnHelper = createColumnHelper();
-    
+    const columnHelper = createColumnHelper()
+
     return [
       columnHelper.display({
-        id: "option",
+        id: 'option',
         header: 'Annotation Option',
         // cell: ({ getValue }) => getValue(),
-        cell: ({row}) => (
+        cell: ({ row }) => (
           <>
-            <CTooltip
-                content={row.original.description}
-                placement="top"
-            >
-                <b style={{ textDecoration: 'grey dotted underline'}}>{row.original.option}</b>
+            <CTooltip content={row.original.description} placement="top">
+              <b style={{ textDecoration: 'grey dotted underline' }}>
+                {row.original.option}
+              </b>
             </CTooltip>
-            <div className="small text-muted">
-                {`ID: ${row.original.id}`}
-            </div>
+            <div className="small text-muted">{`ID: ${row.original.id}`}</div>
           </>
         ),
       }),
@@ -180,126 +196,135 @@ const Instruction = ({ visLevel }) => {
         id: 'actions',
         header: 'Actions',
         cell: ({ row }) => {
-          const original = row.original;
-          const disabled = !canDelete(visLevel, original);
+          const original = row.original
+          const disabled = !canDelete(visLevel, original)
           return (
             <>
-              {(canEdit(visLevel, original)) && (
-                <CoreIconButton 
-                  icon={faPen} 
-                  style={{"margin-right": 5}} 
-                  color="warning" 
+              {canEdit(visLevel, original) && (
+                <CoreIconButton
+                  icon={faPen}
+                  style={{ 'margin-right': 5 }}
+                  color="warning"
                   onClick={() => handleEditClick(original)}
                   className={original.isLastRow ? 'edit-instruction-button' : ''}
-                  toolTip='Edit Instruction'
+                  toolTip="Edit Instruction"
                 />
               )}
-              {(canView(visLevel, original) && !canEdit(visLevel, original)) && (
+              {canView(visLevel, original) && !canEdit(visLevel, original) && (
                 <CoreIconButton
-                  style={{"margin-right": 5}}
+                  style={{ 'margin-right': 5 }}
                   icon={faEye}
                   color="info"
                   onClick={() => handleViewClick(original)}
-                  toolTip='View Instruction'
+                  toolTip="View Instruction"
                 />
               )}
               {/* {disabled ? ( */}
-                {/* <CoreIconButton 
+              {/* <CoreIconButton 
                   icon={faTrash}
                   color="secondary"
                   disabled={true} 
                   toolTip='Deletion is restricted to admins only' 
                 /> */}
               {/* ) : ( */}
-                <CoreIconButton
-                  style={{"margin-right": 5}} 
-                  icon={faTrash}
-                  disabled={disabled}
-                  color="danger" 
-                  onClick={() => handleDelete(original.id)}
-                  toolTip='Delete Instruction'
-                />
+              <CoreIconButton
+                style={{ 'margin-right': 5 }}
+                icon={faTrash}
+                disabled={disabled}
+                color="danger"
+                onClick={() => handleDelete(original.id)}
+                toolTip="Delete Instruction"
+              />
               {/* )} */}
             </>
-          );
+          )
         },
       }),
-    ];
-  };
+    ]
+  }
 
   return (
     <CContainer style={{ marginTop: '15px' }}>
       <CRow>
         <CCol>
           <TableHeader
-              headline="Instructions"
-              buttonStyle={{ marginTop: 15, marginBottom: 20 }}
-              icon={faUserPlus}
-              buttonText='Add Instruction'
-              className="add-instruction-button"
-              onClick={handleAddInstruction}
+            headline="Instructions"
+            buttonStyle={{ marginTop: 15, marginBottom: 20 }}
+            icon={faUserPlus}
+            buttonText="Add Instruction"
+            className="add-instruction-button"
+            onClick={handleAddInstruction}
           />
         </CCol>
       </CRow>
       <CRow>
         <CCol>
           <BaseContainer>
-          <ErrorBoundary>
-            {filteredInstructions.length === 0 && !isLoading && (
-              <p>No instructions available.</p>
-            )}
-            <div className="instruction-list">
-              <CoreDataTable
-                key="instructionsTable"
-                tableData={enhancedInstructions}
-                columns={defineColumns()}
-                pageSize={10}
-                isLoading={isLoading}
-                getRowClassName={getRowClassName}
-                usePagination={true}
-                wholeData={true}
-              />
-            </div>
-          </ErrorBoundary>
+            <ErrorBoundary>
+              {filteredInstructions.length === 0 && !isLoading && (
+                <p>No instructions available.</p>
+              )}
+              <div className="instruction-list">
+                <CoreDataTable
+                  key="instructionsTable"
+                  tableData={enhancedInstructions}
+                  columns={defineColumns()}
+                  pageSize={10}
+                  isLoading={isLoading}
+                  getRowClassName={getRowClassName}
+                  usePagination={true}
+                  wholeData={true}
+                />
+              </div>
+            </ErrorBoundary>
           </BaseContainer>
         </CCol>
       </CRow>
 
       {/* Only use BaseModal for add/edit */}
-          {(editingInstruction && modalOpen) && (
-            <BaseModal
-              isOpen={modalOpen}
-              title={editingInstruction.id ? 'Edit Instruction' : 'Add Instruction'}
-              toggle={() => setModalOpen(false)}
-              footer={null}
-              className={editingInstruction.id ? 'edit-instructions-modal' : 'add-instructions-modal'}
-            >
-              <EditInstruction
-                instructionData={editingInstruction}
-                onSave={handleSave}
-                visLevel={visLevel}
-                onClose={() => setModalOpen(false)}
-              />
-            </BaseModal>
-          )}
+      {editingInstruction && modalOpen && (
+        <BaseModal
+          isOpen={modalOpen}
+          title={editingInstruction.id ? 'Edit Instruction' : 'Add Instruction'}
+          toggle={() => setModalOpen(false)}
+          footer={null}
+          className={
+            editingInstruction.id ? 'edit-instructions-modal' : 'add-instructions-modal'
+          }
+        >
+          <EditInstruction
+            instructionData={editingInstruction}
+            onSave={handleSave}
+            visLevel={visLevel}
+            onClose={() => setModalOpen(false)}
+          />
+        </BaseModal>
+      )}
 
-          {/* Directly render ViewInstruction for view */}
-          {viewingInstruction && (
-            <ViewInstruction
-              instructionData={viewingInstruction}
-              onClose={() => setViewingInstruction(null)}
-              onEdit={handleEditClick}
-            />
-          )}
-
+      {/* Directly render ViewInstruction for view */}
+      {viewingInstruction && (
+        <ViewInstruction
+          instructionData={viewingInstruction}
+          onClose={() => setViewingInstruction(null)}
+          onEdit={handleEditClick}
+        />
+      )}
 
       {isLoading && (
-        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 1050 }}>
+        <div
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: 1050,
+          }}
+        >
           <CSpinner color="primary" size="lg" />
         </div>
       )}
     </CContainer>
-  );
-};
+  )
+}
 
-export default Instruction;
+export default Instruction

@@ -14,121 +14,119 @@ import { NodeConfigModal } from './modals/NodeConfigModal'
 import { PipelineStartModal } from './modals/PipelineStartModal'
 
 export const TemplateView = () => {
-    const navigate = useNavigate()
-    const { templateId } = useParams()
+  const navigate = useNavigate()
+  const { templateId } = useParams()
 
-    const { data, isLoading, isError } = useTemplate(templateId)
-    const [modalData, setModalData] = useState<PipelineTemplateElement | null>(null)
-    const [isModalOpen, toggleModal] = useToggle(false)
+  const { data, isLoading, isError } = useTemplate(templateId)
+  const [modalData, setModalData] = useState<PipelineTemplateElement | null>(null)
+  const [isModalOpen, toggleModal] = useToggle(false)
 
-    const [isSubmitModalOpen, toggleSubmitModal] = useToggle(false)
+  const [isSubmitModalOpen, toggleSubmitModal] = useToggle(false)
 
-    if (isLoading) {
-        return <CenteredSpinner />
+  if (isLoading) {
+    return <CenteredSpinner />
+  }
+
+  if (isError) {
+    return <p>An error occurred when getting pipeline data!</p>
+  }
+
+  const handleNodeClick = (_event: React.MouseEvent, node: Node) => {
+    if (node.type === 'dataExportNode') {
+      return
     }
 
-    if (isError) {
-        return <p>An error occurred when getting pipeline data!</p>
+    const clickedModalData = data?.elements.find((el) => el.peN.toString() === node.id)
+
+    if (clickedModalData) {
+      setModalData(clickedModalData)
+      toggleModal()
     }
 
-    const handleNodeClick = (_event: React.MouseEvent, node: Node) => {
-        if (node.type === 'dataExportNode') {
-            return
-        }
-
-        const clickedModalData = data?.elements.find(
-            (el) => el.peN.toString() === node.id,
+    if (node.type === 'datasourceNode') {
+      const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true'
+      const currentStep = parseInt(localStorage.getItem('currentStep') || '0')
+      if (joyrideRunning && currentStep === 3) {
+        window.dispatchEvent(
+          new CustomEvent('joyride-next-step', {
+            detail: { step: 'navigate-to-dsnode' },
+          }),
         )
-
-        if (clickedModalData) {
-            setModalData(clickedModalData)
-            toggleModal()
-        }
-
-        if (node.type === 'datasourceNode'){
-            const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true';
-            const currentStep = parseInt(localStorage.getItem('currentStep') || '0');
-            if (joyrideRunning && currentStep === 3) {
-            window.dispatchEvent(
-                new CustomEvent('joyride-next-step', {
-                detail: { step: 'navigate-to-dsnode' }
-                })
-            );}
-        }
-        if (node.type === 'annoTaskNode'){
-            setTimeout(() => { 
-                const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true';
-                const currentStep = parseInt(localStorage.getItem('currentStep') || '0');
-                if (joyrideRunning && currentStep === 11) {
-                window.dispatchEvent(
-                new CustomEvent('joyride-next-step', {
-                detail: { step: 'navigate-to-annoTasknode' }
-                }))}},1000);
-            }
+      }
     }
-
-        const handleNextClick = () => {
-            const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true';
-            if (joyrideRunning) {
-                window.dispatchEvent(new CustomEvent('joyride-next-step', {
-                    detail: { step: 'template-next' },
-                }))
-            }
-            toggleSubmitModal()
+    if (node.type === 'annoTaskNode') {
+      setTimeout(() => {
+        const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true'
+        const currentStep = parseInt(localStorage.getItem('currentStep') || '0')
+        if (joyrideRunning && currentStep === 11) {
+          window.dispatchEvent(
+            new CustomEvent('joyride-next-step', {
+              detail: { step: 'navigate-to-annoTasknode' },
+            }),
+          )
         }
+      }, 1000)
+    }
+  }
 
-    return (
-        data && (
-            <CContainer style={{ marginTop: '15px' }}>
-                <NavRibbon
-                    onBack={() => navigate('/pipeline-templates')}
-                    onNext={handleNextClick}
-                    nextButtonClassName="step-template-next"
-                ></NavRibbon>
-                <BaseContainer>
-                    <CAlert color="secondary" dismissible>
-                        <div className="d-flex align-items-center">
-                            <FaInfoCircle className="me-2" size={20} />
-                            <p className="mb-0">
-                                Configure your pipeline by setting up the{' '}
-                                <span style={{ fontWeight: 'bolder', color: 'orange' }}>
-                                    orange
-                                </span>{' '}
-                                elements. Click each node to complete its setup. Once all
-                                are{' '}
-                                <span style={{ fontWeight: 'bolder', color: 'green' }}>
-                                    green
-                                </span>
-                                , you can name and describe your pipeline in the next
-                                step.
-                            </p>
-                        </div>
-                    </CAlert>
+  const handleNextClick = () => {
+    const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true'
+    if (joyrideRunning) {
+      window.dispatchEvent(
+        new CustomEvent('joyride-next-step', {
+          detail: { step: 'template-next' },
+        }),
+      )
+    }
+    toggleSubmitModal()
+  }
 
-                    <div className="pipeline-start-2">
-                        <ReactFlowProvider>
-                            <PipelineTemplate
-                                name={data.name}
-                                initialNodes={data.graph.nodes}
-                                initialEdges={data.graph.edges}
-                                onNodeClick={handleNodeClick}
-                            />
-                            <NodeConfigModal
-                                modalData={modalData}
-                                modalOpened={isModalOpen}
-                                toggleModal={toggleModal}
-                                availableGroups={data.availableGroups}
-                                availableLabelTrees={data.availableLabelTrees}
-                            />
-                            <PipelineStartModal
-                                isOpen={isSubmitModalOpen}
-                                toggle={toggleSubmitModal}
-                                templateData={data}
-                            />
-                        </ReactFlowProvider>
-                    </div>
-                </BaseContainer>
-            </CContainer>
-        )
+  return (
+    data && (
+      <CContainer style={{ marginTop: '15px' }}>
+        <NavRibbon
+          onBack={() => navigate('/pipeline-templates')}
+          onNext={handleNextClick}
+          nextButtonClassName="step-template-next"
+        ></NavRibbon>
+        <BaseContainer>
+          <CAlert color="secondary" dismissible>
+            <div className="d-flex align-items-center">
+              <FaInfoCircle className="me-2" size={20} />
+              <p className="mb-0">
+                Configure your pipeline by setting up the{' '}
+                <span style={{ fontWeight: 'bolder', color: 'orange' }}>orange</span>{' '}
+                elements. Click each node to complete its setup. Once all are{' '}
+                <span style={{ fontWeight: 'bolder', color: 'green' }}>green</span>, you
+                can name and describe your pipeline in the next step.
+              </p>
+            </div>
+          </CAlert>
+
+          <div className="pipeline-start-2">
+            <ReactFlowProvider>
+              <PipelineTemplate
+                name={data.name}
+                initialNodes={data.graph.nodes}
+                initialEdges={data.graph.edges}
+                onNodeClick={handleNodeClick}
+              />
+              <NodeConfigModal
+                modalData={modalData}
+                modalOpened={isModalOpen}
+                toggleModal={toggleModal}
+                availableGroups={data.availableGroups}
+                availableLabelTrees={data.availableLabelTrees}
+              />
+              <PipelineStartModal
+                isOpen={isSubmitModalOpen}
+                toggle={toggleSubmitModal}
+                templateData={data}
+              />
+            </ReactFlowProvider>
+          </div>
+        </BaseContainer>
+      </CContainer>
     )
+  )
 }

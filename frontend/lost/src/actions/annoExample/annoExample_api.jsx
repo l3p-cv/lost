@@ -17,9 +17,7 @@ import { useMutation } from 'react-query'
 // }
 
 export const useGetAnnoExample = () => {
-    return useMutation((example) =>
-        axios
-            .post(API_URL + `/annoExample/getAnnoExample`, example)
-            .then((res) => res.data),
-    )
+  return useMutation((example) =>
+    axios.post(API_URL + `/annoExample/getAnnoExample`, example).then((res) => res.data),
+  )
 }

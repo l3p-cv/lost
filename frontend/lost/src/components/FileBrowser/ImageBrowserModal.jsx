@@ -1,11 +1,19 @@
-import React from 'react';
-import { CModal, CModalBody, CModalHeader, CModalTitle, CSpinner } from '@coreui/react';
-import LostFileBrowser from './LostFileBrowser';
+import React from 'react'
+import { CModal, CModalBody, CModalHeader, CModalTitle, CSpinner } from '@coreui/react'
+import LostFileBrowser from './LostFileBrowser'
 
-const ImageBrowserModal = ({ visible, onClose, fs, fsLoading, fullFs, initPath, onPathSelected }) => {
+const ImageBrowserModal = ({
+  visible,
+  onClose,
+  fs,
+  fsLoading,
+  fullFs,
+  initPath,
+  onPathSelected,
+}) => {
   return (
     <CModal visible={visible} onClose={onClose} size="lg">
-      <div className='file-browser-modal'>
+      <div className="file-browser-modal">
         <CModalHeader>
           <CModalTitle>Select an Image</CModalTitle>
         </CModalHeader>
@@ -24,7 +32,7 @@ const ImageBrowserModal = ({ visible, onClose, fs, fsLoading, fullFs, initPath, 
         </CModalBody>
       </div>
     </CModal>
-  );
-};
+  )
+}
 
-export default ImageBrowserModal;
+export default ImageBrowserModal
