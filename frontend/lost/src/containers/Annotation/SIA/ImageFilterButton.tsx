@@ -34,7 +34,7 @@ const ImageFilterButton = ({
       style={customPopoverStyle}
     >
       <CButton color="primary" disabled={isDisabled} variant="outline">
-        <FontAwesomeIcon icon={faFilter as IconProp} size="lg" />
+        <FontAwesomeIcon icon={faFilter as IconProp} />
       </CButton>
     </CPopover>
   )

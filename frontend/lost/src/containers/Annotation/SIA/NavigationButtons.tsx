@@ -1,11 +1,10 @@
-import { CButton, CButtonGroup } from '@coreui/react'
+import { CButtonGroup } from '@coreui/react'
 import {
   faArrowLeft,
   faArrowRight,
   faPaperPlane,
 } from '@fortawesome/free-solid-svg-icons'
-import { IconProp } from '@fortawesome/fontawesome-svg-core'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { IconButton } from 'lost-sia'
 
 type NavigationButtonsProps = {
   isFirstImage?: boolean
@@ -24,25 +23,33 @@ const NavigationButtons = ({
 }: NavigationButtonsProps) => {
   return (
     <CButtonGroup role="group" aria-label="Basic example">
-      <CButton
+      <IconButton
         color="primary"
-        variant={'outline'}
         disabled={isFirstImage}
+        icon={faArrowLeft}
+        isOutline={true}
         onClick={onPreviousImagePressed}
-      >
-        <FontAwesomeIcon icon={faArrowLeft as IconProp} size="lg" />
-      </CButton>
+        tooltip="Switch to previous image"
+      />
 
       {!isLastImage && (
-        <CButton color="primary" variant={'outline'} onClick={onNextImagePressed}>
-          <FontAwesomeIcon icon={faArrowRight as IconProp} size="lg" />
-        </CButton>
+        <IconButton
+          color="primary"
+          icon={faArrowRight}
+          isOutline={true}
+          onClick={onNextImagePressed}
+          tooltip="Switch to next image"
+        />
       )}
 
       {isLastImage && (
-        <CButton color="primary" variant={'outline'} onClick={onSubmitAnnotask}>
-          <FontAwesomeIcon icon={faPaperPlane as IconProp} size="lg" />
-        </CButton>
+        <IconButton
+          color="primary"
+          icon={faPaperPlane}
+          isOutline={true}
+          onClick={onSubmitAnnotask}
+          tooltip="Finish annotation task"
+        />
       )}
     </CButtonGroup>
   )

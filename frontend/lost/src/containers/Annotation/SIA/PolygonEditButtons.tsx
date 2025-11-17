@@ -1,13 +1,12 @@
-import { CButton, CButtonGroup } from '@coreui/react'
-import { IconProp } from '@fortawesome/fontawesome-svg-core'
+import { CButtonGroup } from '@coreui/react'
 import {
   faCodeMerge,
   faExpand,
   faObjectUngroup,
   faScissors,
 } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import PolygonEditMode from '../../../models/PolygonEditMode'
+import { IconButton } from 'lost-sia'
 
 type PolygonEditButtonsProps = {
   polygonEditMode: PolygonEditMode
@@ -26,37 +25,37 @@ const PolygonEditButtons = ({
 
   return (
     <CButtonGroup role="group" aria-label="Basic example">
-      <CButton
+      <IconButton
         color="primary"
-        variant={polygonEditMode == PolygonEditMode.MERGE ? undefined : 'outline'}
+        icon={faCodeMerge}
+        isOutline={polygonEditMode !== PolygonEditMode.MERGE}
         onClick={() => changeMode(PolygonEditMode.MERGE)}
-      >
-        <FontAwesomeIcon icon={faCodeMerge as IconProp} size="lg" />
-      </CButton>
+        tooltip="Merge annotations"
+      />
 
-      <CButton
+      <IconButton
         color="primary"
-        variant={polygonEditMode == PolygonEditMode.INTERSECT ? undefined : 'outline'}
+        icon={faObjectUngroup}
+        isOutline={polygonEditMode !== PolygonEditMode.INTERSECT}
         onClick={() => changeMode(PolygonEditMode.INTERSECT)}
-      >
-        <FontAwesomeIcon icon={faObjectUngroup as IconProp} size="lg" />
-      </CButton>
+        tooltip="Intersect annotations"
+      />
 
-      <CButton
+      <IconButton
         color="primary"
-        variant={polygonEditMode == PolygonEditMode.DIFFERENCE ? undefined : 'outline'}
+        icon={faScissors}
+        isOutline={polygonEditMode !== PolygonEditMode.DIFFERENCE}
         onClick={() => changeMode(PolygonEditMode.DIFFERENCE)}
-      >
-        <FontAwesomeIcon icon={faScissors as IconProp} size="lg" />
-      </CButton>
+        tooltip="Differ annotations"
+      />
 
-      <CButton
+      <IconButton
         color="primary"
-        variant={polygonEditMode == PolygonEditMode.BBOX ? undefined : 'outline'}
+        icon={faExpand}
+        isOutline={polygonEditMode !== PolygonEditMode.BBOX}
         onClick={() => changeMode(PolygonEditMode.BBOX)}
-      >
-        <FontAwesomeIcon icon={faExpand as IconProp} size="lg" />
-      </CButton>
+        tooltip="Create BBox of annotation"
+      />
     </CButtonGroup>
   )
 }
