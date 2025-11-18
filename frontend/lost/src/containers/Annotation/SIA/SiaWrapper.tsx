@@ -23,7 +23,7 @@ import type {
 
 import { Sia } from 'lost-sia'
 import { useNavigate } from 'react-router-dom'
-import { CButtonGroup, CCol } from '@coreui/react'
+import { CButton, CButtonGroup, CCol, CTooltip } from '@coreui/react'
 // import {
 //     INFERENCE_MODEL_TYPE,
 //     useTritonInference,
@@ -56,8 +56,9 @@ import PolygonEditMode from '../../../models/PolygonEditMode'
 import SIAImageSearchModal, {
   ImageSearchResult,
 } from '../../Datasets/SIAImageSearchModal'
-import CoreIconButton from '../../../components/CoreIconButton'
 import { faSearch } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import imageSearch, { FirstLastResult } from './imageSearch'
 
 type SiaWrapperProps = {
   annoData: SiaResponse | undefined
@@ -149,6 +150,9 @@ const SiaWrapper = ({
   // request will automatically refetch when its state (parameter) changes
   const { data: imageBlobRequest } = useGetSiaImage(imageRequestData)
   const [imageBlob, setImageBlob] = useState<string | undefined>()
+
+  const [isImageSearchButtonTooltipOpen, setIsImageSearchButtonTooltipOpen] =
+    useState<boolean>()
 
   // move this to an external state to be able to unload the image
   // changing the image does also reinitialize SIA
@@ -283,6 +287,12 @@ const SiaWrapper = ({
 
     if (handleResponse(finishAnnotaskResponse)) navigate('/annotation')
   }, [finishAnnotaskResponse, handleResponse, navigate])
+
+  useEffect(() => {
+    // don't enable the image search button tooltip directly - other items like the label button moves it aftewards and the tooltip gets displaced...
+
+    if (isImageSearchActive && imageBlob) setIsImageSearchButtonTooltipOpen(true)
+  }, [isImageSearchActive, imageBlob])
 
   const calculatePolygonOperation = (
     firstAnnotation: Annotation,
@@ -556,6 +566,10 @@ const SiaWrapper = ({
   }
 
   const handleNewImage = (isForward: boolean) => {
+    // abort when going out of available image scope
+    const { isFirst, isLast } = checkNavigationConstraints()
+    if ((isForward && isLast) || (!isForward && isFirst)) return
+
     resetWrapper()
 
     const currentImageId: number = imageRequestData!.imageId
@@ -563,6 +577,10 @@ const SiaWrapper = ({
 
     // stay in image search filter (if applied)
     if (isImageSearchActive) {
+      // quickly hide tooltip - it gets visible again when the next image is loaded
+      // otherwise the label button moved the toolbar in a way that the tooltip gets displaced
+      setIsImageSearchButtonTooltipOpen(false)
+
       const nextImageIdInFilter: ImageSearchResult = getSearchImageId(
         currentImageId,
         isForward,
@@ -585,12 +603,10 @@ const SiaWrapper = ({
   }
 
   const getNextImage = () => {
-    if (annoData?.image?.isLast) return
     handleNewImage(true)
   }
 
   const getPreviousImage = () => {
-    if (annoData?.image?.isFirst) return
     handleNewImage(false)
   }
 
@@ -813,7 +829,28 @@ const SiaWrapper = ({
     handleBBoxReponse(bboxCreationResponse)
   }, [bboxCreationResponse, handleBBoxReponse])
 
+  const checkNavigationConstraints = (): FirstLastResult => {
+    // || false -> catch undefined
+    let isFirst: boolean = annoData?.image?.isFirst || false
+    let isLast: boolean = annoData?.image?.isLast || false
+
+    // check first and last for the restricted image selection if in search mode
+    if (isImageSearchActive) {
+      const firstLastResult: FirstLastResult = imageSearch.checkFirstLastImage(
+        imageId,
+        filteredImageIds,
+      )
+
+      isFirst = firstLastResult.isFirst
+      isLast = firstLastResult.isLast
+    }
+
+    return { isFirst, isLast }
+  }
+
   const renderAdditionalButtons = () => {
+    const { isFirst, isLast } = checkNavigationConstraints()
+
     return (
       <>
         <CCol xs="auto">
@@ -852,22 +889,37 @@ const SiaWrapper = ({
             />
 
             {isImageSearchEnabled && (
-              <CoreIconButton
-                icon={faSearch}
-                isOutline={!isImageSearchActive}
-                toolTip="Open image search"
-                onClick={() => {
-                  if (isImageSearchActive) setIsImageSearchActive(false)
-                  else setIsImgSearchModalVisible(true)
-                }}
-              />
+              <CTooltip
+                content={
+                  isImageSearchActive
+                    ? 'Image search mode - click to exit'
+                    : 'Open image search'
+                }
+                placement="top"
+                visible={isImageSearchButtonTooltipOpen}
+                trigger={isImageSearchButtonTooltipOpen ? [] : ['hover']}
+              >
+                <CButton
+                  color={isImageSearchActive ? 'danger' : 'primary'}
+                  variant={isImageSearchActive ? undefined : 'outline'}
+                  onClick={() => {
+                    if (isImageSearchActive) {
+                      setIsImageSearchActive(false)
+                      setIsImageSearchButtonTooltipOpen(false)
+                    } else setIsImgSearchModalVisible(true)
+                  }}
+                >
+                  <FontAwesomeIcon className="mr-3" icon={faSearch} />
+                </CButton>
+              </CTooltip>
             )}
           </CButtonGroup>
         </CCol>
         <CCol xs="auto">
           <NavigationButtons
-            isFirstImage={annoData?.image?.isFirst}
-            isLastImage={annoData?.image?.isLast}
+            isFirstImage={isFirst}
+            isLastImage={isLast}
+            isImageSearchActive={isImageSearchActive}
             onNextImagePressed={getNextImage}
             onPreviousImagePressed={getPreviousImage}
             onSubmitAnnotask={submitAnnotask}
