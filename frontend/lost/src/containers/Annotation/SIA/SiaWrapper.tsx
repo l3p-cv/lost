@@ -804,55 +804,52 @@ const SiaWrapper = ({
   }, [])
 
   // handles response after we did a polygon operation (HTTP request)
-  const handlePolygonOperationResponse = useCallback(
-    (response) => {
-      // show errors to user
-      if (response?.error) {
-        handleNotification({
-          title: 'Invalid selection',
-          message: response.error,
-          type: NotificationType.ERROR,
-        })
-        setIsSiaLoading(false)
-        setPolygonEditMode(PolygonEditMode.NONE)
-        return
-      } else if (response?.errors) {
-        // the response can contain multiple errors at once
-        Object.keys(response.errors).forEach((errorTitle) =>
-          handleNotification({
-            title: errorTitle,
-            message: response.errors[errorTitle],
-            type: NotificationType.ERROR,
-          }),
-        )
-        return
-      }
-
-      if (response?.resultantPolygon === undefined) return
-
-      if (response?.type !== 'polygon') return
-
-      const { resultantPolygon } = response
-
-      const toolCoordinates: ToolCoordinates = {
-        type: AnnotationTool.Polygon,
-        coordinates: resultantPolygon,
-      }
-
-      const annotationsToDelete: Annotation[] =
-        currentlySelectedAnnotation !== undefined ? [currentlySelectedAnnotation] : []
-
-      const newPolygonOperationResult: PolygonOperationResult = {
-        polygonsToCreate: [toolCoordinates],
-        annotationsToDelete,
-      }
-
-      // write update to SIA
-      setPolygonOperationResult(newPolygonOperationResult)
+  const handlePolygonOperationResponse = (response) => {
+    // show errors to user
+    if (response?.error) {
+      handleNotification({
+        title: 'Invalid selection',
+        message: response.error,
+        type: NotificationType.ERROR,
+      })
       setIsSiaLoading(false)
-    },
-    [currentlySelectedAnnotation],
-  )
+      setPolygonEditMode(PolygonEditMode.NONE)
+      return
+    } else if (response?.errors) {
+      // the response can contain multiple errors at once
+      Object.keys(response.errors).forEach((errorTitle) =>
+        handleNotification({
+          title: errorTitle,
+          message: response.errors[errorTitle],
+          type: NotificationType.ERROR,
+        }),
+      )
+      return
+    }
+
+    if (response?.resultantPolygon === undefined) return
+
+    if (response?.type !== 'polygon') return
+
+    const { resultantPolygon } = response
+
+    const toolCoordinates: ToolCoordinates = {
+      type: AnnotationTool.Polygon,
+      coordinates: resultantPolygon,
+    }
+
+    const annotationsToDelete: Annotation[] =
+      currentlySelectedAnnotation !== undefined ? [currentlySelectedAnnotation] : []
+
+    const newPolygonOperationResult: PolygonOperationResult = {
+      polygonsToCreate: [toolCoordinates],
+      annotationsToDelete,
+    }
+
+    // write update to SIA
+    setPolygonOperationResult(newPolygonOperationResult)
+    setIsSiaLoading(false)
+  }
 
   const handleSelectAnnotation = (annotation: Annotation) => {
     // if we have a polygon edit mode selected we are currently searching for the second polygon to calculate
@@ -869,17 +866,17 @@ const SiaWrapper = ({
   useEffect(() => {
     if (polygonDiffReponse === undefined) return
     handlePolygonOperationResponse(polygonDiffReponse)
-  }, [polygonDiffReponse, handlePolygonOperationResponse])
+  }, [polygonDiffReponse])
 
   useEffect(() => {
     if (polygonIntersectionReponse === undefined) return
     handlePolygonOperationResponse(polygonIntersectionReponse)
-  }, [polygonIntersectionReponse, handlePolygonOperationResponse])
+  }, [polygonIntersectionReponse])
 
   useEffect(() => {
     if (polygonUnionReponse === undefined) return
     handlePolygonOperationResponse(polygonUnionReponse)
-  }, [polygonUnionReponse, handlePolygonOperationResponse])
+  }, [polygonUnionReponse])
 
   useEffect(() => {
     if (bboxCreationResponse === undefined) return
