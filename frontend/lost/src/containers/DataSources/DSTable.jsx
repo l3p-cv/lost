@@ -212,7 +212,7 @@ export const DSTable = ({ visLevel, headline = 'Datasources' }) => {
           return (
             <>
               <CoreIconButton
-                style={{ 'margin-right': '5px' }}
+                style={{ marginRight: '5px' }}
                 icon={faFolderOpen}
                 color="info"
                 onClick={() => onOpenFileBrowser(props.row.original)}
@@ -220,7 +220,7 @@ export const DSTable = ({ visLevel, headline = 'Datasources' }) => {
                 // isOutline={false}
               />
               <CoreIconButton
-                style={{ 'margin-right': '5px' }}
+                style={{ marginRight: '5px' }}
                 icon={faEdit}
                 color="warning"
                 onClick={() => onEditDs(props.row)}
@@ -229,7 +229,7 @@ export const DSTable = ({ visLevel, headline = 'Datasources' }) => {
                 // isOutline={false}
               />
               <CoreIconButton
-                style={{ 'margin-right': '5px' }}
+                style={{ marginRight: '5px' }}
                 icon={faTrash}
                 color="danger"
                 onClick={() => onDeleteDs(props)}

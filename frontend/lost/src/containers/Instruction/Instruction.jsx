@@ -203,7 +203,7 @@ const Instruction = ({ visLevel }) => {
               {canEdit(visLevel, original) && (
                 <CoreIconButton
                   icon={faPen}
-                  style={{ 'margin-right': 5 }}
+                  style={{ marginRight: 5 }}
                   color="warning"
                   onClick={() => handleEditClick(original)}
                   className={original.isLastRow ? 'edit-instruction-button' : ''}
@@ -212,7 +212,7 @@ const Instruction = ({ visLevel }) => {
               )}
               {canView(visLevel, original) && !canEdit(visLevel, original) && (
                 <CoreIconButton
-                  style={{ 'margin-right': 5 }}
+                  style={{ marginRight: 5 }}
                   icon={faEye}
                   color="info"
                   onClick={() => handleViewClick(original)}
@@ -228,7 +228,7 @@ const Instruction = ({ visLevel }) => {
                 /> */}
               {/* ) : ( */}
               <CoreIconButton
-                style={{ 'margin-right': 5 }}
+                style={{ marginRight: 5 }}
                 icon={faTrash}
                 disabled={disabled}
                 color="danger"
