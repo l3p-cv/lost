@@ -1,20 +1,23 @@
-__author__ = 'Jonas Jaeger'
-from lost.db import model, state, dtype
+__author__ = "Jonas Jaeger"
 import igraph
 
-class PipeEngine(object):
-    '''A PipeEngine object maps to one pipeline in the portal an manages it.
+from lost.db import dtype, model, state
+
+
+class PipeEngine:
+    """A PipeEngine object maps to one pipeline in the portal an manages it.
 
     Each pipline belongs to one Pipe.
-    '''
-    def __init__(self, dbm, pipe:model.Pipe):
+    """
+
+    def __init__(self, dbm, pipe: model.Pipe):
         self.dbm = dbm
-        self.pipe = pipe#dbm.get_task(task_id)
+        self.pipe = pipe  # dbm.get_task(task_id)
         self.pipe_elements = dbm.get_pipe_elements(pipe.idx)
         self.pe_graph = self.create_pe_graph(self.pipe_elements)
 
     def create_pe_graph(self, pe_list):
-        '''Create a graph for a pipeline.
+        """Create a graph for a pipeline.
 
         Args:
             pe_list (list): A list of pipeline elements that represent a pipeline.
@@ -23,13 +26,13 @@ class PipeEngine(object):
             Graph: A graph of :class:`lost.db.model.PipeElement` objects.
                 pe_graph.vs[0] is source and pe_graph.vs[pe_graph.vcount()-1]
                 is sink.
-        '''
+        """
         pe_graph = igraph.Graph(directed=True)
-        pe_graph.add_vertices(len(pe_list)+2)
-        new_vs = pe_graph.vs.select(range(1,len(pe_list)+1))
+        pe_graph.add_vertices(len(pe_list) + 2)
+        new_vs = pe_graph.vs.select(range(1, len(pe_list) + 1))
         new_vs["pe"] = pe_list
         new_vs["visited"] = False
-        sink = pe_graph.vs[pe_graph.vcount()-1]
+        sink = pe_graph.vs[pe_graph.vcount() - 1]
         sink["visited"] = False
         pe_graph.vs[0]["visited"] = True
         for pe in pe_list:
@@ -44,7 +47,7 @@ class PipeEngine(object):
             if len(pe.pe_outs) == 0:
                 pe_graph.add_edge(v_pe_n.index, sink.index)
         for pe in pe_list:
-            #Check if pe should be linked to source
+            # Check if pe should be linked to source
             v_pe_n = pe_graph.vs.select(pe_eq=pe)[0]
             target = pe_graph.es.select(_target=v_pe_n.index)
             if len(target) == 0:
@@ -52,11 +55,11 @@ class PipeEngine(object):
         return pe_graph
 
     def get_all_loop_elements(self):
-        '''Get all loop elements in pipeline.
+        """Get all loop elements in pipeline.
 
         Returns:
             list: of PipeElements
-        '''
+        """
         loop_list = list()
         for pipe_e in self.pipe_elements:
             if pipe_e.dtype == dtype.PipeElement.LOOP:
@@ -64,7 +67,7 @@ class PipeEngine(object):
         return loop_list
 
     def get_loop_pes(self, pe_jump, pe_loop):
-        '''Get all pipeline elements that are within a loop.
+        """Get all pipeline elements that are within a loop.
 
         Args:
             pe_jump: The element where the loop starts.
@@ -72,12 +75,12 @@ class PipeEngine(object):
 
         Returns:
             list: A list of PipeElements
-        '''
-        #v_jump = self.pe_graph.vs.select(pe_eq=pe_jump)[0]
-        #v_loop = self.pe_graph.vs.select(pe_eq=pe_loop)[0]
-        #self.pe_graph.es['cost'] = 0
-        #loop_vs = list()
-        #while True:
+        """
+        # v_jump = self.pe_graph.vs.select(pe_eq=pe_jump)[0]
+        # v_loop = self.pe_graph.vs.select(pe_eq=pe_loop)[0]
+        # self.pe_graph.es['cost'] = 0
+        # loop_vs = list()
+        # while True:
         #    vpath = self.pe_graph.get_shortest_paths(v_jump.index, v_loop.index,
         #                                            'cost')[0]
         #    epath = self.pe_graph.get_shortest_paths(v_jump.index, v_loop.index,
@@ -86,23 +89,23 @@ class PipeEngine(object):
         #    if vpath in loop_vs:
         #        break
         #    loop_vs.append(vpath)
-        #vset = set()
-        #for vpath in loop_vs:
+        # vset = set()
+        # for vpath in loop_vs:
         #    vset = vset | set(vpath)
         ##Clean up in order to prevent side effects
-        #self.pe_graph.es['cost'] = 0
-        #return self.pe_graph.vs[vset]['pe']
-        
-        #Get all vs between v_jump and v_loop including v_jump and v_loop.
+        # self.pe_graph.es['cost'] = 0
+        # return self.pe_graph.vs[vset]['pe']
+
+        # Get all vs between v_jump and v_loop including v_jump and v_loop.
         v_jump = self.pe_graph.vs.select(pe_eq=pe_jump)[0]
         v_loop = self.pe_graph.vs.select(pe_eq=pe_loop)[0]
-        s = set(self.pe_graph.subcomponent(v_jump.index, mode='out'))
-        t = set(self.pe_graph.subcomponent(v_loop.index, mode='in'))
+        s = set(self.pe_graph.subcomponent(v_jump.index, mode="out"))
+        t = set(self.pe_graph.subcomponent(v_loop.index, mode="in"))
         intersec = s.intersection(t)
-        return self.pe_graph.vs[intersec]['pe']
+        return self.pe_graph.vs[intersec]["pe"]
 
     def get_next_loop(self, pe):
-        '''Get the nearest loop element relative to pe
+        """Get the nearest loop element relative to pe
 
         Args:
             pe (PipeElement): A PipeElement that wants to know the next loop element.
@@ -110,7 +113,7 @@ class PipeEngine(object):
         Returns:
             PipeElement or None: The next loop element in pipeline. When no
                 loop element can be found, None will be returned.
-        '''
+        """
         v_pe = self.pe_graph.vs.select(pe_eq=pe)[0]
         min_path = None
         min_loop_e = None
@@ -121,43 +124,40 @@ class PipeEngine(object):
             # to select the closest loop. I think there is a better method than
             # shortest path.
             path_new = self.pe_graph.get_shortest_paths(v_pe.index, v_loop.index)[0]
-            if min_path is None:
-                min_path = path_new
-                min_loop_e = loop_e
-            elif len(path_new) < len(min_path):
+            if min_path is None or len(path_new) < len(min_path):
                 min_path = path_new
                 min_loop_e = loop_e
         return loop_e
 
     def get_to_visit(self):
-        '''Get all pipe elements that should be visited.
+        """Get all pipe elements that should be visited.
 
         Returns:
             list: A list of :class:`lost.db.model.PipeElement` objects.
-        '''
+        """
         return self.pe_graph.vs.select(visited_eq=False)["pe"]
 
     def get_prev_pes(self, pe):
-        '''Get previous :class:`lost.db.model.PipeElement` objects in the pipeline.
+        """Get previous :class:`lost.db.model.PipeElement` objects in the pipeline.
 
         Args:
             pe (object): Current :class:`lost.db.model.PipeElement`
 
         Returns:
             list: A list of :class:`lost.db.model.PipeElement` objects.
-        '''
+        """
         v_pe = self.pe_graph.vs.select(pe_eq=pe)[0]
         return self.get_prev_vertices(v_pe.index)["pe"]
 
     def get_prev_vertices(self, vertex_id):
-        '''Get previous vertices in pe_graph with respect to vertex_id.
+        """Get previous vertices in pe_graph with respect to vertex_id.
 
         Args:
             vertex_id (int): Index of a vertx in pe_graph
 
         Returns:
             VertexSeq: A sequence of previous vertices.
-        '''
+        """
         prev_v_list = list()
         target = self.pe_graph.es.select(_target=vertex_id)
         for edge in target:
@@ -165,14 +165,14 @@ class PipeEngine(object):
         return self.pe_graph.vs[prev_v_list]
 
     def get_next_vertices(self, vertex_id):
-        '''Get next vertices in pe_graph with respect to vertex_id.
+        """Get next vertices in pe_graph with respect to vertex_id.
 
         Args:
             vertex_id (int): Index of a vertx in pe_graph
 
         Returns:
             VertexSeq: A sequence of next vertices.
-        '''
+        """
         prev_v_list = list()
         source = self.pe_graph.es.select(_source=vertex_id)
         for edge in source:
@@ -180,14 +180,14 @@ class PipeEngine(object):
         return self.pe_graph.vs[prev_v_list]
 
     def get_next_pes(self, pe):
-        '''Get next :class:`lost.db.model.PipeElement` objects in the pipeline.
+        """Get next :class:`lost.db.model.PipeElement` objects in the pipeline.
 
         Args:
             pe (object): Current :class:`lost.db.model.PipeElement`
 
         Returns:
             list: A list of :class:`lost.db.model.PipeElement` objects.
-        '''
+        """
         v_pe = self.pe_graph.vs.select(pe_eq=pe)[0]
         return self.get_next_vertices(v_pe.index)["pe"]
 
@@ -206,12 +206,12 @@ class PipeEngine(object):
     #     return pe_paths
 
     def get_final_pes(self):
-        '''Get last :class:`lost.db.model.PipeElement` objects in pipeline
+        """Get last :class:`lost.db.model.PipeElement` objects in pipeline
 
         Returns:
             list: A list of :class:`lost.db.model.PipeElement` objects.
-        '''
-        return self.get_prev_vertices(self.pe_graph.vcount()-1)["pe"]
+        """
+        return self.get_prev_vertices(self.pe_graph.vcount() - 1)["pe"]
 
     def set_visited(self, pe):
         v_pe = self.pe_graph.vs.select(pe_eq=pe)[0]

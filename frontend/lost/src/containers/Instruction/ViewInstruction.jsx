@@ -1,37 +1,37 @@
-import React, { useState, useEffect } from 'react';
-import MarkdownIt from 'markdown-it';
-import { CModal, CModalBody, CModalHeader, CButton } from '@coreui/react';
-import { FaExpand, FaCompress } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react'
+import MarkdownIt from 'markdown-it'
+import { CModal, CModalBody, CModalHeader, CButton } from '@coreui/react'
+import { FaExpand, FaCompress } from 'react-icons/fa'
 
-const mdParser = new MarkdownIt();
+const mdParser = new MarkdownIt()
 
 const ViewInstruction = ({ instructionData, onClose, onEdit }) => {
-  const [isFullScreen, setIsFullScreen] = useState(false);
+  const [isFullScreen, setIsFullScreen] = useState(false)
 
   useEffect(() => {
-    const originalStyle = window.getComputedStyle(document.body).overflow;
-    document.body.style.overflow = 'hidden';  
+    const originalStyle = window.getComputedStyle(document.body).overflow
+    document.body.style.overflow = 'hidden'
     return () => {
-      document.body.style.overflow = originalStyle; 
-    };
-  }, []);
+      document.body.style.overflow = originalStyle
+    }
+  }, [])
 
   const toggleFullScreen = () => {
-    setIsFullScreen(!isFullScreen);
-  };
+    setIsFullScreen(!isFullScreen)
+  }
 
   const modifyInstructionHTML = (htmlContent) =>
     htmlContent.replace(/<img([^>]+)>/g, (match, p1) => {
-      return `<img${p1} style="max-width: 100%; height: auto; display: block; margin: 0 auto;" />`;
-    });
+      return `<img${p1} style="max-width: 100%; height: auto; display: block; margin: 0 auto;" />`
+    })
 
   const renderContent = () => (
     <div
       className="p-4"
       style={{
-        width: isFullScreen ? '100%' : '700px', 
-        margin: isFullScreen ? '0' : '0 auto', 
-        textAlign: 'left',                        
+        width: isFullScreen ? '100%' : '700px',
+        margin: isFullScreen ? '0' : '0 auto',
+        textAlign: 'left',
       }}
     >
       <div className="mb-4">
@@ -64,7 +64,7 @@ const ViewInstruction = ({ instructionData, onClose, onEdit }) => {
         />
       </div>
     </div>
-  );
+  )
 
   return (
     <CModal
@@ -95,7 +95,7 @@ const ViewInstruction = ({ instructionData, onClose, onEdit }) => {
         {renderContent()}
       </CModalBody>
     </CModal>
-  );
-};
+  )
+}
 
-export default ViewInstruction;
+export default ViewInstruction

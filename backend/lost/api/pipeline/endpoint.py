@@ -1,24 +1,26 @@
-import subprocess
-import shutil
-from flask import request, make_response
-from flask_restx import Resource
-from flask_jwt_extended import jwt_required, get_jwt_identity
-from lost.api.api import api
-from lost.logic.file_man import AppFileMan
-from lost.api.pipeline.api_definition import templates, template
-from lost.api.pipeline import tasks
-from lost.db import roles, access
-from lost.settings import LOST_CONFIG, DATA_URL
-from lost.logic.pipeline import service as pipeline_service
-from lost.logic.pipeline import template_import
-from lost.logic import template as template_service
-from lost.db.vis_level import VisLevel
 import json
 import os
-from io import BytesIO
+import shutil
+import subprocess
 import traceback
-from lost.logic.file_access import UserFileAccess
+from io import BytesIO
+
+from flask import make_response, request
+from flask_jwt_extended import get_jwt_identity, jwt_required
+from flask_restx import Resource
+
+from lost.api.api import api
+from lost.api.pipeline import tasks
+from lost.api.pipeline.api_definition import template, templates
+from lost.db import access, roles
+from lost.db.vis_level import VisLevel
 from lost.logic import sia
+from lost.logic import template as template_service
+from lost.logic.file_access import UserFileAccess
+from lost.logic.file_man import AppFileMan
+from lost.logic.pipeline import service as pipeline_service
+from lost.logic.pipeline import template_import
+from lost.settings import DATA_URL, LOST_CONFIG
 
 namespace = api.namespace("pipeline", description="Pipeline API.")
 
@@ -37,7 +39,7 @@ class TemplateList(Resource):
         if visibility == VisLevel().USER:
             if not user.has_role(roles.DESIGNER):
                 dbm.close_session()
-                return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 403
+                return f"You need to be {roles.DESIGNER} in order to perform this request.", 403
             else:
                 re = template_service.get_templates(dbm, group_id=default_group.idx)
                 dbm.close_session()
@@ -45,7 +47,7 @@ class TemplateList(Resource):
         if visibility == VisLevel().GLOBAL:
             if not user.has_role(roles.ADMINISTRATOR):
                 dbm.close_session()
-                return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 403
+                return f"You need to be {roles.DESIGNER} in order to perform this request.", 403
             else:
                 re = template_service.get_templates(dbm)
                 dbm.close_session()
@@ -53,7 +55,7 @@ class TemplateList(Resource):
         if visibility == VisLevel().ALL:
             if not user.has_role(roles.DESIGNER):
                 dbm.close_session()
-                return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 403
+                return f"You need to be {roles.DESIGNER} in order to perform this request.", 403
             else:
                 re = template_service.get_templates(dbm, group_id=default_group.idx, add_global=True)
                 dbm.close_session()
@@ -73,7 +75,7 @@ class Template(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 403
+            return f"You need to be {roles.DESIGNER} in order to perform this request.", 403
 
         else:
             re = template_service.get_template(dbm, template_id, user)
@@ -94,7 +96,7 @@ class PipelineList(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 403
+            return f"You need to be {roles.DESIGNER} in order to perform this request.", 403
         else:
             # for group in user.groups:
             #     print("--- printing group of user.groups ---")
@@ -122,7 +124,7 @@ class PipelineListPaged(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            return f"You need to be {roles.DESIGNER} in order to perform this request.", 401
         else:
             # for group in user.groups:
             #     print("--- printing group of user.groups ---")
@@ -149,7 +151,7 @@ class Pipeline(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 403
+            return f"You need to be {roles.DESIGNER} in order to perform this request.", 403
         else:
             re = pipeline_service.get_running_pipe(dbm, identity, pipeline_id, DATA_URL)
             dbm.close_session()
@@ -163,7 +165,7 @@ class Pipeline(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 403
+            return f"You need to be {roles.DESIGNER} in order to perform this request.", 403
         else:
             tasks.delete_pipe(pipeline_id)
             dbm.close_session()
@@ -181,7 +183,7 @@ class PipelineStart(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 403
+            return f"You need to be {roles.DESIGNER} in order to perform this request.", 403
         else:
             data = request.data
             # quick and dirty here, data was binary but should be dictonary without using json.loads locally.
@@ -198,7 +200,7 @@ class PipelineStart(Resource):
                 return "success"
             else:
                 dbm.close_session()
-                return "default group for user {} not found.".format(identity), 400
+                return f"default group for user {identity} not found.", 400
 
 
 @namespace.route("/updateArguments")
@@ -211,7 +213,7 @@ class PipelineUpdateArguments(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 403
+            return f"You need to be {roles.DESIGNER} in order to perform this request.", 403
         else:
             status = pipeline_service.updateArguments(dbm, request.data)
             dbm.close_session()
@@ -229,7 +231,7 @@ class PipelinePause(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 403
+            return f"You need to be {roles.DESIGNER} in order to perform this request.", 403
         else:
             pipeline_service.pause(dbm, pipeline_id)
             dbm.close_session()
@@ -247,7 +249,7 @@ class PipelinePlay(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 403
+            return f"You need to be {roles.DESIGNER} in order to perform this request.", 403
         else:
             pipeline_service.play(dbm, pipeline_id)
             dbm.close_session()
@@ -264,7 +266,7 @@ class TemplateImportZip(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ADMINISTRATOR):
             dbm.close_session()
-            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ADMINISTRATOR))
+            return api.abort(403, f"You need to be {roles.ADMINISTRATOR} in order to perform this request.")
         else:
             try:
                 fm = AppFileMan(LOST_CONFIG)
@@ -325,7 +327,7 @@ class TemplateImportGit(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ADMINISTRATOR):
             dbm.close_session()
-            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ADMINISTRATOR))
+            return api.abort(403, f"You need to be {roles.ADMINISTRATOR} in order to perform this request.")
         else:
             try:
                 fm = AppFileMan(LOST_CONFIG)
@@ -380,7 +382,7 @@ class PipelineTemplateExport(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ADMINISTRATOR):
             dbm.close_session()
-            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ADMINISTRATOR))
+            return api.abort(403, f"You need to be {roles.ADMINISTRATOR} in order to perform this request.")
         else:
             # TODO Export here !
             # src = fm.get_pipe_project_path(content['namespace'])
@@ -408,7 +410,7 @@ class TemplateDelete(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ADMINISTRATOR):
             dbm.close_session()
-            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ADMINISTRATOR))
+            return api.abort(403, f"You need to be {roles.ADMINISTRATOR} in order to perform this request.")
 
         else:
             data = json.loads(request.data)
@@ -453,19 +455,19 @@ class ProjectList(Resource):
         if visibility == VisLevel().USER:
             if not user.has_role(roles.DESIGNER):
                 dbm.close_session()
-                return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 403
+                return f"You need to be {roles.DESIGNER} in order to perform this request.", 403
             else:
                 re = template_service.get_templates(dbm, group_id=default_group.idx)
         if visibility == VisLevel().GLOBAL:
             if not user.has_role(roles.ADMINISTRATOR):
                 dbm.close_session()
-                return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 403
+                return f"You need to be {roles.DESIGNER} in order to perform this request.", 403
             else:
                 re = template_service.get_templates(dbm)
         if visibility == VisLevel().ALL:
             if not user.has_role(roles.DESIGNER):
                 dbm.close_session()
-                return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 403
+                return f"You need to be {roles.DESIGNER} in order to perform this request.", 403
             else:
                 re = template_service.get_templates(dbm, group_id=default_group.idx, add_global=True)
 
@@ -510,7 +512,7 @@ class Review(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 403
+            return f"You need to be {roles.DESIGNER} in order to perform this request.", 403
 
         else:
             data = json.loads(request.data)
@@ -525,7 +527,7 @@ class Review(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 403
+            return f"You need to be {roles.DESIGNER} in order to perform this request.", 403
 
         else:
             data = json.loads(request.data)
@@ -545,7 +547,7 @@ class ReviewOptions(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 403
+            return f"You need to be {roles.DESIGNER} in order to perform this request.", 403
 
         else:
             re = sia.reviewoptions(dbm, pipeline_element_id, user.idx)

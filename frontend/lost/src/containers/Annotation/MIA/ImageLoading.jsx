@@ -4,19 +4,19 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSync } from '@fortawesome/free-solid-svg-icons'
 import PropTypes from 'prop-types'
 
-const Loading = ({ size='lg' }) => (
-    <div
-        className="flex justify-center items-center h-full"
-        style={{ margin: '10px', display: 'inline' }}
-    >
-        {/* <FaSync className="animate-spin" size={size} /> */}
-        <FontAwesomeIcon color="#092F38" size={size} icon={faSync} spin />
-    </div>
+const Loading = ({ size = 'lg' }) => (
+  <div
+    className="flex justify-center items-center h-full"
+    style={{ margin: '10px', display: 'inline' }}
+  >
+    {/* <FaSync className="animate-spin" size={size} /> */}
+    <FontAwesomeIcon color="#092F38" size={size} icon={faSync} spin />
+  </div>
 )
 
 Loading.propTypes = {
-    size: PropTypes.string,
-    // marginTop: PropTypes.number,
+  size: PropTypes.string,
+  // marginTop: PropTypes.number,
 }
 
 // Loading.defaultProps = {

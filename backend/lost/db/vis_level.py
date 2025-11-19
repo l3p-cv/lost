@@ -1,4 +1,4 @@
-class VisLevel():
-    USER = 'user'
-    GLOBAL = 'global'
-    ALL='all'
+class VisLevel:
+    USER = "user"
+    GLOBAL = "global"
+    ALL = "all"

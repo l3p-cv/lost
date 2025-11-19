@@ -4,103 +4,103 @@ import { useEffect } from 'react'
 import { getLayoutedElements } from '../../utils/graph-layout-util'
 
 export type LayoutOptions = {
-    direction: string
-    ignoreDataChanges?: boolean
+  direction: string
+  ignoreDataChanges?: boolean
 }
 
 export const useAutoLayout = (options: LayoutOptions) => {
-    const { setNodes, setEdges } = useReactFlow()
-    const nodesInitialized = useNodesInitialized()
+  const { setNodes, setEdges } = useReactFlow()
+  const nodesInitialized = useNodesInitialized()
 
-    const elements = useStore(
-        (state) => ({
-            nodes: state.nodes,
-            edges: state.edges,
-        }),
-        compareElements(options.ignoreDataChanges ?? false),
-    )
+  const elements = useStore(
+    (state) => ({
+      nodes: state.nodes,
+      edges: state.edges,
+    }),
+    compareElements(options.ignoreDataChanges ?? false),
+  )
 
-    useEffect(() => {
-        // console.log('here in useAutoLayout')
-        if (!nodesInitialized || elements.nodes.length === 0) {
-            return
-        }
+  useEffect(() => {
+    // console.log('here in useAutoLayout')
+    if (!nodesInitialized || elements.nodes.length === 0) {
+      return
+    }
 
-        const runLayout = async () => {
-            // a copy so that original nodes are not mutated
-            const nodes = elements.nodes.map((node) => ({ ...node }))
-            const edges = elements.edges.map((edge) => ({ ...edge }))
+    const runLayout = async () => {
+      // a copy so that original nodes are not mutated
+      const nodes = elements.nodes.map((node) => ({ ...node }))
+      const edges = elements.edges.map((edge) => ({ ...edge }))
 
-            const { nodes: nextNodes, edges: nextEdges } = await getLayoutedElements(
-                nodes,
-                edges,
-                options,
-            )
+      const { nodes: nextNodes, edges: nextEdges } = await getLayoutedElements(
+        nodes,
+        edges,
+        options,
+      )
 
-            setNodes(nextNodes)
-            setEdges(nextEdges)
-        }
+      setNodes(nextNodes)
+      setEdges(nextEdges)
+    }
 
-        runLayout()
-    }, [nodesInitialized, elements, setNodes, setEdges, options])
+    runLayout()
+  }, [nodesInitialized, elements, setNodes, setEdges, options])
 }
 
 type Elements = {
-    nodes: Array<Node>
-    edges: Array<Edge>
+  nodes: Array<Node>
+  edges: Array<Edge>
 }
 
 const compareElements = (ignoreDataChanges: boolean) => (xs: Elements, ys: Elements) => {
-    return (
-        compareNodes(xs.nodes, ys.nodes, ignoreDataChanges) &&
-        compareEdges(xs.edges, ys.edges)
-    )
+  return (
+    compareNodes(xs.nodes, ys.nodes, ignoreDataChanges) &&
+    compareEdges(xs.edges, ys.edges)
+  )
 }
 
 const compareNodes = (xs: Array<Node>, ys: Array<Node>, ignoreDataChanges: boolean) => {
-    // the number of nodes changed, so we already know that the nodes are not equal
-    if (xs.length !== ys.length) return false
+  // the number of nodes changed, so we already know that the nodes are not equal
+  if (xs.length !== ys.length) return false
 
-    for (let i = 0; i < xs.length; i++) {
-        const x = xs[i]
-        const y = ys[i]
+  for (let i = 0; i < xs.length; i++) {
+    const x = xs[i]
+    const y = ys[i]
 
-        // the node doesn't exist in the next state so it just got added
-        if (!y) return false
-        // We don't want to force a layout change while a user might be resizing a
-        // node, so we only compare the dimensions if the node is not currently
-        // being resized.
-        //
-        // We early return here instead of using a `continue` because there's no
-        // scenario where we'd want nodes to start moving around *while* a user is
-        // trying to resize a node or move it around.
-        if (x.resizing || x.dragging) return true
-        if (
-            x.measured?.width !== y.measured?.width ||
-            x.measured?.height !== y.measured?.height
-        ) {
-            return false
-        }
-
-        if (ignoreDataChanges) return true
-        if (!isEqual(x.data, y.data)) return false
+    // the node doesn't exist in the next state so it just got added
+    if (!y) return false
+    // We don't want to force a layout change while a user might be resizing a
+    // node, so we only compare the dimensions if the node is not currently
+    // being resized.
+    //
+    // We early return here instead of using a `continue` because there's no
+    // scenario where we'd want nodes to start moving around *while* a user is
+    // trying to resize a node or move it around.
+    if (x.resizing || x.dragging) return true
+    if (
+      x.measured?.width !== y.measured?.width ||
+      x.measured?.height !== y.measured?.height
+    ) {
+      return false
     }
 
-    return true
+    if (ignoreDataChanges) return true
+    if (!isEqual(x.data, y.data)) return false
+  }
+
+  return true
 }
 
 const compareEdges = (xs: Array<Edge>, ys: Array<Edge>) => {
-    // the number of edges changed, so we already know that the edges are not equal
-    if (xs.length !== ys.length) return false
+  // the number of edges changed, so we already know that the edges are not equal
+  if (xs.length !== ys.length) return false
 
-    for (let i = 0; i < xs.length; i++) {
-        const x = xs[i]
-        const y = ys[i]
+  for (let i = 0; i < xs.length; i++) {
+    const x = xs[i]
+    const y = ys[i]
 
-        if (x.source !== y.source || x.target !== y.target) return false
-        if (x?.sourceHandle !== y?.sourceHandle) return false
-        if (x?.targetHandle !== y?.targetHandle) return false
-    }
+    if (x.source !== y.source || x.target !== y.target) return false
+    if (x?.sourceHandle !== y?.sourceHandle) return false
+    if (x?.targetHandle !== y?.targetHandle) return false
+  }
 
-    return true
+  return true
 }

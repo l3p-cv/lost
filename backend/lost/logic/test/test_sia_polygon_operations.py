@@ -1,13 +1,9 @@
-import pytest
-import json
 import logging
-import math
 from unittest.mock import MagicMock
+
+import pytest
+
 from lost.logic import sia
-import lostconfig as config
-from shapely.errors import TopologicalError, ShapelyError
-from shapely.geometry import Polygon, MultiPolygon
-from shapely.ops import unary_union
 
 # Mock flask.current_app.logger to avoid Flask context errors
 sia.flask = MagicMock()

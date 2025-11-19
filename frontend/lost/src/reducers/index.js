@@ -6,19 +6,19 @@ import sia from './sia'
 import siaReview from './siaReview'
 
 const appReducer = combineReducers({
-    annoTask,
-    mia,
-    sia,
-    form: formReducer,
-    siaReview,
+  annoTask,
+  mia,
+  sia,
+  form: formReducer,
+  siaReview,
 })
 
 const rootReducer = (state, action) => {
-    if (action.type === 'logout') {
-        state = undefined
-    }
+  if (action.type === 'logout') {
+    state = undefined
+  }
 
-    return appReducer(state, action)
+  return appReducer(state, action)
 }
 
 export default rootReducer

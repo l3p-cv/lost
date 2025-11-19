@@ -1,14 +1,14 @@
 import {
-    Background,
-    BackgroundVariant,
-    Controls,
-    Edge,
-    Node,
-    Panel,
-    ReactFlow,
-    useEdgesState,
-    useNodesState,
-    useReactFlow,
+  Background,
+  BackgroundVariant,
+  Controls,
+  Edge,
+  Node,
+  Panel,
+  ReactFlow,
+  useEdgesState,
+  useNodesState,
+  useReactFlow,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import { useEffect } from 'react'
@@ -16,63 +16,65 @@ import '../globalComponents/node.scss'
 import { LayoutOptions, useAutoLayout } from '../useAutoLayout'
 import '../xy-theme.css'
 import {
-    AnnoTaskNode,
-    DataExportNode,
-    DatasourceNode,
-    LoopNode,
-    ScriptNode,
+  AnnoTaskNode,
+  DataExportNode,
+  DatasourceNode,
+  LoopNode,
+  ScriptNode,
 } from './nodes'
 
 const templateNodeTypes = {
-    datasourceNode: DatasourceNode,
-    annoTaskNode: AnnoTaskNode,
-    dataExportNode: DataExportNode,
-    loopNode: LoopNode,
-    scriptNode: ScriptNode,
+  datasourceNode: DatasourceNode,
+  annoTaskNode: AnnoTaskNode,
+  dataExportNode: DataExportNode,
+  loopNode: LoopNode,
+  scriptNode: ScriptNode,
 }
 
 const defaultLayoutOptions: LayoutOptions = {
-    direction: 'TB',
+  direction: 'TB',
 }
 
 interface PipelineTemplateProps {
-    name: string
-    initialNodes: Node[]
-    initialEdges: Edge[]
-    onNodeClick: (event: React.MouseEvent, node: Node) => void
+  name: string
+  initialNodes: Node[]
+  initialEdges: Edge[]
+  onNodeClick: (event: React.MouseEvent, node: Node) => void
 }
 
 export const PipelineTemplate: React.FC<PipelineTemplateProps> = ({
-    name,
-    initialNodes,
-    initialEdges,
-    onNodeClick,
+  name,
+  initialNodes,
+  initialEdges,
+  onNodeClick,
 }) => {
-    const { fitView } = useReactFlow()
+  const { fitView } = useReactFlow()
 
-    const [nodes, setNodes, onNodesChange] = useNodesState([] as Node[])
-    const [edges, setEdges, onEdgesChange] = useEdgesState([] as Edge[])
+  const [nodes, setNodes, onNodesChange] = useNodesState([] as Node[])
+  const [edges, setEdges, onEdgesChange] = useEdgesState([] as Edge[])
 
   useEffect(() => {
     const nodesWithClassNames = initialNodes.map((node) => {
-      let className = '';
-      if (node.type === 'datasourceNode') className = 'datasource-node';
-      if (node.type === 'scriptNode') className = 'script-node';
-      if (node.type === 'annoTaskNode') className = 'anno-task-node';
-      return { ...node, className };
-    });
+      let className = ''
+      if (node.type === 'datasourceNode') className = 'datasource-node'
+      if (node.type === 'scriptNode') className = 'script-node'
+      if (node.type === 'annoTaskNode') className = 'anno-task-node'
+      return { ...node, className }
+    })
 
     setNodes(nodesWithClassNames)
     setEdges(initialEdges)
   }, [initialNodes, initialEdges])
 
   useEffect(() => {
-    const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true';
-    const currentStep = parseInt(localStorage.getItem('currentStep') || '0');
-    if (joyrideRunning && currentStep === 2 ) {
-      window.dispatchEvent(new CustomEvent('joyride-next-step', {
-        detail: { step: 'highlight-ds-node' }
-      }))
+    const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true'
+    const currentStep = parseInt(localStorage.getItem('currentStep') || '0')
+    if (joyrideRunning && currentStep === 2) {
+      window.dispatchEvent(
+        new CustomEvent('joyride-next-step', {
+          detail: { step: 'highlight-ds-node' },
+        }),
+      )
     }
   })
 

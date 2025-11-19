@@ -1,6 +1,5 @@
 from lost.db import state
 
-
 # def add_user(data_man, user):
 #     '''add user to user meta
 
@@ -38,6 +37,7 @@ from lost.db import state
 
 #     data_man.save_obj(usermeta)
 
+
 def get_user_default_group(dbm, user_id):
     for user_group in dbm.get_user_groups_by_user_id(user_id):
         if user_group.group.is_user_default:
@@ -45,13 +45,14 @@ def get_user_default_group(dbm, user_id):
             return group_id
     return None
 
+
 def release_user_annos(dbm, user_id):
-    '''Release locked annos for a specific user.
+    """Release locked annos for a specific user.
 
     Args:
         dbm (object): DBMan object.
         user_id (int): ID of the user to release locked annos.
-    '''
+    """
     for anno_task in dbm.get_anno_task(state=state.AnnoTask.IN_PROGRESS):
         locked_annos = dbm.get_locked_img_annos(anno_task.idx)
         # for anno in locked_annos:
@@ -62,7 +63,7 @@ def release_user_annos(dbm, user_id):
             anno.timestamp_lock = None
             anno.user_id = None
             dbm.add(anno)
-                
+
         locked_annos = dbm.get_locked_two_d_annos(anno_task.idx)
         # for anno in locked_annos:
         #     print('UserID: {} AnnoID: {}'.format(anno.user_id, anno.idx))

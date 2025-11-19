@@ -1,92 +1,99 @@
-import { useState, useEffect, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
-import { pipelineStepMap, instructionStepMap, instructionStepMap2, labelStepMap } from '../config/stepMaps';
+import { useState, useEffect, useRef } from 'react'
+import { useLocation } from 'react-router-dom'
+import {
+  pipelineStepMap,
+  instructionStepMap,
+  instructionStepMap2,
+  labelStepMap,
+} from '../config/stepMaps'
 
 export const useTourStepManager = (pipelineType) => {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [readyToRun, setReadyToRun] = useState(false);
-  const [isNextEnabled, setIsNextEnabled] = useState(true);
-  const currentStepRef = useRef(currentStep);
-  const location = useLocation();
+  const [currentStep, setCurrentStep] = useState(0)
+  const [readyToRun, setReadyToRun] = useState(false)
+  const [isNextEnabled, setIsNextEnabled] = useState(true)
+  const currentStepRef = useRef(currentStep)
+  const location = useLocation()
 
   useEffect(() => {
-    currentStepRef.current = currentStep;
-  }, [currentStep]);
+    currentStepRef.current = currentStep
+  }, [currentStep])
 
   useEffect(() => {
-    const savedStep = localStorage.getItem('currentStep');
-    const hasCompletedTour = localStorage.getItem('hasCompletedTour') === 'true';
+    const savedStep = localStorage.getItem('currentStep')
+    const hasCompletedTour = localStorage.getItem('hasCompletedTour') === 'true'
     if (savedStep && !hasCompletedTour) {
-      setCurrentStep(parseInt(savedStep, 10));
+      setCurrentStep(parseInt(savedStep, 10))
     }
-  }, []);
+  }, [])
 
   const useStepReadiness = (steps) => {
     useEffect(() => {
-      let timeoutId;
+      let timeoutId
       const checkDomReady = () => {
-        const target = steps[currentStep]?.target;
-        const element = target && document.querySelector(target);
+        const target = steps[currentStep]?.target
+        const element = target && document.querySelector(target)
 
         if (element) {
-          setTimeout(() => setReadyToRun(true), 300);
+          setTimeout(() => setReadyToRun(true), 300)
         } else {
-          setReadyToRun(false);
-          timeoutId = setTimeout(checkDomReady, 200);
+          setReadyToRun(false)
+          timeoutId = setTimeout(checkDomReady, 200)
         }
-      };
-      checkDomReady();
-      return () => clearTimeout(timeoutId);
-    }, [location.pathname, steps, currentStep]);
-  };
+      }
+      checkDomReady()
+      return () => clearTimeout(timeoutId)
+    }, [location.pathname, steps, currentStep])
+  }
 
   useEffect(() => {
     const handleNextStep = (event) => {
-      const latestPipelineId = localStorage.getItem('latestPipelineId');
-      const currentStep = parseInt(localStorage.getItem('currentStep')||'0');
+      const latestPipelineId = localStorage.getItem('latestPipelineId')
+      const currentStep = parseInt(localStorage.getItem('currentStep') || '0')
       if (pipelineType === 'instructionTour' && currentStep >= 25 && latestPipelineId) {
-        localStorage.removeItem('latestPipelineId');
+        localStorage.removeItem('latestPipelineId')
       }
-      const mapToUse = 
+      const mapToUse =
         pipelineType === 'instructionTour' && latestPipelineId == undefined
           ? instructionStepMap
-          :pipelineType === 'instructionTour' && latestPipelineId && currentStep >= 40
-          ? instructionStepMap
-          : pipelineType === 'instructionTour' && latestPipelineId 
-          ? instructionStepMap2 
-          : pipelineType === 'labelTour' 
-          ? labelStepMap
-          : pipelineStepMap;
+          : pipelineType === 'instructionTour' && latestPipelineId && currentStep >= 40
+            ? instructionStepMap
+            : pipelineType === 'instructionTour' && latestPipelineId
+              ? instructionStepMap2
+              : pipelineType === 'labelTour'
+                ? labelStepMap
+                : pipelineStepMap
 
-      const nextStep = mapToUse[event.detail.step];
-       if (event.detail.step === 'after-instruction-select') {
-        localStorage.setItem('hasCompletedTour', 'true');
-        setCurrentStep(46);
-        localStorage.removeItem('currentStep');
-        return; 
+      const nextStep = mapToUse[event.detail.step]
+      if (event.detail.step === 'after-instruction-select') {
+        localStorage.setItem('hasCompletedTour', 'true')
+        setCurrentStep(46)
+        localStorage.removeItem('currentStep')
+        return
       }
       if (typeof nextStep === 'number' && nextStep !== currentStepRef.current) {
-        setCurrentStep(nextStep);
-        localStorage.setItem('currentStep', String(nextStep));
+        setCurrentStep(nextStep)
+        localStorage.setItem('currentStep', String(nextStep))
       }
-    };
+    }
 
-    window.addEventListener('joyride-next-step', handleNextStep);
+    window.addEventListener('joyride-next-step', handleNextStep)
     return () => {
-      window.removeEventListener('joyride-next-step', handleNextStep);
-    };
-  }, [pipelineType]);
-
+      window.removeEventListener('joyride-next-step', handleNextStep)
+    }
+  }, [pipelineType])
 
   useEffect(() => {
-    if (currentStep === 29 && (pipelineType === 'miaPipeline' || pipelineType === 'mainPipeline')) {
-      setIsNextEnabled(false);
-      const timer = setTimeout(() => setIsNextEnabled(true), 8000);
-      return () => clearTimeout(timer);
+    if (
+      currentStep === 29 &&
+      (pipelineType === 'miaPipeline' || pipelineType === 'mainPipeline')
+    ) {
+      setIsNextEnabled(false)
+      const timer = setTimeout(() => setIsNextEnabled(true), 8000)
+      return () => clearTimeout(timer)
     } else {
-      setIsNextEnabled(true);
+      setIsNextEnabled(true)
     }
-  }, [currentStep, pipelineType]);
+  }, [currentStep, pipelineType])
 
   return {
     currentStep,
@@ -95,5 +102,5 @@ export const useTourStepManager = (pipelineType) => {
     readyToRun,
     isNextEnabled,
     useStepReadiness,
-  };
-};
+  }
+}

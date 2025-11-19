@@ -4,8 +4,8 @@ import sia from './sia'
 import siaReview from './siaReview'
 
 export default {
-    ...annoTask,
-    ...mia,
-    ...sia,
-    ...siaReview,
+  ...annoTask,
+  ...mia,
+  ...sia,
+  ...siaReview,
 }

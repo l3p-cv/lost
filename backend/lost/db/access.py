@@ -1,15 +1,17 @@
 from typing import Optional
+
 import sqlalchemy
+from sqlalchemy import and_, or_
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool
-from sqlalchemy import or_, and_
 from sqlalchemy.sql import text
+
 from lost.api.inference_model.api_definition import InferenceModelRequest
-from lost.db import model, state, dtype
+from lost.db import dtype, model, state
 
 
 def convert_connection_str(lostconfig):
-    '''Convert connection string from config format to sqlalchemy format.
+    """Convert connection string from config format to sqlalchemy format.
 
     Args:
         connection_str (str): Connection string in format:
@@ -17,54 +19,66 @@ def convert_connection_str(lostconfig):
 
     Returns:
         str: *mysql+mysqldb://user:pwd@server_ip:port/database*
-    '''
-    #out = CONNECTOR + "://" + lostconfig.lost_db_user + ":" + lostconfig.lost_db_pwd + "@" + lostconfig.lost_db_ip + "/" + lostconfig.lost_db_name
-    out = lostconfig.db_connector + "://" + lostconfig.lost_db_user + ":" + lostconfig.lost_db_pwd + "@" + lostconfig.lost_db_ip +":"+ lostconfig.lost_db_port + "/" + lostconfig.lost_db_name
+    """
+    # out = CONNECTOR + "://" + lostconfig.lost_db_user + ":" + lostconfig.lost_db_pwd + "@" + lostconfig.lost_db_ip + "/" + lostconfig.lost_db_name
+    out = (
+        lostconfig.db_connector
+        + "://"
+        + lostconfig.lost_db_user
+        + ":"
+        + lostconfig.lost_db_pwd
+        + "@"
+        + lostconfig.lost_db_ip
+        + ":"
+        + lostconfig.lost_db_port
+        + "/"
+        + lostconfig.lost_db_name
+    )
     return out
 
-class DBMan(object):
-    """Database access manager for Project database.
-    """
+
+class DBMan:
+    """Database access manager for Project database."""
+
     def __init__(self, lostconfig, debug=False):
-        '''Init database connection
+        """Init database connection
 
         Args:
             lostconfig (object): :class:`lost.pyapi.parse.LOSTConfig`
             debug (bool): If True, echo database communication.
-        '''
+        """
         orm_connection_str = convert_connection_str(lostconfig)
-        self.engine = sqlalchemy.create_engine(orm_connection_str, echo=debug,
-                                               poolclass=NullPool)
+        self.engine = sqlalchemy.create_engine(orm_connection_str, echo=debug, poolclass=NullPool)
         self.__Session = sessionmaker(bind=self.engine)
         self.session = self.__Session()
         self.lostconfig = lostconfig
 
     def create_database(self):
-        '''Create all tables that are modeled in *data_model.project* in database.
+        """Create all tables that are modeled in *data_model.project* in database.
 
         Note:
             An empty database needs to be already present. Otherwise this
             method will not work.
-        '''
-        #Use this line to crate the tables
+        """
+        # Use this line to crate the tables
         model.Base.metadata.create_all(self.engine)
 
     def drop_all(self):
-        '''Drop all tables in database'''
+        """Drop all tables in database"""
         model.Base.metadata.drop_all(self.engine)
 
     def new_session(self):
-        '''Cerate new orm session for this DBManager'''
+        """Cerate new orm session for this DBManager"""
         self.session.close()
         self.session = self.__Session()
 
     def close_session(self):
-        '''Close current session  for this DBManager'''
+        """Close current session  for this DBManager"""
         self.session.close()
         del self.session
 
     def add(self, obj):
-        '''Add an object to current session.
+        """Add an object to current session.
 
         Args:
             obj (object): An object from data_model.
@@ -72,41 +86,41 @@ class DBMan(object):
             After an object was added it is not stored in database. It is just
             marked, that it will be stored with the next call of the commit
             method.
-        '''
+        """
         self.session.add(obj)
 
     def delete(self, obj):
         self.session.delete(obj)
 
     def commit(self):
-        '''Store all added /deleted object to database.'''
+        """Store all added /deleted object to database."""
         self.session.commit()
 
     def save_obj(self, obj):
-        '''Store an object to database.
+        """Store an object to database.
 
         Args:
             obj (object): An object from data_model.
-        '''
+        """
         self.session.add(obj)
         self.session.commit()
-        
+
     def save_obj_get_idx(self, obj):
-        '''Store an object to database and redurn its idx.
+        """Store an object to database and redurn its idx.
 
         Args:
             obj (object): An object from data_model.
-            
+
         Returns:
             idx (int): Index of object in database
-        '''
+        """
         self.session.add(obj)
         self.session.commit()
         self.session.refresh(obj)
         return obj.idx
 
     def get_anno_task(self, anno_task_id=None, pipe_element_id=None, state=None):
-        '''Get an AnnoationTask object.
+        """Get an AnnoationTask object.
 
         Args:
             anno_task_id (int): Get object by annotask_id.
@@ -114,33 +128,34 @@ class DBMan(object):
 
         Returns:
             :class:`.project.AnnoTask`
-        '''
+        """
         if anno_task_id is not None:
-            return self.session.query(model.AnnoTask)\
-                .filter(model.AnnoTask.idx==anno_task_id).first()
+            return self.session.query(model.AnnoTask).filter(model.AnnoTask.idx == anno_task_id).first()
         elif pipe_element_id is not None:
-            return self.session.query(model.AnnoTask)\
-                .filter(model.AnnoTask.pipe_element_id==pipe_element_id).first()
+            return self.session.query(model.AnnoTask).filter(model.AnnoTask.pipe_element_id == pipe_element_id).first()
         elif state is not None:
-            return self.session.query(model.AnnoTask)\
-                .filter(model.AnnoTask.state==state).all()
+            return self.session.query(model.AnnoTask).filter(model.AnnoTask.state == state).all()
         else:
             raise Exception("One of the arguments need to be not None.")
 
     def get_available_annotask(self, group_ids):
-        '''Get all available annotation task by group_ids and state != pending
+        """Get all available annotation task by group_ids and state != pending
 
         Args:
             group_ids [int]: IDs of groups
 
         Returns:
             :class:`.project.AnnoTask`
-        '''
-        return self.session.query(model.AnnoTask).filter((model.AnnoTask.state!=state.AnnoTask.PENDING) &\
-        (model.AnnoTask.group_id.in_(group_ids))).order_by(model.AnnoTask.idx.desc()).all()
+        """
+        return (
+            self.session.query(model.AnnoTask)
+            .filter((model.AnnoTask.state != state.AnnoTask.PENDING) & (model.AnnoTask.group_id.in_(group_ids)))
+            .order_by(model.AnnoTask.idx.desc())
+            .all()
+        )
 
     def get_pipe(self, pipe_id=None, pipe_template_id=None) -> model.Pipe:
-        '''Get a pipe object.
+        """Get a pipe object.
 
         Args:
             pipe_id (int): Id of the desired pipe.
@@ -148,41 +163,36 @@ class DBMan(object):
 
         Returns:
             :class:`.project.Pipe`
-        '''
+        """
         if pipe_id is not None:
-            return self.session.query(model.Pipe).filter(model.Pipe.idx==pipe_id).first()
+            return self.session.query(model.Pipe).filter(model.Pipe.idx == pipe_id).first()
         elif pipe_template_id is not None:
-            return self.session.query(model.Pipe)\
-                    .filter(model.Pipe.pipe_template_id==pipe_template_id).first()
+            return self.session.query(model.Pipe).filter(model.Pipe.pipe_template_id == pipe_template_id).first()
         else:
             raise Exception("db_access.get_pipe: Need to specify one of the arguments!")
 
     def get_all_pipes(self):
-        '''Get all pipes in project
+        """Get all pipes in project
 
         Returns:
             list of :class:`.project.Pipe`
-        '''
+        """
         return self.session.query(model.Pipe).all()
-    
-    def get_pipelines_paged(self,
-        group_ids,
-        page_index,
-        page_size):
-        '''Returns a page of all pipelines and the total number of pages
+
+    def get_pipelines_paged(self, group_ids, page_index, page_size):
+        """Returns a page of all pipelines and the total number of pages
 
         Args:
             group_ids [int]: IDs of groups
             page_index (int): Zero-based page-index
             page_size (int): entries per page
-        '''
+        """
         # get everything
-        query = self.session.query(model.Pipe)\
-            .filter((model.Pipe.group_id.in_(group_ids) &  (model.Pipe.state!=state.Pipe.DELETED) ))
+        query = self.session.query(model.Pipe).filter(
+            model.Pipe.group_id.in_(group_ids) & (model.Pipe.state != state.Pipe.DELETED)
+        )
         # get page
-        pipe_page = (query.order_by(model.Pipe.timestamp.desc())\
-                     .limit(page_size)\
-                    .offset(page_index * page_size)).all()
+        pipe_page = (query.order_by(model.Pipe.timestamp.desc()).limit(page_size).offset(page_index * page_size)).all()
         # total pages
         count = query.count()
         pages = count // page_size
@@ -191,69 +201,75 @@ class DBMan(object):
         return pipe_page, pages
 
     def get_pipes_to_process(self) -> list[model.Pipe]:
-        '''Get all :class:`project.Pipe` objects that are not finished.
+        """Get all :class:`project.Pipe` objects that are not finished.
 
         Returns:
             list: A list of :class:`project.Pipe` objects
-        '''
-        return self.session.query(model.Pipe)\
-            .filter((model.Pipe.state!=state.Pipe.FINISHED) &\
-                    (model.Pipe.state!=state.Pipe.DELETED) &\
-                    (model.Pipe.state!=state.Pipe.PAUSED) &\
-                    (model.Pipe.changed_by_engine != model.Pipe.changed_by_element)
-                    ).all()
+        """
+        return (
+            self.session.query(model.Pipe)
+            .filter(
+                (model.Pipe.state != state.Pipe.FINISHED)
+                & (model.Pipe.state != state.Pipe.DELETED)
+                & (model.Pipe.state != state.Pipe.PAUSED)
+                & (model.Pipe.changed_by_engine != model.Pipe.changed_by_element)
+            )
+            .all()
+        )
 
     def get_pipes(self, group_ids):
-        '''Get all :class:`project.Pipe` objects that are not finished.
+        """Get all :class:`project.Pipe` objects that are not finished.
 
         Args:
             group_ids [int]: List of group ids to search for.
 
         Returns:
             list: A list of :class:`project.Pipe` objects
-        '''
-        return self.session.query(model.Pipe)\
-            .filter((model.Pipe.group_id.in_(group_ids) &  (model.Pipe.state!=state.Pipe.DELETED) )).all()
-                    
+        """
+        return (
+            self.session.query(model.Pipe)
+            .filter(model.Pipe.group_id.in_(group_ids) & (model.Pipe.state != state.Pipe.DELETED))
+            .all()
+        )
+
     def get_all_pipeline_templates(self, group_id=None, global_only=False, add_global=False):
-        '''Get all PipeTemplate objects in db.
+        """Get all PipeTemplate objects in db.
 
         Returns:
             list: :class:`.project.PipeTemplate`
-        '''
+        """
         if group_id:
             if add_global:
-                return self.session.query(model.PipeTemplate)\
-                    .filter(or_(model.PipeTemplate.group_id==group_id, model.PipeTemplate.group_id == None)).all()
+                return (
+                    self.session.query(model.PipeTemplate)
+                    .filter(or_(model.PipeTemplate.group_id == group_id, model.PipeTemplate.group_id == None))
+                    .all()
+                )
             else:
-                return self.session.query(model.PipeTemplate)\
-                    .filter(model.PipeTemplate.group_id==group_id).all()
+                return self.session.query(model.PipeTemplate).filter(model.PipeTemplate.group_id == group_id).all()
         if global_only:
-            return self.session.query(model.PipeTemplate)\
-                .filter(model.PipeTemplate.group_id==None).all()
+            return self.session.query(model.PipeTemplate).filter(model.PipeTemplate.group_id == None).all()
 
         return self.session.query(model.PipeTemplate).all()
 
     def get_pipe_template(self, pipe_template_id=None):
-        '''Get a single PipeTemplate.
+        """Get a single PipeTemplate.
 
         Returns:
             :class:`.project.PipeTemplate`
-        '''
-        return self.session.query(model.PipeTemplate)\
-            .filter(model.PipeTemplate.idx==pipe_template_id).first()
+        """
+        return self.session.query(model.PipeTemplate).filter(model.PipeTemplate.idx == pipe_template_id).first()
 
     def get_pipe_template_by_pipe_project(self, pipe_project_name):
-        '''Get PipeTemplates by pipe_project name
+        """Get PipeTemplates by pipe_project name
 
         Returns:
             list: List of PipeTemplates
-        '''
-        return self.session.query(model.PipeTemplate)\
-            .filter(model.PipeTemplate.pipe_project==pipe_project_name).all()
+        """
+        return self.session.query(model.PipeTemplate).filter(model.PipeTemplate.pipe_project == pipe_project_name).all()
 
     def get_script(self, script_id=None, name=None, file_name=None):
-        '''Get a script object from database.
+        """Get a script object from database.
 
         Args:
             script_id (int): Get object by script_id.
@@ -263,814 +279,940 @@ class DBMan(object):
 
         Returns:
             :class:`.project.Script`
-        '''
+        """
         if script_id is not None:
-            return self.session.query(model.Script)\
-                .filter(model.Script.idx==script_id).first()
+            return self.session.query(model.Script).filter(model.Script.idx == script_id).first()
         elif name is not None:
-            return self.session.query(model.Script)\
-                .filter(model.Script.name==name.lower()).first()
+            return self.session.query(model.Script).filter(model.Script.name == name.lower()).first()
         elif file_name is not None:
-            return self.session.query(model.Script)\
-                .filter(model.Script.path.contains(file_name)).first()
+            return self.session.query(model.Script).filter(model.Script.path.contains(file_name)).first()
         else:
             raise Exception("lost.db.access.get_script: You need to specify one of the arguments")
 
     def get_pipe_elements(self, pipe_id):
-        '''Get a list of PipeElements
+        """Get a list of PipeElements
 
         Args:
             pipe_id (int): Get list by pipe_id.
 
         Returns:
             list of :class:`.project.PipeElement`
-        '''
-        return self.session.query(model.PipeElement)\
-            .filter(model.PipeElement.pipe_id==pipe_id).all()
-            
+        """
+        return self.session.query(model.PipeElement).filter(model.PipeElement.pipe_id == pipe_id).all()
 
     def get_pipe_element(self, pipe_e_id=None, script_id=None) -> model.PipeElement:
-        '''Get an PipeElement
+        """Get an PipeElement
 
         Args:
             pipe_e_id (int): Get PipeElement by PipeElement ID.
 
         Returns:
             :class:`.project.PipeElement`
-        '''
+        """
         if pipe_e_id is not None:
-            return self.session.query(model.PipeElement)\
-                .filter(model.PipeElement.idx==pipe_e_id).first()
+            return self.session.query(model.PipeElement).filter(model.PipeElement.idx == pipe_e_id).first()
         elif script_id is not None:
-            return self.session.query(model.PipeElement)\
-                .filter(model.PipeElement.script_id==script_id).first()
+            return self.session.query(model.PipeElement).filter(model.PipeElement.script_id == script_id).first()
         else:
             raise Exception("One of the arguments need to be not None.")
 
     def get_image_anno(self, img_anno_id):
-        ''' get a single image annotation
-        '''
-        return self.session.query(model.ImageAnno).filter(model.ImageAnno.idx==img_anno_id).first()
+        """get a single image annotation"""
+        return self.session.query(model.ImageAnno).filter(model.ImageAnno.idx == img_anno_id).first()
 
     def get_image_annotations(self, anno_task_id):
-        '''Get a list of ImageAnnos.
+        """Get a list of ImageAnnos.
 
         Args:
             anno_task_id (int): Get annotations by anno_task_id.
 
         Returns:
             list of :class:`.project.ImageAnno`
-        '''
-        return self.session.query(model.ImageAnno)\
-            .filter(model.ImageAnno.anno_task_id==anno_task_id).all()
+        """
+        return self.session.query(model.ImageAnno).filter(model.ImageAnno.anno_task_id == anno_task_id).all()
 
     def get_image_annotations_by_ids(self, anno_task_id, user_id, ids):
-        ''' Get list of image annotation by it's ids
-        '''
-        return self.session.query(model.ImageAnno)\
-            .filter(model.ImageAnno.anno_task_id==anno_task_id, model.ImageAnno.user_id==user_id, model.ImageAnno.idx.in_(ids)).all()
+        """Get list of image annotation by it's ids"""
+        return (
+            self.session.query(model.ImageAnno)
+            .filter(
+                model.ImageAnno.anno_task_id == anno_task_id,
+                model.ImageAnno.user_id == user_id,
+                model.ImageAnno.idx.in_(ids),
+            )
+            .all()
+        )
 
     def get_image_annotations_by_state(self, anno_task_id, state, user_id, amount):
-        ''' Get all Image Anno by annotask, state and user_id
-        '''
-        if (amount > 0):
-            return self.session.query(model.ImageAnno).filter(model.ImageAnno.state==state,\
-                                                          model.ImageAnno.anno_task_id== anno_task_id,\
-                                                          model.ImageAnno.user_id==user_id)\
-                                                          .limit(amount).all()
+        """Get all Image Anno by annotask, state and user_id"""
+        if amount > 0:
+            return (
+                self.session.query(model.ImageAnno)
+                .filter(
+                    model.ImageAnno.state == state,
+                    model.ImageAnno.anno_task_id == anno_task_id,
+                    model.ImageAnno.user_id == user_id,
+                )
+                .limit(amount)
+                .all()
+            )
         else:
-            return self.session.query(model.ImageAnno).filter(model.ImageAnno.state==state,\
-                                                          model.ImageAnno.anno_task_id== anno_task_id,\
-                                                          model.ImageAnno.user_id==user_id).all()
-
+            return (
+                self.session.query(model.ImageAnno)
+                .filter(
+                    model.ImageAnno.state == state,
+                    model.ImageAnno.anno_task_id == anno_task_id,
+                    model.ImageAnno.user_id == user_id,
+                )
+                .all()
+            )
 
     def get_image_annotation_by_sim_class(self, anno_task_id, sim_class, amount):
-        ''' Get unlocked image annotations by sim_class and anno task
-        '''
-        return self.session.query(model.ImageAnno).filter(model.ImageAnno.state==state.Anno.UNLOCKED,\
-                                                      model.ImageAnno.anno_task_id== anno_task_id,\
-                                                      model.ImageAnno.sim_class==sim_class)\
-        .limit(amount).all()
+        """Get unlocked image annotations by sim_class and anno task"""
+        return (
+            self.session.query(model.ImageAnno)
+            .filter(
+                model.ImageAnno.state == state.Anno.UNLOCKED,
+                model.ImageAnno.anno_task_id == anno_task_id,
+                model.ImageAnno.sim_class == sim_class,
+            )
+            .limit(amount)
+            .all()
+        )
 
     def get_random_sim_class_img_anno(self, anno_task_id):
-        ''' get a random sim class of one anno task (created by db)
-        '''
-        sql = "SELECT sim_class FROM image_anno WHERE anno_task_id=%d AND state=%d ORDER BY RAND() LIMIT 1"\
-        %(anno_task_id, state.Anno.UNLOCKED)
+        """get a random sim class of one anno task (created by db)"""
+        sql = "SELECT sim_class FROM image_anno WHERE anno_task_id=%d AND state=%d ORDER BY RAND() LIMIT 1" % (
+            anno_task_id,
+            state.Anno.UNLOCKED,
+        )
         return self.session.execute(text(sql)).first()
 
     def get_all_img_annos(self):
-        '''Get a list of all ImageAnnos in database.
+        """Get a list of all ImageAnnos in database.
 
         Returns:
             list of :class:`.project.ImageAnno`
-        '''
+        """
         return self.session.query(model.ImageAnno).all()
 
     def get_locked_img_annos(self, anno_task_id):
-        return self.session.query(model.ImageAnno)\
-            .filter((model.ImageAnno.anno_task_id==anno_task_id)\
-                    & ((model.ImageAnno.state == state.Anno.LOCKED)\
-                    | (model.ImageAnno.state == state.Anno.LABELED_LOCKED)\
-                       | (model.ImageAnno.state == state.Anno.LOCKED_PRIORITY))).all()
+        return (
+            self.session.query(model.ImageAnno)
+            .filter(
+                (model.ImageAnno.anno_task_id == anno_task_id)
+                & (
+                    (model.ImageAnno.state == state.Anno.LOCKED)
+                    | (model.ImageAnno.state == state.Anno.LABELED_LOCKED)
+                    | (model.ImageAnno.state == state.Anno.LOCKED_PRIORITY)
+                )
+            )
+            .all()
+        )
 
     def get_locked_two_d_annos(self, anno_task_id):
-        return self.session.query(model.TwoDAnno)\
-            .filter((model.TwoDAnno.anno_task_id==anno_task_id)\
-                    & ((model.TwoDAnno.state == state.Anno.LOCKED)\
-                    | (model.TwoDAnno.state == state.Anno.LABELED_LOCKED)\
-                       | (model.TwoDAnno.state == state.Anno.LOCKED_PRIORITY))).all()
+        return (
+            self.session.query(model.TwoDAnno)
+            .filter(
+                (model.TwoDAnno.anno_task_id == anno_task_id)
+                & (
+                    (model.TwoDAnno.state == state.Anno.LOCKED)
+                    | (model.TwoDAnno.state == state.Anno.LABELED_LOCKED)
+                    | (model.TwoDAnno.state == state.Anno.LOCKED_PRIORITY)
+                )
+            )
+            .all()
+        )
 
     def get_resultlinks_pe_n(self, pe_n_id):
-        '''Get result links for pe_n.
-        '''
-        return self.session.query(model.ResultLink)\
-        .filter(model.ResultLink.pe_n==pe_n_id).all()
+        """Get result links for pe_n."""
+        return self.session.query(model.ResultLink).filter(model.ResultLink.pe_n == pe_n_id).all()
 
     def get_resultlinks_pe_out(self, pe_out_id):
-        '''Get result links for pe_out.
-        '''
-        return self.session.query(model.ResultLink)\
-        .filter(model.ResultLink.pe_out==pe_out_id).all()
-    
+        """Get result links for pe_out."""
+        return self.session.query(model.ResultLink).filter(model.ResultLink.pe_out == pe_out_id).all()
+
     def get_all_resultlinks(self):
-        '''Get all result links.
-        '''
+        """Get all result links."""
         return self.session.query(model.ResultLink).all()
 
     def get_result(self, result_id):
-        '''Get result by id.
-        '''
-        return self.session.query(model.Result)\
-        .filter(model.Result.idx==result_id).first()
-
+        """Get result by id."""
+        return self.session.query(model.Result).filter(model.Result.idx == result_id).first()
 
     def get_all_required_label_leaves(self, anno_task_id=None, label_leaf_id=None):
-        '''Get required label leaves by anno_task_id
-        '''
-        if not anno_task_id is None:
-            return self.session.query(model.RequiredLabelLeaf)\
-            .filter(model.RequiredLabelLeaf.anno_task_id==anno_task_id).all()
-        elif not label_leaf_id is None:
-            return self.session.query(model.RequiredLabelLeaf)\
-            .filter(model.RequiredLabelLeaf.label_leaf_id==label_leaf_id).all()
+        """Get required label leaves by anno_task_id"""
+        if anno_task_id is not None:
+            return (
+                self.session.query(model.RequiredLabelLeaf)
+                .filter(model.RequiredLabelLeaf.anno_task_id == anno_task_id)
+                .all()
+            )
+        elif label_leaf_id is not None:
+            return (
+                self.session.query(model.RequiredLabelLeaf)
+                .filter(model.RequiredLabelLeaf.label_leaf_id == label_leaf_id)
+                .all()
+            )
+
     def get_label_leaf(self, label_leaf_id):
-        '''Get label leaf by idx
-        '''
-        return self.session.query(model.LabelLeaf)\
-        .filter(model.LabelLeaf.idx==label_leaf_id).first()
+        """Get label leaf by idx"""
+        return self.session.query(model.LabelLeaf).filter(model.LabelLeaf.idx == label_leaf_id).first()
 
     def get_all_label_names(self):
-        '''Get a list of all label definitions in database.
+        """Get a list of all label definitions in database.
 
         Returns:
             list: A list of :class:`lost.db.model.LabelName` objects.
-        '''
+        """
         return self.session.query(model.LabelName).all()
 
     def get_all_datasource(self):
-        ''' Get all datasource
-        '''
+        """Get all datasource"""
         return self.session.query(model.Datasource).all()
 
     def get_datasource(self, datasource_id=None, name=None, pipe_element_id=None):
-        ''' Get single datasource by id
-        '''
+        """Get single datasource by id"""
         if datasource_id is not None:
-            return self.session.query(model.Datasource)\
-            .filter(model.Datasource.idx==datasource_id).first()
+            return self.session.query(model.Datasource).filter(model.Datasource.idx == datasource_id).first()
         elif name is not None:
-            return self.session.query(model.Datasource)\
-            .filter(model.Datasource.name==name).first()
+            return self.session.query(model.Datasource).filter(model.Datasource.name == name).first()
         elif pipe_element_id is not None:
-            query_result = self.session.query(model.Datasource)\
-               .filter(model.Datasource.pipe_element_id==pipe_element_id)
+            query_result = self.session.query(model.Datasource).filter(
+                model.Datasource.pipe_element_id == pipe_element_id
+            )
             return query_result.first()
         else:
-            raise Exception('Need to specify one of the method parameters')
+            raise Exception("Need to specify one of the method parameters")
 
     def get_data_exports(self, result_id):
-        ''' Get data_export by result_id
-        '''
-        return self.session.query(model.DataExport)\
-        .filter(model.DataExport.result_id==result_id).all()
+        """Get data_export by result_id"""
+        return self.session.query(model.DataExport).filter(model.DataExport.result_id == result_id).all()
 
     def get_data_export(self, de_id):
-        ''' Get data_export by id
-        '''
-        return self.session.query(model.DataExport)\
-        .filter(model.DataExport.idx==de_id).first()
+        """Get data_export by id"""
+        return self.session.query(model.DataExport).filter(model.DataExport.idx == de_id).first()
 
     def get_visual_outputs(self, result_id):
-        ''' Get visual_output by result_id
-        '''
-        return self.session.query(model.VisualOutput)\
-        .filter(model.VisualOutput.result_id==result_id).all()
+        """Get visual_output by result_id"""
+        return self.session.query(model.VisualOutput).filter(model.VisualOutput.result_id == result_id).all()
 
     def get_choosen_annotask(self, user_id=None, anno_task_id=None):
-        ''' Get choosen annotation task of one user by user_id
-        '''
+        """Get choosen annotation task of one user by user_id"""
         if user_id is not None:
-            return self.session.query(model.ChoosenAnnoTask)\
-            .filter(model.ChoosenAnnoTask.user_id == user_id).all()
+            return self.session.query(model.ChoosenAnnoTask).filter(model.ChoosenAnnoTask.user_id == user_id).all()
         elif anno_task_id is not None:
-            return self.session.query(model.ChoosenAnnoTask)\
-            .filter(model.ChoosenAnnoTask.anno_task_id == anno_task_id).all()
+            return (
+                self.session.query(model.ChoosenAnnoTask)
+                .filter(model.ChoosenAnnoTask.anno_task_id == anno_task_id)
+                .all()
+            )
         else:
-            raise Exception('Need to specify one of the method parameters')
+            raise Exception("Need to specify one of the method parameters")
 
     def count_image_remaining_annos(self, anno_task_id):
-        ''' Count the remaining image annotation of an annotation task
-        '''
+        """Count the remaining image annotation of an annotation task"""
 
-        sql = "SELECT COUNT(state) AS r FROM image_anno WHERE anno_task_id=%d AND state!=%d AND state!=%d"\
-         %(anno_task_id, state.Anno.LABELED, state.Anno.LABELED_LOCKED)
+        sql = "SELECT COUNT(state) AS r FROM image_anno WHERE anno_task_id=%d AND state!=%d AND state!=%d" % (
+            anno_task_id,
+            state.Anno.LABELED,
+            state.Anno.LABELED_LOCKED,
+        )
         return self.session.execute(text(sql)).first()
 
     def count_all_image_annos(self, anno_task_id, iteration=0):
-        ''' Count the all image annotation of an annotation task
-        '''
-        return self.session.query(sqlalchemy.func.count(model.ImageAnno.idx))\
-        .filter(model.ImageAnno.anno_task_id == anno_task_id, model.ImageAnno.iteration == iteration)
+        """Count the all image annotation of an annotation task"""
+        return self.session.query(sqlalchemy.func.count(model.ImageAnno.idx)).filter(
+            model.ImageAnno.anno_task_id == anno_task_id, model.ImageAnno.iteration == iteration
+        )
 
     def get_all_image_annos_by_iteration(self, anno_task_id, iteration):
-        ''' Get all image annotation of an annotation task by iteration
-        '''
-        return self.session.query(model.ImageAnno)\
-        .filter(model.ImageAnno.iteration==iteration, model.ImageAnno.anno_task_id==anno_task_id).all()
-    
+        """Get all image annotation of an annotation task by iteration"""
+        return (
+            self.session.query(model.ImageAnno)
+            .filter(model.ImageAnno.iteration == iteration, model.ImageAnno.anno_task_id == anno_task_id)
+            .all()
+        )
+
     def get_all_image_annos(self, anno_task_id):
-        ''' Get all image annotation of an annotation task
-        '''
-        return self.session.query(model.ImageAnno)\
-        .filter(model.ImageAnno.anno_task_id==anno_task_id).all()
+        """Get all image annotation of an annotation task"""
+        return self.session.query(model.ImageAnno).filter(model.ImageAnno.anno_task_id == anno_task_id).all()
 
     def get_user(self, user_id):
-        ''' Get User by its id
-        '''
-        return self.session.query(model.User)\
-        .filter(model.User.idx==user_id).first()
+        """Get User by its id"""
+        return self.session.query(model.User).filter(model.User.idx == user_id).first()
 
     def get_image_annotation(self, img_anno_id=None, result_id=None):
-        ''' Get single image annotation by it's id or result_id
-        '''
+        """Get single image annotation by it's id or result_id"""
         if img_anno_id is not None:
-            return self.session.query(model.ImageAnno).filter(model.ImageAnno.idx==img_anno_id).first()
+            return self.session.query(model.ImageAnno).filter(model.ImageAnno.idx == img_anno_id).first()
         elif result_id is not None:
-            return self.session.query(model.ImageAnno)\
-            .filter(model.ImageAnno.result_id==result_id).all()
+            return self.session.query(model.ImageAnno).filter(model.ImageAnno.result_id == result_id).all()
         else:
-            raise Exception('Need to specify one of the method parameters')
+            raise Exception("Need to specify one of the method parameters")
 
     def get_image_annotation_interval(self, result_id, date_from, date_to):
-        ''' Get image annotations by result_id and time interval
-        '''
-        return self.session.query(model.ImageAnno).filter(model.ImageAnno.result_id==result_id, \
-                                                       model.ImageAnno.timestamp>=date_from, \
-                                                       model.ImageAnno.timestamp<=date_to).all()
-    
-
+        """Get image annotations by result_id and time interval"""
+        return (
+            self.session.query(model.ImageAnno)
+            .filter(
+                model.ImageAnno.result_id == result_id,
+                model.ImageAnno.timestamp >= date_from,
+                model.ImageAnno.timestamp <= date_to,
+            )
+            .all()
+        )
 
     def get_next_unlocked_sia_anno(self, anno_task_id, iteration):
-        ''' Get next sia annotation of an anno_task
-        '''
-        return self.session.query(model.ImageAnno).with_for_update().filter(model.ImageAnno.anno_task_id==anno_task_id, \
-                                                       model.ImageAnno.state==state.Anno.UNLOCKED, \
-                                                       model.ImageAnno.iteration==iteration).order_by(model.ImageAnno.idx.asc()).first()
+        """Get next sia annotation of an anno_task"""
+        return (
+            self.session.query(model.ImageAnno)
+            .with_for_update()
+            .filter(
+                model.ImageAnno.anno_task_id == anno_task_id,
+                model.ImageAnno.state == state.Anno.UNLOCKED,
+                model.ImageAnno.iteration == iteration,
+            )
+            .order_by(model.ImageAnno.idx.asc())
+            .first()
+        )
 
     def get_next_locked_sia_anno(self, anno_task_id, user_id, iteration):
-        ''' Get next sia annotation of an anno_task
-        '''
+        """Get next sia annotation of an anno_task"""
         # sql = "SELECT * FROM image_anno WHERE anno_task_id=%d AND state=%d AND user_id=%d AND iteration=%d LIMIT 2"\
         #  %(anno_task_id, state.Anno.LOCKED, user_id, iteration)
-        return self.session.query(model.ImageAnno).filter(model.ImageAnno.anno_task_id==anno_task_id, \
-                                                       model.ImageAnno.state==state.Anno.LOCKED, \
-                                                       model.ImageAnno.user_id==user_id, \
-                                                       model.ImageAnno.iteration==iteration).all()
+        return (
+            self.session.query(model.ImageAnno)
+            .filter(
+                model.ImageAnno.anno_task_id == anno_task_id,
+                model.ImageAnno.state == state.Anno.LOCKED,
+                model.ImageAnno.user_id == user_id,
+                model.ImageAnno.iteration == iteration,
+            )
+            .all()
+        )
 
     def get_next_sia_anno_by_last_anno(self, anno_task_id, user_id, img_anno_id, iteration):
-        ''' Get next sia annotation of an anno_task
-        '''
+        """Get next sia annotation of an anno_task"""
         # sql = "SELECT * FROM image_anno WHERE user_id=%d AND anno_task_id=%d AND idx>%d AND iteration=%d LIMIT 1"\
         #  %(user_id, anno_task_id, img_anno_id, iteration)
-        return self.session.query(model.ImageAnno).filter(model.ImageAnno.anno_task_id==anno_task_id, \
-                                                       model.ImageAnno.user_id== user_id, \
-                                                       model.ImageAnno.idx > img_anno_id, \
-                                                       model.ImageAnno.iteration==iteration).first()
+        return (
+            self.session.query(model.ImageAnno)
+            .filter(
+                model.ImageAnno.anno_task_id == anno_task_id,
+                model.ImageAnno.user_id == user_id,
+                model.ImageAnno.idx > img_anno_id,
+                model.ImageAnno.iteration == iteration,
+            )
+            .first()
+        )
 
     def get_two_d_anno_by_img_anno(self, img_anno_id, iteration):
-        ''' Get all two_d annotation of an image annotation
-        '''
-        return self.session.query(model.TwoDAnno).filter(model.TwoDAnno.img_anno_id==img_anno_id,\
-                                                            model.TwoDAnno.iteration==iteration).all()
+        """Get all two_d annotation of an image annotation"""
+        return (
+            self.session.query(model.TwoDAnno)
+            .filter(model.TwoDAnno.img_anno_id == img_anno_id, model.TwoDAnno.iteration == iteration)
+            .all()
+        )
 
     def get_lonely_two_d_annos(self):
-        ''' Get all two_d annotation that are not assigned to an image
-        '''
-        return self.session.query(model.TwoDAnno).filter(model.TwoDAnno.img_anno_id==None).all()
+        """Get all two_d annotation that are not assigned to an image"""
+        return self.session.query(model.TwoDAnno).filter(model.TwoDAnno.img_anno_id == None).all()
 
     def get_previous_sia_anno(self, anno_task_id, user_id, img_anno_id, iteration):
-        ''' Get a previous image annotation by current annotation id
-        '''
-        sql = "SELECT * FROM image_anno WHERE iteration=%d AND anno_task_id=%d AND idx=(SELECT max(idx)\
+        """Get a previous image annotation by current annotation id"""
+        sql = (
+            "SELECT * FROM image_anno WHERE iteration=%d AND anno_task_id=%d AND idx=(SELECT max(idx)\
          FROM image_anno WHERE idx<%d\
-         AND user_id=%d AND anno_task_id=%d)"\
-         %(iteration, anno_task_id, img_anno_id, user_id, anno_task_id)
+         AND user_id=%d AND anno_task_id=%d)"
+            % (iteration, anno_task_id, img_anno_id, user_id, anno_task_id)
+        )
         img_anno = self.session.execute(text(sql)).first()
         if img_anno:
-            return self.session.query(model.ImageAnno).filter(model.ImageAnno.idx==img_anno.idx).first()
+            return self.session.query(model.ImageAnno).filter(model.ImageAnno.idx == img_anno.idx).first()
         else:
             return None
 
-
     def get_all_two_d_label(self, two_d_anno_id):
-        ''' Get all label of a two_d annotation
-        '''
-        return self.session.query(model.Label).filter(model.Label.two_d_anno_id==two_d_anno_id).all()
+        """Get all label of a two_d annotation"""
+        return self.session.query(model.Label).filter(model.Label.two_d_anno_id == two_d_anno_id).all()
 
     def get_two_d_anno(self, two_d_anno_id=None, img_anno_id=None):
-        ''' Get a single BBoxAnno by its id or img_anno_id
-        '''
+        """Get a single BBoxAnno by its id or img_anno_id"""
         if two_d_anno_id is not None:
-            return self.session.query(model.TwoDAnno).filter(model.TwoDAnno.idx==two_d_anno_id).first()
+            return self.session.query(model.TwoDAnno).filter(model.TwoDAnno.idx == two_d_anno_id).first()
         elif img_anno_id is not None:
-            return self.session.query(model.TwoDAnno)\
-            .filter(model.TwoDAnno.img_anno_id==img_anno_id).all()
+            return self.session.query(model.TwoDAnno).filter(model.TwoDAnno.img_anno_id == img_anno_id).all()
         else:
-            raise Exception('Need to specify one of the method parameters')
+            raise Exception("Need to specify one of the method parameters")
 
     def get_all_scripts(self):
-        ''' Get all available scripts
-        '''
+        """Get all available scripts"""
         return self.session.query(model.Script).all()
 
     def get_loop(self, loop_id=None, pipe_element_id=None):
-        ''' Get single loop by its id
-        '''
+        """Get single loop by its id"""
         if loop_id:
             return self.session.query(model.Loop).filter(model.Loop.idx == loop_id).first()
         elif pipe_element_id:
-            return self.session.query(model.Loop)\
-            .filter(model.Loop.pipe_element_id==pipe_element_id).first()
-    def get_last_sia_anno(self, anno_task_id , iteration, user_id):
-        ''' Get last locked sia annotation
-        '''
-        sql = "SELECT * FROM image_anno WHERE idx=(SELECT max(idx)\
-         FROM image_anno WHERE iteration=%d AND anno_task_id=%d AND user_id=%d)"\
-         %(iteration, anno_task_id, user_id)
+            return self.session.query(model.Loop).filter(model.Loop.pipe_element_id == pipe_element_id).first()
+
+    def get_last_sia_anno(self, anno_task_id, iteration, user_id):
+        """Get last locked sia annotation"""
+        sql = (
+            "SELECT * FROM image_anno WHERE idx=(SELECT max(idx)\
+         FROM image_anno WHERE iteration=%d AND anno_task_id=%d AND user_id=%d)"
+            % (iteration, anno_task_id, user_id)
+        )
         return self.session.execute(text(sql)).first()
 
-    def get_last_edited_sia_anno(self, anno_task_id , iteration, user_id):
-        ''' Get last locked sia annotation
-        '''
-        sql = "SELECT * FROM image_anno WHERE idx=(SELECT max(idx)\
-         FROM image_anno WHERE iteration=%d AND anno_task_id=%d AND user_id=%d AND state=%d)"\
-         %(iteration, anno_task_id, user_id, state.Anno.LABELED)
+    def get_last_edited_sia_anno(self, anno_task_id, iteration, user_id):
+        """Get last locked sia annotation"""
+        sql = (
+            "SELECT * FROM image_anno WHERE idx=(SELECT max(idx)\
+         FROM image_anno WHERE iteration=%d AND anno_task_id=%d AND user_id=%d AND state=%d)"
+            % (iteration, anno_task_id, user_id, state.Anno.LABELED)
+        )
         return self.session.execute(text(sql)).first()
 
-    def get_first_sia_anno(self, anno_task_id, iteration, user_id ):
-        ''' Get first sia annotation of an user
-        '''
-        sql = "SELECT * FROM image_anno WHERE idx=(SELECT min(idx)\
-         FROM image_anno WHERE anno_task_id=%d AND iteration=%d AND user_id=%d )"\
-         %(anno_task_id, iteration, user_id)
+    def get_first_sia_anno(self, anno_task_id, iteration, user_id):
+        """Get first sia annotation of an user"""
+        sql = (
+            "SELECT * FROM image_anno WHERE idx=(SELECT min(idx)\
+         FROM image_anno WHERE anno_task_id=%d AND iteration=%d AND user_id=%d )"
+            % (anno_task_id, iteration, user_id)
+        )
         return self.session.execute(text(sql)).first()
-    
+
     def get_all_label_trees(self, group_id=None, global_only=False, add_global=False):
-        '''Get all label trees in lost'''
+        """Get all label trees in lost"""
         if group_id:
             if add_global:
-                return self.session.query(model.LabelLeaf)\
-                    .filter(model.LabelLeaf.is_root == True, \
-                            or_(model.LabelLeaf.group_id==group_id, model.LabelLeaf.group_id == None)).all()
+                return (
+                    self.session.query(model.LabelLeaf)
+                    .filter(
+                        model.LabelLeaf.is_root == True,
+                        or_(model.LabelLeaf.group_id == group_id, model.LabelLeaf.group_id == None),
+                    )
+                    .all()
+                )
             else:
-                return self.session.query(model.LabelLeaf)\
-                    .filter(model.LabelLeaf.is_root == True, \
-                            model.LabelLeaf.group_id==group_id).all()
+                return (
+                    self.session.query(model.LabelLeaf)
+                    .filter(model.LabelLeaf.is_root == True, model.LabelLeaf.group_id == group_id)
+                    .all()
+                )
         if global_only:
-            return self.session.query(model.LabelLeaf)\
-                .filter(model.LabelLeaf.is_root == True, \
-                        model.LabelLeaf.group_id==None).all()
-        
+            return (
+                self.session.query(model.LabelLeaf)
+                .filter(model.LabelLeaf.is_root == True, model.LabelLeaf.group_id == None)
+                .all()
+            )
+
     def get_all_instructions(self, group_id=None, global_only=False, add_global=False):
-        '''Get all instructions based on group visibility'''
+        """Get all instructions based on group visibility"""
         query = self.session.query(model.Instruction).filter(model.Instruction.is_deleted == False)
 
         if group_id:
             if add_global:
-                return query.filter(
-                    or_(
-                        model.Instruction.group_id == group_id,
-                        model.Instruction.group_id == None
-                    )
-                ).order_by(
-                    model.Instruction.group_id.asc(), 
-                    model.Instruction.created_at.asc()  
-                ).all()
+                return (
+                    query.filter(or_(model.Instruction.group_id == group_id, model.Instruction.group_id == None))
+                    .order_by(model.Instruction.group_id.asc(), model.Instruction.created_at.asc())
+                    .all()
+                )
             else:
-                return query.filter(model.Instruction.group_id == group_id)\
-                            .order_by(model.Instruction.created_at.asc()).all()
+                return (
+                    query.filter(model.Instruction.group_id == group_id)
+                    .order_by(model.Instruction.created_at.asc())
+                    .all()
+                )
 
         if global_only:
-            return query.filter(model.Instruction.group_id == None)\
-                        .order_by(model.Instruction.created_at.asc()).all()
+            return query.filter(model.Instruction.group_id == None).order_by(model.Instruction.created_at.asc()).all()
 
         return query.order_by(
-            case(
-                [(model.Instruction.group_id == None, 0)],  
-                else_=1
-            ),
-            model.Instruction.group_id.asc(), 
-            model.Instruction.created_at.asc()
+            case([(model.Instruction.group_id == None, 0)], else_=1),
+            model.Instruction.group_id.asc(),
+            model.Instruction.created_at.asc(),
         ).all()
 
     def get_available_users(self):
-        ''' Get all available users
-        '''
+        """Get all available users"""
         return self.session.query(model.User).all()
 
     def get_two_d_annotations(self, img_anno_id):
-        ''' Get all two_d_annotations of one image annotation
-        '''
-        return self.session.query(model.TwoDAnno)\
-        .filter(model.TwoDAnno.img_anno_id==img_anno_id).all()
+        """Get all two_d_annotations of one image annotation"""
+        return self.session.query(model.TwoDAnno).filter(model.TwoDAnno.img_anno_id == img_anno_id).all()
+
     def get_all_child_label_leaves(self, parent_leaf_id):
-        ''' Get all child label leaves of a label leaf (1. order)
-        '''
-        return self.session.query(model.LabelLeaf)\
-        .filter(model.LabelLeaf.parent_leaf_id==parent_leaf_id).all()
+        """Get all child label leaves of a label leaf (1. order)"""
+        return self.session.query(model.LabelLeaf).filter(model.LabelLeaf.parent_leaf_id == parent_leaf_id).all()
 
     def get_anno_amount(self, label_leaf_id):
-        ''' count the amount of connections of a label leaf
-        '''
-        return self.session.query(sqlalchemy.func.count(model.Label.idx))\
-        .filter(model.Label.label_leaf_id == label_leaf_id).first()[0]
-    
+        """count the amount of connections of a label leaf"""
+        return (
+            self.session.query(sqlalchemy.func.count(model.Label.idx))
+            .filter(model.Label.label_leaf_id == label_leaf_id)
+            .first()[0]
+        )
+
     def get_all_datasources(self):
-        ''' get all available datasources
-        '''
+        """get all available datasources"""
         return self.session.query(model.Datasource).all()
 
     def count_annos(self, anno_task_id, iteration=None):
-        '''count all annos with specific anno_task_id
-        '''
+        """count all annos with specific anno_task_id"""
         if iteration:
-            return self.session.query(sqlalchemy.func.count(model.ImageAnno.idx))\
-                .filter(model.ImageAnno.anno_task_id == anno_task_id, model.ImageAnno.iteration == iteration).first()[0]
-        else:    
-            return self.session.query(sqlalchemy.func.count(model.ImageAnno.idx))\
-                .filter(model.ImageAnno.anno_task_id == anno_task_id).first()[0]
-    
+            return (
+                self.session.query(sqlalchemy.func.count(model.ImageAnno.idx))
+                .filter(model.ImageAnno.anno_task_id == anno_task_id, model.ImageAnno.iteration == iteration)
+                .first()[0]
+            )
+        else:
+            return (
+                self.session.query(sqlalchemy.func.count(model.ImageAnno.idx))
+                .filter(model.ImageAnno.anno_task_id == anno_task_id)
+                .first()[0]
+            )
 
     def get_two_d_annotations_by_state(self, anno_task_id, state, user_id, amount):
-        ''' Get all TwoDAnno by annotask, state and user id
-        '''
-        if (amount > 0):
-            return self.session.query(model.TwoDAnno).filter(model.TwoDAnno.state==state,\
-                                                            model.TwoDAnno.anno_task_id== anno_task_id,\
-                                                            model.TwoDAnno.user_id==user_id)\
-                                                            .limit(amount).all()
+        """Get all TwoDAnno by annotask, state and user id"""
+        if amount > 0:
+            return (
+                self.session.query(model.TwoDAnno)
+                .filter(
+                    model.TwoDAnno.state == state,
+                    model.TwoDAnno.anno_task_id == anno_task_id,
+                    model.TwoDAnno.user_id == user_id,
+                )
+                .limit(amount)
+                .all()
+            )
         else:
-            return self.session.query(model.TwoDAnno).filter(model.TwoDAnno.state==state,\
-                                                            model.TwoDAnno.anno_task_id== anno_task_id,\
-                                                            model.TwoDAnno.user_id==user_id).all()
+            return (
+                self.session.query(model.TwoDAnno)
+                .filter(
+                    model.TwoDAnno.state == state,
+                    model.TwoDAnno.anno_task_id == anno_task_id,
+                    model.TwoDAnno.user_id == user_id,
+                )
+                .all()
+            )
 
     def get_two_d_anno_by_sim_class(self, anno_task_id, sim_class, amount):
-        ''' Get unlocked image annotations by sim_class and anno task
-        '''
-        return self.session.query(model.TwoDAnno).filter(model.TwoDAnno.state==state.Anno.UNLOCKED,\
-                                                      model.TwoDAnno.anno_task_id== anno_task_id,\
-                                                      model.TwoDAnno.sim_class==sim_class)\
-        .limit(amount).all()
-    
-    def get_random_sim_class_two_d_anno(self, anno_task_id):
-        ''' get a random sim class of one anno task (created by db)
-        '''
-        sql = "SELECT sim_class FROM two_d_anno WHERE anno_task_id=%d AND state=%d ORDER BY RAND() LIMIT 1"\
-        %(anno_task_id, state.Anno.UNLOCKED)
-        return self.session.execute(text(sql)).first()
-    
-    def count_two_d_remaining_annos(self, anno_task_id):
-        ''' Count the remaining two_d annotation of an annotation task
-        '''
+        """Get unlocked image annotations by sim_class and anno task"""
+        return (
+            self.session.query(model.TwoDAnno)
+            .filter(
+                model.TwoDAnno.state == state.Anno.UNLOCKED,
+                model.TwoDAnno.anno_task_id == anno_task_id,
+                model.TwoDAnno.sim_class == sim_class,
+            )
+            .limit(amount)
+            .all()
+        )
 
-        sql = "SELECT COUNT(state) AS r FROM two_d_anno WHERE anno_task_id=%d AND state!=%d AND state!=%d"\
-         %(anno_task_id, state.Anno.LABELED, state.Anno.LABELED_LOCKED)
+    def get_random_sim_class_two_d_anno(self, anno_task_id):
+        """get a random sim class of one anno task (created by db)"""
+        sql = "SELECT sim_class FROM two_d_anno WHERE anno_task_id=%d AND state=%d ORDER BY RAND() LIMIT 1" % (
+            anno_task_id,
+            state.Anno.UNLOCKED,
+        )
+        return self.session.execute(text(sql)).first()
+
+    def count_two_d_remaining_annos(self, anno_task_id):
+        """Count the remaining two_d annotation of an annotation task"""
+
+        sql = "SELECT COUNT(state) AS r FROM two_d_anno WHERE anno_task_id=%d AND state!=%d AND state!=%d" % (
+            anno_task_id,
+            state.Anno.LABELED,
+            state.Anno.LABELED_LOCKED,
+        )
         return self.session.execute(text(sql)).first()
 
     def count_all_two_d_annos(self, anno_task_id, iteration):
-        ''' Count the all two_d annotation of an annotation task
-        '''
-        return self.session.query(sqlalchemy.func.count(model.TwoDAnno.idx))\
-        .filter(model.TwoDAnno.anno_task_id == anno_task_id, model.TwoDAnno.iteration == iteration)
+        """Count the all two_d annotation of an annotation task"""
+        return self.session.query(sqlalchemy.func.count(model.TwoDAnno.idx)).filter(
+            model.TwoDAnno.anno_task_id == anno_task_id, model.TwoDAnno.iteration == iteration
+        )
 
     def get_two_d_annotation(self, two_d_anno_id=None, result_id=None):
-        ''' Get single two_d annotation by it's id or result_id
-        '''
+        """Get single two_d annotation by it's id or result_id"""
         if two_d_anno_id is not None:
-            return self.session.query(model.TwoDAnno).filter(model.TwoDAnno.idx==two_d_anno_id).first()
+            return self.session.query(model.TwoDAnno).filter(model.TwoDAnno.idx == two_d_anno_id).first()
         elif result_id is not None:
-            return self.session.query(model.TwoDAnno)\
-            .filter(model.TwoDAnno.result_id==result_id).all()
+            return self.session.query(model.TwoDAnno).filter(model.TwoDAnno.result_id == result_id).all()
         else:
-            raise Exception('Need to specify one of the method parameters')
-    
+            raise Exception("Need to specify one of the method parameters")
+
     def get_two_d_annotations_by_ids(self, anno_task_id, user_id, ids):
-        ''' Get list of two_d annotation by it's ids
-        '''
-        return self.session.query(model.TwoDAnno)\
-            .filter(model.TwoDAnno.anno_task_id==anno_task_id, model.TwoDAnno.user_id==user_id, model.TwoDAnno.idx.in_(ids)).all()
+        """Get list of two_d annotation by it's ids"""
+        return (
+            self.session.query(model.TwoDAnno)
+            .filter(
+                model.TwoDAnno.anno_task_id == anno_task_id,
+                model.TwoDAnno.user_id == user_id,
+                model.TwoDAnno.idx.in_(ids),
+            )
+            .all()
+        )
 
     def get_example_annotation_by_ll_id(self, label_leaf_id):
-        ''' Get list of two_d annotation by label leaf id
-        '''
-        return self.session.query(model.TwoDAnno).join(model.Label)\
-            .filter(model.Label.two_d_anno_id == model.TwoDAnno.idx,
-                    model.Label.label_leaf_id == label_leaf_id,
-                    model.TwoDAnno.is_example==True).all()
+        """Get list of two_d annotation by label leaf id"""
+        return (
+            self.session.query(model.TwoDAnno)
+            .join(model.Label)
+            .filter(
+                model.Label.two_d_anno_id == model.TwoDAnno.idx,
+                model.Label.label_leaf_id == label_leaf_id,
+                model.TwoDAnno.is_example == True,
+            )
+            .all()
+        )
 
     def find_user_by_email(self, email):
-        return self.session.query(model.User).filter(model.User.email==email).first()
-    
+        return self.session.query(model.User).filter(model.User.email == email).first()
+
     def find_user_by_user_name(self, user_name):
-        return self.session.query(model.User).filter(model.User.user_name==user_name).first()
+        return self.session.query(model.User).filter(model.User.user_name == user_name).first()
 
     def get_user_by_id(self, user_id):
-        return self.session.query(model.User).filter(model.User.idx==user_id).first()
+        return self.session.query(model.User).filter(model.User.idx == user_id).first()
 
     def get_user_roles(self, user_id):
-        return self.session.query(model.UserRoles).filter(model.UserRoles.user_id==user_id).order_by(model.UserRoles.role_id.asc()).all()
+        return (
+            self.session.query(model.UserRoles)
+            .filter(model.UserRoles.user_id == user_id)
+            .order_by(model.UserRoles.role_id.asc())
+            .all()
+        )
 
     def get_role(self, role_id):
-        return self.session.query(model.Role).filter(model.Role.idx==role_id).first()
+        return self.session.query(model.Role).filter(model.Role.idx == role_id).first()
 
     def get_role_by_name(self, role_name):
-        return self.session.query(model.Role).filter(model.Role.name==role_name).first()
+        return self.session.query(model.Role).filter(model.Role.name == role_name).first()
 
     def get_users(self):
         return self.session.query(model.User).all()
 
     def get_groups(self):
         return self.session.query(model.Group).all()
-        
+
     def get_user_groups(self, user_defaults=False):
-        return self.session.query(model.Group).filter(model.Group.is_user_default==user_defaults).all()
-    
+        return self.session.query(model.Group).filter(model.Group.is_user_default == user_defaults).all()
+
     def get_group_by_name(self, group_name):
-        return self.session.query(model.Group).filter(model.Group.name==group_name).first()
+        return self.session.query(model.Group).filter(model.Group.name == group_name).first()
 
     def get_group_by_id(self, group_id):
-        return self.session.query(model.Group).filter(model.Group.idx==group_id).first()
+        return self.session.query(model.Group).filter(model.Group.idx == group_id).first()
 
     def get_user_roles_by_user_id(self, user_id):
-        return self.session.query(model.UserRoles).filter(model.UserRoles.user_id==user_id).all()
-    
+        return self.session.query(model.UserRoles).filter(model.UserRoles.user_id == user_id).all()
+
     def get_user_groups_by_user_id(self, user_id):
-        return self.session.query(model.UserGroups).filter(model.UserGroups.user_id==user_id).all()
-    
+        return self.session.query(model.UserGroups).filter(model.UserGroups.user_id == user_id).all()
+
     def mean_anno_time(self, anno_task_id, anno_type, user_id=None):
-        user_id_query = 'user_id={} AND'.format(user_id)
+        user_id_query = f"user_id={user_id} AND"
         if not user_id:
-            user_id_query = ''
-        if anno_type == 'imageBased':
-            sql = "SELECT AVG(anno_time) FROM image_anno WHERE {} anno_task_id={} AND anno_time IS NOT NULL".format(user_id_query, anno_task_id)
+            user_id_query = ""
+        if anno_type == "imageBased":
+            sql = f"SELECT AVG(anno_time) FROM image_anno WHERE {user_id_query} anno_task_id={anno_task_id} AND anno_time IS NOT NULL"
             return self.session.execute(text(sql)).first()
         else:
-            sql = "SELECT AVG(anno_time) FROM two_d_anno WHERE {} anno_task_id={} AND anno_time IS NOT NULL".format(user_id_query, anno_task_id)
+            sql = f"SELECT AVG(anno_time) FROM two_d_anno WHERE {user_id_query} anno_task_id={anno_task_id} AND anno_time IS NOT NULL"
             return self.session.execute(text(sql)).first()
 
     def get_worker(self, worker_name=None):
-        '''Get an Worker object.
+        """Get an Worker object.
 
         Args:
             worker_name (str): Name of the worker to get.
 
         Returns:
             :class:`model.Worker`
-        '''
+        """
         if worker_name is None:
             return self.session.query(model.Worker).all()
         else:
-            return self.session.query(model.Worker)\
-                .filter(model.Worker.worker_name==worker_name).first()
+            return self.session.query(model.Worker).filter(model.Worker.worker_name == worker_name).first()
 
     def get_user_default_fs(self, user_idx):
-        '''Get user default filesystem 
+        """Get user default filesystem
 
         Args:
             user_idx (int): Id of the user who own this default filesystem
-        
+
         Retruns:
             `model.FileSystem` object: If one arg was given.
-        '''
-        return self.session.query(model.FileSystem)\
-            .filter(model.FileSystem.user_default_id==user_idx).first()
-                
+        """
+        return self.session.query(model.FileSystem).filter(model.FileSystem.user_default_id == user_idx).first()
+
     def get_fs_deleted_also(self, name=None, group_id=None, fs_id=None):
-        '''Get all filesystem entries from database including deleted fs
+        """Get all filesystem entries from database including deleted fs
 
         Args:
             name (str): Get filesystem by name.
             group_id (int): GroupID for Group or User
-        
+
         Retruns:
             list of `model.FileSystem`: If no arg or group_id was given.
             `model.FileSystem` object: If one arg was given.
-        '''
+        """
         if name is not None:
-            return self.session.query(model.FileSystem)\
-                .filter(model.FileSystem.name==name).first()
+            return self.session.query(model.FileSystem).filter(model.FileSystem.name == name).first()
         elif group_id is not None:
-            return self.session.query(model.FileSystem)\
-                .filter(model.FileSystem.group_id==group_id).all()
+            return self.session.query(model.FileSystem).filter(model.FileSystem.group_id == group_id).all()
         elif fs_id is not None:
-            return self.session.query(model.FileSystem)\
-                .filter(model.FileSystem.idx==fs_id).first()
+            return self.session.query(model.FileSystem).filter(model.FileSystem.idx == fs_id).first()
         else:
             return self.session.query(model.FileSystem).all()
 
     def get_fs(self, name=None, group_id=None, fs_id=None) -> list[model.FileSystem]:
-        '''Get filesystem entries from database
+        """Get filesystem entries from database
 
         Args:
             name (str): Get filesystem by name.
             group_id (int): GroupID for Group or User
-        
+
         Retruns:
             list of `model.FileSystem`: If no arg or group_id was given.
             `model.FileSystem` object: If one arg was given.
-        '''
+        """
         if name is not None:
-            return self.session.query(model.FileSystem)\
-                .filter(model.FileSystem.deleted==False)\
-                .filter(model.FileSystem.name==name).first()
+            return (
+                self.session.query(model.FileSystem)
+                .filter(model.FileSystem.deleted == False)
+                .filter(model.FileSystem.name == name)
+                .first()
+            )
         elif group_id is not None:
-            return self.session.query(model.FileSystem)\
-                .filter(model.FileSystem.deleted==False)\
-                .filter(model.FileSystem.group_id==group_id).all()
+            return (
+                self.session.query(model.FileSystem)
+                .filter(model.FileSystem.deleted == False)
+                .filter(model.FileSystem.group_id == group_id)
+                .all()
+            )
         elif fs_id is not None:
-            return self.session.query(model.FileSystem)\
-                .filter(model.FileSystem.idx==fs_id).first()
+            return self.session.query(model.FileSystem).filter(model.FileSystem.idx == fs_id).first()
         else:
-            return self.session.query(model.FileSystem)\
-                .filter(model.FileSystem.deleted==False).all()
-    
+            return self.session.query(model.FileSystem).filter(model.FileSystem.deleted == False).all()
+
     def get_all_user_default_fs(self) -> list[model.FileSystem]:
-        '''Get all user default filesystems
+        """Get all user default filesystems
 
         Retruns:
             list of `model.FileSystem`: All user default filesystems
-        '''
-        return self.session.query(model.FileSystem)\
-                .filter(model.FileSystem.user_default_id!=None).all()
+        """
+        return self.session.query(model.FileSystem).filter(model.FileSystem.user_default_id != None).all()
 
     def get_public_fs(self):
-        '''Get all public available filesystem entries
+        """Get all public available filesystem entries
 
         Retruns:
             list of `model.FileSystem`: All public filesystem entries.
-        '''
-        return self.session.query(model.FileSystem)\
-                .filter(model.FileSystem.group_id==None).all()
+        """
+        return self.session.query(model.FileSystem).filter(model.FileSystem.group_id == None).all()
 
     def get_worker_and_lock(self, worker_name):
-        '''Get an worker object and lock for update in database.
+        """Get an worker object and lock for update in database.
 
         Args:
             worker_name (str): Name of the worker to get.
 
         Returns:
             :class:`model.Worker`
-        '''
-        
-        return self.session.query(model.Worker).with_for_update()\
-            .filter(model.Worker.worker_name==worker_name).first()
-    
+        """
+
+        return (
+            self.session.query(model.Worker).with_for_update().filter(model.Worker.worker_name == worker_name).first()
+        )
+
     def get_amount_per_label(self, anno_task_id, label_leaf_id, anno_type):
-        if anno_type == 'imageBased':
-            sql = "SELECT COUNT(idx) FROM label WHERE label_leaf_id={} AND img_anno_id IN (SELECT idx FROM image_anno WHERE anno_task_id={})".format(label_leaf_id, anno_task_id)
+        if anno_type == "imageBased":
+            sql = f"SELECT COUNT(idx) FROM label WHERE label_leaf_id={label_leaf_id} AND img_anno_id IN (SELECT idx FROM image_anno WHERE anno_task_id={anno_task_id})"
             return self.session.execute(text(sql)).first()
         else:
-            sql = "SELECT COUNT(idx) FROM label WHERE label_leaf_id={} AND two_d_anno_id IN (SELECT idx FROM two_d_anno WHERE anno_task_id={})".format(label_leaf_id, anno_task_id)
+            sql = f"SELECT COUNT(idx) FROM label WHERE label_leaf_id={label_leaf_id} AND two_d_anno_id IN (SELECT idx FROM two_d_anno WHERE anno_task_id={anno_task_id})"
             return self.session.execute(text(sql)).first()
 
     def get_script_errors(self, pipe_id):
-        return self.session.query(model.PipeElement).filter(model.PipeElement.pipe_id==pipe_id,\
-                                                            model.PipeElement.dtype==dtype.PipeElement.SCRIPT,\
-                                                            model.PipeElement.state==state.PipeElement.SCRIPT_ERROR,\
-                                                            model.PipeElement.error_reported==False)
-    
-    def get_sia_review_first(self, anno_task_id, iteration=None):
-        ''' Get first sia annotation of an anno_task
-        '''
-        if iteration is not None:
-            return self.session.query(model.ImageAnno).filter(model.ImageAnno.anno_task_id==anno_task_id, \
-                                                           model.ImageAnno.iteration==iteration).order_by(model.ImageAnno.idx.asc()).first()
-        else:
-            return self.session.query(model.ImageAnno).filter(model.ImageAnno.anno_task_id==anno_task_id).order_by(model.ImageAnno.idx.asc()).first()
-        
-    def get_sia_review_last(self, anno_task_id, iteration=None):
-        ''' Get last sia annotation of an anno_task
-        '''
-        if iteration is not None:
-            return self.session.query(model.ImageAnno).filter(model.ImageAnno.anno_task_id==anno_task_id, \
-                                                           model.ImageAnno.iteration==iteration).order_by(model.ImageAnno.idx.desc()).first()
-        else:
-            return self.session.query(model.ImageAnno).filter(model.ImageAnno.anno_task_id==anno_task_id).order_by(model.ImageAnno.idx.desc()).first()
+        return self.session.query(model.PipeElement).filter(
+            model.PipeElement.pipe_id == pipe_id,
+            model.PipeElement.dtype == dtype.PipeElement.SCRIPT,
+            model.PipeElement.state == state.PipeElement.SCRIPT_ERROR,
+            model.PipeElement.error_reported == False,
+        )
 
+    def get_sia_review_first(self, anno_task_id, iteration=None):
+        """Get first sia annotation of an anno_task"""
+        if iteration is not None:
+            return (
+                self.session.query(model.ImageAnno)
+                .filter(model.ImageAnno.anno_task_id == anno_task_id, model.ImageAnno.iteration == iteration)
+                .order_by(model.ImageAnno.idx.asc())
+                .first()
+            )
+        else:
+            return (
+                self.session.query(model.ImageAnno)
+                .filter(model.ImageAnno.anno_task_id == anno_task_id)
+                .order_by(model.ImageAnno.idx.asc())
+                .first()
+            )
+
+    def get_sia_review_last(self, anno_task_id, iteration=None):
+        """Get last sia annotation of an anno_task"""
+        if iteration is not None:
+            return (
+                self.session.query(model.ImageAnno)
+                .filter(model.ImageAnno.anno_task_id == anno_task_id, model.ImageAnno.iteration == iteration)
+                .order_by(model.ImageAnno.idx.desc())
+                .first()
+            )
+        else:
+            return (
+                self.session.query(model.ImageAnno)
+                .filter(model.ImageAnno.anno_task_id == anno_task_id)
+                .order_by(model.ImageAnno.idx.desc())
+                .first()
+            )
 
     def get_sia_review_next(self, anno_task_id, img_anno_id, iteration=None):
-        ''' Get next sia annotation of an anno_task
-        '''
+        """Get next sia annotation of an anno_task"""
         if iteration is not None:
-            return self.session.query(model.ImageAnno).filter(model.ImageAnno.anno_task_id==anno_task_id, \
-                                                        model.ImageAnno.idx > img_anno_id, \
-                                                        model.ImageAnno.iteration==iteration).first()
+            return (
+                self.session.query(model.ImageAnno)
+                .filter(
+                    model.ImageAnno.anno_task_id == anno_task_id,
+                    model.ImageAnno.idx > img_anno_id,
+                    model.ImageAnno.iteration == iteration,
+                )
+                .first()
+            )
         else:
-            return self.session.query(model.ImageAnno).filter(model.ImageAnno.anno_task_id==anno_task_id, \
-                                                        model.ImageAnno.idx > img_anno_id).first()
+            return (
+                self.session.query(model.ImageAnno)
+                .filter(model.ImageAnno.anno_task_id == anno_task_id, model.ImageAnno.idx > img_anno_id)
+                .first()
+            )
 
     def get_sia_review_prev(self, anno_task_id, img_anno_id, iteration=None):
-        ''' Get a previous image annotation by current annotation id
-        '''
+        """Get a previous image annotation by current annotation id"""
         if iteration is not None:
-            sql = "SELECT * FROM image_anno WHERE anno_task_id=%d AND iteration=%d AND idx<%d ORDER BY idx DESC LIMIT 1"\
-            %(iteration, anno_task_id, img_anno_id)
+            sql = (
+                "SELECT * FROM image_anno WHERE anno_task_id=%d AND iteration=%d AND idx<%d ORDER BY idx DESC LIMIT 1"
+                % (iteration, anno_task_id, img_anno_id)
+            )
         else:
-            sql = "SELECT * FROM image_anno WHERE anno_task_id=%d AND idx<%d ORDER BY idx DESC LIMIT 1"\
-            %(anno_task_id, img_anno_id)
+            sql = "SELECT * FROM image_anno WHERE anno_task_id=%d AND idx<%d ORDER BY idx DESC LIMIT 1" % (
+                anno_task_id,
+                img_anno_id,
+            )
         img_anno = self.session.execute(text(sql)).first()
         if img_anno:
-            return self.session.query(model.ImageAnno).filter(model.ImageAnno.idx==img_anno.idx).first()
+            return self.session.query(model.ImageAnno).filter(model.ImageAnno.idx == img_anno.idx).first()
         else:
             return None
-        
+
     def get_sia_review_id(self, anno_task_id, image_anno_id, iteration=None):
-        ''' Get a sia annotation of an anno_task specified by its id
-        '''
+        """Get a sia annotation of an anno_task specified by its id"""
         if iteration is not None:
-            return self.session.query(model.ImageAnno).filter(model.ImageAnno.anno_task_id==anno_task_id, \
-                                                           model.ImageAnno.iteration==iteration, model.ImageAnno.idx == image_anno_id).order_by(model.ImageAnno.idx.desc()).first()
+            return (
+                self.session.query(model.ImageAnno)
+                .filter(
+                    model.ImageAnno.anno_task_id == anno_task_id,
+                    model.ImageAnno.iteration == iteration,
+                    model.ImageAnno.idx == image_anno_id,
+                )
+                .order_by(model.ImageAnno.idx.desc())
+                .first()
+            )
         else:
-            return self.session.query(model.ImageAnno).filter(model.ImageAnno.anno_task_id==anno_task_id, model.ImageAnno.idx == image_anno_id).order_by(model.ImageAnno.idx.desc()).first()
-    
-    def count_two_d_annos_per_label_by_pe(self, pipe_element_id, user_id=None, iteration=None, date_from=None, date_to=None, exclude_current_iteration=False):
+            return (
+                self.session.query(model.ImageAnno)
+                .filter(model.ImageAnno.anno_task_id == anno_task_id, model.ImageAnno.idx == image_anno_id)
+                .order_by(model.ImageAnno.idx.desc())
+                .first()
+            )
+
+    def count_two_d_annos_per_label_by_pe(
+        self,
+        pipe_element_id,
+        user_id=None,
+        iteration=None,
+        date_from=None,
+        date_to=None,
+        exclude_current_iteration=False,
+    ):
         user_id_str = ""
         if user_id:
-            user_id_str ='AND two_d_anno.user_id = {}'.format(user_id)
+            user_id_str = f"AND two_d_anno.user_id = {user_id}"
         iteration_str = ""
         if iteration:
-            iteration_str ='AND pipe_element.iteration = {}'.format(iteration)
+            iteration_str = f"AND pipe_element.iteration = {iteration}"
             if user_id_str != "":
-                iteration_str ='AND pipe_element.iteration = {}'.format(iteration)
+                iteration_str = f"AND pipe_element.iteration = {iteration}"
         between_str = ""
         if date_from and date_to:
-            between_str ='AND two_d_anno.timestamp BETWEEN STR_TO_DATE("{}","%Y-%m-%d") AND STR_TO_DATE("{}","%Y-%m-%d")'.format(date_from, date_to)
+            between_str = f'AND two_d_anno.timestamp BETWEEN STR_TO_DATE("{date_from}","%Y-%m-%d") AND STR_TO_DATE("{date_to}","%Y-%m-%d")'
             if user_id_str != "" or iteration_str != "":
-                between_str ='AND two_d_anno.timestamp BETWEEN STR_TO_DATE("{}","%Y-%m-%d") AND STR_TO_DATE("{}","%Y-%m-%d")'.format(date_from, date_to)
+                between_str = f'AND two_d_anno.timestamp BETWEEN STR_TO_DATE("{date_from}","%Y-%m-%d") AND STR_TO_DATE("{date_to}","%Y-%m-%d")'
 
         exclude_current_iteration_str = ""
         if exclude_current_iteration:
-            exclude_current_iteration_str = 'AND two_d_anno.iteration != pipe_element.iteration'
+            exclude_current_iteration_str = "AND two_d_anno.iteration != pipe_element.iteration"
 
-        sql = "SELECT label.label_leaf_id, label_leaf.name, COUNT(label.idx) AS num_items \
+        sql = f"SELECT label.label_leaf_id, label_leaf.name, COUNT(label.idx) AS num_items \
                 FROM label INNER JOIN two_d_anno ON two_d_anno.idx = label.two_d_anno_id \
                 INNER JOIN anno_task ON anno_task.idx = two_d_anno.anno_task_id \
                 INNER JOIN label_leaf ON label_leaf.idx = label.label_leaf_id \
                 INNER JOIN pipe_element ON pipe_element.idx = anno_task.pipe_element_id \
-                WHERE anno_task.pipe_element_id = {} \
-                {} {} {} {} GROUP BY label.label_leaf_id".format(pipe_element_id, user_id_str, iteration_str, between_str, exclude_current_iteration_str)
+                WHERE anno_task.pipe_element_id = {pipe_element_id} \
+                {user_id_str} {iteration_str} {between_str} {exclude_current_iteration_str} GROUP BY label.label_leaf_id"
         return self.session.execute(text(sql))
-    
-    def count_two_d_annos_per_day(self, pipe_element_id, user_id=None, iteration=None, date_from=None, date_to=None, exclude_current_iteration=False):
+
+    def count_two_d_annos_per_day(
+        self,
+        pipe_element_id,
+        user_id=None,
+        iteration=None,
+        date_from=None,
+        date_to=None,
+        exclude_current_iteration=False,
+    ):
         user_id_str = ""
         if user_id:
-            user_id_str ='AND two_d_anno.user_id = {}'.format(user_id)
+            user_id_str = f"AND two_d_anno.user_id = {user_id}"
         iteration_str = ""
         if iteration:
-            iteration_str ='AND pipe_element.iteration = {}'.format(iteration)
+            iteration_str = f"AND pipe_element.iteration = {iteration}"
             if user_id_str != "":
-                iteration_str ='AND pipe_element.iteration = {}'.format(iteration)
+                iteration_str = f"AND pipe_element.iteration = {iteration}"
         between_str = ""
         if date_from and date_to:
-            between_str ='AND two_d_anno.timestamp BETWEEN STR_TO_DATE("{}","%Y-%m-%d") AND STR_TO_DATE("{}","%Y-%m-%d")'.format(date_from, date_to)
+            between_str = f'AND two_d_anno.timestamp BETWEEN STR_TO_DATE("{date_from}","%Y-%m-%d") AND STR_TO_DATE("{date_to}","%Y-%m-%d")'
             if user_id_str != "" or iteration_str != "":
-                between_str ='AND two_d_anno.timestamp BETWEEN STR_TO_DATE("{}","%Y-%m-%d") AND STR_TO_DATE("{}","%Y-%m-%d")'.format(date_from, date_to)
+                between_str = f'AND two_d_anno.timestamp BETWEEN STR_TO_DATE("{date_from}","%Y-%m-%d") AND STR_TO_DATE("{date_to}","%Y-%m-%d")'
 
         exclude_current_iteration_str = ""
         if exclude_current_iteration:
-            exclude_current_iteration_str = 'AND two_d_anno.iteration != pipe_element.iteration'
+            exclude_current_iteration_str = "AND two_d_anno.iteration != pipe_element.iteration"
 
-        sql = "SELECT COUNT(two_d_anno.idx), DAY(two_d_anno.timestamp), MONTH(two_d_anno.timestamp), YEAR(two_d_anno.timestamp) \
+        sql = (
+            f"SELECT COUNT(two_d_anno.idx), DAY(two_d_anno.timestamp), MONTH(two_d_anno.timestamp), YEAR(two_d_anno.timestamp) \
                 FROM two_d_anno INNER JOIN anno_task ON anno_task.idx = two_d_anno.anno_task_id\
                 INNER JOIN pipe_element ON pipe_element.idx = anno_task.pipe_element_id \
-                WHERE anno_task.pipe_element_id = {} {} {}\
-                GROUP BY YEAR(two_d_anno.timestamp), MONTH(two_d_anno.timestamp), DAY(two_d_anno.timestamp)".format(pipe_element_id, between_str, exclude_current_iteration_str)
+                WHERE anno_task.pipe_element_id = {pipe_element_id} {between_str} {exclude_current_iteration_str}\
+                GROUP BY YEAR(two_d_anno.timestamp), MONTH(two_d_anno.timestamp), DAY(two_d_anno.timestamp)"
+        )
 
         return self.session.execute(text(sql))
-    
+
     def get_project_config(self, key=None):
-        '''Get all :class:`model.Config` objects in LOST.
+        """Get all :class:`model.Config` objects in LOST.
 
         Args:
             key (str): Get project config by key
@@ -1078,300 +1220,322 @@ class DBMan(object):
         Returns:
             list: A list of :class:`model.Config` objects
             Config object: A single config object
-        '''
+        """
         if key is None:
-            return self.session.query(model.Config).filter(model.Config.is_user_specific==False).all()
+            return self.session.query(model.Config).filter(model.Config.is_user_specific == False).all()
         else:
-            return self.session.query(model.Config)\
-                .filter(model.Config.key == key, model.Config.is_user_specific==False).first()
+            return (
+                self.session.query(model.Config)
+                .filter(model.Config.key == key, model.Config.is_user_specific == False)
+                .first()
+            )
 
     def get_number_twod_annos_in_time(self, user_id, start=None, end=None):
         if start and end:
-            return self.session.query(sqlalchemy.func.count(model.TwoDAnno.idx))\
-            .filter(model.TwoDAnno.user_id == user_id, \
-                model.TwoDAnno.timestamp >= start, 
-                model.TwoDAnno.timestamp <= end)
+            return self.session.query(sqlalchemy.func.count(model.TwoDAnno.idx)).filter(
+                model.TwoDAnno.user_id == user_id, model.TwoDAnno.timestamp >= start, model.TwoDAnno.timestamp <= end
+            )
         else:
-            return self.session.query(sqlalchemy.func.count(model.TwoDAnno.idx))\
-            .filter(model.TwoDAnno.user_id == user_id)
+            return self.session.query(sqlalchemy.func.count(model.TwoDAnno.idx)).filter(
+                model.TwoDAnno.user_id == user_id
+            )
 
     def count_two_d_annos_per_label_by_user(self, user_id, start=None, end=None):
         between_str = ""
         if start and end:
-            between_str ='AND two_d_anno.timestamp BETWEEN STR_TO_DATE("{}","%Y-%m-%d") AND STR_TO_DATE("{}","%Y-%m-%d")'.format(start, end)
+            between_str = f'AND two_d_anno.timestamp BETWEEN STR_TO_DATE("{start}","%Y-%m-%d") AND STR_TO_DATE("{end}","%Y-%m-%d")'
 
-        sql = "SELECT label.label_leaf_id, label_leaf.name, label_leaf.color, COUNT(label.idx) AS num_items \
+        sql = f"SELECT label.label_leaf_id, label_leaf.name, label_leaf.color, COUNT(label.idx) AS num_items \
                 FROM label INNER JOIN two_d_anno ON two_d_anno.idx = label.two_d_anno_id \
                 INNER JOIN label_leaf ON label_leaf.idx = label.label_leaf_id \
-                WHERE two_d_anno.user_id = {} \
-                {} GROUP BY label.label_leaf_id".format(user_id, between_str)
+                WHERE two_d_anno.user_id = {user_id} \
+                {between_str} GROUP BY label.label_leaf_id"
         return self.session.execute(text(sql))
-    
+
     def count_two_d_annos_per_type_by_user(self, user_id, start=None, end=None):
         between_str = ""
         if start and end:
-            between_str ='AND two_d_anno.timestamp BETWEEN STR_TO_DATE("{}","%Y-%m-%d") AND STR_TO_DATE("{}","%Y-%m-%d")'.format(start, end)
+            between_str = f'AND two_d_anno.timestamp BETWEEN STR_TO_DATE("{start}","%Y-%m-%d") AND STR_TO_DATE("{end}","%Y-%m-%d")'
 
-        sql = "SELECT two_d_anno.dtype, COUNT(two_d_anno.idx) AS num_items \
-                FROM two_d_anno WHERE two_d_anno.user_id = {} {} GROUP BY two_d_anno.dtype".format(user_id, between_str)
+        sql = f"SELECT two_d_anno.dtype, COUNT(two_d_anno.idx) AS num_items \
+                FROM two_d_anno WHERE two_d_anno.user_id = {user_id} {between_str} GROUP BY two_d_anno.dtype"
         return self.session.execute(text(sql))
-     
-    def mean_anno_time_by_user(self, user_id, anno_type='twodBased', start=None, end=None):
-        between_str = ''
-        if anno_type == 'imageBased':
+
+    def mean_anno_time_by_user(self, user_id, anno_type="twodBased", start=None, end=None):
+        between_str = ""
+        if anno_type == "imageBased":
             if start and end:
-                between_str ='AND timestamp BETWEEN "{}" AND "{}"'.format(start, end)
-            sql = "SELECT AVG(anno_time) FROM image_anno WHERE user_id={} AND anno_time IS NOT NULL {}".format(user_id, between_str)
+                between_str = f'AND timestamp BETWEEN "{start}" AND "{end}"'
+            sql = (
+                f"SELECT AVG(anno_time) FROM image_anno WHERE user_id={user_id} AND anno_time IS NOT NULL {between_str}"
+            )
             return self.session.execute(text(sql)).first()
         else:
             if start and end:
-                between_str ='AND timestamp BETWEEN "{}" AND "{}"'.format(start, end)
-            sql = "SELECT AVG(anno_time) FROM two_d_anno WHERE user_id={} AND anno_time IS NOT NULL  {}".format(user_id, between_str)
+                between_str = f'AND timestamp BETWEEN "{start}" AND "{end}"'
+            sql = f"SELECT AVG(anno_time) FROM two_d_anno WHERE user_id={user_id} AND anno_time IS NOT NULL  {between_str}"
             return self.session.execute(text(sql)).first()
-    
+
     def get_number_image_annos_in_time(self, user_id, start=None, end=None):
         if start and end:
-            return self.session.query(sqlalchemy.func.count(model.ImageAnno.idx))\
-            .filter(model.ImageAnno.user_id == user_id, \
-                model.ImageAnno.state == state.Anno.LABELED, 
-                model.ImageAnno.timestamp >= start, 
-                model.ImageAnno.timestamp <= end)
+            return self.session.query(sqlalchemy.func.count(model.ImageAnno.idx)).filter(
+                model.ImageAnno.user_id == user_id,
+                model.ImageAnno.state == state.Anno.LABELED,
+                model.ImageAnno.timestamp >= start,
+                model.ImageAnno.timestamp <= end,
+            )
         else:
-            return self.session.query(sqlalchemy.func.count(model.ImageAnno.idx))\
-            .filter(model.ImageAnno.user_id == user_id, \
-                model.ImageAnno.state == state.Anno.LABELED)
-    
+            return self.session.query(sqlalchemy.func.count(model.ImageAnno.idx)).filter(
+                model.ImageAnno.user_id == user_id, model.ImageAnno.state == state.Anno.LABELED
+            )
 
-    def mean_anno_time_by_user_grouped_by(self, user_id, start, end, group_by='day', anno_type='twodBased'):
-        between_str ='AND timestamp BETWEEN "{}" AND "{}" GROUP BY {}(timestamp)'.format(start, end, group_by)
-        if anno_type == 'imageBased':
-            sql = "SELECT AVG(anno_time) FROM image_anno WHERE user_id={} AND anno_time IS NOT NULL {}".format(user_id, between_str)
+    def mean_anno_time_by_user_grouped_by(self, user_id, start, end, group_by="day", anno_type="twodBased"):
+        between_str = f'AND timestamp BETWEEN "{start}" AND "{end}" GROUP BY {group_by}(timestamp)'
+        if anno_type == "imageBased":
+            sql = (
+                f"SELECT AVG(anno_time) FROM image_anno WHERE user_id={user_id} AND anno_time IS NOT NULL {between_str}"
+            )
             return self.session.execute(text(sql))
         else:
-            sql = "SELECT AVG(anno_time) FROM two_d_anno WHERE user_id={} AND anno_time IS NOT NULL  {}".format(user_id, between_str)
+            sql = f"SELECT AVG(anno_time) FROM two_d_anno WHERE user_id={user_id} AND anno_time IS NOT NULL  {between_str}"
             return self.session.execute(text(sql))
-    
 
-    def get_number_twod_annos_in_time_group_by(self, user_id, start, end, group_by='day'):
-        between_str ='AND timestamp BETWEEN "{}" AND "{}" GROUP BY {}(timestamp)'.format(start, end, group_by)
-        sql = "SELECT COUNT(idx) FROM two_d_anno WHERE user_id={} AND anno_time IS NOT NULL {}".format(user_id, between_str)
+    def get_number_twod_annos_in_time_group_by(self, user_id, start, end, group_by="day"):
+        between_str = f'AND timestamp BETWEEN "{start}" AND "{end}" GROUP BY {group_by}(timestamp)'
+        sql = f"SELECT COUNT(idx) FROM two_d_anno WHERE user_id={user_id} AND anno_time IS NOT NULL {between_str}"
         return self.session.execute(text(sql))
 
-    def get_number_image_annos_in_time_group_by(self, user_id, start, end, group_by='day'):
-        between_str ='AND timestamp BETWEEN "{}" AND "{}" GROUP BY {}(timestamp)'.format(start, end, group_by)
-        sql = "SELECT COUNT(idx) FROM image_anno WHERE user_id={} AND anno_time IS NOT NULL {}".format(user_id, between_str)
+    def get_number_image_annos_in_time_group_by(self, user_id, start, end, group_by="day"):
+        between_str = f'AND timestamp BETWEEN "{start}" AND "{end}" GROUP BY {group_by}(timestamp)'
+        sql = f"SELECT COUNT(idx) FROM image_anno WHERE user_id={user_id} AND anno_time IS NOT NULL {between_str}"
         return self.session.execute(text(sql))
-    
-    def get_processed_anno_tasks_in_time(self, user_id, start, end, group_by='day'):
-        between_str ='AND image_anno.timestamp BETWEEN "{}" AND "{}" GROUP BY {}(image_anno.timestamp)'.format(start, end, group_by)
-        sql = "SELECT COUNT(DISTINCT(anno_task.idx)) FROM image_anno INNER JOIN anno_task ON anno_task.idx = image_anno.anno_task_id WHERE \
-             image_anno.user_id={} AND image_anno.anno_time IS NOT NULL {}".format(user_id, between_str)
-        return self.session.execute(text(sql)) 
+
+    def get_processed_anno_tasks_in_time(self, user_id, start, end, group_by="day"):
+        between_str = (
+            f'AND image_anno.timestamp BETWEEN "{start}" AND "{end}" GROUP BY {group_by}(image_anno.timestamp)'
+        )
+        sql = (
+            f"SELECT COUNT(DISTINCT(anno_task.idx)) FROM image_anno INNER JOIN anno_task ON anno_task.idx = image_anno.anno_task_id WHERE \
+             image_anno.user_id={user_id} AND image_anno.anno_time IS NOT NULL {between_str}"
+        )
+        return self.session.execute(text(sql))
 
     def count_all_anno_tasks_by_user(self, user_id):
-        sql = "SELECT COUNT(DISTINCT(anno_task.idx)) FROM image_anno INNER JOIN anno_task ON anno_task.idx = image_anno.anno_task_id WHERE \
-             image_anno.user_id={} AND image_anno.anno_time IS NOT NULL".format(user_id)
-        return self.session.execute(text(sql)) 
-    
+        sql = (
+            f"SELECT COUNT(DISTINCT(anno_task.idx)) FROM image_anno INNER JOIN anno_task ON anno_task.idx = image_anno.anno_task_id WHERE \
+             image_anno.user_id={user_id} AND image_anno.anno_time IS NOT NULL"
+        )
+        return self.session.execute(text(sql))
+
     def count_two_d_annos_by_designer_and_group_by_hour(self, user_id, start, end):
-        between_str ='AND two_d_anno.timestamp BETWEEN "{}" AND "{}" \
+        between_str = f'AND two_d_anno.timestamp BETWEEN "{start}" AND "{end}" \
                      GROUP BY YEAR(two_d_anno.timestamp), \
                      MONTH(two_d_anno.timestamp), DAY(two_d_anno.timestamp), \
-                     HOUR(two_d_anno.timestamp)'.format(start, end)
-        sql = "SELECT DAY(two_d_anno.timestamp), MONTH(two_d_anno.timestamp), \
+                     HOUR(two_d_anno.timestamp)'
+        sql = f"SELECT DAY(two_d_anno.timestamp), MONTH(two_d_anno.timestamp), \
                 YEAR(two_d_anno.timestamp), HOUR(two_d_anno.timestamp), \
                 COUNT(two_d_anno.idx), AVG(two_d_anno.anno_time) \
                 FROM two_d_anno INNER JOIN anno_task ON anno_task.idx = two_d_anno.anno_task_id\
                 INNER JOIN pipe_element ON pipe_element.idx = anno_task.pipe_element_id \
                 INNER JOIN pipe ON pipe.idx = pipe_element.pipe_id \
-                WHERE pipe.manager_id = {} {}".format(user_id, between_str)
+                WHERE pipe.manager_id = {user_id} {between_str}"
         return self.session.execute(text(sql))
-    
-    def get_processed_anno_tasks_in_time_by_designer(self, user_id, start, end, group_by='day'):
-        between_str ='AND image_anno.timestamp BETWEEN "{}" AND "{}" GROUP BY {}(image_anno.timestamp)'.format(start, end, group_by)
-        sql = "SELECT COUNT(DISTINCT(anno_task.idx)) FROM image_anno \
+
+    def get_processed_anno_tasks_in_time_by_designer(self, user_id, start, end, group_by="day"):
+        between_str = (
+            f'AND image_anno.timestamp BETWEEN "{start}" AND "{end}" GROUP BY {group_by}(image_anno.timestamp)'
+        )
+        sql = f"SELECT COUNT(DISTINCT(anno_task.idx)) FROM image_anno \
              INNER JOIN anno_task ON anno_task.idx = image_anno.anno_task_id \
              INNER JOIN pipe_element ON pipe_element.idx = anno_task.pipe_element_id \
              INNER JOIN pipe ON pipe.idx = pipe_element.pipe_id \
-             WHERE pipe.manager_id={} AND image_anno.anno_time IS NOT NULL {}".format(user_id, between_str)
+             WHERE pipe.manager_id={user_id} AND image_anno.anno_time IS NOT NULL {between_str}"
         return self.session.execute(text(sql))
 
-    def mean_anno_time_by_designer(self, user_id, anno_type='twodBased', start=None, end=None):
-        between_str = ''
-        if anno_type == 'imageBased':
+    def mean_anno_time_by_designer(self, user_id, anno_type="twodBased", start=None, end=None):
+        between_str = ""
+        if anno_type == "imageBased":
             if start and end:
-                between_str ='AND image_anno.timestamp BETWEEN "{}" AND "{}"'.format(start, end)
-            sql = "SELECT AVG(image_anno.anno_time) FROM image_anno \
+                between_str = f'AND image_anno.timestamp BETWEEN "{start}" AND "{end}"'
+            sql = f"SELECT AVG(image_anno.anno_time) FROM image_anno \
                 INNER JOIN anno_task ON anno_task.idx = image_anno.anno_task_id \
                 INNER JOIN pipe_element ON pipe_element.idx = anno_task.pipe_element_id \
                 INNER JOIN pipe ON pipe.idx = pipe_element.pipe_id \
-                WHERE pipe.manager_id={} AND image_ano.anno_time IS NOT NULL {}".format(user_id, between_str)
+                WHERE pipe.manager_id={user_id} AND image_ano.anno_time IS NOT NULL {between_str}"
             return self.session.execute(text(sql)).first()
         else:
             if start and end:
-                between_str ='AND two_d_anno.timestamp BETWEEN "{}" AND "{}"'.format(start, end)
-            sql = "SELECT AVG(two_d_anno.anno_time) FROM two_d_anno \
+                between_str = f'AND two_d_anno.timestamp BETWEEN "{start}" AND "{end}"'
+            sql = f"SELECT AVG(two_d_anno.anno_time) FROM two_d_anno \
                  INNER JOIN anno_task ON anno_task.idx = two_d_anno.anno_task_id \
                  INNER JOIN pipe_element ON pipe_element.idx = anno_task.pipe_element_id \
                  INNER JOIN pipe ON pipe.idx = pipe_element.pipe_id \
-                 WHERE pipe.manager_id={} AND two_d_anno.anno_time IS NOT NULL  {}".format(user_id, between_str)
+                 WHERE pipe.manager_id={user_id} AND two_d_anno.anno_time IS NOT NULL  {between_str}"
             return self.session.execute(text(sql)).first()
-    
-    def mean_anno_time_by_designer_group_by(self, user_id, start, end, group_by='day', anno_type='twodBased'):
-        if anno_type == 'imageBased':
-            between_str ='AND image_anno.timestamp BETWEEN "{}" AND "{}" GROUP BY {}(image_anno.timestamp)'.format(start, end, group_by)
-            sql = "SELECT AVG(image_anno.anno_time) FROM image_anno \
+
+    def mean_anno_time_by_designer_group_by(self, user_id, start, end, group_by="day", anno_type="twodBased"):
+        if anno_type == "imageBased":
+            between_str = (
+                f'AND image_anno.timestamp BETWEEN "{start}" AND "{end}" GROUP BY {group_by}(image_anno.timestamp)'
+            )
+            sql = f"SELECT AVG(image_anno.anno_time) FROM image_anno \
                 INNER JOIN anno_task ON anno_task.idx = image_anno.anno_task_id \
                 INNER JOIN pipe_element ON pipe_element.idx = anno_task.pipe_element_id \
                 INNER JOIN pipe ON pipe.idx = pipe_element.pipe_id \
-                WHERE pipe.manager_id={} AND image_ano.anno_time IS NOT NULL {}".format(user_id, between_str)
+                WHERE pipe.manager_id={user_id} AND image_ano.anno_time IS NOT NULL {between_str}"
             return self.session.execute(text(sql))
         else:
-            between_str ='AND two_d_anno.timestamp BETWEEN "{}" AND "{}" GROUP BY {}(two_d_anno.timestamp)'.format(start, end, group_by)
-            sql = "SELECT AVG(two_d_anno.anno_time) FROM two_d_anno \
+            between_str = (
+                f'AND two_d_anno.timestamp BETWEEN "{start}" AND "{end}" GROUP BY {group_by}(two_d_anno.timestamp)'
+            )
+            sql = f"SELECT AVG(two_d_anno.anno_time) FROM two_d_anno \
                  INNER JOIN anno_task ON anno_task.idx = two_d_anno.anno_task_id \
                  INNER JOIN pipe_element ON pipe_element.idx = anno_task.pipe_element_id \
                  INNER JOIN pipe ON pipe.idx = pipe_element.pipe_id \
-                 WHERE pipe.manager_id={} AND two_d_anno.anno_time IS NOT NULL  {}".format(user_id, between_str)
+                 WHERE pipe.manager_id={user_id} AND two_d_anno.anno_time IS NOT NULL  {between_str}"
             return self.session.execute(text(sql))
-    
+
     def count_all_anno_tasks_by_designer(self, user_id):
-        sql = "SELECT COUNT(DISTINCT(anno_task.idx)) FROM image_anno \
+        sql = f"SELECT COUNT(DISTINCT(anno_task.idx)) FROM image_anno \
             INNER JOIN anno_task ON anno_task.idx = image_anno.anno_task_id \
             INNER JOIN pipe_element ON pipe_element.idx = anno_task.pipe_element_id \
             INNER JOIN pipe ON pipe.idx = pipe_element.pipe_id \
-            WHERE pipe.manager_id={} AND image_anno.anno_time IS NOT NULL".format(user_id)
-        return self.session.execute(text(sql)) 
-    
+            WHERE pipe.manager_id={user_id} AND image_anno.anno_time IS NOT NULL"
+        return self.session.execute(text(sql))
+
     def count_two_d_annos_per_label_by_designer(self, user_id, start=None, end=None):
         between_str = ""
         if start and end:
-            between_str ='AND two_d_anno.timestamp BETWEEN STR_TO_DATE("{}","%Y-%m-%d") AND STR_TO_DATE("{}","%Y-%m-%d")'.format(start, end)
+            between_str = f'AND two_d_anno.timestamp BETWEEN STR_TO_DATE("{start}","%Y-%m-%d") AND STR_TO_DATE("{end}","%Y-%m-%d")'
 
-        sql = "SELECT label.label_leaf_id, label_leaf.name, label_leaf.color, COUNT(label.idx) AS num_items \
+        sql = f"SELECT label.label_leaf_id, label_leaf.name, label_leaf.color, COUNT(label.idx) AS num_items \
                 FROM label INNER JOIN two_d_anno ON two_d_anno.idx = label.two_d_anno_id \
                 INNER JOIN anno_task ON anno_task.idx = two_d_anno.anno_task_id \
                 INNER JOIN pipe_element ON pipe_element.idx = anno_task.pipe_element_id \
                 INNER JOIN pipe ON pipe.idx = pipe_element.pipe_id \
                 INNER JOIN label_leaf ON label_leaf.idx = label.label_leaf_id \
-                WHERE pipe.manager_id = {} \
-                {} GROUP BY label.label_leaf_id".format(user_id, between_str)
+                WHERE pipe.manager_id = {user_id} \
+                {between_str} GROUP BY label.label_leaf_id"
         return self.session.execute(text(sql))
 
     def count_two_d_annos_per_type_by_designer(self, user_id, start=None, end=None):
         between_str = ""
         if start and end:
-            between_str ='AND two_d_anno.timestamp BETWEEN STR_TO_DATE("{}","%Y-%m-%d") AND STR_TO_DATE("{}","%Y-%m-%d")'.format(start, end)
+            between_str = f'AND two_d_anno.timestamp BETWEEN STR_TO_DATE("{start}","%Y-%m-%d") AND STR_TO_DATE("{end}","%Y-%m-%d")'
 
-        sql = "SELECT two_d_anno.dtype, COUNT(two_d_anno.idx) AS num_items \
+        sql = f"SELECT two_d_anno.dtype, COUNT(two_d_anno.idx) AS num_items \
                 FROM two_d_anno INNER JOIN anno_task ON anno_task.idx = two_d_anno.anno_task_id \
                 INNER JOIN pipe_element ON pipe_element.idx = anno_task.pipe_element_id \
                 INNER JOIN pipe ON pipe.idx = pipe_element.pipe_id \
-                WHERE pipe.manager_id = {} {} GROUP BY two_d_anno.dtype".format(user_id, between_str)
+                WHERE pipe.manager_id = {user_id} {between_str} GROUP BY two_d_anno.dtype"
         return self.session.execute(text(sql))
 
-    def get_number_image_annos_in_time_by_designer_group_by(self, user_id, start, end, group_by='day'):
-        between_str ='AND image_anno.timestamp BETWEEN "{}" AND "{}" GROUP BY {}(image_anno.timestamp)'.format(start, end, group_by)
-        sql = "SELECT COUNT(image_anno.idx) FROM image_anno INNER JOIN anno_task ON anno_task.idx = image_anno.anno_task_id \
+    def get_number_image_annos_in_time_by_designer_group_by(self, user_id, start, end, group_by="day"):
+        between_str = (
+            f'AND image_anno.timestamp BETWEEN "{start}" AND "{end}" GROUP BY {group_by}(image_anno.timestamp)'
+        )
+        sql = (
+            f"SELECT COUNT(image_anno.idx) FROM image_anno INNER JOIN anno_task ON anno_task.idx = image_anno.anno_task_id \
                 INNER JOIN pipe_element ON pipe_element.idx = anno_task.pipe_element_id \
                 INNER JOIN pipe ON pipe.idx = pipe_element.pipe_id \
-                WHERE pipe.manager_id={} AND image_anno.anno_time IS NOT NULL {}".format(user_id, between_str)
+                WHERE pipe.manager_id={user_id} AND image_anno.anno_time IS NOT NULL {between_str}"
+        )
         return self.session.execute(text(sql))
-    
-        
+
     def get_number_image_annos_in_time_by_designer(self, user_id, start=None, end=None):
-        between_str = ''
+        between_str = ""
         if start and end:
-            between_str ='AND image_anno.timestamp BETWEEN "{}" AND "{}"'.format(start, end)
-        sql = "SELECT COUNT(image_anno.idx) FROM image_anno INNER JOIN anno_task ON anno_task.idx = image_anno.anno_task_id \
+            between_str = f'AND image_anno.timestamp BETWEEN "{start}" AND "{end}"'
+        sql = (
+            f"SELECT COUNT(image_anno.idx) FROM image_anno INNER JOIN anno_task ON anno_task.idx = image_anno.anno_task_id \
                 INNER JOIN pipe_element ON pipe_element.idx = anno_task.pipe_element_id \
                 INNER JOIN pipe ON pipe.idx = pipe_element.pipe_id \
-                WHERE pipe.manager_id={} AND image_anno.anno_time IS NOT NULL {}".format(user_id, between_str)
+                WHERE pipe.manager_id={user_id} AND image_anno.anno_time IS NOT NULL {between_str}"
+        )
         return self.session.execute(text(sql))
 
-    def get_number_twod_annos_in_time_by_designer_group_by(self, user_id, start, end, group_by='day'):
-        between_str ='AND two_d_anno.timestamp BETWEEN "{}" AND "{}" GROUP BY {}(two_d_anno.timestamp)'.format(start, end, group_by)
-        sql = "SELECT COUNT(two_d_anno.idx) FROM two_d_anno INNER JOIN anno_task ON anno_task.idx = two_d_anno.anno_task_id \
+    def get_number_twod_annos_in_time_by_designer_group_by(self, user_id, start, end, group_by="day"):
+        between_str = (
+            f'AND two_d_anno.timestamp BETWEEN "{start}" AND "{end}" GROUP BY {group_by}(two_d_anno.timestamp)'
+        )
+        sql = (
+            f"SELECT COUNT(two_d_anno.idx) FROM two_d_anno INNER JOIN anno_task ON anno_task.idx = two_d_anno.anno_task_id \
                 INNER JOIN pipe_element ON pipe_element.idx = anno_task.pipe_element_id \
                 INNER JOIN pipe ON pipe.idx = pipe_element.pipe_id \
-                WHERE pipe.manager_id={} AND two_d_anno.anno_time IS NOT NULL {}".format(user_id, between_str)
+                WHERE pipe.manager_id={user_id} AND two_d_anno.anno_time IS NOT NULL {between_str}"
+        )
         return self.session.execute(text(sql))
-    
+
     def get_number_twod_annos_in_time_by_designer(self, user_id, start=None, end=None):
-        between_str = ''
+        between_str = ""
         if start and end:
-            between_str ='AND two_d_anno.timestamp BETWEEN "{}" AND "{}"'.format(start, end)
-        sql = "SELECT COUNT(two_d_anno.idx) FROM two_d_anno INNER JOIN anno_task ON anno_task.idx = two_d_anno.anno_task_id \
+            between_str = f'AND two_d_anno.timestamp BETWEEN "{start}" AND "{end}"'
+        sql = (
+            f"SELECT COUNT(two_d_anno.idx) FROM two_d_anno INNER JOIN anno_task ON anno_task.idx = two_d_anno.anno_task_id \
                 INNER JOIN pipe_element ON pipe_element.idx = anno_task.pipe_element_id \
                 INNER JOIN pipe ON pipe.idx = pipe_element.pipe_id \
-                WHERE pipe.manager_id={} AND two_d_anno.anno_time IS NOT NULL {}".format(user_id, between_str)
+                WHERE pipe.manager_id={user_id} AND two_d_anno.anno_time IS NOT NULL {between_str}"
+        )
         return self.session.execute(text(sql))
-    
-    def get_anno_task_export(self, anno_task_export_id=None, anno_task_id=None):
-        ''' Get anno_task_export by anno_task_export_id or anno_task_id
-        '''
-        if anno_task_export_id:
-            return self.session.query(model.AnnoTaskExport)\
-            .filter(model.AnnoTaskExport.idx==anno_task_export_id).first()
-        if anno_task_id:
-            return self.session.query(model.AnnoTaskExport)\
-            .filter(model.AnnoTaskExport.anno_task_id==anno_task_id).order_by(model.AnnoTaskExport.idx.desc()).all()
 
+    def get_anno_task_export(self, anno_task_export_id=None, anno_task_id=None):
+        """Get anno_task_export by anno_task_export_id or anno_task_id"""
+        if anno_task_export_id:
+            return (
+                self.session.query(model.AnnoTaskExport).filter(model.AnnoTaskExport.idx == anno_task_export_id).first()
+            )
+        if anno_task_id:
+            return (
+                self.session.query(model.AnnoTaskExport)
+                .filter(model.AnnoTaskExport.anno_task_id == anno_task_id)
+                .order_by(model.AnnoTaskExport.idx.desc())
+                .all()
+            )
 
     def count_pipelines_by_template_id(self, pipe_template_id):
-        ''' Count all pipelines belonging to a template_id
-        '''
-        return self.session.query(sqlalchemy.func.count(model.Pipe.idx))\
-        .filter(model.Pipe.pipe_template_id == pipe_template_id)
+        """Count all pipelines belonging to a template_id"""
+        return self.session.query(sqlalchemy.func.count(model.Pipe.idx)).filter(
+            model.Pipe.pipe_template_id == pipe_template_id
+        )
 
     def get_annotasks_without_dataset(self):
-        ''' Returns a list of all annotations tasks that don't have a dataset assigned
-        '''
+        """Returns a list of all annotations tasks that don't have a dataset assigned"""
         return self.session.query(model.AnnoTask).filter(model.AnnoTask.dataset_id == None).all()
-        
+
     def get_datasets_with_no_parent(self):
-        ''' Returns all datasets that don't have a parent assigned in a onedimensional list
-        '''
+        """Returns all datasets that don't have a parent assigned in a onedimensional list"""
         return self.session.query(model.Dataset).filter(model.Dataset.parent_id == None).all()
-    
+
     def get_datasets(self):
-        '''Get all datasets
-        '''
+        """Get all datasets"""
         return self.session.query(model.Dataset).all()
-    
-    def get_datasets_paged(self,
-        page_index,
-        page_size):
-        '''Returns a page of datasets and the total number of pages
+
+    def get_datasets_paged(self, page_index, page_size):
+        """Returns a page of datasets and the total number of pages
 
         Args:
             page_index (int): Zero-based page-index
             page_size (int): entries per page
-        '''
+        """
         # get everything without parent
         query = self.session.query(model.Dataset).filter(model.Dataset.parent_id == None)
         # get page
-        ds_page = (query\
-                     .limit(page_size)\
-                    .offset(page_index * page_size)).all()
+        ds_page = (query.limit(page_size).offset(page_index * page_size)).all()
         # total pages
-        count = query.count() + 1 # +1 due to meta-dataset for parentless annotasks
+        count = query.count() + 1  # +1 due to meta-dataset for parentless annotasks
         pages = count // page_size
         if count % page_size:
             pages += 1
         return ds_page, pages
 
     def get_dataset(self, dataset_id):
-        '''Get dataset by idx
-        '''
-        return self.session.query(model.Dataset)\
-        .filter(model.Dataset.idx==dataset_id).first()
-    
+        """Get dataset by idx"""
+        return self.session.query(model.Dataset).filter(model.Dataset.idx == dataset_id).first()
+
     def get_datastores(self):
-        ''' Returns all datasources what can be used to store data
-        '''
+        """Returns all datasources what can be used to store data"""
         return self.session.query(model.Datasource).filter(model.Datasource.is_datastore == True).all()
-    
+
     def get_search_images_in_annotask_list(self, anno_task_ids, search_str=""):
         anno_task_list = ",".join([str(x) for x in anno_task_ids])
         sql = f"SELECT i.idx, i.anno_task_id, i.img_path, a.name FROM anno_task a\
@@ -1379,7 +1543,7 @@ class DBMan(object):
             WHERE a.idx in ({anno_task_list}) \
             AND i.img_path LIKE '%{search_str}%';"
         return self.session.execute(text(sql))
-    
+
     def get_search_images_in_annotask(self, annotask_idx, search_str=""):
         sql = f"SELECT i.idx, i.anno_task_id, i.img_path, a.name FROM anno_task a, image_anno i \
             WHERE a.idx = {annotask_idx} \
@@ -1389,71 +1553,48 @@ class DBMan(object):
 
     def get_child_datasets_by_parent_ds_id(self, dataset_id):
         return self.session.query(model.Dataset).filter(model.Dataset.parent_id == dataset_id).all()
-    
+
     def get_anno_tasks_by_dataset_id(self, dataset_id):
         return self.session.query(model.AnnoTask).filter(model.AnnoTask.dataset_id == dataset_id).all()
-    
-    def get_annotasks_filtered(
-        self,
-        group_ids,
-        page_size,
-        page,
-        filtered_states,
-        filtered_name
-    ):
+
+    def get_annotasks_filtered(self, group_ids, page_size, page, filtered_states, filtered_name):
         filter_conditions = []
         name = filtered_name
-        if name :
-            filter_conditions.append(
-            model.AnnoTask.name.like(f"%{name}%")
-        )
+        if name:
+            filter_conditions.append(model.AnnoTask.name.like(f"%{name}%"))
         task_states = filtered_states
         if task_states:
-            filter_conditions.append(
-                model.AnnoTask.state.in_(task_states)
-            )
-            
+            filter_conditions.append(model.AnnoTask.state.in_(task_states))
+
         query = (
-        self.session.query(model.AnnoTask)
-          .join(model.PipeElement, model.AnnoTask.pipe_element_id == model.PipeElement.idx)
-          .join(model.Pipe, model.Pipe.idx == model.PipeElement.pipe_id)
-          .filter(model.Pipe.state != state.Pipe.PAUSED)
-          .filter(and_(*filter_conditions))
-          .filter((model.AnnoTask.state!=state.AnnoTask.PENDING) &\
-            (model.AnnoTask.group_id.in_(group_ids)))
+            self.session.query(model.AnnoTask)
+            .join(model.PipeElement, model.AnnoTask.pipe_element_id == model.PipeElement.idx)
+            .join(model.Pipe, model.Pipe.idx == model.PipeElement.pipe_id)
+            .filter(model.Pipe.state != state.Pipe.PAUSED)
+            .filter(and_(*filter_conditions))
+            .filter((model.AnnoTask.state != state.AnnoTask.PENDING) & (model.AnnoTask.group_id.in_(group_ids)))
             .order_by(model.AnnoTask.timestamp.desc())
             .limit(page_size)
             .offset(page * page_size)
         )
         return query.all()
-    
-    def get_annotasks_total_pages(
-        self,
-        group_ids,
-        page_size,
-        filtered_states,
-        filtered_name
-    ): 
+
+    def get_annotasks_total_pages(self, group_ids, page_size, filtered_states, filtered_name):
         filter_conditions = []
         name = filtered_name
-        if name :
-            filter_conditions.append(
-            model.AnnoTask.name.like(f"%{name}%")
-        )
+        if name:
+            filter_conditions.append(model.AnnoTask.name.like(f"%{name}%"))
         task_states = filtered_states
         if task_states:
-            filter_conditions.append(
-                model.AnnoTask.state.in_(task_states)
-            )
-        
+            filter_conditions.append(model.AnnoTask.state.in_(task_states))
+
         count = (
             self.session.query(model.AnnoTask)
             .join(model.PipeElement, model.AnnoTask.pipe_element_id == model.PipeElement.idx)
             .join(model.Pipe, model.Pipe.idx == model.PipeElement.pipe_id)
             .filter(model.Pipe.state != state.Pipe.PAUSED)
             .filter(and_(*filter_conditions))
-            .filter((model.AnnoTask.state!=state.AnnoTask.PENDING) &\
-            (model.AnnoTask.group_id.in_(group_ids)))
+            .filter((model.AnnoTask.state != state.AnnoTask.PENDING) & (model.AnnoTask.group_id.in_(group_ids)))
             .count()
         )
 
@@ -1468,10 +1609,9 @@ class DBMan(object):
             SELECT DISTINCT label_leaf_id FROM `required_label_leaf` WHERE anno_task_id in ({anno_task_list}) \
         );"
         return self.session.execute(text(sql))
-    
+
     def get_all_images_with_labels(self, image_ids: list[int], label_ids: list[int]):
-        """returns all images of a given image id list that have at least one of the given labels
-        """
+        """returns all images of a given image id list that have at least one of the given labels"""
         image_id_list = ",".join([str(x) for x in image_ids])
         label_id_list = ",".join([str(x) for x in label_ids])
         sql_union = f"(SELECT DISTINCT t.img_anno_id FROM label l \
@@ -1488,19 +1628,19 @@ class DBMan(object):
             AND ( \
                 i.idx IN ({image_id_list}) \
                 OR l.img_anno_id IN ({image_id_list}) \
-            ));"  
+            ));"
 
         return self.session.execute(text(sql_union))
 
     def get_version(self, package=None):
-        '''Get version info
+        """Get version info
 
         Args:
             package (str): Name of the package
 
         Returns:
             :class:`model.Version`
-        '''
+        """
         if package:
             return self.session.query(model.Version).filter(model.Version.package == package).first()
         return self.session.query(model.Version).all()
@@ -1510,8 +1650,7 @@ class DBMan(object):
         self.session.add(new_entry)
         self.session.commit()
         return new_entry
-        
-    
+
     def delete_dataset_export(self, idx: int) -> None:
         entry = self.session.query(model.DatasetExport).filter_by(idx=idx).first()
         if entry:
@@ -1519,14 +1658,19 @@ class DBMan(object):
             self.session.commit()
 
     def get_all_dataset_exports_by_dataset_id(self, idx: int) -> list[model.DatasetExport]:
-        return self.session.query(model.DatasetExport).filter_by(dataset_id=idx).order_by(model.DatasetExport.idx.desc()).all()
+        return (
+            self.session.query(model.DatasetExport)
+            .filter_by(dataset_id=idx)
+            .order_by(model.DatasetExport.idx.desc())
+            .all()
+        )
 
     def get_dataset_export_by_id(self, idx: int) -> model.DatasetExport:
         return self.session.query(model.DatasetExport).filter_by(idx=idx).first()
 
     def get_all_inference_models(self) -> list[model.InferenceModel]:
         return self.session.query(model.InferenceModel).order_by(model.InferenceModel.last_updated.desc()).all()
-    
+
     def create_inference_model(self, data: InferenceModelRequest) -> model.InferenceModel:
         new_entry = model.InferenceModel(
             name=data.name,
@@ -1539,7 +1683,7 @@ class DBMan(object):
         self.session.add(new_entry)
         self.session.commit()
         return new_entry
-    
+
     def update_inference_model(self, idx: int, data) -> Optional[model.InferenceModel]:
         entry = self.session.query(model.InferenceModel).filter_by(idx=idx).first()
         if not entry:
@@ -1547,18 +1691,17 @@ class DBMan(object):
         entry.name = data.name
         entry.display_name = data.display_name
         entry.server_url = data.server_url
-        entry.model_type=data.model_type,
-        entry.task_type=data.task_type,
-        entry.description=data.description,
+        entry.model_type = (data.model_type,)
+        entry.task_type = (data.task_type,)
+        entry.description = (data.description,)
         self.session.commit()
         return entry
-    
+
     def delete_inference_model(self, idx: int) -> None:
         entry = self.session.query(model.InferenceModel).filter_by(idx=idx).first()
         if entry:
             self.session.delete(entry)
             self.session.commit()
-        
+
     def get_inference_model_by_id(self, idx: int) -> model.InferenceModel:
         return self.session.query(model.InferenceModel).filter_by(idx=idx).first()
-    

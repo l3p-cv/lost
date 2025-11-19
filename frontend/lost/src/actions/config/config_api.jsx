@@ -3,17 +3,17 @@ import { useMutation, useQuery } from 'react-query'
 import { API_URL } from '../../lost_settings'
 
 export const useConfig = () => {
-    return useQuery(
-        ['config'],
-        () => axios.get(`${API_URL}/config`).then((res) => res.data),
-        {
-            initialData: [],
-        },
-    )
+  return useQuery(
+    ['config'],
+    () => axios.get(`${API_URL}/config`).then((res) => res.data),
+    {
+      initialData: [],
+    },
+  )
 }
 
 export const useSaveConfig = () => {
-    return useMutation((data) =>
-        axios.patch(`${API_URL}/config`, data).then((res) => res.data),
-    )
+  return useMutation((data) =>
+    axios.patch(`${API_URL}/config`, data).then((res) => res.data),
+  )
 }

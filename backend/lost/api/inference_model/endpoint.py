@@ -1,17 +1,21 @@
-
-from sqlalchemy.exc import IntegrityError
-from lost.api.inference_model.api_definition import InferenceModelListResponse, InferenceModelRequest, InferenceModelResponse
-from flask_restx import Resource
-from lost.db import access
-from lost.api.api import api
-from lost.settings import LOST_CONFIG
-from flask_pydantic import validate
 from flask_jwt_extended import jwt_required
+from flask_pydantic import validate
+from flask_restx import Resource
+from sqlalchemy.exc import IntegrityError
+
+from lost.api.api import api
+from lost.api.inference_model.api_definition import (
+    InferenceModelListResponse,
+    InferenceModelRequest,
+    InferenceModelResponse,
+)
+from lost.db import access
+from lost.settings import LOST_CONFIG
+
+namespace = api.namespace("models", description="API to manage inference models")
 
 
-namespace = api.namespace('models', description='API to manage inference models')
-
-@namespace.route('')
+@namespace.route("")
 class InferenceModelList(Resource):
     # @jwt_required()
     @validate(response_by_alias=True)
@@ -28,7 +32,7 @@ class InferenceModelList(Resource):
                 task_type=model.task_type,
                 model_type=model.model_type,
                 description=model.description,
-                last_updated=model.last_updated
+                last_updated=model.last_updated,
             )
             for model in models
         ]
@@ -42,9 +46,9 @@ class InferenceModelList(Resource):
         try:
             model = dbm.create_inference_model(body)
         except IntegrityError as e:
-            if 'Duplicate entry' in str(e):
+            if "Duplicate entry" in str(e):
                 dbm.close_session()
-                return {'message': f'Model with display name "{body.display_name}" already exists'}, 400
+                return {"message": f'Model with display name "{body.display_name}" already exists'}, 400
             else:
                 raise e
         except Exception as e:
@@ -63,7 +67,7 @@ class InferenceModelList(Resource):
         return model, 201
 
 
-@namespace.route('/<int:idx>')
+@namespace.route("/<int:idx>")
 class InferenceModelResource(Resource):
     # @jwt_required()
     @validate(response_by_alias=True)
@@ -71,7 +75,7 @@ class InferenceModelResource(Resource):
         dbm = access.DBMan(LOST_CONFIG)
         model = dbm.get_inference_model_by_id(idx)
         if model is None:
-            return {'message': 'Model not found'}, 404
+            return {"message": "Model not found"}, 404
         model = InferenceModelResponse(
             id=model.idx,
             name=model.name,
@@ -92,11 +96,11 @@ class InferenceModelResource(Resource):
         try:
             model = dbm.update_inference_model(idx, body)
             if model is None:
-                return {'message': 'Model not found'}, 404
+                return {"message": "Model not found"}, 404
         except IntegrityError as e:
-            if 'Duplicate entry' in str(e):
+            if "Duplicate entry" in str(e):
                 dbm.close_session()
-                return {'message': f'Model with display name "{body.display_name}" already exists'}, 400
+                return {"message": f'Model with display name "{body.display_name}" already exists'}, 400
             else:
                 raise e
         except Exception as e:
@@ -119,5 +123,5 @@ class InferenceModelResource(Resource):
         dbm = access.DBMan(LOST_CONFIG)
         dbm.delete_inference_model(idx)
         dbm.close_session()
-        
+
         return {}, 204

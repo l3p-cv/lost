@@ -13,68 +13,71 @@ import CoreIconButton from '../../components/CoreIconButton'
 import ErrorBoundary from '../../components/ErrorBoundary'
 
 export const Groups = () => {
-    const [newGroup, setNewGroup] = useState('')
-    const { mutate: createGroup } = useCreateGroup()
-    const { mutate: deleteGroup } = useDeleteGroup()
-    const { data: groupsData } = useGroups()
-    const columnHelper = createColumnHelper()
+  const [newGroup, setNewGroup] = useState('')
+  const { mutate: createGroup } = useCreateGroup()
+  const { mutate: deleteGroup } = useDeleteGroup()
+  const { data: groupsData } = useGroups()
+  const columnHelper = createColumnHelper()
 
-    const addGroup = () => {
-        if (newGroup.length < 3) {
-            Notification.showError('Minimum 3 character')
-        } else if (newGroup.length > 25) {
-            Notification.showError('Maximum 25 character')
-        } else {
-            createGroup({
-                group_name: newGroup,
-            })
-        }
+  const addGroup = () => {
+    if (newGroup.length < 3) {
+      Notification.showError('Minimum 3 character')
+    } else if (newGroup.length > 25) {
+      Notification.showError('Maximum 25 character')
+    } else {
+      createGroup({
+        group_name: newGroup,
+      })
     }
+  }
 
-    const columns = [
-        columnHelper.accessor('name', {
-            header: 'Group',
-            cell: (props) => {
-                return (
-                    <>
-                        <b>{props.row.original.name}</b>
-                        <div className="small text-muted">
-                            {`ID: ${props.row.original.idx}`}
-                        </div>
-                    </>
-                )
-            }
-        })
-    ]
-
-    let needPages = false
-    if (groupsData) {
-        needPages = (groupsData.groups.length > 10)
-    }
-
-    return (
-        groupsData && (
-            <div>
-                <CInputGroup style={{ marginBottom: 20 }}>
-                    <CFormInput
-                        placeholder="groupname"
-                        value={newGroup}
-                        onChange={(e) => setNewGroup(e.currentTarget.value)}
-                    />
-                    <CoreIconButton color="primary" type='submit' icon={faPlus} onClick={addGroup} />
-                </CInputGroup>
-                <BaseContainer>
-                    <ErrorBoundary>
-                    <CoreDataTable
-                        columns={columns}
-                        tableData={groupsData.groups}
-                        usePagination={needPages}
-                        paginationLarge={false}
-                        />
-                    </ErrorBoundary>
-                </BaseContainer>
-            </div>
+  const columns = [
+    columnHelper.accessor('name', {
+      header: 'Group',
+      cell: (props) => {
+        return (
+          <>
+            <b>{props.row.original.name}</b>
+            <div className="small text-muted">{`ID: ${props.row.original.idx}`}</div>
+          </>
         )
+      },
+    }),
+  ]
+
+  let needPages = false
+  if (groupsData) {
+    needPages = groupsData.groups.length > 10
+  }
+
+  return (
+    groupsData && (
+      <div>
+        <CInputGroup style={{ marginBottom: 20 }}>
+          <CFormInput
+            placeholder="groupname"
+            value={newGroup}
+            onChange={(e) => setNewGroup(e.currentTarget.value)}
+          />
+          <CoreIconButton
+            color="primary"
+            type="submit"
+            icon={faPlus}
+            onClick={addGroup}
+          />
+        </CInputGroup>
+        <BaseContainer>
+          <ErrorBoundary>
+            <CoreDataTable
+              columns={columns}
+              tableData={groupsData.groups}
+              usePagination={needPages}
+              paginationLarge={false}
+            />
+          </ErrorBoundary>
+        </BaseContainer>
+      </div>
     )
+  )
 }
 export default Groups

@@ -1,69 +1,63 @@
-import { CButton, CButtonGroup } from '@coreui/react'
-import { IconProp } from '@fortawesome/fontawesome-svg-core'
+import { CButtonGroup } from '@coreui/react'
 import {
-    faCodeMerge,
-    faExpand,
-    faObjectUngroup,
-    faScissors,
+  faCodeMerge,
+  faExpand,
+  faObjectUngroup,
+  faScissors,
 } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import PolygonEditMode from '../../../models/PolygonEditMode'
+import { IconButton } from 'lost-sia'
 
 type PolygonEditButtonsProps = {
-    polygonEditMode: PolygonEditMode
-    onPolygonEditModeChanged: (newMode: PolygonEditMode) => void
+  polygonEditMode: PolygonEditMode
+  onPolygonEditModeChanged: (newMode: PolygonEditMode) => void
 }
 
 const PolygonEditButtons = ({
-    polygonEditMode,
-    onPolygonEditModeChanged,
+  polygonEditMode,
+  onPolygonEditModeChanged,
 }: PolygonEditButtonsProps) => {
-    const changeMode = (clickedMode: PolygonEditMode) => {
-        // deactivate mode if clicking on currently active mode
-        const newMode =
-            polygonEditMode == clickedMode ? PolygonEditMode.NONE : clickedMode
-        onPolygonEditModeChanged(newMode)
-    }
+  const changeMode = (clickedMode: PolygonEditMode) => {
+    // deactivate mode if clicking on currently active mode
+    const newMode = polygonEditMode == clickedMode ? PolygonEditMode.NONE : clickedMode
+    onPolygonEditModeChanged(newMode)
+  }
 
-    return (
-        <CButtonGroup role="group" aria-label="Basic example">
-            <CButton
-                color="primary"
-                variant={polygonEditMode == PolygonEditMode.MERGE ? undefined : 'outline'}
-                onClick={() => changeMode(PolygonEditMode.MERGE)}
-            >
-                <FontAwesomeIcon icon={faCodeMerge as IconProp} size="lg" />
-            </CButton>
+  return (
+    <CButtonGroup role="group" aria-label="Basic example">
+      <IconButton
+        color="primary"
+        icon={faCodeMerge}
+        isOutline={polygonEditMode !== PolygonEditMode.MERGE}
+        onClick={() => changeMode(PolygonEditMode.MERGE)}
+        tooltip="Merge annotations"
+      />
 
-            <CButton
-                color="primary"
-                variant={
-                    polygonEditMode == PolygonEditMode.INTERSECT ? undefined : 'outline'
-                }
-                onClick={() => changeMode(PolygonEditMode.INTERSECT)}
-            >
-                <FontAwesomeIcon icon={faObjectUngroup as IconProp} size="lg" />
-            </CButton>
+      <IconButton
+        color="primary"
+        icon={faObjectUngroup}
+        isOutline={polygonEditMode !== PolygonEditMode.INTERSECT}
+        onClick={() => changeMode(PolygonEditMode.INTERSECT)}
+        tooltip="Intersect annotations"
+      />
 
-            <CButton
-                color="primary"
-                variant={
-                    polygonEditMode == PolygonEditMode.DIFFERENCE ? undefined : 'outline'
-                }
-                onClick={() => changeMode(PolygonEditMode.DIFFERENCE)}
-            >
-                <FontAwesomeIcon icon={faScissors as IconProp} size="lg" />
-            </CButton>
+      <IconButton
+        color="primary"
+        icon={faScissors}
+        isOutline={polygonEditMode !== PolygonEditMode.DIFFERENCE}
+        onClick={() => changeMode(PolygonEditMode.DIFFERENCE)}
+        tooltip="Differ annotations"
+      />
 
-            <CButton
-                color="primary"
-                variant={polygonEditMode == PolygonEditMode.BBOX ? undefined : 'outline'}
-                onClick={() => changeMode(PolygonEditMode.BBOX)}
-            >
-                <FontAwesomeIcon icon={faExpand as IconProp} size="lg" />
-            </CButton>
-        </CButtonGroup>
-    )
+      <IconButton
+        color="primary"
+        icon={faExpand}
+        isOutline={polygonEditMode !== PolygonEditMode.BBOX}
+        onClick={() => changeMode(PolygonEditMode.BBOX)}
+        tooltip="Create BBox of annotation"
+      />
+    </CButtonGroup>
+  )
 }
 
 export default PolygonEditButtons

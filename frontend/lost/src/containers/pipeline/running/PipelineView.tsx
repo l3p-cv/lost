@@ -12,59 +12,63 @@ import Modal from './modals'
 import Toolbar from './Toolbar'
 
 export const PipelineView = () => {
-    const { pipelineId } = useParams()
+  const { pipelineId } = useParams()
 
-    const { data, isLoading, isError } = usePipeline(pipelineId)
-    const [modalData, setModalData] = useState<PipelineResponseElement | null>(null)
-    const [isModalOpen, toggleModal] = useToggle(false)
+  const { data, isLoading, isError } = usePipeline(pipelineId)
+  const [modalData, setModalData] = useState<PipelineResponseElement | null>(null)
+  const [isModalOpen, toggleModal] = useToggle(false)
 
-    if (isLoading) {
-        return <CenteredSpinner />
-    }
+  if (isLoading) {
+    return <CenteredSpinner />
+  }
 
-    if (isError) {
-        return <p>An error occurred when getting pipeline data!</p>
-    }
+  if (isError) {
+    return <p>An error occurred when getting pipeline data!</p>
+  }
 
-    const handleNodeClick = (event, node: Node) => {
-        const clickedModalData = data?.elements.find(
-            (el) => el.peN.toString() === node.id,
+  const handleNodeClick = (event, node: Node) => {
+    const clickedModalData = data?.elements.find((el) => el.peN.toString() === node.id)
+    if (clickedModalData) {
+      setModalData(clickedModalData)
+      toggleModal()
+      const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true'
+      const currentStep = parseInt(localStorage.getItem('currentStep') || '0')
+      if (
+        joyrideRunning &&
+        clickedModalData.annoTask &&
+        (currentStep === 43 || currentStep === 15)
+      ) {
+        window.dispatchEvent(
+          new CustomEvent('joyride-next-step', {
+            detail: { step: 'view-created-annotask' },
+          }),
         )
-        if (clickedModalData) {
-            setModalData(clickedModalData)
-            toggleModal()
-            const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true';
-            const currentStep = parseInt(localStorage.getItem('currentStep') || '0');
-            if (joyrideRunning && clickedModalData.annoTask && (currentStep === 43 || currentStep === 15)) {
-                window.dispatchEvent(new CustomEvent('joyride-next-step', {
-                    detail: { step: 'view-created-annotask' },
-                }))
-            }
-        }
+      }
     }
+  }
 
-    return (
-        data && (
-            <CContainer style={{ marginTop: '15px' }}>
-                <BaseContainer>
-                    <div className="pipeline-running-2">
-                        <Toolbar data={data} />
-                        <ReactFlowProvider>
-                            <LivePipeline
-                                name={data.name}
-                                initialNodes={data.graph.nodes}
-                                initialEdges={data.graph.edges}
-                                onNodeClick={handleNodeClick}
-                            />
-                            <Modal
-                                data={modalData}
-                                modalOpened={isModalOpen}
-                                toggleModal={toggleModal}
-                            />
-                        </ReactFlowProvider>
-                    </div>
-                </BaseContainer>
-            </CContainer>
-        )
+  return (
+    data && (
+      <CContainer style={{ marginTop: '15px' }}>
+        <BaseContainer>
+          <div className="pipeline-running-2">
+            <Toolbar data={data} />
+            <ReactFlowProvider>
+              <LivePipeline
+                name={data.name}
+                initialNodes={data.graph.nodes}
+                initialEdges={data.graph.edges}
+                onNodeClick={handleNodeClick}
+              />
+              <Modal
+                data={modalData}
+                modalOpened={isModalOpen}
+                toggleModal={toggleModal}
+              />
+            </ReactFlowProvider>
+          </div>
+        </BaseContainer>
+      </CContainer>
     )
+  )
 }
