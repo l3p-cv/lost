@@ -316,7 +316,7 @@ const SiaWrapper = ({
 
       handleNotification({
         title: 'Invalid selection',
-        message: 'Merge can only be done with polygon annotations',
+        message: 'Merge can only be done with annotations containing an area',
         type: NotificationType.ERROR,
       })
 
