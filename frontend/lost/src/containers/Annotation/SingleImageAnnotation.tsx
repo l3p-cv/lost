@@ -1,4 +1,4 @@
-import { CSSProperties, useState } from 'react'
+import { CSSProperties, useEffect, useState } from 'react'
 
 import WorkingOnSIA from './AnnoTask/WorkingOnSIA'
 import SiaWrapper from './SIA/SiaWrapper'
@@ -17,7 +17,13 @@ const SingleImageAnnotation = () => {
     })
 
   const { data: annoData } = useGetSiaAnnos(annotationRequestData)
-  const { data: currentAnnotask } = annotaskApi.useGetCurrentAnnotask()
+  const { data: currentAnnotask, refetch: refetchCurrentAnnotask } =
+    annotaskApi.useGetCurrentAnnotask()
+
+  // reload annotation task data after switching image
+  useEffect(() => {
+    refetchCurrentAnnotask()
+  }, [annoData])
 
   /**
    * do not use a CContainer here
