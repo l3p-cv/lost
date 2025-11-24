@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { CSSProperties, useCallback, useEffect, useState } from 'react'
 import type {
   SiaApi,
   EditAnnotationData,
@@ -1004,6 +1004,16 @@ const SiaWrapper = ({
     )
   }
 
+  const wrapperStyle: CSSProperties = {
+    // use the max available height as a flex child
+    flex: '1 1 auto',
+    minHeight: 0,
+
+    // give the max available height to the next child
+    display: 'flex',
+    flexDirection: 'column',
+  }
+
   return (
     <>
       {isImageSearchEnabled && (
@@ -1019,7 +1029,7 @@ const SiaWrapper = ({
       )}
 
       <div
-        style={{ height: '100%', width: '100%' }}
+        style={wrapperStyle}
         onKeyDown={(e) => {
           if (!e.repeat) handleWrapperKeydown(e.key)
         }}

@@ -19,41 +19,38 @@ const SingleImageAnnotation = () => {
   const { data: annoData } = useGetSiaAnnos(annotationRequestData)
   const { data: currentAnnotask } = annotaskApi.useGetCurrentAnnotask()
 
-  // method to get the available height of the page without scrolling
-  const contentRootStyle: CSSProperties = {
+  /**
+   * do not use a CContainer here
+   * CContainers remove the ability to get the available height of the page using flexbox
+   * Instead, get the current flexbox, let the current child grow to its maximum available with and height
+   * and set the display to flexbox, so that the next child can also benefit from it
+   */
+  const forwardFlex: CSSProperties = {
+    // use the max available height as a flex child
+    flex: '1 1 auto',
+    minHeight: 0,
+
+    // give the max available height to the next child
     display: 'flex',
     flexDirection: 'column',
-    height: 'calc(100vh - 375px)',
-    overflow: 'hidden',
-    marginTop: 10,
-  }
-
-  const middleStyle: CSSProperties = {
-    flexGrow: 1,
-    flexShrink: 0,
-    flexBasis: 'auto',
-    minHeight: 0,
   }
 
   if (currentAnnotask === undefined) return 'Loading...'
 
   return (
-    <>
+    <div style={forwardFlex}>
       <WorkingOnSIA annoTask={currentAnnotask} />
-
-      <div style={contentRootStyle}>
-        <div style={middleStyle}>
-          <SiaWrapper
-            taskId={currentAnnotask.id}
-            isDatasetMode={false}
-            isImageSearchEnabled={false}
-            annoData={annoData}
-            onSetAnnotationRequestData={setAnnotationRequestData}
-            siaApi={siaApi}
-          />
-        </div>
+      <div style={forwardFlex}>
+        <SiaWrapper
+          taskId={currentAnnotask.id}
+          isDatasetMode={false}
+          isImageSearchEnabled={false}
+          annoData={annoData}
+          onSetAnnotationRequestData={setAnnotationRequestData}
+          siaApi={siaApi}
+        />
       </div>
-    </>
+    </div>
   )
 }
 

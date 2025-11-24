@@ -30,56 +30,48 @@ const AnnotaskReviewComponent = () => {
 
   const nAnnotaskId: number = parseInt(annotaskId)
 
-  // method to get the available height of the page without scrolling
-  const contentRootStyle: CSSProperties = {
+  /**
+   * do not use a CContainer here
+   * CContainers remove the ability to get the available height of the page using flexbox
+   * Instead, get the current flexbox, let the current child grow to its maximum available with and height
+   * and set the display to flexbox, so that the next child can also benefit from it
+   */
+  const forwardFlex: CSSProperties = {
+    // use the max available height as a flex child
+    flex: '1 1 auto',
+    minHeight: 0,
+
+    // give the max available height to the next child
     display: 'flex',
     flexDirection: 'column',
-    height: 'calc(100vh - 375px)',
-    overflow: 'hidden',
-    marginTop: 10,
-  }
-
-  const middleStyle: CSSProperties = {
-    flexGrow: 1,
-    flexShrink: 0,
-    flexBasis: 'auto',
-    minHeight: 0,
   }
 
   return (
-    <CRow>
-      <CCol>
-        <h1>Review of annotation task {annotaskId}</h1>
-        <CRow>
-          <CCol xs="12" sm="12" lg="12">
-            <div style={contentRootStyle}>
-              <div style={middleStyle}>
-                <SiaWrapper
-                  annoData={annoData}
-                  annoTaskId={nAnnotaskId}
-                  isDatasetMode={false}
-                  isImageSearchEnabled={true}
-                  siaApi={siaApi}
-                  onSetAnnotationRequestData={(imageSwitchData: ImageSwitchData) => {
-                    const newReviewData: ReviewData = {
-                      isAnnotaskReview: true,
-                      taskId: parseInt(`${annotaskId}`),
-                      data: {
-                        direction: imageSwitchData.direction,
-                        imageAnnoId: imageSwitchData.imageId,
-                        iteration: imageSwitchData.iteration,
-                      },
-                    }
+    <div style={forwardFlex}>
+      <h1>Review of annotation task {annotaskId}</h1>
+      <div style={forwardFlex}>
+        <SiaWrapper
+          annoData={annoData}
+          annoTaskId={nAnnotaskId}
+          isDatasetMode={false}
+          isImageSearchEnabled={true}
+          siaApi={siaApi}
+          onSetAnnotationRequestData={(imageSwitchData: ImageSwitchData) => {
+            const newReviewData: ReviewData = {
+              isAnnotaskReview: true,
+              taskId: parseInt(`${annotaskId}`),
+              data: {
+                direction: imageSwitchData.direction,
+                imageAnnoId: imageSwitchData.imageId,
+                iteration: imageSwitchData.iteration,
+              },
+            }
 
-                    setAnnotationRequestData(newReviewData)
-                  }}
-                />
-              </div>
-            </div>
-          </CCol>
-        </CRow>
-      </CCol>
-    </CRow>
+            setAnnotationRequestData(newReviewData)
+          }}
+        />
+      </div>
+    </div>
   )
 }
 

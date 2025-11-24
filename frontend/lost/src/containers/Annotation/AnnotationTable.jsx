@@ -7,8 +7,7 @@ import MyAnnoTasks from './AnnoTask/MyAnnoTasks'
 import WorkingOn from './AnnoTask/WorkingOn'
 import actions from '../../actions'
 import { useNavigate } from 'react-router-dom'
-import { CCard, CCardBody, CCardHeader, CCol, CContainer, CRow } from '@coreui/react'
-import TableHeader from '../../components/TableHeader'
+import { CCard, CCardBody, CCol, CContainer, CRow } from '@coreui/react'
 import ErrorBoundary from '../../components/ErrorBoundary'
 
 const { getAnnoTasks, getWorkingOnAnnoTask, chooseAnnoTask } = actions
@@ -42,40 +41,29 @@ const AnnotatorDashboard = () => {
   const renderWorkingOn = () => {
     if (workingOnAnnoTask !== null) {
       return (
-        <CContainer style={{ marginTop: '15px' }}>
-          <h3 className="card-title mb-3" style={{ textAlign: 'center' }}>
-            Annotation
-          </h3>
-          <CRow>
-            <CCol className="mt-3">
-              <TableHeader
-                headline="Working on"
-                buttonStyle={{ marginTop: 15, marginBottom: 20, visibility: 'hidden' }}
-              />
-              <ErrorBoundary>
-                <CCard>
-                  {/* <CCardHeader>
-                                    <h4>Working on</h4>
-                                </CCardHeader> */}
-                  <CCardBody>
-                    <CRow>
+        <CRow>
+          <CCol>
+            <h3>Working on</h3>
+            <ErrorBoundary>
+              <CCard>
+                <CCardBody>
+                  <CRow>
+                    <CCol xs="12" md="6" xl="6">
+                      <WorkingOn annoTask={workingOnAnnoTask}></WorkingOn>
+                    </CCol>
+                    {workingOnAnnoTask.statistic.amount_per_label && (
                       <CCol xs="12" md="6" xl="6">
-                        <WorkingOn annoTask={workingOnAnnoTask}></WorkingOn>
+                        <AmountPerLabel
+                          stats={workingOnAnnoTask.statistic.amount_per_label}
+                        />
                       </CCol>
-                      {workingOnAnnoTask.statistic.amount_per_label && (
-                        <CCol xs="12" md="6" xl="6">
-                          <AmountPerLabel
-                            stats={workingOnAnnoTask.statistic.amount_per_label}
-                          />
-                        </CCol>
-                      )}
-                    </CRow>
-                  </CCardBody>
-                </CCard>
-              </ErrorBoundary>
-            </CCol>
-          </CRow>
-        </CContainer>
+                    )}
+                  </CRow>
+                </CCardBody>
+              </CCard>
+            </ErrorBoundary>
+          </CCol>
+        </CRow>
       )
     }
     return <React.Fragment></React.Fragment>
@@ -83,17 +71,18 @@ const AnnotatorDashboard = () => {
 
   return (
     <CContainer>
+      <CRow className="mt-3">
+        <h3 className="card-title" style={{ textAlign: 'center' }}>
+          Annotation
+        </h3>
+      </CRow>
       {renderWorkingOn()}
       <CRow>
-        <CCol className="mt-3">
-          <TableHeader
-            headline="My Annotation Tasks"
-            buttonStyle={{ marginTop: 15, marginBottom: 20, visibility: 'hidden' }}
-          />
+        <h3 className="mt-4">My Annotation Tasks</h3>
+      </CRow>
+      <CRow>
+        <CCol>
           <CCard>
-            {/* <CCardHeader>
-                            <h4>My Annotation Tasks</h4>
-                        </CCardHeader> */}
             <CCardBody>
               <MyAnnoTasks
                 annoTasks={annoTasks}
@@ -101,18 +90,6 @@ const AnnotatorDashboard = () => {
               ></MyAnnoTasks>
             </CCardBody>
           </CCard>
-          {/* <Card>
-                        <CardHeader>
-                            Statistics
-                        </CardHeader>
-                        <CardBody>
-                            <Facts></Facts>
-                            <br/>
-                            <div>Images/Day</div>
-                            <br/>
-                            <ImagesPerDay></ImagesPerDay>
-                        </CardBody>
-                    </Card> */}
         </CCol>
       </CRow>
     </CContainer>

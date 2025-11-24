@@ -1,19 +1,18 @@
-import React from 'react'
 import { CCol, CRow } from '@coreui/react'
 import CoreIconButton from './CoreIconButton'
 import SelectFileButton from './SelectFileButton'
 
 const TableHeader = ({
   headline,
-  buttonStyle,
-  className,
+  buttonStyle = {},
+  className = '',
   icon = null,
   onClick = () => {},
   buttonText = '',
   buttonColor = 'primary',
   selectFileButton = false,
   headerClassname = 'card-title mb-2',
-  accept,
+  accept = undefined,
 }) => {
   return (
     <CRow>
