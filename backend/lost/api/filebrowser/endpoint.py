@@ -1,7 +1,7 @@
 import ast
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 
 from flask import request
 from flask_jwt_extended import get_jwt_identity, jwt_required
@@ -225,7 +225,7 @@ class SaveFs(Resource):
                     root_path=data["rootPath"],
                     fs_type=data["fsType"],
                     name=data["name"],
-                    timestamp=datetime.utcnow(),
+                    timestamp=datetime.now(timezone.utc),
                 )
                 dbm.save_obj(new_fs_db)
             else:
@@ -235,7 +235,7 @@ class SaveFs(Resource):
                 fs_db.root_path = data["rootPath"]
                 fs_db.fs_type = data["fsType"]
                 fs_db.name = data["name"]
-                fs_db.timestamp = datetime.utcnow()
+                fs_db.timestamp = datetime.now(timezone.utc)
                 dbm.save_obj(fs_db)
             dbm.close_session()
             return "success", 200
