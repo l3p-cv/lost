@@ -291,6 +291,7 @@ const Instruction = ({ visLevel }) => {
           className={
             editingInstruction.id ? 'edit-instructions-modal' : 'add-instructions-modal'
           }
+          backdropOption={'static'}
         >
           <EditInstruction
             instructionData={editingInstruction}

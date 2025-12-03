@@ -246,7 +246,7 @@ const EditInstruction = ({ instructionData, onSave, visLevel, onClose }) => {
           className="browse-files-button"
           icon={faFolderOpen}
           color="info"
-          text="Browse Files"
+          text="Add Image"
           onClick={handleBrowseClick}
         />
       </div>
