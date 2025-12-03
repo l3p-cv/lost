@@ -5,9 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [unreleased] - 
+- your changes here
+
+## [3.0.0] - 
 ### Breaking Changes
 - The LOST docker container is now split into two containers: lost-frontend and lost-backend
+- Reworked LOST-SIA + wrappers
 ### Added
+- Added annotation operations (merge, union, difference, intersection)
 - Instruction page for annotation tasks
 - Wrote db_patch for instruction data
 - A tourguide for lost onboarding using Joyride
