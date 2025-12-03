@@ -12,8 +12,11 @@ import {
   CFormInput,
   CFormLabel,
   CFormText,
+  CHeader,
   CInputGroup,
+  CRow,
 } from '@coreui/react'
+import { data } from 'react-router-dom'
 
 const Profile = () => {
   const { t } = useTranslation()
@@ -210,6 +213,40 @@ const Profile = () => {
                   {t('myProfile.pleaseConfirmNewPassword')}
                 </CFormText>
               </CCol>
+              <CInputGroup>
+                <CCol md="3">
+                  <CFormLabel htmlFor="myprofile-groups">{'Groups'}</CFormLabel>
+                </CCol>
+                <CCol>
+                  <CFormInput
+                    disabled
+                    defaultValue={user.groups.map((r) => r.name).join(', ')}
+                    type="text"
+                    name="myprofile-groups"
+                    placeholder=""
+                  />
+                  <CFormText className="help-block">
+                    {'Groups are editable in admin area'}
+                  </CFormText>
+                </CCol>
+              </CInputGroup>
+              <CInputGroup>
+                <CCol md="3">
+                  <CFormLabel htmlFor="myprofile-roles">{'Roles'}</CFormLabel>
+                </CCol>
+                <CCol>
+                  <CFormInput
+                    disabled
+                    defaultValue={user.roles.map((r) => r.name).join(', ')}
+                    type="text"
+                    name="myprofile-roles"
+                    placeholder=""
+                  />
+                  <CFormText className="help-block">
+                    {'Roles are editable in admin area'}
+                  </CFormText>
+                </CCol>
+              </CInputGroup>
             </CInputGroup>
             <IconButton
               type="submit"
