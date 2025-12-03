@@ -6,7 +6,7 @@ import BaseModal from '../../../components/BaseModal'
 import ImageLoading from './ImageLoading'
 import { CRow, CFormSwitch } from '@coreui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTimes } from '@fortawesome/free-solid-svg-icons'
+import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons'
 
 const MIAImage = (props) => {
   const [image, setImage] = useState({ id: props.image.id, data: '' })
@@ -101,7 +101,16 @@ const MIAImage = (props) => {
         />
         <div style={{ marginRight: '50px' }}>
           {props.image.is_active ? (
-            <b>Included</b>
+            <>
+              <FontAwesomeIcon
+                className="mr-3"
+                size={'1x'}
+                color={'green'}
+                icon={faCheck}
+              />
+              &nbsp;
+              <b>Included</b>
+            </>
           ) : (
             <>
               <FontAwesomeIcon

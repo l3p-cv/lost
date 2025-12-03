@@ -191,7 +191,7 @@ class Control extends Component {
           <CButtonGroup className="float-left">
             <CoreIconButton
               icon={faArrowLeft}
-              isOutline={false}
+              isOutline={true}
               disabled={this.hist.isEmpty()}
               // className="btn-info"
               color="info"
@@ -199,7 +199,7 @@ class Control extends Component {
             />
             <CoreIconButton
               icon={faArrowRight}
-              isOutline={false}
+              isOutline={true}
               disabled={this.props.selectedLabel ? false : true}
               // className="btn-info"
               color="info"
@@ -214,22 +214,22 @@ class Control extends Component {
               color="secondary"
               icon={faArrowsAltH}
               text="Reverse"
-              isOutline={false}
+              isOutline={true}
             />
             <CoreIconButton
               onClick={this.handleZoomIn}
               color="secondary"
               icon={faSearchPlus}
-              isOutline={false}
+              isOutline={true}
             />
             <CoreIconButton
               onClick={this.handleZoomOut}
               color="secondary"
               icon={faSearchMinus}
-              isOutline={false}
+              isOutline={true}
             />
             <CDropdown>
-              <CDropdownToggle color="secondary" caret>
+              <CDropdownToggle color="secondary" variant="outline" caret>
                 Amount
               </CDropdownToggle>
               <CDropdownMenu>

@@ -33,6 +33,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added /polygon_operations endpoint with perform_polygon_operations for union, intersection, and difference of polygons and bounding boxes, including validations.
 - Added Swagger UI documentation for the new polygon operations API
 - Added pytest coverage for polygon operations including mixed polygon and bbox scenarios
+- BaseModal now has backdropOption (which can be true, false or 'static'); used 'static' for EditInstruction
+- Groups and Roles viewable und "My Profile"
 ### Changed
 - Replaced all usages of reactstrap and semantic-ui with CoreUI components and/or generic solutions 
 - moved quick_setup.py into main directory
