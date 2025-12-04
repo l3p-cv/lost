@@ -92,11 +92,7 @@ const LabelEditorControls = ({
             updateNodeData(nodeId, { externalId: e.target.value })
           }}
         />
-        <CFormInput
-          type="text"
-          value={`ID: ${nodeId}`}
-          disabled
-        />
+        <CFormInput type="text" value={`ID: ${nodeId}`} disabled />
         <CFormInput
           type="color"
           className="edit-label-color"
@@ -109,11 +105,11 @@ const LabelEditorControls = ({
           }}
         />
         <IconButton
-            className="edit-label-save"
-            color="success"
-            onClick={handleSave}
-            icon={faCheck}
-            text="Save"
+          className="edit-label-save"
+          color="success"
+          onClick={handleSave}
+          icon={faCheck}
+          text="Save"
         />
         <IconButton
           color="danger"

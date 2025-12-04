@@ -18,7 +18,7 @@ export const pipelineStepMap = {
   'template-next': 26,
   'latest-running-pipeline': 29,
   'latest-running-annotask': 30,
-};
+}
 
 export const instructionStepMap = {
   'start-instruction': 0,
@@ -46,7 +46,7 @@ export const instructionStepMap = {
   'anno-task-display': 42,
   'view-created-pipeline': 43,
   'view-created-annotask': 44,
-};
+}
 
 export const instructionStepMap2 = {
   'start-instruction': 0,
@@ -61,11 +61,11 @@ export const instructionStepMap2 = {
   'after-nav': 14,
   'view-created-pipeline': 15,
   'view-created-annotask': 16,
-};
+}
 
 export const labelStepMap = {
-  'skip-tocreate':1,
+  'skip-tocreate': 1,
   'latest-label-tree': 4,
   'open-edit-modal': 5,
   'create-label': 7,
-};
+}

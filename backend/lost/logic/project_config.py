@@ -1,9 +1,10 @@
 import ast
-from lost.db import model
-from datetime import datetime
-import pandas as pd
 import json
 import time
+
+import pandas as pd
+
+from lost.db import model
 
 
 def try_dump(data):
@@ -17,8 +18,7 @@ def try_dump(data):
     return data
 
 
-class ProjectConfigMan(object):
-
+class ProjectConfigMan:
     def __init__(self, dbm):
         self.dbm = dbm
         self.df = self._load_from_db()
@@ -28,64 +28,64 @@ class ProjectConfigMan(object):
         return pd.DataFrame(d_list)
 
     def _get_by_key(self, key, entry):
-        '''Get entry for a specific key'''
+        """Get entry for a specific key"""
         try:
-            return ast.literal_eval(self.df[self.df['key'] == key][entry].values[0])
+            return ast.literal_eval(self.df[self.df["key"] == key][entry].values[0])
         except:
             try:
-                return self.df[self.df['key'] == key][entry].values[0]
+                return self.df[self.df["key"] == key][entry].values[0]
             except:
-                raise KeyError('Wrong key: {}'.format(key))
+                raise KeyError(f"Wrong key: {key}")
 
     def get_all(self):
-        '''
+        """
         Returns: config file as json
-        '''
-        return json.loads(self.df.to_json(orient='records'))
+        """
+        return json.loads(self.df.to_json(orient="records"))
 
     def get_val(self, key):
-        '''Get config value for a specific key.
+        """Get config value for a specific key.
 
         Args:
             key (str): Config key
 
         Retruns:
             python object
-        '''
-        return self._get_by_key(key, 'value')
+        """
+        return self._get_by_key(key, "value")
 
     def get_default_val(self, key):
-        '''Get config default_value for a specific key.
+        """Get config default_value for a specific key.
 
         Args:
             key (str): Config key
 
         Retruns:
             python object
-        '''
-        return self._get_by_key(key, 'default_value')
+        """
+        return self._get_by_key(key, "default_value")
 
     def get_description(self, key):
-        '''Get config description for a specific key.
+        """Get config description for a specific key.
 
         Args:
             key (str): Config key
 
         Retruns:
             str: Description for this config entry.
-        '''
-        return self._get_by_key(key, 'description')
+        """
+        return self._get_by_key(key, "description")
 
     def update_all(self, new_values):
-        '''Update all entrys
+        """Update all entrys
 
-        Args: 
+        Args:
             new_values: new values
-        '''
+        """
         return "Not implemented"
 
     def update_entry(self, key, value=None, user_id=None, default=None, description=None, config=None):
-        '''Update config entry.
+        """Update config entry.
 
         Args:
             key (str): Config key
@@ -93,10 +93,10 @@ class ProjectConfigMan(object):
             user_id (None or int): Id of user who created this entry
             default (None or obj): Default value for this config entry
             description (None or str): Description for this config entry
-        '''
+        """
         entry = self.dbm.get_project_config(key)
         if entry is None:
-            raise Exception('No entry in database for key: {}!'.format(key))
+            raise Exception(f"No entry in database for key: {key}!")
         else:
             if value is not None:
                 entry.value = try_dump(value)
@@ -111,7 +111,7 @@ class ProjectConfigMan(object):
             self.dbm.save_obj(entry)
 
     def create_entry(self, key, value, user_id=None, default=None, description=None, config=None):
-        '''Create config entry.
+        """Create config entry.
 
         Args:
             key (str): Config key
@@ -122,15 +122,20 @@ class ProjectConfigMan(object):
 
         Note:
             Will throw exception if key is already present in config!
-        '''
+        """
         entry = self.dbm.get_project_config(key)
         if entry is None:
             if default is None:
                 default = value
-            entry = model.Config(key=key, default_value=try_dump(default), value=try_dump(value),
-                                 user_id=user_id, timestamp=int(time.time()), description=description, config=config
-                                 )
+            entry = model.Config(
+                key=key,
+                default_value=try_dump(default),
+                value=try_dump(value),
+                user_id=user_id,
+                timestamp=int(time.time()),
+                description=description,
+                config=config,
+            )
             self.dbm.save_obj(entry)
         else:
-            raise Exception(
-                'Config entry already exists! Can not create key: {}!'.format(key))
+            raise Exception(f"Config entry already exists! Can not create key: {key}!")

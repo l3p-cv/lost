@@ -1,19 +1,20 @@
 from flask import request
+from flask_jwt_extended import get_jwt_identity, jwt_required
 from flask_restx import Resource
-from flask_jwt_extended import jwt_required, get_jwt_identity
+
 from lost.api.api import api
 from lost.api.group.api_definition import group, group_list
 from lost.api.group.parsers import group_parser
-from lost.db import model, roles, access
+from lost.db import access, model, roles
 from lost.settings import LOST_CONFIG
 
-namespace = api.namespace('group', description='Groups in System.')
+namespace = api.namespace("group", description="Groups in System.")
 
-@namespace.route('')
-@api.doc(security='apikey')
+
+@namespace.route("")
+@api.doc(security="apikey")
 class GroupList(Resource):
-    @api.doc(security='apikey',description='Get a list of all groups')
-
+    @api.doc(security="apikey", description="Get a list of all groups")
     @api.marshal_with(group_list)
     @jwt_required()
     def get(self):
@@ -24,33 +25,34 @@ class GroupList(Resource):
             dbm.close_session()
             return api.abort(403, "You are not authorized.")
         else:
-            glist = {'groups':dbm.get_user_groups(user_defaults=False)}
+            glist = {"groups": dbm.get_user_groups(user_defaults=False)}
             dbm.close_session()
             return glist
 
-    @api.doc(security='apikey',description='Add a new group')
+    @api.doc(security="apikey", description="Add a new group")
     @api.expect(group_parser)
     @jwt_required()
     def post(self):
         args = group_parser.parse_args(request)
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
-        group_name = args.get('group_name')
+        group_name = args.get("group_name")
         if not group_name:
             return "A group name is required.", 400
         if dbm.get_group_by_name(group_name):
-            return "Group with name '{}' already exists.".format(group_name), 409
+            return f"Group with name '{group_name}' already exists.", 409
         group = model.Group(name=group_name, manager_id=identity)
         dbm.save_obj(group)
         dbm.commit()
         dbm.close_session()
         return "success"
 
-@namespace.route('/<int:id>')
-@namespace.param('id', 'The group identifier')
-@api.doc(security='apikey')
+
+@namespace.route("/<int:id>")
+@namespace.param("id", "The group identifier")
+@api.doc(security="apikey")
 class Group(Resource):
-    @api.doc(security='apikey',description='Get Group with a given ID')
+    @api.doc(security="apikey", description="Get Group with a given ID")
     @api.marshal_with(group)
     @jwt_required()
     def get(self, id):
@@ -61,9 +63,9 @@ class Group(Resource):
         if group:
             return group
         else:
-            return "Group with ID '{}' not found.".format(id)
-        
-    @api.doc(security='apikey',description='Delete Group with given ID')
+            return f"Group with ID '{id}' not found."
+
+    @api.doc(security="apikey", description="Delete Group with given ID")
     @jwt_required()
     def delete(self, id):
         dbm = access.DBMan(LOST_CONFIG)
@@ -74,12 +76,12 @@ class Group(Resource):
             return api.abort(403, "You are not authorized.")
 
         group = dbm.get_group_by_id(id)
-        
+
         if group:
-            dbm.delete(group) 
+            dbm.delete(group)
             dbm.commit()
             dbm.close_session()
-            return 'success', 200 
+            return "success", 200
         else:
             dbm.close_session()
-            return "Group with ID '{}' not found.".format(id), 400
+            return f"Group with ID '{id}' not found.", 400

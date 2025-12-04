@@ -1,21 +1,22 @@
 import datetime
 from typing import Optional
-from lost.api.base import BaseModelWithCamelCase
+
 from pydantic import field_validator
 from werkzeug.exceptions import BadRequest
 
+from lost.api.base import BaseModelWithCamelCase
 from lost.utils.validators import is_valid_grpc_url
 
 
+class InferenceModelType:
+    YOLO = "YOLO"
+    SAM = "SAM"
 
 
-class InferenceModelType():
-    YOLO = 'YOLO'
-    SAM = 'SAM'
-
-class InferenceModelTaskType():
+class InferenceModelTaskType:
     DETECTION = 0
     SEGMENTATION = 1
+
 
 class InferenceModelRequest(BaseModelWithCamelCase):
     name: str
@@ -25,21 +26,20 @@ class InferenceModelRequest(BaseModelWithCamelCase):
     model_type: str  # newly added
     description: Optional[str] = None  # newly added
 
-    @field_validator('server_url', mode='before')
+    @field_validator("server_url", mode="before")
     @classmethod
     def validate_server_url(cls, v):
         if not is_valid_grpc_url(v):
             raise BadRequest(f"Invalid grpc URL format: {v}")
         return v
 
-    @field_validator('model_type', mode='before')
+    @field_validator("model_type", mode="before")
     @classmethod
     def validate_model_type(cls, v):
         allowed_types = {InferenceModelType.YOLO, InferenceModelType.SAM}
         if v not in allowed_types:
             raise BadRequest(f"Invalid model type: {v}. Allowed types are: {', '.join(allowed_types)}")
         return v
-
 
 
 class InferenceModelResponse(BaseModelWithCamelCase):

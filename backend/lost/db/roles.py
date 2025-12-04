@@ -1,3 +1,3 @@
-ADMINISTRATOR = 'Administrator'
-DESIGNER = 'Designer'
-ANNOTATOR = 'Annotator'
+ADMINISTRATOR = "Administrator"
+DESIGNER = "Designer"
+ANNOTATOR = "Annotator"

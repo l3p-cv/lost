@@ -1,12 +1,16 @@
 import React from 'react'
 
-const TagLabel = ({ label, color = '#2185d0', 
-    size: bodySize = 32, 
-    triangleSize=22, 
-    onClick = null,
-    style = {}, className = '' }) => {
-// const bodySize = triangleSize*1.414
-// const triangleSize=bodySize*0.7072135785
+const TagLabel = ({
+  label,
+  color = '#2185d0',
+  size: bodySize = 32,
+  triangleSize = 22,
+  onClick = null,
+  style = {},
+  className = '',
+}) => {
+  // const bodySize = triangleSize*1.414
+  // const triangleSize=bodySize*0.7072135785
 
   const containerStyle = {
     display: 'inline-flex',
@@ -34,13 +38,11 @@ const TagLabel = ({ label, color = '#2185d0',
     backgroundColor: color,
     transform: 'rotate(45deg)',
     zIndex: -1, // push behind text
-    pointerEvents: 'none'
+    pointerEvents: 'none',
   }
 
   return (
-    <span style={containerStyle} className={className}
-        onClick={onClick} 
-    >
+    <span style={containerStyle} className={className} onClick={onClick}>
       <span style={triangleStyle} />
       {label}
     </span>

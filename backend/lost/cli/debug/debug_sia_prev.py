@@ -1,23 +1,17 @@
-
-from enum import auto
-import lost
-import json
-import os
-import flask
-from lost.db import dtype, state, model, access
-from lost.db.access import DBMan
-from lost.logic.anno_task import set_finished, update_anno_task
 from datetime import datetime
-from lost.logic.file_man import FileMan
-from lost.settings import LOST_CONFIG, DATA_URL
 
-USER_ID=7
+from lost.db import access, dtype
+from lost.settings import LOST_CONFIG
 
-def get_sia_anno_task(db_man, user_id): 
+USER_ID = 7
+
+
+def get_sia_anno_task(db_man, user_id):
     for cat in db_man.get_choosen_annotask(user_id):
         if cat.anno_task.dtype == dtype.AnnoTask.SIA:
             return cat.anno_task
     return None
+
 
 user_id = USER_ID
 img_id = 171221

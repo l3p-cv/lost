@@ -1,10 +1,10 @@
 export interface AvailableDatasetExportsResponse {
-    exports: Export[]
+  exports: Export[]
 }
 
 export interface Export {
-    datasetId: number
-    filePath: string
-    id: number
-    progress: number
+  datasetId: number
+  filePath: string
+  id: number
+  progress: number
 }

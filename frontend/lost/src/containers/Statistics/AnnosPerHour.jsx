@@ -7,102 +7,102 @@ const brandInfo = getStyle('info') || '#20a8d8'
 const brandDanger = getStyle('danger') || '#f86c6b'
 
 const AnnosPerHour = ({ data }) => {
-    const defaultDatasets = (() => {
-        return [
-            {
-                label: 'Annotations',
-                backgroundColor: hexToRgba(brandInfo, 10),
-                borderColor: brandInfo,
-                pointHoverBackgroundColor: brandInfo,
-                borderWidth: 2,
-                yAxisID: 'A',
-                data: data.amountPerHour,
-            },
-            {
-                label: 'Average time per annotation (seconds)',
-                backgroundColor: 'transparent',
-                borderColor: brandDanger,
-                pointHoverBackgroundColor: brandDanger,
-                borderWidth: 1,
-                borderDash: [8, 5],
-                yAxisID: 'B',
-                data: data.avgPerHour,
-            },
-        ]
-    })()
+  const defaultDatasets = (() => {
+    return [
+      {
+        label: 'Annotations',
+        backgroundColor: hexToRgba(brandInfo, 10),
+        borderColor: brandInfo,
+        pointHoverBackgroundColor: brandInfo,
+        borderWidth: 2,
+        yAxisID: 'A',
+        data: data.amountPerHour,
+      },
+      {
+        label: 'Average time per annotation (seconds)',
+        backgroundColor: 'transparent',
+        borderColor: brandDanger,
+        pointHoverBackgroundColor: brandDanger,
+        borderWidth: 1,
+        borderDash: [8, 5],
+        yAxisID: 'B',
+        data: data.avgPerHour,
+      },
+    ]
+  })()
 
-    const defaultOptions = (() => {
-        return {
-            maintainAspectRatio: true,
-            legend: {
-                display: false,
+  const defaultOptions = (() => {
+    return {
+      maintainAspectRatio: true,
+      legend: {
+        display: false,
+      },
+      scales: {
+        xAxes: [
+          {
+            type: 'time',
+            gridLines: {
+              drawOnChartArea: false,
             },
-            scales: {
-                xAxes: [
-                    {
-                        type: 'time',
-                        gridLines: {
-                            drawOnChartArea: false,
-                        },
-                        time: {
-                            // parser: 'YYYY-MM-DD HH:mm',
-                            parser: function (date) {
-                                return date.toLocaleString()
-                            },
-                            tooltipFormat: 'll HH:mm',
-                            unit: 'day',
-                            unitStepSize: 1,
-                            displayFormats: {
-                                day: 'MMM DD',
-                            },
-                        },
-                    },
-                ],
-                yAxes: [
-                    {
-                        id: 'A',
-                        position: 'left',
-                        ticks: {
-                            beginAtZero: true,
-                            maxTicksLimit: 5,
-                        },
-                        gridLines: {
-                            display: true,
-                        },
-                    },
-                    {
-                        id: 'B',
-                        position: 'right',
-                        ticks: {
-                            beginAtZero: true,
-                            maxTicksLimit: 5,
-                        },
-                        gridLines: {
-                            display: false,
-                        },
-                    },
-                ],
+            time: {
+              // parser: 'YYYY-MM-DD HH:mm',
+              parser: function (date) {
+                return date.toLocaleString()
+              },
+              tooltipFormat: 'll HH:mm',
+              unit: 'day',
+              unitStepSize: 1,
+              displayFormats: {
+                day: 'MMM DD',
+              },
             },
-            elements: {
-                point: {
-                    radius: 0,
-                    hitRadius: 10,
-                    hoverRadius: 4,
-                    hoverBorderWidth: 3,
-                },
+          },
+        ],
+        yAxes: [
+          {
+            id: 'A',
+            position: 'left',
+            ticks: {
+              beginAtZero: true,
+              maxTicksLimit: 5,
             },
-        }
-    })()
+            gridLines: {
+              display: true,
+            },
+          },
+          {
+            id: 'B',
+            position: 'right',
+            ticks: {
+              beginAtZero: true,
+              maxTicksLimit: 5,
+            },
+            gridLines: {
+              display: false,
+            },
+          },
+        ],
+      },
+      elements: {
+        point: {
+          radius: 0,
+          hitRadius: 10,
+          hoverRadius: 4,
+          hoverBorderWidth: 3,
+        },
+      },
+    }
+  })()
 
-    // render
-    return (
-        <CChartLine
-            style={{ minHeight: 350, maxHeight: '900' }}
-            data={{ datasets: defaultDatasets, labels: data.labels }}
-            options={defaultOptions}
-            labels={data.labels}
-        />
-    )
+  // render
+  return (
+    <CChartLine
+      style={{ minHeight: 350, maxHeight: '900' }}
+      data={{ datasets: defaultDatasets, labels: data.labels }}
+      options={defaultOptions}
+      labels={data.labels}
+    />
+  )
 }
 
 export default AnnosPerHour

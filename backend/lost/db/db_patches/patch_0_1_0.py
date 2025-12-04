@@ -1,7 +1,10 @@
 import traceback
+
 from sqlalchemy import text
+
 from lost.db import access
 from lostconfig import LOSTConfig
+
 
 def create_version_table(dbm):
     try:
@@ -11,14 +14,16 @@ def create_version_table(dbm):
                 ADD COLUMN changed_by_engine INTEGER DEFAULT 0;
             """
         dbm.session.execute(text(sql))
-        print(f'executed successfull: {sql}')
+        print(f"executed successfull: {sql}")
     except:
         print(traceback.format_exc())
 
+
 def run_all(dbm):
-    print('--- Start lost db patch 0.1.0 ---')
+    print("--- Start lost db patch 0.1.0 ---")
     create_version_table(dbm)
-    print('--- lost db patch 0.1.0 complete ---')
+    print("--- lost db patch 0.1.0 complete ---")
+
 
 if __name__ == "__main__":
     dbm = access.DBMan(LOSTConfig())

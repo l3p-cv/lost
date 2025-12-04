@@ -1,10 +1,11 @@
+import os
+
+import cv2
 import pytest
 from skimage.metrics import structural_similarity as ssim
-import os
-import cv2
-import math
-import numpy as np
+
 from lost.logic import sia
+
 
 @pytest.fixture
 def image_data():
@@ -16,6 +17,7 @@ def image_data():
     if img is None:
         raise ValueError(f"Failed to load original image: {file_path}")
     return img
+
 
 def load_image(filename):
     test_dir = os.path.dirname(__file__)
@@ -98,7 +100,6 @@ class TestImageFilters:
         similarity, _ = ssim(processed_img, expected_img, channel_axis=-1, full=True)
         assert similarity > 0.99, f"Images differ: SSIM={similarity:.2f}"
 
-
     def test_tc13_apply_multiple_filters_expected_result(self, image_data):
         filters = [
             {"name": "cannyEdge", "configuration": {"lowerThreshold": 60, "upperThreshold": 180}},
@@ -124,7 +125,7 @@ class TestImageFilters:
         filters = [
             {"name": "bilateral", "configuration": {"diameter": 9, "sigmaColor": 75, "sigmaSpace": 75}},
             {"name": "clahe", "configuration": {"clipLimit": 4.0}},
-            {"name": "cannyEdge", "configuration": {"lowerThreshold": 10, "upperThreshold": 150}}
+            {"name": "cannyEdge", "configuration": {"lowerThreshold": 10, "upperThreshold": 150}},
         ]
         processed_img = sia.apply_filters(image_data, filters)
         expected_img = load_image("test_filter_images/test_tc15_image_405.png")
@@ -148,7 +149,7 @@ class TestImageFilters:
         with pytest.raises(ValueError, match="diameter, sigmaColor, and sigmaSpace must be positive"):
             sia.apply_bilateral_blurr(image_data, config=config)
 
-        config = {"diameter": 9, "sigmaColor": 75, "sigmaSpace": float('inf')}
+        config = {"diameter": 9, "sigmaColor": 75, "sigmaSpace": float("inf")}
         with pytest.raises(ValueError, match="diameter, sigmaColor, and sigmaSpace must be numeric and finite"):
             sia.apply_bilateral_blurr(image_data, config=config)
 

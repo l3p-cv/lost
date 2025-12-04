@@ -1,40 +1,39 @@
+import json
+import logging
 import os
 from datetime import datetime
+
+from flask import make_response, request
+from flask_jwt_extended import get_jwt_identity, jwt_required
 from flask_restx import Resource
-from flask import request, make_response
-from flask_jwt_extended import jwt_required, get_jwt_identity
-from lost.api.api import api
-from lost.settings import LOST_CONFIG, DATA_URL
-from lost.logic.file_access import UserFileAccess
-from lost.logic.db_access import UserDbAccess
-from lost.db import access, roles, model, dtype
+
+from lost.api.annotasks.api_definition import (
+    anno_task,
+    anno_task_export_list,
+    anno_task_filter_lables,
+    anno_task_list,
+    review_images,
+    review_options,
+    storage_settings,
+)
 from lost.api.annotasks.parsers import (
-    annotask_parser,
-    update_group_parser,
     annotask_config_parser,
-    storage_parser,
+    annotask_parser,
     generate_export_parser,
     get_annotasks_parser,
     patch_annotation_parser,
+    storage_parser,
+    update_group_parser,
 )
+from lost.api.api import api
+from lost.db import access, dtype, model, roles
 from lost.logic import anno_task as annotask_service
-from lost.logic.jobs.jobs import force_anno_release, export_ds
-from lost.logic import dask_session
-from lost.api.annotasks.api_definition import (
-    anno_task_list,
-    anno_task,
-    storage_settings,
-    anno_task_export_list,
-    anno_task_export_download,
-    anno_task_filter_lables,
-    review_images,
-    review_options,
-)
-import json
-from lost.logic.sia import SiaSerialize, get_image_progress, SiaUpdateOneThing
-import logging
-from lost.logic import sia
-
+from lost.logic import dask_session, sia
+from lost.logic.db_access import UserDbAccess
+from lost.logic.file_access import UserFileAccess
+from lost.logic.jobs.jobs import export_ds, force_anno_release
+from lost.logic.sia import SiaSerialize, SiaUpdateOneThing, get_image_progress
+from lost.settings import DATA_URL, LOST_CONFIG
 
 namespace = api.namespace("annotasks", description="AnnoTask API.")
 
@@ -566,7 +565,7 @@ class DatasetReviewImageSearch(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.DESIGNER))
+            return api.abort(403, f"You need to be {roles.DESIGNER} in order to perform this request.")
 
         search_str = request.args.get("filter")
         labels = request.args.get("labels")
@@ -611,6 +610,25 @@ class DatasetReviewImageSearch(Resource):
         return {"images": found_images}
 
 
+@namespace.route("/<int:annotask_id>/review/labels")
+@api.doc(security="apikey")
+class AnnotaskReviewLabels(Resource):
+    @api.doc(description="Get all possible labels for a given annotation task")
+    @api.param("annotask_id", "annotask id to get the labels for")
+    @jwt_required()
+    def get(self, annotask_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return api.abort(403, f"You need to be {roles.DESIGNER} in order to perform this request.")
+
+        labels = sia.get_label_trees_by_anno_task_id(dbm, annotask_id)
+
+        return labels
+
+
 @namespace.route("/<int:annotask_id>/annotation")
 @api.expect(patch_annotation_parser)
 @api.doc(security="apikey")
@@ -623,7 +641,7 @@ class UpdateOneThing(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
+            return api.abort(403, f"You need to be {roles.ANNOTATOR} in order to perform this request.")
         else:
             args = patch_annotation_parser.parse_args(request)
             logging.info(args)
@@ -654,7 +672,7 @@ class ReviewOptions(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.DESIGNER))
+            return api.abort(403, f"You need to be {roles.DESIGNER} in order to perform this request.")
 
         else:
             re = sia.reviewoptions_annotask(dbm, annotask_id, user.idx)
@@ -676,7 +694,7 @@ class AnnotaskReview(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.DESIGNER))
+            return api.abort(403, f"You need to be {roles.DESIGNER} in order to perform this request.")
 
         data = request.json
         serialized_review_data = self.__review(dbm, annotask_id, user.idx, data)
@@ -687,7 +705,7 @@ class AnnotaskReview(Resource):
         annotask = dbm.get_anno_task(anno_task_id=annotask_id)
         direction = data["direction"]
         current_idx = data["imageAnnoId"]
-        iteration = data["iteration"]
+        iteration = data.get("iteration", None)
 
         first_annotation = dbm.get_sia_review_first(annotask.idx, iteration)
 
@@ -700,10 +718,10 @@ class AnnotaskReview(Resource):
         elif direction == "next":
             # get the next image of the same annotation task
             image_anno = dbm.get_sia_review_next(annotask.idx, current_idx, iteration)
-        elif direction == "previous":
+        elif direction == "prev":
             # get the previous image of the same annotation task
             image_anno = dbm.get_sia_review_prev(current_annotask.idx, current_idx, iteration)
-        elif direction == "specificImage":
+        elif direction == "specificImage" or direction == "current":
             image_anno = dbm.get_sia_review_id(annotask_id, current_idx, iteration)
 
         if not image_anno:

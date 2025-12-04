@@ -1,21 +1,19 @@
-import { useQuery, useMutation, useQueryClient } from 'react-query';
-import axios from 'axios';
-import { API_URL } from '../../lost_settings';
+import { useQuery, useMutation, useQueryClient } from 'react-query'
+import axios from 'axios'
+import { API_URL } from '../../lost_settings'
 
 // (GET)
 export const useGetInstructions = (visLevel) => {
-  return useQuery(
-    ['instructions', visLevel],
-    () =>
-      axios
-        .get(`${API_URL}/instructions/getInstructions/${visLevel}`) // Use visLevel in URL
-        .then((res) => res.data.instructions)
-  );
-};
+  return useQuery(['instructions', visLevel], () =>
+    axios
+      .get(`${API_URL}/instructions/getInstructions/${visLevel}`) // Use visLevel in URL
+      .then((res) => res.data.instructions),
+  )
+}
 
 // (DELETE)
 export const useDeleteInstruction = () => {
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
 
   return useMutation(
     (id) =>
@@ -24,15 +22,15 @@ export const useDeleteInstruction = () => {
         .then((res) => res.data),
     {
       onSuccess: () => {
-        queryClient.invalidateQueries('instructions');
+        queryClient.invalidateQueries('instructions')
       },
-    }
-  );
-};
+    },
+  )
+}
 
 // (POST)
 export const useAddInstruction = () => {
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
 
   return useMutation(
     (newInstruction) =>
@@ -41,15 +39,15 @@ export const useAddInstruction = () => {
         .then((res) => res.data),
     {
       onSuccess: () => {
-        queryClient.invalidateQueries('instructions');
+        queryClient.invalidateQueries('instructions')
       },
-    }
-  );
-};
+    },
+  )
+}
 
 // (PUT)
 export const useEditInstruction = () => {
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
 
   return useMutation(
     (updatedInstruction) =>
@@ -58,8 +56,8 @@ export const useEditInstruction = () => {
         .then((res) => res.data),
     {
       onSuccess: () => {
-        queryClient.invalidateQueries('instructions');
+        queryClient.invalidateQueries('instructions')
       },
-    }
-  );
-};
+    },
+  )
+}

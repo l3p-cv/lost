@@ -20,17 +20,15 @@ const LDivider = ({
   }
 
   if (!text) {
-    return (
-      <hr
-        className={`mx-auto ${className}`}
-        style={{ width }}
-        {...rest}
-      />
-    )
+    return <hr className={`mx-auto ${className}`} style={{ width }} {...rest} />
   }
 
   return (
-    <div className={`d-flex align-items-center ${getJustifyClass()} my-3 ${className}`} style={{ width }} {...rest}>
+    <div
+      className={`d-flex align-items-center ${getJustifyClass()} my-3 ${className}`}
+      style={{ width }}
+      {...rest}
+    >
       <div className="flex-grow-1 border-top"></div>
       <span className={`px-3 ${textClassName}`}>{text}</span>
       <div className="flex-grow-1 border-top"></div>

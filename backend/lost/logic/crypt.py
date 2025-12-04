@@ -1,17 +1,20 @@
-from cryptography.fernet import Fernet
-from lostconfig import LOSTConfig
 import json
 
-class Crypt(object):
-    
+from cryptography.fernet import Fernet
+
+from lostconfig import LOSTConfig
+
+
+class Crypt:
     def __init__(self):
         self.chipper = Fernet(LOSTConfig().secret_key.encode())
-    
+
     def encrypt(self, text):
         return self.chipper.encrypt(text.encode()).decode()
-    
+
     def decrypt(self, text):
-        return self.chipper.decrypt(text.encode()).decode()    
+        return self.chipper.decrypt(text.encode()).decode()
+
 
 def encrypt_fs_connection(con):
     c = Crypt()
@@ -20,8 +23,9 @@ def encrypt_fs_connection(con):
     except:
         return c.encrypt(json.dumps(con))
 
+
 def decrypt_fs_connection(fs_db):
-    if fs_db.fs_type == 'file':
+    if fs_db.fs_type == "file":
         return fs_db.connection
     c = Crypt()
     dec = c.decrypt(fs_db.connection)

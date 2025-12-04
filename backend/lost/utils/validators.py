@@ -4,10 +4,10 @@ import re
 def is_valid_grpc_url(url: str) -> bool:
     # Match standard host:port or scheme://host:port
     pattern = re.compile(
-        r'^(?:(dns|unix):\/\/\/?)?'     # optional scheme
-        r'(([\w\.-]+)|(\[::1\])|(\[.*\]))?'  # host, IPv4, domain, or IPv6
-        r'(?::(\d{1,5}))?'              # optional :port (1–5 digits)
-        r'(\/[\w\/\.]+)?$'              # optional path (for unix sockets)
+        r"^(?:(dns|unix):\/\/\/?)?"  # optional scheme
+        r"(([\w\.-]+)|(\[::1\])|(\[.*\]))?"  # host, IPv4, domain, or IPv6
+        r"(?::(\d{1,5}))?"  # optional :port (1–5 digits)
+        r"(\/[\w\/\.]+)?$"  # optional path (for unix sockets)
     )
     match = pattern.match(url)
     if not match:

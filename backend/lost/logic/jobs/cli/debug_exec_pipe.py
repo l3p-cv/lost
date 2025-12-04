@@ -1,33 +1,30 @@
-import traceback
 import logging
-import os
-from datetime import datetime, timedelta
+import traceback
+
 from dask.distributed import Client
 
 try:
-    from lost.db import access
-    from lost.logic.pipeline import cron
     import lostconfig as config
     from lost.db.access import DBMan
-    from lost.db import state
+    from lost.logic.pipeline import cron
 except:
-    logging.error(traceback.format_exc())
+    logging.exception(traceback.format_exc())
+
 
 def exec_pipe():
     lostconfig = config.LOSTConfig()
     dbm = DBMan(lostconfig)
     pipe_list = dbm.get_pipes_to_process()
-    if lostconfig.worker_management != 'dynamic':
-        client = Client('{}:{}'.format(
-            lostconfig.scheduler_ip, lostconfig.scheduler_port)
-        )
+    if lostconfig.worker_management != "dynamic":
+        client = Client(f"{lostconfig.scheduler_ip}:{lostconfig.scheduler_port}")
     else:
         client = None
     # For each task in this project
     for p in pipe_list:
-       pipe_man = cron.PipeEngine(dbm=dbm, pipe=p, lostconfig=lostconfig, client=client)
-       pipe_man.process_pipeline()
+        pipe_man = cron.PipeEngine(dbm=dbm, pipe=p, lostconfig=lostconfig, client=client)
+        pipe_man.process_pipeline()
     dbm.close_session()
+
 
 # def release_annos():
 #     lostconfig = config.LOSTConfig()

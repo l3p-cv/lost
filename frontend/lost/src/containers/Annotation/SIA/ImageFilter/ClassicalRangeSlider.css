@@ -1,0 +1,45 @@
+.classic-range-slider {
+    -webkit-appearance: none; /* Für Chrome, Safari, Opera */
+    appearance: none;
+    width: 100%;
+    height: 8px; /* Höhe der Spur */
+    background: transparent;
+}
+
+/* Styles for Track in WebKit-Browsers (Chrome, Safari, Opera) */
+.classic-range-slider::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 6px;
+    background: var(--cui-secondary-bg, #0d6efd); /* Die CoreUI primary Farbe */
+    border-radius: 4px;
+}
+
+/* Styles for thumb in WebKit-Browsers */
+.classic-range-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 16px; /* Höhe des Thumbs */
+    width: 16px; /* Breite des Thumbs */
+    background: var(--cui-primary, #0d6efd);
+    border-radius: 50%; /* Runde Form */
+    margin-top: -4px; /* Zentrierung: (Track-Höhe - Thumb-Höhe) / 2 */
+    cursor: pointer;
+}
+
+/* Styles track in Firefox */
+.classic-range-slider::-moz-range-track {
+    width: 100%;
+    height: 6px;
+    background: var(--cui-secondary-bg, #0d6efd);
+    border-radius: 4px;
+}
+
+/* Styles for slider (Thumb) in firefox */
+.classic-range-slider::-moz-range-thumb {
+    height: 16px;
+    width: 16px;
+    background: var(--cui-primary, #0d6efd);
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+}

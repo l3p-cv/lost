@@ -1,7 +1,10 @@
 import traceback
+
 from sqlalchemy import text
+
 from lost.db import access
 from lostconfig import LOSTConfig
+
 
 def create_dataset_export_table(dbm):
     try:
@@ -15,14 +18,16 @@ def create_dataset_export_table(dbm):
             );
             """
         dbm.session.execute(text(sql))
-        print(f'executed successfully : {sql}')
+        print(f"executed successfully : {sql}")
     except:
         print(traceback.format_exc())
 
+
 def run_all(dbm):
-    print('--- Start lost db patch 0.2.0 ---')
+    print("--- Start lost db patch 0.2.0 ---")
     create_dataset_export_table(dbm)
-    print('--- lost db patch 0.2.0 complete ---')
+    print("--- lost db patch 0.2.0 complete ---")
+
 
 if __name__ == "__main__":
     dbm = access.DBMan(LOSTConfig())
