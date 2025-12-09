@@ -1,6 +1,4 @@
-// TODO: PLEASE RENAME THIS!!!
 import { CTable, CTableBody, CTableHead, CSpinner, CRow, CCol } from '@coreui/react'
-// import BaseContainer from './BaseContainer'
 import { useState } from 'react'
 import {
   flexRender,
@@ -13,7 +11,6 @@ import {
 import React, { Fragment, useEffect } from 'react'
 import PaginationWrapper from './Pagination/PaginationWrapper'
 
-// const CoreDataTable = ( {tableData, columns} ) => { // TODO: rewrite as const???
 function CoreDataTable({
   className = '',
   tableData = [],
@@ -62,7 +59,6 @@ function CoreDataTable({
   }, [paginationState])
 
   const table = useReactTable({
-    // data: (dataTemp.length === 0) ? dataTemp : tableData, // TODO: dataTemp
     data: dataTemp,
     manualPagination: pageCount !== undefined ? true : false,
     columns,
@@ -85,10 +81,8 @@ function CoreDataTable({
     getExpandedRowModel: getExpandedRowModel(),
   })
 
-  // TODO: use isLoading!!!
   return (
     <>
-      {/* <BaseContainer> */}
       <CTable striped hover>
         <CTableHead>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -157,7 +151,6 @@ function CoreDataTable({
         setPaginationState={setPaginationState}
         large={paginationLarge}
       />
-      {/* </BaseContainer> */}
     </>
   )
 }
