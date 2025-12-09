@@ -507,6 +507,7 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
           pageCount={pages}
           wholeData={false}
           getRowClassName={getRowClassName}
+          isLoading={isLoadingAnnoTaskListData}
         />
       </ErrorBoundary>
     </>

@@ -27,7 +27,11 @@ export const DSTable = ({ visLevel, headline = 'Datasources' }) => {
   const defaultDsName = 'default'
   const [browseOpen, setBrowseOpen] = useState(false)
   // const [fs, setFs] = useState()
-  const { mutate: getFSListNew, data: fsList } = fbAPI.useGetFSList()
+  const {
+    mutate: getFSListNew,
+    data: fsList,
+    isLoading: fsListIsLoading,
+  } = fbAPI.useGetFSList()
   const { mutate: getFullFs, data: fullFs } = fbAPI.useGetFullFs()
   const { mutate: getPossibleFsTypes, data: possibleFsTypes } =
     fbAPI.useGetPossibleFsTypes()
@@ -275,7 +279,11 @@ export const DSTable = ({ visLevel, headline = 'Datasources' }) => {
       />
       <BaseContainer>
         <ErrorBoundary>
-          <CoreDataTable columns={defineColumns()} tableData={tableData} />
+          <CoreDataTable
+            columns={defineColumns()}
+            tableData={tableData}
+            isLoading={fsListIsLoading}
+          />
         </ErrorBoundary>
       </BaseContainer>
     </>

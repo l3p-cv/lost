@@ -23,7 +23,11 @@ const Labels = ({ visLevel, showHeader = true }) => {
                     Labels
                 </h3>} */}
         {/* <BaseContainer className="mt-3"> */}
-        <LabelTreeTable labelTrees={labelTrees} visLevel={visLevel} />
+        <LabelTreeTable
+          labelTrees={labelTrees}
+          visLevel={visLevel}
+          isLoading={isLoading}
+        />
         {/* </BaseContainer> */}
       </CContainer>
     )

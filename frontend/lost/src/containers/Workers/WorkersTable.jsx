@@ -89,7 +89,11 @@ const WorkersTable = () => {
       {data && (
         <BaseContainer>
           <ErrorBoundary>
-            <CoreDataTable columns={columns} tableData={data.workers} />
+            <CoreDataTable
+              columns={columns}
+              tableData={data.workers}
+              isLoading={isLoading}
+            />
           </ErrorBoundary>
         </BaseContainer>
       )}

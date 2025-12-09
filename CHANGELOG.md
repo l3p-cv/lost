@@ -36,6 +36,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - BaseModal now has backdropOption (which can be true, false or 'static'); used 'static' for EditInstruction
 - Groups and Roles viewable und "My Profile"
 - AnnotationTop component to use for each SIA/MIA
+- BaseModal now has "backdrop" option
+- Added spinner to CoreDataTable, for when data ist still loading (and gave it isLoading from all of its usages)
 ### Changed
 - Replaced all usages of reactstrap and semantic-ui with CoreUI components and/or generic solutions 
 - moved quick_setup.py into main directory

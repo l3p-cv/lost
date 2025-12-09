@@ -20,7 +20,7 @@ import ErrorBoundary from '../../components/ErrorBoundary'
 
 let amountOfLabels = 0
 
-const LabelTreeTable = ({ labelTrees, visLevel }) => {
+const LabelTreeTable = ({ labelTrees, visLevel, isLoading = false }) => {
   const { mutate: exportLabelTree } = useExportLabelTree()
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [selectedTree, setSelectedTree] = useState({ nodes: [], edges: [] })
@@ -246,6 +246,7 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
             columns={defineColumns()}
             tableData={labelTrees}
             getRowClassName={getRowClassName}
+            isLoading={isLoading}
           />
         </ErrorBoundary>
       </BaseContainer>

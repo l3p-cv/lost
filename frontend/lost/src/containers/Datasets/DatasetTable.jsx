@@ -25,6 +25,7 @@ const DatasetTable = ({
   pageCount,
   setLastRequestedPage,
   setDatatableInfo,
+  isLoading = false,
 }) => {
   const [expanded, setExpanded] = useState({})
   const navigate = useNavigate()
@@ -229,6 +230,7 @@ const DatasetTable = ({
         wholeData={false}
         expanded={expanded}
         setExpanded={setExpanded}
+        isLoading={isLoading}
       />
     </ErrorBoundary>
   )

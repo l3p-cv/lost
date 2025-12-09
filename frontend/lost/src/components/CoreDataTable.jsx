@@ -1,5 +1,5 @@
 // TODO: PLEASE RENAME THIS!!!
-import { CTable, CTableBody, CTableHead, CSpinner } from '@coreui/react'
+import { CTable, CTableBody, CTableHead, CSpinner, CRow, CCol } from '@coreui/react'
 // import BaseContainer from './BaseContainer'
 import { useState } from 'react'
 import {
@@ -85,6 +85,7 @@ function CoreDataTable({
     getExpandedRowModel: getExpandedRowModel(),
   })
 
+  // TODO: use isLoading!!!
   return (
     <>
       {/* <BaseContainer> */}
@@ -109,6 +110,13 @@ function CoreDataTable({
             </tr>
           ))}
         </CTableHead>
+        {isLoading && (
+          <CRow>
+            <div className="text-center">
+              <CSpinner />
+            </div>
+          </CRow>
+        )}
         <CTableBody>
           {table.getRowModel().rows.map((row) => (
             <Fragment key={row.id}>

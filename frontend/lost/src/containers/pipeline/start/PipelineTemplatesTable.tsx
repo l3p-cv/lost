@@ -125,7 +125,11 @@ export const PipelineTemplatesTable = () => {
       }, 3000)
       return (
         <ErrorBoundary>
-          <CoreDataTable columns={defineColumns()} tableData={templateData} />
+          <CoreDataTable
+            columns={defineColumns()}
+            tableData={templateData}
+            isLoading={isLoading}
+          />
         </ErrorBoundary>
       )
     }

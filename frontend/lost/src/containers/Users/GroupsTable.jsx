@@ -16,7 +16,7 @@ export const Groups = () => {
   const [newGroup, setNewGroup] = useState('')
   const { mutate: createGroup } = useCreateGroup()
   const { mutate: deleteGroup } = useDeleteGroup()
-  const { data: groupsData } = useGroups()
+  const { data: groupsData, isLoading } = useGroups()
   const columnHelper = createColumnHelper()
 
   const addGroup = () => {
@@ -73,6 +73,7 @@ export const Groups = () => {
               tableData={groupsData.groups}
               usePagination={needPages}
               paginationLarge={false}
+              isLoading={isLoading}
             />
           </ErrorBoundary>
         </BaseContainer>

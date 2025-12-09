@@ -47,7 +47,7 @@ export const TabInferenceModels = () => {
     return [
       columnHelper.display({
         id: 'name',
-        header: 'Name / Id',
+        header: 'Name',
         cell: ({ row }) => {
           return (
             <>
@@ -159,7 +159,7 @@ export const TabInferenceModels = () => {
 
       <BaseContainer>
         <ErrorBoundary>
-          <CoreDataTable tableData={tableData} columns={columns} />
+          <CoreDataTable tableData={tableData} columns={columns} isLoading={isLoading} />
         </ErrorBoundary>
       </BaseContainer>
     </>

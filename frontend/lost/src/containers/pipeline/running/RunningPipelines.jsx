@@ -262,6 +262,7 @@ export const RunningPipelines = () => {
             pageCount={pageCount}
             wholeData={false}
             getRowClassName={getRowClassName}
+            isLoading={isLoading}
           />
         </ErrorBoundary>
       )

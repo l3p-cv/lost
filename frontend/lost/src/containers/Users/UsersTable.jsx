@@ -37,7 +37,7 @@ export const UsersTable = () => {
   const [copiedObj, copyToClipboard] = useCopyToClipboard()
   const [isNewUser, setIsNewUser] = useState(false)
 
-  const { data: usersData, refetch: refetchUsers } = useUsers()
+  const { data: usersData, refetch: refetchUsers, isLoading } = useUsers()
   const { mutate: deleteUser } = useDeleteUser()
   const columnHelper = createColumnHelper()
 
@@ -186,7 +186,11 @@ export const UsersTable = () => {
       </div>
       <BaseContainer>
         <ErrorBoundary>
-          <CoreDataTable columns={columns} tableData={usersData.users} />
+          <CoreDataTable
+            columns={columns}
+            tableData={usersData.users}
+            isLoading={isLoading}
+          />
         </ErrorBoundary>
       </BaseContainer>
     </div>

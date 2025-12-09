@@ -15,8 +15,11 @@ import ErrorBoundary from '../../components/ErrorBoundary'
 
 const PTTable = ({ visLevel }) => {
   const [tableData, setTableData] = useState([])
-  const { data: pipelineProjects, refetch } =
-    pipelineProjectsApi.usePipelineProjects(visLevel)
+  const {
+    data: pipelineProjects,
+    refetch,
+    isLoading,
+  } = pipelineProjectsApi.usePipelineProjects(visLevel)
 
   const { mutate: deletePipelineProject, status: deletePipelineProjectStatus } =
     pipelineProjectsApi.useDeletePipelineProject()
@@ -136,7 +139,11 @@ const PTTable = ({ visLevel }) => {
       {tableData.length > 0 ? (
         <BaseContainer>
           <ErrorBoundary>
-            <CoreDataTable columns={columns} tableData={tableData} />
+            <CoreDataTable
+              columns={columns}
+              tableData={tableData}
+              isLoading={isLoading}
+            />
           </ErrorBoundary>
         </BaseContainer>
       ) : (

@@ -14,8 +14,11 @@ import TableHeader from '../../components/TableHeader'
 
 const Datasets = () => {
   // const { data: datasetList, refetch: reloadDatasetList } = datasetApi.useDatasets()
-  const { data: flatDatasetList, refetch: reloadFlatDatasetList } =
-    datasetApi.useFlatDatasets()
+  const {
+    data: flatDatasetList,
+    refetch: reloadFlatDatasetList,
+    isLoading: dsListIsLoading,
+  } = datasetApi.useFlatDatasets()
 
   const { data: datastores } = datasetApi.useDatastoreKeys()
   const { data: annotaskResponse, mutate: loadAnnotask } = annotaskApi.useAnnotaskOld()
@@ -196,6 +199,7 @@ const Datasets = () => {
                 pageCount={pageCount}
                 setLastRequestedPage={setLastRequestedPage}
                 setDatatableInfo={setDatatableInfo}
+                isLoading={dsListIsLoading}
               />
             </BaseContainer>
           </CCol>
