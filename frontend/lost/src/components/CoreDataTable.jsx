@@ -110,13 +110,6 @@ function CoreDataTable({
             </tr>
           ))}
         </CTableHead>
-        {isLoading && (
-          <CRow>
-            <div className="text-center">
-              <CSpinner />
-            </div>
-          </CRow>
-        )}
         <CTableBody>
           {table.getRowModel().rows.map((row) => (
             <Fragment key={row.id}>
@@ -147,25 +140,13 @@ function CoreDataTable({
           ))}
         </CTableBody>
       </CTable>
-      {/* HACK: Add feature to show spinner based on request state to get a clean solution!
-            {tableData.length === 0 && (
-                <div
-                    style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        zIndex: 10,
-                        width: '100%',
-                        height: '100%',
-                        background: 'rgba(255,255,255,0.6)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                    }}
-                >
-                    <CSpinner />
-                </div>
-            )} */}
+      {isLoading && (
+        <CRow className="justify-content-center">
+          <CCol xl="auto">
+            <CSpinner />
+          </CCol>
+        </CRow>
+      )}
       <PaginationWrapper
         table={table}
         visible={usePagination}
