@@ -45,11 +45,11 @@ const AnnotationTop = ({
   }
 
   const progress = Math.floor((annoTask.finished / annoTask.size) * 100)
-  // HACK: pipeline_name is still in some requests...
+  // HACK: stil some inconsistent naming in the apis...
   const pipelineName = annoTask?.pipelineName ?? annoTask?.pipeline_name
-  const startedAt = annoTask?.createdAt ?? annoTask?.started_at
+  const createdAt = annoTask?.createdAt ?? annoTask?.created_at
 
-  // console.log('AannoTask: ', annoTask)
+  console.log('AannoTask: ', annoTask)
 
   return (
     <CContainer fluid>
@@ -64,16 +64,24 @@ const AnnotationTop = ({
           }}
         >
           <CRow>
-            <CCol xl="auto">
-              {/* TODO: annotated images to progress; new CCol: Current image */}
+            <CCol xl="2">
               {/* <div className="callout callout-primary"> */}
               <div className="clearfix">
                 <div className="float-left">
-                  <small className="text-muted">Progress</small>
+                  <small className="text-muted">Task Progress</small>
                   <br />
                   <strong className="h4">
-                    {annoTask.finished}/{annoTask.size} = {progress}%
+                    {/* {annoTask.finished}/{annoTask.size} = {progress}% */}
+                    {progress}%
                   </strong>
+                  {!!isReview && (
+                    <>
+                      <br />
+                      <small className="text-muted">
+                        {annoTask.finished}/{annoTask.size} Images
+                      </small>
+                    </>
+                  )}
                 </div>
               </div>
               {/* </div> */}
@@ -136,7 +144,7 @@ const AnnotationTop = ({
                 />
                 <div className="float-right">
                   <small className="text-muted">
-                    Started at: {new Date(startedAt).toLocaleString()}
+                    Started at: {new Date(createdAt).toLocaleString()}
                   </small>
                 </div>
               </CCol>

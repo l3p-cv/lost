@@ -56,10 +56,11 @@ import PolygonEditMode from '../../../models/PolygonEditMode'
 import SIAImageSearchModal, {
   ImageSearchResult,
 } from '../../Datasets/SIAImageSearchModal'
-import { faSearch } from '@fortawesome/free-solid-svg-icons'
+import { faMagnifyingGlassMinus, faSearch } from '@fortawesome/free-solid-svg-icons'
 import { TimeUtils } from 'lost-sia/utils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import imageSearch, { FirstLastResult } from './imageSearch'
+import CoreIconButton from '../../../components/CoreIconButton'
 
 type SiaWrapperProps = {
   annoData: SiaResponse | undefined
@@ -934,42 +935,41 @@ const SiaWrapper = ({
             }}
           />
         </CCol>
-        <CCol xs="auto">
+        <CCol xs="2">
           <CButtonGroup>
             <ImageFilterButton
               isDisabled={isSiaLoading}
               appliedFilters={appliedImageFilters}
+              tooltip={'Open Filter Options'}
               onFiltersChanged={setAppliedImageFilters}
             />
-
-            {isImageSearchEnabled && (
-              <CTooltip
-                content={
+            <CoreIconButton
+              toolTip="Open image search"
+              color="primary"
+              icon={faSearch}
+              onClick={() => {
+                setIsImgSearchModalVisible(true)
+              }}
+            />
+            {isImageSearchActive && (
+              <CoreIconButton
+                toolTip={
                   isImageSearchActive
                     ? 'Image search mode - click to exit'
                     : 'Open image search'
                 }
-                placement="top"
-                visible={isImageSearchButtonTooltipOpen}
-                trigger={isImageSearchButtonTooltipOpen ? [] : ['hover']}
-              >
-                <CButton
-                  color={isImageSearchActive ? 'danger' : 'primary'}
-                  variant={isImageSearchActive ? undefined : 'outline'}
-                  onClick={() => {
-                    if (isImageSearchActive) {
-                      setIsImageSearchActive(false)
-                      setIsImageSearchButtonTooltipOpen(false)
-                    } else setIsImgSearchModalVisible(true)
-                  }}
-                >
-                  <FontAwesomeIcon className="mr-3" icon={faSearch} />
-                </CButton>
-              </CTooltip>
+                color={isImageSearchActive ? 'danger' : 'primary'}
+                icon={faMagnifyingGlassMinus}
+                onClick={() => {
+                  setIsImageSearchActive(false)
+                  setIsImageSearchButtonTooltipOpen(false)
+                }}
+                isOutline={false}
+              />
             )}
           </CButtonGroup>
         </CCol>
-        <CCol xs="auto">
+        <CCol xs="2">
           <NavigationButtons
             isFirstImage={isFirst}
             isLastImage={isLast}
@@ -1027,7 +1027,6 @@ const SiaWrapper = ({
           onSearchResult={setFilteredImageIds}
         />
       )}
-
       <div
         style={wrapperStyle}
         onKeyDown={(e) => {

@@ -98,7 +98,25 @@ export const useDeleteExport = () => {
   )
 }
 
-export const useAnnotask = () => {
+export const useAnnotask = (annotaskId) => {
+  return useQuery(
+    ['getannotask', annotaskId],
+    () =>
+      axios
+        .get(`${API_URL}/annotasks/${annotaskId}?config=true`)
+        .then((res) => res.data)
+        .catch((error) => error.response.data),
+    {
+      // only fetch when annotaskId is available
+      // request will automatically refetch when value changes
+      enabled: !!annotaskId,
+      refetchOnWindowFocus: false,
+    },
+  )
+}
+
+// TODO: rework with use query
+export const useAnnotaskOld = () => {
   return useMutation((annoTaskId) =>
     axios.get(`${API_URL}/annotasks/${annoTaskId}?config=true`).then((res) => res.data),
   )

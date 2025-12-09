@@ -1,4 +1,3 @@
-import { CCol, CRow } from '@coreui/react'
 import { useParams } from 'react-router-dom'
 import SiaWrapper from '../SIA/SiaWrapper'
 
@@ -7,10 +6,13 @@ import siaApi, {
   ReviewData,
   useReview,
 } from '../../../actions/dataset/dataset_review_api'
+import { useAnnotask } from '../../../actions/annoTask/anno_task_api'
 import { ImageSwitchData } from '../../../actions/sia/sia_api'
+import AnnotationTop from './AnnotationTop'
 
 const AnnotaskReviewComponent = () => {
   const { annotaskId } = useParams()
+  const { data: currentAnnotask } = useAnnotask(annotaskId)
 
   // image nr in annotask
   const [annotationRequestData, setAnnotationRequestData] = useState<ReviewData>({
@@ -49,6 +51,7 @@ const AnnotaskReviewComponent = () => {
   return (
     <div style={forwardFlex}>
       <h1>Review of annotation task {annotaskId}</h1>
+      <AnnotationTop annoTask={currentAnnotask} annoData={annoData} isReview={true} />
       <div style={forwardFlex}>
         <SiaWrapper
           annoData={annoData}
@@ -66,7 +69,6 @@ const AnnotaskReviewComponent = () => {
                 iteration: imageSwitchData.iteration,
               },
             }
-
             setAnnotationRequestData(newReviewData)
           }}
         />

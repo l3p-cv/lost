@@ -15,6 +15,7 @@ const BaseModal = ({
   size = 'xl',
   onClosed = () => {},
   className,
+  backdropOption = true,
   style = undefined,
   fullscreen = false,
 }) => {
@@ -83,6 +84,7 @@ const BaseModal = ({
       key={key}
       size={size}
       visible={isOpen}
+      backdrop={backdropOption}
       // onClose={toggle}
       onClose={() => {
         if (isOpen) {

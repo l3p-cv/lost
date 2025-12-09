@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added pytest coverage for polygon operations including mixed polygon and bbox scenarios
 - BaseModal now has backdropOption (which can be true, false or 'static'); used 'static' for EditInstruction
 - Groups and Roles viewable und "My Profile"
+- AnnotationTop component to use for each SIA/MIA
 ### Changed
 - Replaced all usages of reactstrap and semantic-ui with CoreUI components and/or generic solutions 
 - moved quick_setup.py into main directory
@@ -53,6 +54,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Big update of LOST Documentation (now with docusaurus)
 - Moved development.md from documentation to new frontend_development
 - Changed the polygon operations endpoints to use data instead of coordinates.
+- Rewrote ImageFilterButton (to use CButton + CTooltip)
+- Rewrote image Search in SIA Toolbar (additional button, to end the search-mode)
+- Reworte useAnnotask() in anno_task_api (kept old implementation as useAnnotaskOld())
 ### Fixed
 - Removed centered spinner of CoreDataTable, when faced with empty data, to not block the rest of the page
 - Fixed execution of DBPatcher at wrong place on start up

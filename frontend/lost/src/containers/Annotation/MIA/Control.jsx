@@ -1,13 +1,16 @@
 import { Component } from 'react'
 import Autocomplete from 'react-autocomplete'
 import { connect } from 'react-redux'
+import BaseContainer from '../../../components/BaseContainer'
 import {
   CButtonGroup,
   CCol,
+  CContainer,
   CDropdown,
   CDropdownItem,
   CDropdownMenu,
   CDropdownToggle,
+  CFormSelect,
   CInputGroup,
   CRow,
 } from '@coreui/react'
@@ -15,8 +18,12 @@ import {
   faArrowLeft,
   faArrowRight,
   faArrowsAltH,
+  faBan,
+  faSearch,
+  faSearchLocation,
   faSearchMinus,
   faSearchPlus,
+  faTag,
 } from '@fortawesome/free-solid-svg-icons'
 import CoreIconButton from '../../../components/CoreIconButton'
 import TagLabel from '../../../components/TagLabel'
@@ -113,7 +120,11 @@ class Control extends Component {
           return image.id
         }),
       }
+      console.log('MIA IDs: ', miaIds)
       this.props.getSpecialMiaAnnos(miaIds, this.props.getWorkingOnAnnoTask)
+
+      // TODO:
+      this.hist.undoMia()
     }
   }
 
@@ -149,87 +160,50 @@ class Control extends Component {
     }
   }
   render() {
+    console.log('Props: ', this.props)
+    console.log('History: ', this.hist)
     return (
       <CRow
+        className="align-items-center"
         style={{
-          padding: '0 0 25px 0',
+          padding: '0px 0px 25px 0px',
         }}
       >
-        <CCol xs="6" sm="6" lg="6">
-          <CInputGroup style={{ zIndex: 5 }}>
-            <Autocomplete
-              items={this.props.labels}
-              shouldItemRender={(item, value) =>
-                item.label.toLowerCase().indexOf(value.toLowerCase()) > -1
-              }
-              getItemValue={(item) => item.label}
-              renderInput={(props) => {
-                return (
-                  <input {...props} style={{ width: '300px' }} className="form-control" />
-                )
-              }}
-              renderItem={(item, highlighted) => (
-                <div
-                  className={`item ${highlighted ? 'item-highlighted' : ''}`}
-                  key={item.id}
-                >
-                  {item.label}
-                </div>
-              )}
-              value={this.state.value}
-              onChange={(e) => this.setState({ value: e.target.value })}
-              onSelect={(value, label) => {
-                this.setState({ value: value })
-                this.handleAddLabel(label)
-              }}
-            />
-
-            {this.renderSelectedLabel()}
-          </CInputGroup>
-        </CCol>
-        <CCol xs="3" sm="3" lg="3">
-          <CButtonGroup className="float-left">
-            <CoreIconButton
-              icon={faArrowLeft}
-              isOutline={true}
-              disabled={this.hist.isEmpty()}
-              // className="btn-info"
-              color="info"
-              onClick={this.handleUndo}
-            />
-            <CoreIconButton
-              icon={faArrowRight}
-              isOutline={true}
-              disabled={this.props.selectedLabel ? false : true}
-              // className="btn-info"
-              color="info"
-              onClick={this.handleSubmit}
-            />
-          </CButtonGroup>
-        </CCol>
-        <CCol xs="3" sm="3" lg="3">
-          <CButtonGroup className="float-right">
-            <CoreIconButton
-              onClick={this.handleReverse}
-              color="secondary"
-              icon={faArrowsAltH}
-              text="Reverse"
-              isOutline={true}
-            />
+        <CCol xs="4" sm="4" lg="4" className="d-flex justify-content-center">
+          {/* TODO: INCLUDE JUNK BUTTON!!! */}
+          {/* TODO: INCLUDE Permanent Reverse!!! */}
+          <CButtonGroup>
             <CoreIconButton
               onClick={this.handleZoomIn}
-              color="secondary"
+              color="primary"
               icon={faSearchPlus}
               isOutline={true}
+              toolTip="Zoom In"
             />
             <CoreIconButton
               onClick={this.handleZoomOut}
-              color="secondary"
+              color="primary"
               icon={faSearchMinus}
+              isOutline={true}
+              toolTip="Zoom Out"
+            />
+            {/* <CoreIconButton
+              onClick={this.handleJunking}
+              color="primary"
+              icon={faBan}
+              text=""
+              isOutline={true}
+              toolTip="Junk selected Images"
+            /> */}
+            <CoreIconButton
+              onClick={this.handleReverse}
+              color="primary"
+              icon={faArrowsAltH}
+              toolTip="Reverse Selection"
               isOutline={true}
             />
             <CDropdown>
-              <CDropdownToggle color="secondary" variant="outline" caret>
+              <CDropdownToggle color="primary" variant="outline" caret>
                 Amount
               </CDropdownToggle>
               <CDropdownMenu>
@@ -243,6 +217,62 @@ class Control extends Component {
                 <CDropdownItem onClick={this.handleMaxAmount}>200</CDropdownItem>
               </CDropdownMenu>
             </CDropdown>
+          </CButtonGroup>
+        </CCol>
+        <CCol xs="4" sm="4" lg="4">
+          <CButtonGroup style={{ zIndex: 5 }}>
+            <CoreIconButton icon={faTag} isOutline={false} />
+            <CInputGroup>
+              <CFormSelect
+                style={{
+                  width: '250px',
+                  maxWidth: '250px',
+                  borderRadius: 0,
+                  borderTopRightRadius: 5,
+                  borderBottomRightRadius: 5,
+                }}
+                value={this.state.value}
+                onChange={(e) => {
+                  const selectedId = parseInt(e.target.value)
+                  this.setState({ value: selectedId }) // Save raw value for input field
+                  // Find the selected label object
+                  const selectedLabel = this.props.labels.find(
+                    (lbl) => lbl.id === selectedId,
+                  )
+                  this.handleAddLabel(selectedLabel)
+                }}
+              >
+                <option value="">Select label...</option>
+                {this.props.labels.map((label) => (
+                  <option key={label.id} value={label.id}>
+                    {label.label}
+                  </option>
+                ))}
+              </CFormSelect>
+              {this.renderSelectedLabel()}
+            </CInputGroup>
+          </CButtonGroup>
+        </CCol>
+        <CCol xs="1" sm="1" lg="1" className="d-flex justify-content-start">
+          <CButtonGroup>
+            <CoreIconButton
+              icon={faArrowLeft}
+              isOutline={true}
+              disabled={this.hist.isEmpty()} // TODO: wrong with current implementation!!!
+              color="primary"
+              onClick={this.handleUndo}
+              toolTip="Undo last Label Selection"
+            />
+            <CoreIconButton
+              icon={faArrowRight}
+              isOutline={true}
+              disabled={
+                this.props.selectedLabel && this.props.images.length ? false : true
+              }
+              color="primary"
+              onClick={this.handleSubmit}
+              toolTip="Give Images selected Label"
+            />
           </CButtonGroup>
         </CCol>
       </CRow>

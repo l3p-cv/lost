@@ -5,8 +5,9 @@ import SiaWrapper from './SIA/SiaWrapper'
 import * as annotaskApi from '../../actions/annoTask/anno_task_api'
 import siaApi, {
   SiaAnnotationChangeRequest,
-  useGetSiaAnnos,
+  useGetSiaAnnos, // no image switcher???
 } from '../../actions/sia/sia_api'
+import AnnotationTop from './AnnoTask/AnnotationTop'
 
 const SingleImageAnnotation = () => {
   // image nr in annotask
@@ -43,9 +44,11 @@ const SingleImageAnnotation = () => {
 
   if (currentAnnotask === undefined) return 'Loading...'
 
+  console.log(annoData)
   return (
     <div style={forwardFlex}>
-      <WorkingOnSIA annoTask={currentAnnotask} />
+      {/* <WorkingOnSIA annoTask={currentAnnotask} /> */}
+      <AnnotationTop annoTask={currentAnnotask} annoData={annoData} />
       <div style={forwardFlex}>
         <SiaWrapper
           taskId={currentAnnotask.id}

@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 
 import MIA from './MIA/MIA'
 import WorkingOnMIA from './AnnoTask/WorkingOnMIA'
+import AnnotationTop from './AnnoTask/AnnotationTop'
 
 import actions from '../../actions'
 import { CCol, CRow } from '@coreui/react'
@@ -18,7 +19,8 @@ class MultiImageAnnotation extends Component {
         <CCol>
           <CRow>
             <CCol xs="12" sm="12" lg="12">
-              <WorkingOnMIA annoTask={this.props.workingOnAnnoTask}></WorkingOnMIA>
+              {/* <WorkingOnMIA annoTask={this.props.workingOnAnnoTask}></WorkingOnMIA> */}
+              <AnnotationTop annoTask={this.props.workingOnAnnoTask} isSIA={false} />
               <MIA></MIA>
             </CCol>
           </CRow>

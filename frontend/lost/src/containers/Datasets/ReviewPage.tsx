@@ -4,10 +4,14 @@ import SiaWrapper from '../Annotation/SIA/SiaWrapper'
 import { CSSProperties, useEffect, useState } from 'react'
 import siaApi, { ReviewData, useReview } from '../../actions/dataset/dataset_review_api'
 import { ImageSwitchData } from '../../actions/sia/sia_api'
+import { useAnnotask } from '../../actions/annoTask/anno_task_api'
+import AnnotationTop from '../Annotation/AnnoTask/AnnotationTop'
 
 const DatasetsReviewComponent = () => {
   const { datasetId } = useParams()
   const [currentAnnotaskId, setCurrentAnnotaskId] = useState<number>(-1)
+  const { data: currentAnnotask } = useAnnotask(currentAnnotaskId)
+  console.log('Annotask: ', currentAnnotask)
 
   // image nr in annotask
   const [annotationRequestData, setAnnotationRequestData] = useState<ReviewData>({
@@ -50,7 +54,13 @@ const DatasetsReviewComponent = () => {
 
   return (
     <div style={forwardFlex}>
-      <h1>Review of dataset {datasetId}</h1>
+      {/* <h1>(Under Construction) Review of dataset {datasetId}</h1> */}
+      <AnnotationTop
+        annoTask={!!currentAnnotask ? currentAnnotask : null}
+        annoData={annoData}
+        datasetId={nDatasetId}
+        isReview={true}
+      />
       <div style={forwardFlex}>
         <SiaWrapper
           annoData={annoData}

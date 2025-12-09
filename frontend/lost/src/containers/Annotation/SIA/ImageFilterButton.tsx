@@ -1,4 +1,4 @@
-import { CButton, CPopover } from '@coreui/react'
+import { CButton, CPopover, CTooltip } from '@coreui/react'
 import { IconProp } from '@fortawesome/fontawesome-svg-core'
 import { faFilter } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -8,12 +8,14 @@ import { ImageFilter } from '../../../types/SiaTypes'
 type ImageFilterButtonProps = {
   isDisabled?: boolean
   appliedFilters?: ImageFilter[]
+  tooltip?: String
   onFiltersChanged: (filters: ImageFilter[]) => void
 }
 
 const ImageFilterButton = ({
   isDisabled = false,
   appliedFilters = [],
+  tooltip = '',
   onFiltersChanged = () => {},
 }: ImageFilterButtonProps) => {
   const customPopoverStyle = {
@@ -33,9 +35,11 @@ const ImageFilterButton = ({
       }
       style={customPopoverStyle}
     >
-      <CButton color="primary" disabled={isDisabled} variant="outline">
-        <FontAwesomeIcon icon={faFilter as IconProp} />
-      </CButton>
+      <CTooltip content={tooltip} placement="top">
+        <CButton color="primary" disabled={isDisabled} variant="outline">
+          <FontAwesomeIcon icon={faFilter as IconProp} />
+        </CButton>
+      </CTooltip>
     </CPopover>
   )
 }
