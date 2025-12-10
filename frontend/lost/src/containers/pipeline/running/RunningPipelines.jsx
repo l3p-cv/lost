@@ -1,7 +1,6 @@
 import { CContainer, CTooltip, CProgress, CBadge } from '@coreui/react'
 import { faEye, faPlay, faPause, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
-import 'react-table/react-table.css'
 import {
   usePipelinesPaged,
   useTemplates,

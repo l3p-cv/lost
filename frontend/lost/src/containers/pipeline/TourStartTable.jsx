@@ -4,10 +4,11 @@ import { faPlay } from '@fortawesome/free-solid-svg-icons'
 import { useTemplates } from '../../actions/pipeline/pipeline_api'
 import BaseContainer from '../../components/BaseContainer'
 import { CenteredSpinner } from '../../components/CenteredSpinner'
-import Datatable from '../../components/Datatable'
 import HelpButton from '../../components/HelpButton'
 import { useEffect, useState } from 'react'
-import IconButton from '../../components/IconButton'
+import CoreDataTable from '../../components/CoreDataTable'
+import { createColumnHelper } from '@tanstack/react-table'
+import CoreIconButton from '../../components/CoreIconButton'
 
 const TourStartTable = ({ onStartTour }) => {
   const { data, isLoading, isError } = useTemplates('all')
@@ -89,51 +90,53 @@ const TourStartTable = ({ onStartTour }) => {
       </CContainer>
     )
 
+  const columnHelper = createColumnHelper()
+  const columns = [
+    columnHelper.accessor('label', {
+      header: 'Name / Project',
+      cell: (props) => {
+        return (
+          <>
+            <b>{props.row.original.label}</b>
+            <div className="small text-muted">
+              {props.row.original.tourType === 'instructionTour'
+                ? 'Instructions'
+                : 'found'}
+            </div>
+          </>
+        )
+      },
+    }),
+    columnHelper.accessor('description', {
+      header: 'Description',
+      cell: (props) => {
+        return (
+          <HelpButton
+            id={`${props.row.original.label.toLowerCase()}-description`}
+            text={props.row.original.description}
+          />
+        )
+      },
+    }),
+    columnHelper.accessor('id', {
+      header: 'Start Tour',
+      cell: (props) => {
+        return (
+          <CoreIconButton
+            icon={faPlay}
+            text="Start Tour"
+            color="primary"
+            onClick={() => onStartTour(props.row.original.tourType)}
+          />
+        )
+      },
+    }),
+  ]
+
   return (
     <CContainer style={{ marginTop: '15px' }}>
       <BaseContainer>
-        <Datatable
-          columns={[
-            {
-              Header: 'Name / Project',
-              accessor: 'label',
-              Cell: (row) => (
-                <>
-                  <b>{row.original.label}</b>
-                  <div className="small text-muted">
-                    {row.original.tourType === 'instructionTour'
-                      ? 'Instructions'
-                      : 'found'}
-                  </div>
-                </>
-              ),
-            },
-            {
-              Header: 'Description',
-              accessor: 'description',
-              Cell: (row) => (
-                <HelpButton
-                  id={`${row.original.label.toLowerCase()}-description`}
-                  text={row.original.description}
-                />
-              ),
-            },
-            {
-              Header: 'Start Tour',
-              accessor: 'id',
-              Cell: (row) => (
-                <IconButton
-                  icon={faPlay}
-                  text="Start Tour"
-                  color="primary"
-                  onClick={() => onStartTour(row.original.tourType)}
-                />
-              ),
-            },
-          ]}
-          data={pipelines}
-          defaultPageSize={3}
-        />
+        <CoreDataTable columns={columns} tableData={pipelines} pageSize={3} />
       </BaseContainer>
     </CContainer>
   )

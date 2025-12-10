@@ -1,7 +1,8 @@
+import { createColumnHelper } from '@tanstack/react-table'
 import { useGroups } from '../../../../../../actions/group/group-api'
 import { useAnnoTaskUser } from '../../../../../../actions/user/user_api'
 import { CenteredSpinner } from '../../../../../../components/CenteredSpinner'
-import Datatable from '../../../../../../components/Datatable'
+import CoreDataTable from '../../../../../../components/CoreDataTable'
 import IconButton from '../../../../../../components/IconButton'
 import { alertSuccess } from '../../../../globalComponents/Sweetalert'
 
@@ -37,42 +38,42 @@ const TabUser = ({ annotaskId, annotaskUser, changeUser }) => {
     return <CenteredSpinner />
   }
 
+  const columnHelper = createColumnHelper()
+  const columns = [
+    columnHelper.accessor('name', {
+      header: 'Name',
+      cell: (props) => {
+        console.log(props)
+        return (
+          <>
+            <b>{props.row.original.name}</b>
+            <div className="small text-muted">{`ID: ${props.row.original.idx}`}</div>
+          </>
+        )
+      },
+    }),
+    columnHelper.accessor('change', {
+      header: 'Change',
+      cell: (props) => {
+        if (props.row.original.rawName === annotaskUser) {
+          return <IconButton color="success" isOutline={false} text="Selected" disabled />
+        }
+
+        return (
+          <IconButton
+            color="primary"
+            text="Change"
+            onClick={() => handleChangeUser(props.row.original.idx)}
+          />
+        )
+      },
+    }),
+  ]
+
   return (
     <>
       {users && groups ? (
-        <Datatable
-          data={[...users, ...groups]}
-          columns={[
-            {
-              Header: 'Name',
-              accessor: 'name',
-            },
-            {
-              Header: 'Change',
-              id: 'change',
-              accessor: (d) => {
-                if (d.rawName === annotaskUser) {
-                  return (
-                    <IconButton
-                      color="success"
-                      isOutline={false}
-                      text="Selected"
-                      disabled
-                    />
-                  )
-                }
-
-                return (
-                  <IconButton
-                    color="primary"
-                    text="Change"
-                    onClick={() => handleChangeUser(d.idx)}
-                  />
-                )
-              },
-            },
-          ]}
-        />
+        <CoreDataTable tableData={[...users, ...groups]} columns={columns} />
       ) : (
         ''
       )}

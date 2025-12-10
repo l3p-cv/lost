@@ -5,8 +5,20 @@ import { useGroups } from '../../actions/group/group-api'
 import { useCreateUser, useUpdateUser } from '../../actions/user/user_api'
 import Datatable from '../../components/Datatable'
 import { useLostConfig } from '../../hooks/useLostConfig'
-import { CFormInput, CModal, CModalBody, CModalFooter, CModalHeader } from '@coreui/react'
+import {
+  CBadge,
+  CButton,
+  CCol,
+  CFormInput,
+  CModal,
+  CModalBody,
+  CModalFooter,
+  CModalHeader,
+  CRow,
+} from '@coreui/react'
 import CoreIconButton from '../../components/CoreIconButton'
+import CoreDataTable from '../../components/CoreDataTable'
+import { createColumnHelper } from '@tanstack/react-table'
 
 const CenteredCell = ({ children, key }) => {
   return (
@@ -132,47 +144,160 @@ const EditUserModal = (props) => {
     </>
   )
 
-  const rolesField = () => {
-    return roles.map((guiSetupRole) => {
-      const isActive = user.roles.filter((role) => role.name === guiSetupRole).length > 0
-      return (
-        <Datatable.RenderBadge
-          key={`user-${user.idx}-role-${guiSetupRole}`}
-          text={guiSetupRole}
-          color={isActive ? 'success' : 'secondary'}
-          onClick={() => {
-            setUser({
-              ...user,
-              roles: isActive
-                ? user.roles.filter((role) => role.name !== guiSetupRole)
-                : [...user.roles, { name: guiSetupRole }],
-            })
-          }}
-        />
-      )
-    })
-  }
+  const rolesList = () => (
+    <CRow className="flex-column">
+      {roles.map((guiSetupCat) => {
+        const isActive = user.roles.some((role) => role.name === guiSetupCat)
 
-  const groupField = () => {
-    return groupsData.groups.map((el) => {
-      const isActive = user.groups.filter((group) => group.idx === el.idx).length > 0
-      return (
-        <Datatable.RenderBadge
-          key={`user-${user.idx}-group-${el.idx}`}
-          text={el.name}
-          color={isActive ? 'success' : 'secondary'}
-          onClick={() => {
-            setUser({
-              ...user,
-              groups: isActive
-                ? user.groups.filter((group) => group.idx !== el.idx)
-                : [...user.groups, el],
-            })
-          }}
-        />
-      )
-    })
-  }
+        return (
+          <CCol>
+            <CBadge
+              color={isActive ? 'success' : 'secondary'}
+              onClick={() =>
+                setUser({
+                  ...user,
+                  roles: isActive
+                    ? user.roles.filter((role) => role.name !== guiSetupCat)
+                    : [...user.roles, { name: guiSetupCat }],
+                })
+              }
+            >
+              {guiSetupCat}
+            </CBadge>
+          </CCol>
+        )
+      })}
+    </CRow>
+  )
+
+  const groupsList = () => (
+    <CRow className="flex-column">
+      {groupsData.groups.map((el) => {
+        const isActive = user.groups.filter((group) => group.idx === el.idx).length > 0
+        return (
+          <CCol>
+            <CBadge
+              color={isActive ? 'success' : 'secondary'}
+              onClick={() => {
+                setUser({
+                  ...user,
+                  groups: isActive
+                    ? user.groups.filter((group) => group.idx !== el.idx)
+                    : [...user.groups, el],
+                })
+              }}
+            >
+              {el.name}
+            </CBadge>
+          </CCol>
+        )
+      })}
+    </CRow>
+  )
+
+  const columnHelper = createColumnHelper()
+  const userColumns = [
+    columnHelper.accessor('username', {
+      header: 'Username',
+      cell: () => {
+        return (
+          <>
+            <b>{user.user_name}</b>
+            <div className="small text-muted">{`ID: ${user.idx}`}</div>
+          </>
+        )
+      },
+    }),
+    columnHelper.accessor('email', {
+      header: 'Email',
+      cell: () => {
+        return (
+          <>
+            <CenteredCell>
+              <CFormInput
+                autoFocus={focusedField === 1}
+                placeholder="example@example.com"
+                defaultValue={user.email}
+                disabled={user.is_external}
+                onChange={(e) => {
+                  setFocusedFieled(1)
+                  setUser({ ...user, email: e.currentTarget.value })
+                }}
+              />
+            </CenteredCell>
+            {user.is_external ? <ExternalUserLabel text="External user" /> : null}
+            {emailError ? <ErrorLabel text="Email is not valid" /> : null}
+          </>
+        )
+      },
+    }),
+    columnHelper.accessor('password', {
+      header: 'Password',
+      cell: () => {
+        return (
+          <>
+            <CenteredCell>
+              <CFormInput
+                autoFocus={focusedField === 2}
+                placeholder="*******"
+                type="password"
+                defaultValue={user.password}
+                disabled={user.is_external}
+                onChange={(e) => {
+                  setFocusedFieled(2)
+                  setUser({ ...user, password: e.currentTarget.value })
+                }}
+              />
+            </CenteredCell>
+            {user.is_external ? <ExternalUserLabel text="External user" /> : null}
+            {passwordError ? <ErrorLabel text={passwordError} /> : null}
+          </>
+        )
+      },
+    }),
+    columnHelper.accessor('confirmPassword', {
+      header: 'Confirm Password',
+      cell: () => {
+        return (
+          <>
+            <CenteredCell>
+              <CFormInput
+                autoFocus={focusedField === 3}
+                placeholder="*******"
+                type="password"
+                defaultValue={user.confirmPassword}
+                disabled={user.is_external}
+                onChange={(e) => {
+                  setFocusedFieled(3)
+                  setUser({
+                    ...user,
+                    confirmPassword: e.currentTarget.value,
+                  })
+                }}
+              />
+            </CenteredCell>
+            {passwordConfirmError ? <ErrorLabel text="Passwords do not match" /> : null}
+          </>
+        )
+      },
+    }),
+    columnHelper.accessor('roles', {
+      header: 'Roles',
+      cell: () => {
+        return rolesList()
+      },
+    }),
+    columnHelper.accessor('groups', {
+      header: 'groups',
+      cell: () => {
+        return (
+          <CRow className="justify-content-between">
+            <CCol>{groupsList()}</CCol>
+          </CRow>
+        )
+      },
+    }),
+  ]
 
   const save = () => {
     let isError = false
@@ -250,43 +375,7 @@ const EditUserModal = (props) => {
       >
         <CModalHeader>{'Edit User'}</CModalHeader>
         <CModalBody>
-          <Datatable
-            noText={true}
-            pageSize={1}
-            data={[user]}
-            columns={[
-              {
-                Header: 'Username',
-                accessor: 'userName',
-                Cell: userNameField,
-              },
-              {
-                Header: 'Email',
-                accessor: 'email',
-                Cell: emailField,
-              },
-              {
-                Header: 'Password',
-                accessor: 'password',
-                Cell: passwordField,
-              },
-              {
-                Header: 'Confirm Password',
-                accessor: 'confirmPassword',
-                Cell: confirmPasswordField,
-              },
-              {
-                Header: 'Roles',
-                accessor: 'roles',
-                Cell: rolesField,
-              },
-              {
-                Header: 'Groups',
-                accessor: 'groups',
-                Cell: groupField,
-              },
-            ]}
-          />
+          <CoreDataTable tableData={[user]} columns={userColumns} usePagination={false} />
         </CModalBody>
         <CModalFooter>
           <CoreIconButton

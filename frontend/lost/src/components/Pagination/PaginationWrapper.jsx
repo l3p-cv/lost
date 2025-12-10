@@ -19,6 +19,7 @@ const PaginationWrapper = ({
         visible={visible}
         totalPages={totalPages}
         large={large}
+        pageSize={pageSize}
       />
     )
   }
