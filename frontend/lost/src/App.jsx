@@ -22,14 +22,14 @@ const VITE_BACKEND_PORT = 80
 let apiUrl = ''
 let socketUrl = ''
 if (IS_DEV) {
-  apiUrl = `${window.location.origin.replace(/:\d+?$/, '')}:${VITE_BACKEND_PORT}/api`
-  socketUrl = `${window.location.origin.replace(/:\d+?$/, '')}:${VITE_BACKEND_PORT}`
+  apiUrl = `${globalThis.location.origin.replace(/:\d+?$/, '')}:${VITE_BACKEND_PORT}/api`
+  socketUrl = `${globalThis.location.origin.replace(/:\d+?$/, '')}:${VITE_BACKEND_PORT}`
 } else {
-  apiUrl = `${window.location.origin}/api`
-  socketUrl = `${window.location.origin}`
+  apiUrl = `${globalThis.location.origin}/api`
+  socketUrl = `${globalThis.location.origin}`
 }
-window.API_URL = apiUrl
-window.SOCKET_URL = socketUrl
+globalThis.API_URL = apiUrl
+globalThis.SOCKET_URL = socketUrl
 const resources = {
   en: {
     translation: flatObj(enTranslation),
@@ -81,11 +81,11 @@ function App() {
     }
   }
 
-  window.addEventListener('error', (event) => {
+  globalThis.addEventListener('error', (event) => {
     sendError(event)
   })
 
-  window.addEventListener('unhandledrejection', (event) => {
+  globalThis.addEventListener('unhandledrejection', (event) => {
     sendError(event)
   })
 
