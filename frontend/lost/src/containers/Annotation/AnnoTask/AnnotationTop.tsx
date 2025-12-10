@@ -11,7 +11,7 @@ import { faCrown, faEye } from '@fortawesome/free-solid-svg-icons'
 // TODO: use image (gotten by siaAPI)
 const AnnotationTop = ({
   annoTask,
-  annoData,
+  annoData = null,
   isSIA = true,
   isReview = false,
   datasetId = null,
@@ -86,17 +86,17 @@ const AnnotationTop = ({
               </div>
               {/* </div> */}
             </CCol>
-            {isSIA && (
-              <CCol xl="2">
-                {/* <div className="callout callout-primary"> */}
-                <small className="text-muted">Current Image</small>
-                <br />
-                <strong className="h4">
-                  {annoData?.image.number}/{annoData?.image.amount}
-                </strong>
-                {/* </div> */}
-              </CCol>
-            )}
+            <CCol xl="2">
+              <small className="text-muted">
+                {isSIA ? 'Current Image' : 'Labeled Images'}
+              </small>
+              <br />
+              <strong className="h4">
+                {isSIA
+                  ? `${annoData?.image.number}/${annoData?.image.amount}`
+                  : `${annoTask.finished}/${annoTask.size}`}
+              </strong>
+            </CCol>
             <CCol>
               {/* <div className="callout callout-primary"> */}
               <CRow>

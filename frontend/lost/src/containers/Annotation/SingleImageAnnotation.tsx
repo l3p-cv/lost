@@ -1,6 +1,5 @@
 import { CSSProperties, useEffect, useState } from 'react'
 
-import WorkingOnSIA from './AnnoTask/WorkingOnSIA'
 import SiaWrapper from './SIA/SiaWrapper'
 import * as annotaskApi from '../../actions/annoTask/anno_task_api'
 import siaApi, {
@@ -47,7 +46,6 @@ const SingleImageAnnotation = () => {
   console.log(annoData)
   return (
     <div style={forwardFlex}>
-      {/* <WorkingOnSIA annoTask={currentAnnotask} /> */}
       <AnnotationTop annoTask={currentAnnotask} annoData={annoData} />
       <div style={forwardFlex}>
         <SiaWrapper

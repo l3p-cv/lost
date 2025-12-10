@@ -54,7 +54,6 @@ const DatasetsReviewComponent = () => {
 
   return (
     <div style={forwardFlex}>
-      {/* <h1>(Under Construction) Review of dataset {datasetId}</h1> */}
       <AnnotationTop
         annoTask={!!currentAnnotask ? currentAnnotask : null}
         annoData={annoData}

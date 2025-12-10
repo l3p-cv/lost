@@ -83,6 +83,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed unused BaseModal from globalComponents
 - Removed ToolbarTooltip from containers/pipeline/running (replaced with CoreUI functionality)
 - Removed unnecessary "close"-button for global instructions
+- Removed WorkingOnMIA, WorkingOnSIA - both replaced by AnnotationTop
 
 ## [2.7.0] - 2025-06-12 
 ### Added

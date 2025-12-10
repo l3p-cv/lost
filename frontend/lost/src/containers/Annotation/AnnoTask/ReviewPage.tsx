@@ -50,7 +50,6 @@ const AnnotaskReviewComponent = () => {
 
   return (
     <div style={forwardFlex}>
-      <h1>Review of annotation task {annotaskId}</h1>
       <AnnotationTop annoTask={currentAnnotask} annoData={annoData} isReview={true} />
       <div style={forwardFlex}>
         <SiaWrapper
