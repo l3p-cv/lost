@@ -59,6 +59,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rewrote ImageFilterButton (to use CButton + CTooltip)
 - Rewrote image Search in SIA Toolbar (additional button, to end the search-mode)
 - Reworte useAnnotask() in anno_task_api (kept old implementation as useAnnotaskOld())
+- Replaced DataTable component with CoreDataTable
 ### Fixed
 - Removed centered spinner of CoreDataTable, when faced with empty data, to not block the rest of the page
 - Fixed execution of DBPatcher at wrong place on start up
@@ -74,6 +75,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Resolved issue with image folder selection during tours
 - Re-added rendering of footer for component BaseModal
 - Fixed and removed contraint over the input payload point set to use only 4 points as max limit in `/bboxFromPoints`. 
+- Fixed using alternative pagesizes for whole-data CoreDataTable
 ### Removed
 - Removed all instances of reactstrap library
 - Removed all instances of semantic-ui library
@@ -84,6 +86,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed ToolbarTooltip from containers/pipeline/running (replaced with CoreUI functionality)
 - Removed unnecessary "close"-button for global instructions
 - Removed WorkingOnMIA, WorkingOnSIA - both replaced by AnnotationTop
+- Removed old DataTable component and everything importing from outdated 'react-table'
 
 ## [2.7.0] - 2025-06-12 
 ### Added

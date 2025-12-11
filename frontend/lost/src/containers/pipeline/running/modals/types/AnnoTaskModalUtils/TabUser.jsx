@@ -43,7 +43,6 @@ const TabUser = ({ annotaskId, annotaskUser, changeUser }) => {
     columnHelper.accessor('name', {
       header: 'Name',
       cell: (props) => {
-        console.log(props)
         return (
           <>
             <b>{props.row.original.name}</b>

@@ -1,10 +1,11 @@
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
 import { saveAs } from 'file-saver'
 
-import ReactTable from 'react-table'
-import IconButton from '../../../../../components/IconButton'
 import { API_URL } from '../../../../../lost_settings'
 import { CModalBody, CModalHeader } from '@coreui/react'
+import { createColumnHelper } from '@tanstack/react-table'
+import CoreDataTable from '../../../../../components/CoreDataTable'
+import CoreIconButton from '../../../../../components/CoreIconButton'
 
 const DataExportModal = ({ dataExport }) => {
   const downloadFile = (de_id, fileName) => {
@@ -18,50 +19,40 @@ const DataExportModal = ({ dataExport }) => {
       .then((blob) => saveAs(blob, fileName))
   }
 
+  const columnHelper = createColumnHelper()
+  const columns = [
+    columnHelper.accessor('file_name', {
+      header: 'Name',
+      cell: (props) => {
+        return String(props.row.original.file_path.split('/').pop())
+      },
+    }),
+    columnHelper.accessor('file_name', {
+      header: 'Download',
+      cell: (props) => {
+        return (
+          <CoreIconButton
+            color="primary"
+            // isOutline={false}
+            icon={faDownload}
+            onClick={() =>
+              downloadFile(
+                props.row.original.id,
+                String(props.row.original.file_path.split('/').pop()),
+              )
+            }
+            text={'Download'}
+          />
+        )
+      },
+    }),
+  ]
+
   return (
     <>
       <CModalHeader>Data Export</CModalHeader>
       <CModalBody>
-        <ReactTable
-          columns={[
-            {
-              Header: 'Name',
-              accessor: 'file_name',
-              Cell: ({ original }) => {
-                return String(original.file_path.split('/').pop())
-              },
-            },
-            {
-              Header: 'Download',
-              accessor: 'fileName',
-              Cell: ({ original }) => {
-                return (
-                  <IconButton
-                    color="primary"
-                    isOutline={false}
-                    icon={faDownload}
-                    onClick={() =>
-                      downloadFile(
-                        original.id,
-                        String(original.file_path.split('/').pop()),
-                      )
-                    }
-                    text={'Download'}
-                  />
-                )
-              },
-            },
-          ]}
-          defaultSorted={[
-            {
-              id: 'fileName',
-              desc: true,
-            },
-          ]}
-          data={dataExport}
-          defaultPageSize={10}
-          className="-striped -highlight"
-        />
+        <CoreDataTable tableData={dataExport} columns={columns} />
       </CModalBody>
     </>
   )

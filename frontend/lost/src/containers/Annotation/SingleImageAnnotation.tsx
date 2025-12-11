@@ -43,7 +43,6 @@ const SingleImageAnnotation = () => {
 
   if (currentAnnotask === undefined) return 'Loading...'
 
-  console.log(annoData)
   return (
     <div style={forwardFlex}>
       <AnnotationTop annoTask={currentAnnotask} annoData={annoData} />

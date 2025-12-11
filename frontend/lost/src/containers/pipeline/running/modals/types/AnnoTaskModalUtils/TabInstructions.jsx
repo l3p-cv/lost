@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react'
 import IconButton from '../../../../../../components/IconButton'
 import { faEye } from '@fortawesome/free-solid-svg-icons'
 import ViewInstruction from '../../../../../../containers/Instruction/ViewInstruction'
+import CoreIconButton from '../../../../../../components/CoreIconButton'
 
 const TabInstructions = ({ annotask, updateAnnotask }) => {
   const { instructionId } = annotask
@@ -122,6 +123,7 @@ const TabInstructions = ({ annotask, updateAnnotask }) => {
   return (
     <CRow className="justify-content-center">
       <CCol sm="6" style={{ position: 'relative' }}>
+        {/* TODO: underline and make hover tooltip; new component */}
         <span className="py-1 fs-6 text-muted fw-bold">Instructions &nbsp;</span>
         <HelpButton
           id="anno-start-desc"
@@ -163,17 +165,15 @@ const TabInstructions = ({ annotask, updateAnnotask }) => {
 
         <br />
         <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-          <CButton
+          <CoreIconButton
             color="primary"
             onClick={handleSave}
             disabled={isSaving || isSelectLoading}
-            size="sm"
+            // size="sm"
             style={{ flex: 1 }}
-          >
-            {isSaving ? 'Saving...' : 'Save Instruction'}
-          </CButton>
-
-          <IconButton
+            text={isSaving ? 'Saving...' : 'Save Instruction'}
+          />
+          <CoreIconButton
             icon={faEye}
             color="info"
             onClick={handleViewInstruction}
@@ -183,7 +183,7 @@ const TabInstructions = ({ annotask, updateAnnotask }) => {
                 : 'View Instruction'
             }
             style={{ flex: 1 }}
-            size="sm"
+            // size="sm"
             disabled={instructionId == null || isSelectLoading}
           />
         </div>

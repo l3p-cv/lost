@@ -3,7 +3,6 @@ import { useState } from 'react'
 import validator from 'validator'
 import { useGroups } from '../../actions/group/group-api'
 import { useCreateUser, useUpdateUser } from '../../actions/user/user_api'
-import Datatable from '../../components/Datatable'
 import { useLostConfig } from '../../hooks/useLostConfig'
 import {
   CBadge,

@@ -15,8 +15,8 @@ import {
 import { faPlay } from '@fortawesome/free-solid-svg-icons'
 import * as annoTaskApi from '../../../../../../actions/annoTask/anno_task_api'
 import HelpButton from '../../../../../../components/HelpButton'
-import IconButton from '../../../../../../components/IconButton'
 import * as Notification from '../../../../../../components/Notification'
+import CoreIconButton from '../../../../../../components/CoreIconButton'
 
 const TabGenerateExport = ({ annotaskId, imgCount, annotatedImgCount, setActive }) => {
   const {
@@ -169,7 +169,7 @@ const TabGenerateExport = ({ annotaskId, imgCount, annotatedImgCount, setActive 
               <CRow>
                 <CCol xs="12" lg="5">
                   <CDropdown>
-                    <CDropdownToggle color="secondary">
+                    <CDropdownToggle color="primary" variant="outline">
                       {newExport.exportType}
                     </CDropdownToggle>
                     <CDropdownMenu>
@@ -185,39 +185,38 @@ const TabGenerateExport = ({ annotaskId, imgCount, annotatedImgCount, setActive 
                         LOST_Dataset
                       </CDropdownItem>
                       {/* <CDropdownItem
-                                                    href="#"
-                                                    onClick={(e) =>
-                                                        setNewExport({
-                                                            ...newExport,
-                                                            exportType: 'PascalVOC',
-                                                        })
-                                                    }
-                                                >
-                                                    PascalVOC
-                                                </CDropdownItem>
-                                                <CDropdownItem
-                                                    href="#"
-                                                    onClick={(e) =>
-                                                        setNewExport({
-                                                            ...newExport,
-                                                            exportType: 'MS_Coco',
-                                                        })
-                                                    }
-                                                >
-                                                    MSCoco
-                                                </CDropdownItem>
-                                                <CDropdownItem
-                                                    href="#"
-                                                    onClick={(e) =>
-                                                        setNewExport({
-                                                            ...newExport,
-                                                            exportType: 'YOLO',
-                                                        })
-                                                    }
-                                                >
-                                                    YOLO
-                                                </CDropdownItem> */}
-
+                        href="#"
+                        onClick={(e) =>
+                          setNewExport({
+                            ...newExport,
+                            exportType: 'PascalVOC',
+                          })
+                        }
+                      >
+                        PascalVOC
+                      </CDropdownItem>
+                      <CDropdownItem
+                        href="#"
+                        onClick={(e) =>
+                          setNewExport({
+                            ...newExport,
+                            exportType: 'MS_Coco',
+                          })
+                        }
+                      >
+                        MSCoco
+                      </CDropdownItem>
+                      <CDropdownItem
+                        href="#"
+                        onClick={(e) =>
+                          setNewExport({
+                            ...newExport,
+                            exportType: 'YOLO',
+                          })
+                        }
+                      >
+                        YOLO
+                      </CDropdownItem> */}
                       <CDropdownItem
                         href="#"
                         onClick={(e) =>
@@ -239,19 +238,24 @@ const TabGenerateExport = ({ annotaskId, imgCount, annotatedImgCount, setActive 
                   </h4>
                 </CCol>
               </CRow>
-
               {/* <CRow>
-                                <CCol sm="12">
-                                    <CRow style={{ marginLeft: '5px' }}>
-                                        
-                                    </CRow>
-                                </CCol>
-                            </CRow> */}
+                <CCol sm="12">
+                  <CRow style={{ marginLeft: '5px' }}></CRow>
+                </CCol>
+              </CRow> */}
             </CCol>
           </CRow>
         </CCol>
         <CCol sm="6">
-          <CRow style={{ marginTop: '10px', marginBottom: '40px' }}>
+          <CRow
+            style={{
+              marginTop: '0px',
+              marginBottom: '40px',
+              marginLeft: '20px',
+              // borderLeft: 'thin dotted red',
+            }}
+            xs={{ gutterY: 0 }}
+          >
             <CCol sm="12">
               <h4>
                 Split Dataset
@@ -384,53 +388,52 @@ const TabGenerateExport = ({ annotaskId, imgCount, annotatedImgCount, setActive 
               </CRow>
             </CCol>
             {/* <CCol sm="12">
-                            <h4 className='mt-3'>Datastore</h4>
-                            <CRow>
-                                <CCol sm="12">
-                                    <CRow>
-                                        <CCol md="2">
-                                            <CFormSwitch
-                                                size="xl"
-                                                className={'mx-1'}
-                                                variant={'3d'}
-                                                color={'primary'}
-                                                checked={newExport.randomSplits.active}
-                                                onChange={(e) => {
-                                                    console.log("export to datastore switch flipped");
-                                                }}
-                                            />
-                                        </CCol>
-                                        <CCol>
-                                            <b
-                                                style={{
-                                                    marginLeft: '20px',
-                                                }}
-                                            >
-                                                Export to Datastore
-                                                <HelpButton
-                                                    id="store-to-datastore"
-                                                    text={`If this setting is active, 
+              <h4 className="mt-3">Datastore</h4>
+              <CRow>
+                <CCol sm="12">
+                  <CRow>
+                    <CCol md="2">
+                      <CFormSwitch
+                        size="xl"
+                        className={'mx-1'}
+                        variant={'3d'}
+                        color={'primary'}
+                        checked={newExport.randomSplits.active}
+                        onChange={(e) => {
+                          console.log('export to datastore switch flipped')
+                        }}
+                      />
+                    </CCol>
+                    <CCol>
+                      <b
+                        style={{
+                          marginLeft: '20px',
+                        }}
+                      >
+                        Export to Datastore
+                        <HelpButton
+                          id="store-to-datastore"
+                          text={`If this setting is active, 
                                 the exported file will be saved on the selected datastore instead of this LOST instance.`}
-                                                />
-                                            </b>
-                                        </CCol>
-                                    </CRow>
-                                </CCol>
-                            </CRow>
-                        </CCol> */}
+                        />
+                      </b>
+                    </CCol>
+                  </CRow>
+                </CCol>
+              </CRow>
+            </CCol> */}
           </CRow>
         </CCol>
       </CRow>
       <CRow className="justify-content-center">
-        <IconButton
-          isOutline={false}
+        <CoreIconButton
           disabled={newExport.exportName === ''}
           color="primary"
           onClick={() => onGenerateExport()}
           icon={faPlay}
           text="Generate export"
           style={{ marginTop: '20px', marginRight: '20px', maxWidth: '175px' }}
-        ></IconButton>
+        />
       </CRow>
     </CContainer>
   )
