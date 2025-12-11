@@ -60,6 +60,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rewrote image Search in SIA Toolbar (additional button, to end the search-mode)
 - Reworte useAnnotask() in anno_task_api (kept old implementation as useAnnotaskOld())
 - Replaced DataTable component with CoreDataTable
+- Reworked Review Image-Search UI (table + buttons)
 ### Fixed
 - Removed centered spinner of CoreDataTable, when faced with empty data, to not block the rest of the page
 - Fixed execution of DBPatcher at wrong place on start up
@@ -87,6 +88,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed unnecessary "close"-button for global instructions
 - Removed WorkingOnMIA, WorkingOnSIA - both replaced by AnnotationTop
 - Removed old DataTable component and everything importing from outdated 'react-table'
+- Removed unused component NewDataTable
 
 ## [2.7.0] - 2025-06-12 
 ### Added
