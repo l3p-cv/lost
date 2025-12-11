@@ -3,6 +3,7 @@ import { useExportDataset } from '../../actions/dataset/dataset-export-api'
 import { DatasetExportsTable } from './DatasetExportsTable'
 import {
   CButton,
+  CCol,
   CForm,
   CFormCheck,
   CModal,
@@ -11,6 +12,7 @@ import {
   CModalHeader,
   CRow,
 } from '@coreui/react'
+import CoreIconButton from '../../components/CoreIconButton'
 
 interface WholeDatasetExportModalProps {
   isOpen: boolean
@@ -40,25 +42,31 @@ export const WholeDatasetExportModal = ({
       <CModalBody>
         <CForm>
           <CRow>
-            <CFormCheck
-              type="checkbox"
-              label="Annotated Only"
-              checked={annotatedOnly}
-              onChange={(e) => setAnnotatedOnly(e.target.checked)}
-            />
+            <CCol>
+              <CFormCheck
+                type="checkbox"
+                label="Annotated Only"
+                checked={annotatedOnly}
+                onChange={(e) => setAnnotatedOnly(e.target.checked)}
+              />
+            </CCol>
           </CRow>
-          <CButton color="primary" onClick={handleSubmit} className="mt-2">
-            Generate Export
-          </CButton>
+          <CRow>
+            <CCol>
+              <CoreIconButton
+                text="Generate Export"
+                onClick={handleSubmit}
+                className="mt-2"
+              />
+            </CCol>
+          </CRow>
         </CForm>
 
         <h4 className="text-center">Dataset Exports </h4>
         <DatasetExportsTable datasetId={datasetId} />
       </CModalBody>
       <CModalFooter>
-        <CButton color="secondary" onClick={toggle}>
-          Cancel
-        </CButton>
+        <CoreIconButton color="secondary" onClick={toggle} text="Cancel" />
       </CModalFooter>
     </CModal>
   )

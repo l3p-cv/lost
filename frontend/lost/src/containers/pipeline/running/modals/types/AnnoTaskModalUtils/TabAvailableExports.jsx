@@ -102,25 +102,23 @@ const TabAvailableExports = (props) => {
       cell: (props) => {
         const progress = parseInt(props.row.original.progress)
         return (
-          <>
-            <div className="clearfix">
-              {/* <div className="float-left"> */}
-              <strong>{progress}%</strong>
-              {/* </div> */}
-              <CProgress
-                className="progress-xs rt-progress"
-                color={getColor(progress)}
-                value={progress}
-              />
-              {progress < 100 ? (
-                ''
-              ) : (
-                <div className="small text-muted">
-                  {getFileSize(props.row.original.fileSize)}
-                </div>
-              )}
-            </div>
-          </>
+          <div className="clearfix">
+            {/* <div className="float-left"> */}
+            <strong>{progress}%</strong>
+            {/* </div> */}
+            <CProgress
+              className="progress-xs rt-progress"
+              color={getColor(progress)}
+              value={progress}
+            />
+            {progress < 100 ? (
+              ''
+            ) : (
+              <div className="small text-muted">
+                {getFileSize(props.row.original.fileSize)}
+              </div>
+            )}
+          </div>
         )
       },
     }),
@@ -137,7 +135,7 @@ const TabAvailableExports = (props) => {
         )
       },
     }),
-    columnHelper.accessor('name', {
+    columnHelper.accessor('download', {
       header: 'Download',
       cell: (props) => {
         return (

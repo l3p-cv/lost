@@ -31,6 +31,8 @@ import { faSquare, faSquareCheck } from '@fortawesome/free-regular-svg-icons'
 import * as datasetReviewApi from '../../actions/dataset/dataset_review_api'
 import { Label, TagLabel } from 'lost-sia'
 import CoreIconButton from '../../components/CoreIconButton'
+import BaseContainer from '../../components/BaseContainer'
+import CoreDataTable from '../../components/CoreDataTable'
 
 export type ImageSearchResult = {
   imageId: number
@@ -161,7 +163,7 @@ const SIAImageSearchModal = ({
         <CoreIconButton
           icon={faArrowRight}
           color="primary"
-          isOutline={false}
+          // isOutline={false}
           onClick={() => {
             setIsVisible(false)
             const rowData = props.row.original
@@ -250,93 +252,9 @@ const SIAImageSearchModal = ({
         <CCol sm="2">Results:</CCol>
         <CCol md="8">
           <div style={{ marginTop: '25px' }}></div>
-          <CContainer
-            style={{
-              background: 'white',
-              padding: 15,
-              borderRadius: 10,
-              border: '1px solid #cce2ff',
-            }}
-          >
-            <CTable>
-              <CTableHead>
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <tr key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => (
-                      <th key={header.id}>
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
-                      </th>
-                    ))}
-                  </tr>
-                ))}
-              </CTableHead>
-              <CTableBody>
-                {table.getRowModel().rows.map((row) => (
-                  <Fragment key={row.id}>
-                    <tr key={row.id}>
-                      {row.getVisibleCells().map((cell) => (
-                        <td key={cell.id}>
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </td>
-                      ))}
-                    </tr>
-                  </Fragment>
-                ))}
-              </CTableBody>
-            </CTable>
-            <CRow>
-              <CCol>
-                {
-                  <CoreIconButton
-                    icon={faAngleLeft}
-                    text="Previous"
-                    onClick={() => table.previousPage()}
-                    disabled={!table.getCanPreviousPage()}
-                  />
-                }
-              </CCol>
-              <CCol>
-                <span style={{ lineHeight: 2 }}>
-                  Page
-                  <strong>
-                    {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
-                  </strong>
-                </span>
-              </CCol>
-              <CCol>
-                <span style={{ lineHeight: 2 }}>
-                  <select
-                    value={table.getState().pagination.pageSize}
-                    onChange={(e) => {
-                      table.setPageSize(Number(e.target.value))
-                    }}
-                  >
-                    {[10, 20, 30, 40, 50].map((pageSize) => (
-                      <option key={pageSize} value={pageSize}>
-                        Show {pageSize}
-                      </option>
-                    ))}
-                  </select>
-                </span>
-              </CCol>
-              <CCol>
-                {
-                  <CoreIconButton
-                    icon={faAngleRight}
-                    text="Next"
-                    onClick={() => table.nextPage()}
-                    disabled={!table.getCanNextPage()}
-                    style={{ float: 'right' }}
-                  />
-                }
-              </CCol>
-            </CRow>
-          </CContainer>
+          <BaseContainer>
+            <CoreDataTable tableData={tableData} columns={columns} />
+          </BaseContainer>
         </CCol>
       </CRow>
     )
@@ -366,10 +284,23 @@ const SIAImageSearchModal = ({
         <CRow>
           <CCol sm="2">Filter Labels:</CCol>
           <CCol sm="6">{renderPossibleLabels()}</CCol>
-          <CCol sm="2">
+        </CRow>
+        <CRow className="justify-content-start">
+          <CCol sm="2">&nbsp;</CCol>
+          <CCol sm="auto">
             <CoreIconButton
-              isOutline={true}
-              color="primary"
+              color="info"
+              icon={faSquare}
+              text="Deselect all"
+              onClick={() => {
+                setSelectedFilterLabels([])
+              }}
+              style={{ marginTop: '15px' }}
+            />
+          </CCol>
+          <CCol sm="auto">
+            <CoreIconButton
+              color="info"
               icon={faSquareCheck}
               text="Select all"
               onClick={() => {
@@ -379,24 +310,10 @@ const SIAImageSearchModal = ({
               }}
               style={{ marginTop: '15px' }}
             />
-            &nbsp;
-            <CoreIconButton
-              isOutline={true}
-              color="primary"
-              icon={faSquare}
-              text="Deselect all"
-              onClick={() => {
-                setSelectedFilterLabels([])
-              }}
-              style={{ marginTop: '15px' }}
-            />
           </CCol>
-        </CRow>
-        <CRow>
-          <CCol sm="2">&nbsp;</CCol>
-          <CCol sm="6">
+          <CCol sm="2">
             <CoreIconButton
-              isOutline={false}
+              // isOutline={false}
               color="primary"
               icon={faSearch}
               text="Search"

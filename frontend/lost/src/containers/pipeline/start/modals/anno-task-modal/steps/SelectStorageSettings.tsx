@@ -5,9 +5,9 @@ import { useState } from 'react'
 import Select from 'react-select'
 import * as datasetApi from '../../../../../../actions/dataset/dataset_api'
 import HelpButton from '../../../../../../components/HelpButton'
-import IconButton from '../../../../../../components/IconButton'
 import DatasetEditModal from '../../../../../Datasets/DatasetEditModal'
 import { AnnoTaskNodeData } from '../../../nodes'
+import CoreIconButton from '../../../../../../components/CoreIconButton'
 
 interface SelectStorageSettingsProps {
   nodeId: string
@@ -90,7 +90,7 @@ export const SelectStorageSettings = ({ nodeId }: SelectStorageSettingsProps) =>
             </CRow>
             <CRow>
               <CCol>
-                <IconButton
+                <CoreIconButton
                   isOutline={false}
                   color="primary"
                   icon={faBoxesPacking}

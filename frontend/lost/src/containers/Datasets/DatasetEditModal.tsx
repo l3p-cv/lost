@@ -195,7 +195,7 @@ const DatasetEditModal = ({
 
   const renderDeleteDatasetButton = () => (
     <CoreIconButton
-      isOutline={false}
+      // isOutline={false}
       color="danger"
       icon={faTrash}
       text="Delete Dataset"
@@ -265,13 +265,12 @@ const DatasetEditModal = ({
                         />
                     </CCol>
                 </CRow> */}
-        <CRow>
-          <CCol sm="2">&nbsp;</CCol>
+        <CRow className="justify-content-center">
+          {/* <CCol sm="2">&nbsp;</CCol> */}
           <CCol sm="6">
             {idx !== -1 ? renderDeleteDatasetButton() : ''}
-
             <CoreIconButton
-              isOutline={false}
+              // isOutline={false}
               color="primary"
               icon={faSave}
               text={`${idx === -1 ? 'Add' : 'Update'} Dataset`}

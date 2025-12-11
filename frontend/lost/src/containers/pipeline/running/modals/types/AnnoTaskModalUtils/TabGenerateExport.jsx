@@ -14,9 +14,9 @@ import {
 } from '@coreui/react'
 import { faPlay } from '@fortawesome/free-solid-svg-icons'
 import * as annoTaskApi from '../../../../../../actions/annoTask/anno_task_api'
-import HelpButton from '../../../../../../components/HelpButton'
 import * as Notification from '../../../../../../components/Notification'
 import CoreIconButton from '../../../../../../components/CoreIconButton'
+import InfoText from '../../../../../../components/InfoText'
 
 const TabGenerateExport = ({ annotaskId, imgCount, annotatedImgCount, setActive }) => {
   const {
@@ -68,123 +68,25 @@ const TabGenerateExport = ({ annotaskId, imgCount, annotatedImgCount, setActive 
     }
   }
 
-  return (
-    <CContainer>
-      <CRow style={{ marginLeft: '5px' }}>
-        <CCol sm="6">
-          <CRow xs={{ gutterY: 3 }}>
-            <CCol sm="12">
-              <h4>
-                Export Name
-                <HelpButton id="export-name" text={`Give your export file a name.`} />
-              </h4>
-              <CRow>
-                <CCol>
-                  <CFormInput
-                    type="text"
-                    value={newExport.exportName}
-                    onChange={(e) =>
-                      setNewExport({
-                        ...newExport,
-                        exportName: e.currentTarget.value,
-                      })
-                    }
-                  />
-                </CCol>
-              </CRow>
-            </CCol>
-
-            <CCol sm="12">
-              <CRow>
-                <CCol xs="12" lg="5">
-                  <CFormSwitch
-                    size="xl"
-                    className={'mx-1'}
-                    variant={'3d'}
-                    color={'primary'}
-                    checked={newExport.annotatedOnly}
-                    onChange={(e) =>
-                      setNewExport({
-                        ...newExport,
-                        annotatedOnly: !newExport.annotatedOnly,
-                      })
-                    }
-                  />
-                </CCol>
-                <CCol>
-                  <h4>
-                    Annotated only
-                    <HelpButton
-                      id="anno-only"
-                      text={
-                        'Only add annotations from already annotated images to the export.'
-                      }
-                    />
-                  </h4>
-                </CCol>
-              </CRow>
-            </CCol>
-
-            <CCol sm="12">
-              <CRow>
-                <CCol xs="12" lg="5">
-                  <CFormSwitch
-                    size="xl"
-                    className={'mx-1'}
-                    variant={'3d'}
-                    color={'primary'}
-                    checked={newExport.includeImages}
-                    onChange={(e) =>
-                      setNewExport({
-                        ...newExport,
-                        includeImages: !newExport.includeImages,
-                      })
-                    }
-                  />
-                  {newExport.includeImages ? (
-                    <CBadge color="primary" shape="pill" style={{ marginLeft: '20px' }}>
-                      {newExport.annotatedOnly
-                        ? `${annotatedImgCount} images`
-                        : `${imgCount} images`}
-                    </CBadge>
-                  ) : (
-                    ''
-                  )}
-                </CCol>
-                <CCol>
-                  <h4>
-                    Include Images
-                    <HelpButton
-                      id="include-images"
-                      text={
-                        'Whether images should be packed into the export. (Attention, the file size can become very large). '
-                      }
-                    />
-                  </h4>
-                </CCol>
-              </CRow>
-            </CCol>
-
-            <CCol sm="12">
-              <CRow>
-                <CCol xs="12" lg="5">
-                  <CDropdown>
-                    <CDropdownToggle color="primary" variant="outline">
-                      {newExport.exportType}
-                    </CDropdownToggle>
-                    <CDropdownMenu>
-                      <CDropdownItem
-                        href="#"
-                        onClick={(e) =>
-                          setNewExport({
-                            ...newExport,
-                            exportType: 'LOST_Dataset',
-                          })
-                        }
-                      >
-                        LOST_Dataset
-                      </CDropdownItem>
-                      {/* <CDropdownItem
+  const dropdownMenuLost = () => {
+    return (
+      <CDropdown>
+        <CDropdownToggle color="primary" variant="outline">
+          {newExport.exportType}
+        </CDropdownToggle>
+        <CDropdownMenu>
+          <CDropdownItem
+            href="#"
+            onClick={(e) =>
+              setNewExport({
+                ...newExport,
+                exportType: 'LOST_Dataset',
+              })
+            }
+          >
+            LOST_Dataset
+          </CDropdownItem>
+          {/* <CDropdownItem
                         href="#"
                         onClick={(e) =>
                           setNewExport({
@@ -217,32 +119,122 @@ const TabGenerateExport = ({ annotaskId, imgCount, annotatedImgCount, setActive 
                       >
                         YOLO
                       </CDropdownItem> */}
-                      <CDropdownItem
-                        href="#"
-                        onClick={(e) =>
-                          setNewExport({
-                            ...newExport,
-                            exportType: 'CSV',
-                          })
-                        }
-                      >
-                        CSV
-                      </CDropdownItem>
-                    </CDropdownMenu>
-                  </CDropdown>
+          <CDropdownItem
+            href="#"
+            onClick={(e) =>
+              setNewExport({
+                ...newExport,
+                exportType: 'CSV',
+              })
+            }
+          >
+            CSV
+          </CDropdownItem>
+        </CDropdownMenu>
+      </CDropdown>
+    )
+  }
+
+  return (
+    <CContainer>
+      <CRow style={{ marginLeft: '5px' }}>
+        <CCol sm="6">
+          <CRow xs={{ gutterY: 3 }}>
+            <CCol sm="4" className="align-self-center">
+              <InfoText
+                text="Export Name:"
+                toolTip="Give your export file a name."
+                style={{ fontSize: 20 }}
+                id="export-name"
+              />
+            </CCol>
+            <CCol>
+              <CFormInput
+                type="text"
+                value={newExport.exportName}
+                onChange={(e) =>
+                  setNewExport({
+                    ...newExport,
+                    exportName: e.currentTarget.value,
+                  })
+                }
+              />
+            </CCol>
+            <CCol sm="12">
+              <CRow>
+                <CCol xl="4" className="align-self-center">
+                  <InfoText
+                    text="Annotated only:"
+                    toolTip="Only add annotations from already annotated images to the export."
+                    style={{ fontSize: 20 }}
+                    id="annotated-only"
+                  />
                 </CCol>
-                <CCol>
-                  <h4 className="mb-3">
-                    Export Type
-                    <HelpButton id="export-type" text={'Type of data export. '} />
-                  </h4>
+                <CCol xs="6" lg="2">
+                  <CFormSwitch
+                    size="xl"
+                    className={'mx-1'}
+                    color={'primary'}
+                    checked={newExport.annotatedOnly}
+                    onChange={(e) =>
+                      setNewExport({
+                        ...newExport,
+                        annotatedOnly: !newExport.annotatedOnly,
+                      })
+                    }
+                  />
                 </CCol>
               </CRow>
-              {/* <CRow>
-                <CCol sm="12">
-                  <CRow style={{ marginLeft: '5px' }}></CRow>
+            </CCol>
+            <CCol sm="12">
+              <CRow>
+                <CCol xl="4">
+                  <InfoText
+                    text="Include Images:"
+                    toolTip="Whether images should be packed into the export. (Attention, the file size can become very large). "
+                    style={{ fontSize: 20 }}
+                    id="include-images"
+                  />
                 </CCol>
-              </CRow> */}
+                <CCol xs="6" lg="2">
+                  <CFormSwitch
+                    size="xl"
+                    className={'mx-1'}
+                    color={'primary'}
+                    checked={newExport.includeImages}
+                    onChange={(e) =>
+                      setNewExport({
+                        ...newExport,
+                        includeImages: !newExport.includeImages,
+                      })
+                    }
+                  />
+                  {newExport.includeImages ? (
+                    <CBadge color="primary" shape="pill" style={{ marginLeft: '20px' }}>
+                      {newExport.annotatedOnly
+                        ? `${annotatedImgCount} images`
+                        : `${imgCount} images`}
+                    </CBadge>
+                  ) : (
+                    ''
+                  )}
+                </CCol>
+              </CRow>
+            </CCol>
+            <CCol sm="12">
+              <CRow>
+                <CCol xl="4" className="align-self-center">
+                  <InfoText
+                    text="Export Type:"
+                    toolTip="Type of data export"
+                    style={{ fontSize: 20 }}
+                    id="export-type"
+                  />
+                </CCol>
+                <CCol xs="12" lg="5">
+                  {dropdownMenuLost()}
+                </CCol>
+              </CRow>
             </CCol>
           </CRow>
         </CCol>
@@ -252,65 +244,57 @@ const TabGenerateExport = ({ annotaskId, imgCount, annotatedImgCount, setActive 
               marginTop: '0px',
               marginBottom: '40px',
               marginLeft: '20px',
-              // borderLeft: 'thin dotted red',
             }}
             xs={{ gutterY: 0 }}
           >
-            <CCol sm="12">
-              <h4>
-                Split Dataset
-                <HelpButton
-                  id="split-ds"
-                  text={`If these settings are active, 
-                                the dataset will be split into the parts indicated below. 
-                                This is done randomly based on the image path.`}
-                />
-              </h4>
+            <CCol sm="10">
               <CRow>
-                <CCol sm="12">
-                  <CRow>
-                    <CCol md="2">
-                      <CFormSwitch
-                        size="xl"
-                        className={'mx-1'}
-                        variant={'3d'}
-                        color={'primary'}
-                        checked={newExport.randomSplits.active}
-                        onChange={(e) =>
-                          setNewExport({
-                            ...newExport,
-                            randomSplits: {
-                              train: newExport.randomSplits.train,
-                              test: newExport.randomSplits.test,
-                              val: newExport.randomSplits.val,
-                              active: !newExport.randomSplits.active,
-                            },
-                          })
-                        }
-                      />
-                    </CCol>
-                    <CCol>
-                      <b
-                        style={{
-                          marginLeft: '20px',
-                        }}
-                      >
-                        Active
-                        <HelpButton id="random-splits" text={'Enable random splits'} />
-                      </b>
-                    </CCol>
-                  </CRow>
+                <CCol sm="7" className="align-self-center">
+                  <InfoText
+                    text={'Split Dataset Export:'}
+                    toolTip={`If this setting is active, 
+                                the dataset will be split into the parts indicated below. 
+                                This is done randomly based on the image path`}
+                    style={{ fontSize: 20, marginLeft: '20px' }}
+                    id="random-splits"
+                  />
                 </CCol>
-
+                <CCol>
+                  <CFormSwitch
+                    size="xl"
+                    className={'mx-1'}
+                    color={'primary'}
+                    checked={newExport.randomSplits.active}
+                    onChange={(e) =>
+                      setNewExport({
+                        ...newExport,
+                        randomSplits: {
+                          train: newExport.randomSplits.train,
+                          test: newExport.randomSplits.test,
+                          val: newExport.randomSplits.val,
+                          active: !newExport.randomSplits.active,
+                        },
+                      })
+                    }
+                  />
+                </CCol>
                 {newExport.randomSplits.active ? (
                   <>
                     <div
                       style={{
-                        marginLeft: '5px',
+                        marginLeft: '15px',
                         marginTop: '10px',
                       }}
                     >
                       <CRow>
+                        <CCol className="align-self-center">
+                          <InfoText
+                            text="-Train Portion: "
+                            toolTip={`Split for train`}
+                            style={{ fontSize: 20, marginLeft: '20px' }}
+                            id="split-train"
+                          />
+                        </CCol>
                         <CCol md="6">
                           <CFormInput
                             type="number"
@@ -323,21 +307,23 @@ const TabGenerateExport = ({ annotaskId, imgCount, annotatedImgCount, setActive 
                             }
                           />
                         </CCol>
-                        <CCol>
-                          <b>
-                            Train
-                            <HelpButton id="split-train" text={'Split for train.'} />
-                          </b>
-                        </CCol>
                       </CRow>
                     </div>
                     <div
                       style={{
-                        marginLeft: '5px',
+                        marginLeft: '15px',
                         marginTop: '10px',
                       }}
                     >
                       <CRow>
+                        <CCol className="align-self-center">
+                          <InfoText
+                            text="-Test Portion: "
+                            toolTip={`Split for test`}
+                            style={{ fontSize: 20, marginLeft: '20px' }}
+                            id="split-test"
+                          />
+                        </CCol>
                         <CCol md="6">
                           <CFormInput
                             type="number"
@@ -348,21 +334,23 @@ const TabGenerateExport = ({ annotaskId, imgCount, annotatedImgCount, setActive 
                             onChange={(e) => validateSplit('test', e.currentTarget.value)}
                           />
                         </CCol>
-                        <CCol>
-                          <b>
-                            Test
-                            <HelpButton id="split-test" text={'Split for test.'} />
-                          </b>
-                        </CCol>
                       </CRow>
                     </div>
                     <div
                       style={{
-                        marginLeft: '5px',
+                        marginLeft: '15px',
                         marginTop: '10px',
                       }}
                     >
                       <CRow>
+                        <CCol className="align-self-center">
+                          <InfoText
+                            text="-Val Portion: "
+                            toolTip={`Split for val`}
+                            style={{ fontSize: 20, marginLeft: '20px' }}
+                            id="split-val"
+                          />
+                        </CCol>
                         <CCol md="6">
                           <CFormInput
                             type="number"
@@ -372,12 +360,6 @@ const TabGenerateExport = ({ annotaskId, imgCount, annotatedImgCount, setActive 
                             value={newExport.randomSplits.val}
                             onChange={(e) => validateSplit('val', e.currentTarget.value)}
                           />
-                        </CCol>
-                        <CCol>
-                          <b>
-                            Val
-                            <HelpButton id="split-val" text={'Split for val.'} />
-                          </b>
                         </CCol>
                       </CRow>
                     </div>
