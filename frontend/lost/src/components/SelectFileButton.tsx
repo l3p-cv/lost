@@ -1,7 +1,18 @@
 import PropTypes from 'prop-types'
-import { useRef } from 'react'
+import { CSSProperties, useRef } from 'react'
 import CoreIconButton from './CoreIconButton'
 import { faUpload } from '@fortawesome/free-solid-svg-icons'
+
+type SelectFileButtonProps = {
+  text?: string
+  className?: string
+  style?: CSSProperties
+  accept?: string
+  onSelect?: () => void
+  disabled?: boolean
+  color?: string
+  isOutline?: boolean
+}
 
 const SelectFileButton = ({
   text = 'Choose File',
@@ -11,7 +22,8 @@ const SelectFileButton = ({
   onSelect = () => {},
   disabled = false,
   color = 'primary',
-}) => {
+  isOutline = true,
+}: SelectFileButtonProps) => {
   const inputRef = useRef()
   const selectVideoFaker = () => {
     inputRef.current.click()
@@ -42,6 +54,7 @@ const SelectFileButton = ({
         icon={faUpload}
         style={style}
         // right={text}
+        isOutline={isOutline}
         text={text}
         className={className}
         onClick={() => {
