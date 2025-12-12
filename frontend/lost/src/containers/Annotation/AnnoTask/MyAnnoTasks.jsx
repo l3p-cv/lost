@@ -24,6 +24,7 @@ import DropdownInput from '../../../components/DropdownInput'
 import CoreDataTable from '../../../components/CoreDataTable'
 import CoreIconButton from '../../../components/CoreIconButton'
 import ErrorBoundary from '../../../components/ErrorBoundary'
+import InfoText from '../../../components/InfoText'
 
 const { getAnnoTaskStatistic } = actions
 
@@ -259,26 +260,17 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
       columnHelper.accessor('name', {
         header: 'Name',
         cell: ({ row }) => (
-          <>
-            <div>
-              <b>{row.original.name}</b>
-            </div>
-            <div className="small text-muted">ID: {row.original.id}</div>
-          </>
+          <InfoText text={row.original.name} subText={`ID: ${row.original.id}`} />
         ),
         size: 250,
       }),
       columnHelper.accessor('pipelineName', {
         header: 'Pipeline',
         cell: ({ row }) => (
-          <>
-            <div>
-              <b>{row.original.pipelineName}</b>
-            </div>
-            <div className="small text-muted">
-              Created by: {row.original.pipelineCreator}
-            </div>
-          </>
+          <InfoText
+            text={row.original.pipelineName}
+            subText={`Created by: ${row.original.pipelineCreator}`}
+          />
         ),
       }),
       columnHelper.accessor('group', {
@@ -291,16 +283,10 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
           const progress = Math.floor((row.original.finished / row.original.size) * 100)
           return (
             <>
-              <div className="clearfix">
-                <div className="float-left">
-                  <strong>{progress}%</strong>
-                </div>
-                <div className="float-right">
-                  <small className="text-muted">
-                    Started at: {new Date(row.original.createdAt).toLocaleString()}
-                  </small>
-                </div>
-              </div>
+              <InfoText
+                text={`${progress}%`}
+                subText={`Started at: ${new Date(row.original.createdAt).toLocaleString()}`}
+              />
               <CProgress
                 className="progress-xs"
                 color={getColor(progress)}
@@ -323,12 +309,12 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
         cell: ({ row }) => (
           <>
             {row.original.lastActivity ? (
-              <>
-                <strong>{new Date(row.original.lastActivity).toLocaleString()}</strong>
-                <div className="small text-muted">by {row.original.lastAnnotator}</div>
-              </>
+              <InfoText
+                text={new Date(row.original.lastActivity).toLocaleString()}
+                subText={`by ${row.original.lastAnnotator}`}
+              />
             ) : (
-              ''
+              '-'
             )}
           </>
         ),

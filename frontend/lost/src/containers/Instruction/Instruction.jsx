@@ -5,9 +5,8 @@ import {
   useAddInstruction,
   useEditInstruction,
 } from './instruction_api'
-import { CContainer, CRow, CCol, CSpinner, CBadge, CTooltip } from '@coreui/react'
+import { CContainer, CRow, CCol, CSpinner, CBadge } from '@coreui/react'
 import BaseModal from '../../components/BaseModal'
-import IconButton from '../../components/IconButton'
 import EditInstruction from './EditInstruction'
 import ViewInstruction from './ViewInstruction'
 import BaseContainer from '../../components/BaseContainer'
@@ -19,6 +18,7 @@ import { createColumnHelper } from '@tanstack/react-table'
 import CoreIconButton from '../../components/CoreIconButton'
 import TableHeader from '../../components/TableHeader'
 import ErrorBoundary from '../../components/ErrorBoundary'
+import InfoText from '../../components/InfoText'
 
 const canEdit = (visLevel, instruction) =>
   visLevel === 'global' || (visLevel === 'all' && instruction.group_id)
@@ -170,20 +170,13 @@ const Instruction = ({ visLevel }) => {
         header: 'Annotation Option',
         // cell: ({ getValue }) => getValue(),
         cell: ({ row }) => (
-          <>
-            <CTooltip content={row.original.description} placement="top">
-              <b style={{ textDecoration: 'grey dotted underline' }}>
-                {row.original.option}
-              </b>
-            </CTooltip>
-            <div className="small text-muted">{`ID: ${row.original.id}`}</div>
-          </>
+          <InfoText
+            text={row.original.option}
+            subText={`ID: ${row.original.id}`}
+            toolTip={row.original.description}
+          />
         ),
       }),
-      // columnHelper.accessor('description', {
-      //   header: 'Description',
-      //   cell: ({ getValue }) => getValue(),
-      // }),
       columnHelper.accessor('group_id', {
         header: 'Global',
         cell: ({ row }) => (

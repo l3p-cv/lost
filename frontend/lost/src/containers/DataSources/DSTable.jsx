@@ -18,6 +18,7 @@ import CoreDataTable from '../../components/CoreDataTable'
 import CoreIconButton from '../../components/CoreIconButton'
 import TableHeader from '../../components/TableHeader'
 import ErrorBoundary from '../../components/ErrorBoundary'
+import InfoText from '../../components/InfoText'
 
 export const DSTable = ({ visLevel, headline = 'Datasources' }) => {
   const [isNewDS, setIsNewDS] = useState(false)
@@ -184,10 +185,10 @@ export const DSTable = ({ visLevel, headline = 'Datasources' }) => {
         header: 'Name',
         cell: (props) => {
           return (
-            <>
-              <b>{props.row.original.name}</b>
-              <div className="small text-muted">{`ID: ${props.row.original.id}`}</div>
-            </>
+            <InfoText
+              text={props.row.original.name}
+              subText={`ID: ${props.row.original.id}`}
+            />
           )
         },
       }),

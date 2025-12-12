@@ -12,9 +12,8 @@ import React, { Fragment, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import CoreDataTable from '../../components/CoreDataTable'
 import CoreIconButton from '../../components/CoreIconButton'
-import HelpButton from '../../components/HelpButton'
-import { CTooltip } from '@coreui/react'
 import ErrorBoundary from '../../components/ErrorBoundary'
+import InfoText from '../../components/InfoText'
 
 const DatasetTable = ({
   datasetList,
@@ -93,22 +92,15 @@ const DatasetTable = ({
           if (row.original.isMetaDataset) return <b>{row.original.name}</b>
           if (row.original.isAnnotask) {
             return (
-              <>
-                {/* <b>{row.original.name}</b> */}
-                {row.original.name}
-                <div className="small text-muted">{`ID: ${row.original.idx}`}</div>
-              </>
+              <InfoText text={row.original.name} subText={`ID: ${row.original.idx}`} />
             )
           }
           return (
-            <>
-              <CTooltip content={row.original.description} placement="top">
-                <b style={{ textDecoration: 'grey dotted underline' }}>
-                  {row.original.name}
-                </b>
-              </CTooltip>
-              <div className="small text-muted">{`ID: ${row.original.idx}`}</div>
-            </>
+            <InfoText
+              text={row.original.name}
+              toolTip={row.original.description}
+              subText={`ID: ${row.original.idx}`}
+            />
           )
         },
       }),

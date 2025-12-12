@@ -17,6 +17,7 @@ import CoreDataTable from '../../components/CoreDataTable'
 import { createColumnHelper } from '@tanstack/react-table'
 import BaseContainer from '../../components/BaseContainer'
 import ErrorBoundary from '../../components/ErrorBoundary'
+import InfoText from '../../components/InfoText'
 
 export const TabInferenceModels = () => {
   const { data, isLoading, error } = useModels()
@@ -50,14 +51,11 @@ export const TabInferenceModels = () => {
         header: 'Name',
         cell: ({ row }) => {
           return (
-            <>
-              <CTooltip content={row.original.description} placement="top">
-                <b style={{ textDecoration: 'grey dotted underline' }}>
-                  {row.original.displayName}
-                </b>
-              </CTooltip>
-              <div className="small text-muted">{`ID: ${row.original.id}`}</div>
-            </>
+            <InfoText
+              text={row.original.displayName}
+              toolTip={row.original.description}
+              subText={`ID: ${row.original.id}`}
+            />
           )
         },
       }),

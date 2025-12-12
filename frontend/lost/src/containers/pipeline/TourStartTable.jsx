@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react'
 import CoreDataTable from '../../components/CoreDataTable'
 import { createColumnHelper } from '@tanstack/react-table'
 import CoreIconButton from '../../components/CoreIconButton'
+import InfoText from '../../components/InfoText'
 
 const TourStartTable = ({ onStartTour }) => {
   const { data, isLoading, isError } = useTemplates('all')
@@ -96,24 +97,10 @@ const TourStartTable = ({ onStartTour }) => {
       header: 'Name / Project',
       cell: (props) => {
         return (
-          <>
-            <b>{props.row.original.label}</b>
-            <div className="small text-muted">
-              {props.row.original.tourType === 'instructionTour'
-                ? 'Instructions'
-                : 'found'}
-            </div>
-          </>
-        )
-      },
-    }),
-    columnHelper.accessor('description', {
-      header: 'Description',
-      cell: (props) => {
-        return (
-          <HelpButton
-            id={`${props.row.original.label.toLowerCase()}-description`}
-            text={props.row.original.description}
+          <InfoText
+            text={props.row.original.label}
+            subText={props.row.original.tourType}
+            toolTip={props.row.original.description}
           />
         )
       },
@@ -134,11 +121,14 @@ const TourStartTable = ({ onStartTour }) => {
   ]
 
   return (
-    <CContainer style={{ marginTop: '15px' }}>
-      <BaseContainer>
-        <CoreDataTable columns={columns} tableData={pipelines} pageSize={3} />
-      </BaseContainer>
-    </CContainer>
+    <BaseContainer>
+      <CoreDataTable
+        columns={columns}
+        tableData={pipelines}
+        pageSize={3}
+        style={{ marginTop: '15px' }}
+      />
+    </BaseContainer>
   )
 }
 

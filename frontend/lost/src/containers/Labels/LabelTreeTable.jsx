@@ -6,7 +6,6 @@ import { ReactFlowProvider } from '@xyflow/react'
 import { FaInfoCircle } from 'react-icons/fa'
 import { useExportLabelTree } from '../../actions/label/label-api'
 import BaseModal from '../../components/BaseModal'
-import HelpButton from '../../components/HelpButton'
 import { LabelTreeEditor } from './LabelTreeEditor/LabelTreeEditor'
 import { convertLabelTreeToReactFlow } from './LabelTreeEditor/label-tree-util'
 import CoreDataTable from '../../components/CoreDataTable'
@@ -17,6 +16,7 @@ import BaseContainer from '../../components/BaseContainer'
 import { useImportLabelTree } from '../../actions/label/label-api'
 import CreateLabelTree from './CreateLabelTree'
 import ErrorBoundary from '../../components/ErrorBoundary'
+import InfoText from '../../components/InfoText'
 
 let amountOfLabels = 0
 
@@ -94,12 +94,11 @@ const LabelTreeTable = ({ labelTrees, visLevel, isLoading = false }) => {
                   : undefined
               }
             >
-              <CTooltip content={props.row.original.description} placement="top">
-                <b style={{ textDecoration: 'grey dotted underline' }}>
-                  {props.row.original.name}
-                </b>
-              </CTooltip>
-              <div className="small text-muted">{`ID: ${props.row.original.idx}`}</div>
+              <InfoText
+                text={props.row.original.name}
+                subText={`ID: ${props.row.original.idx}`}
+                toolTip={props.row.original.description}
+              />
             </div>
           )
         },
@@ -143,13 +142,6 @@ const LabelTreeTable = ({ labelTrees, visLevel, isLoading = false }) => {
                       : faEdit
                     : faEdit
                 }
-                // text={
-                //     props.row.original.group_id === null
-                //         ? visLevel !== 'global'
-                //             ? 'Show'
-                //             : 'Edit'
-                //         : 'Edit'
-                // }
                 style={{ 'margin-right': '5px' }}
                 color="warning"
                 className={isNewlyCreated ? 'latest-edit-button' : ''}
