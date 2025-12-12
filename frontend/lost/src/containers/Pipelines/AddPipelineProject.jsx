@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import IconButton from '../../components/IconButton'
 import {
   faPlus,
   faTimes,
@@ -158,9 +157,8 @@ const AddPipelineProject = ({ visLevel, projectNames = [], refetch }) => {
   const renderModalFooter = () => {
     return (
       <></>
-      // <IconButton
+      // <CoreIconButton
       //     icon={faTimes}
-      //     isOutline={false}
       //     color="secondary"
       //     text="Close"
       //     onClick={() => setIsModalOpen(false)}
@@ -223,14 +221,13 @@ const AddPipelineProject = ({ visLevel, projectNames = [], refetch }) => {
                       </b>
                     </aside>
                   </section>
-                  <IconButton
+                  <CoreIconButton
                     style={{
                       marginLeft: '5px',
                       marginTop: '10px',
                       marginBottom: '20px',
                     }}
                     color="primary"
-                    isOutline={false}
                     disabled={uploadZipfile === undefined}
                     onClick={() => onImportZipFile()}
                     icon={faUpload}
@@ -290,9 +287,8 @@ const AddPipelineProject = ({ visLevel, projectNames = [], refetch }) => {
 
                     <CRow className="mt-3">
                       <CCol>
-                        <IconButton
+                        <CoreIconButton
                           color="primary"
-                          isOutline={false}
                           disabled={gitUrl === undefined}
                           onClick={() => onImportGit()}
                           icon={faUpload}

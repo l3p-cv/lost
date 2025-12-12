@@ -16,7 +16,6 @@ import {
   usePlayPipeline,
 } from '../../../actions/pipeline/pipeline_api'
 import HelpButton from '../../../components/HelpButton'
-import IconButton from '../../../components/IconButton'
 import GrayLine from '../globalComponents/GrayLine'
 import { alertDeletePipeline } from '../globalComponents/Sweetalert'
 import { PipelineLogModal } from './PipelineLogModal'
@@ -188,14 +187,14 @@ const Toolbar = (props) => {
               </CForm>
             </CModalBody>
             <CModalFooter>
-              <IconButton
+              <CoreIconButton
                 isOutline={false}
                 color="primary"
                 disabled={description === undefined || name === undefined}
                 icon={faRedo}
                 text="Regenerate"
                 onClick={regeneratePipelineHandler}
-              ></IconButton>
+              />
             </CModalFooter>
           </CModal>
         </>

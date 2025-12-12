@@ -6,7 +6,7 @@ import {
   faScissors,
 } from '@fortawesome/free-solid-svg-icons'
 import PolygonEditMode from '../../../models/PolygonEditMode'
-import { IconButton } from 'lost-sia'
+import CoreIconButton from '../../../components/CoreIconButton'
 
 type PolygonEditButtonsProps = {
   polygonEditMode: PolygonEditMode
@@ -25,36 +25,36 @@ const PolygonEditButtons = ({
 
   return (
     <CButtonGroup role="group" aria-label="Basic example">
-      <IconButton
+      <CoreIconButton
         color="primary"
         icon={faCodeMerge}
         isOutline={polygonEditMode !== PolygonEditMode.MERGE}
         onClick={() => changeMode(PolygonEditMode.MERGE)}
-        tooltip="Merge annotations"
+        toolTip="Merge annotations"
       />
 
-      <IconButton
+      <CoreIconButton
         color="primary"
         icon={faObjectUngroup}
         isOutline={polygonEditMode !== PolygonEditMode.INTERSECT}
         onClick={() => changeMode(PolygonEditMode.INTERSECT)}
-        tooltip="Intersect annotations"
+        toolTip="Intersect annotations"
       />
 
-      <IconButton
+      <CoreIconButton
         color="primary"
         icon={faScissors}
         isOutline={polygonEditMode !== PolygonEditMode.DIFFERENCE}
         onClick={() => changeMode(PolygonEditMode.DIFFERENCE)}
-        tooltip="Differ annotations"
+        toolTip="Differ annotations"
       />
 
-      <IconButton
+      <CoreIconButton
         color="primary"
         icon={faExpand}
         isOutline={polygonEditMode !== PolygonEditMode.BBOX}
         onClick={() => changeMode(PolygonEditMode.BBOX)}
-        tooltip="Create BBox of annotation"
+        toolTip="Create BBox of annotation"
       />
     </CButtonGroup>
   )

@@ -12,12 +12,12 @@ import {
 import { ChonkyIconFA } from 'chonky-icon-fontawesome'
 import { useEffect, useMemo, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
-import IconButton from '../IconButton'
 import * as Notification from '../Notification'
 // import axios from 'axios'
 // import {API_URL} from '../../lost_settings'
 import * as fbaccess from '../../access/fb'
 import * as fb_api from '../../actions/fb/fb_api'
+import CoreIconButton from '../CoreIconButton'
 
 const LostFileBrowser = ({ fs, onPathSelected, mode = undefined, initPath }) => {
   const [files, setFiles] = useState([])
@@ -219,8 +219,7 @@ const LostFileBrowser = ({ fs, onPathSelected, mode = undefined, initPath }) => 
               </section>
             </CCol>
             <CCol sm="2">
-              {' '}
-              <IconButton
+              <CoreIconButton
                 icon={faUpload}
                 color={'primary'}
                 text={'Upload'}

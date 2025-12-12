@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next'
 import { useOwnUser, useUpdateOwnUser } from '../../actions/user/user_api'
 import BaseContainer from '../../components/BaseContainer'
 import { CenteredSpinner } from '../../components/CenteredSpinner'
-import IconButton from '../../components/IconButton'
 import * as Notification from '../../components/Notification'
 import {
   CCol,
@@ -16,7 +15,7 @@ import {
   CInputGroup,
   CRow,
 } from '@coreui/react'
-import { data } from 'react-router-dom'
+import CoreIconButton from '../../components/CoreIconButton'
 
 const Profile = () => {
   const { t } = useTranslation()
@@ -248,7 +247,7 @@ const Profile = () => {
                 </CCol>
               </CInputGroup>
             </CInputGroup>
-            <IconButton
+            <CoreIconButton
               type="submit"
               color="primary"
               icon={faDotCircle}

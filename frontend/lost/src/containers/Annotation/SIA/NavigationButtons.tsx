@@ -4,7 +4,7 @@ import {
   faArrowRight,
   faPaperPlane,
 } from '@fortawesome/free-solid-svg-icons'
-import { IconButton } from 'lost-sia'
+import CoreIconButton from '../../../components/CoreIconButton'
 
 type NavigationButtonsProps = {
   isFirstImage?: boolean
@@ -32,33 +32,33 @@ const NavigationButtons = ({
 
   return (
     <CButtonGroup role="group" aria-label="Basic example">
-      <IconButton
+      <CoreIconButton
         color="primary"
         disabled={isFirstImage}
         icon={faArrowLeft}
         isOutline={true}
         onClick={onPreviousImagePressed}
-        tooltip="Switch to previous image"
+        toolTip="Switch to previous image"
       />
 
       {(!isLastImage || isImageSearchActive) && (
-        <IconButton
+        <CoreIconButton
           color="primary"
           disabled={isLastImage}
           icon={faArrowRight}
           isOutline={true}
           onClick={onNextImagePressed}
-          tooltip="Switch to next image"
+          toolTip="Switch to next image"
         />
       )}
 
       {isLastImage && !isImageSearchActive && (
-        <IconButton
+        <CoreIconButton
           color="primary"
           icon={faPaperPlane}
           isOutline={true}
           onClick={onSubmitAnnotask}
-          tooltip="Finish annotation task"
+          toolTip="Finish annotation task"
         />
       )}
     </CButtonGroup>

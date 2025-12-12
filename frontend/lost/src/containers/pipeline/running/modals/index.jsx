@@ -1,13 +1,13 @@
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { connect } from 'react-redux'
 import actionsAll from '../../../../actions'
-import IconButton from '../../../../components/IconButton'
 import AnnoTaskModal from './types/AnnoTaskModal'
 import DataExportModal from './types/DataExportModal'
 import DatasourceModal from './types/DatasourceModal'
 import LoopModal from './types/LoopModal'
 import ScriptModal from './types/ScriptModal'
 import { CModal, CModalFooter } from '@coreui/react'
+import CoreIconButton from '../../../../components/CoreIconButton'
 
 const { siaReviewSetElement, chooseAnnoTask, forceAnnotationRelease, changeUser } =
   actionsAll
@@ -50,9 +50,8 @@ const BaseModal = (props) => {
       >
         {selectModal()}
         <CModalFooter>
-          <IconButton
+          <CoreIconButton
             color="secondary"
-            isOutline={false}
             icon={faTimes}
             text="Close"
             onClick={props.toggleModal}

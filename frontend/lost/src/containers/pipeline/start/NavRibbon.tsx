@@ -1,5 +1,5 @@
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons'
-import IconButton from '../../../components/IconButton'
+import CoreIconButton from '../../../components/CoreIconButton'
 
 interface NavRibbonProps {
   onNext: () => void
@@ -17,7 +17,7 @@ export const NavRibbon = ({ onNext, onBack, nextButtonClassName }: NavRibbonProp
       }}
     >
       <div>
-        <IconButton
+        <CoreIconButton
           icon={faArrowLeft}
           text="Back"
           onClick={onBack}
@@ -26,7 +26,7 @@ export const NavRibbon = ({ onNext, onBack, nextButtonClassName }: NavRibbonProp
       </div>
 
       <div>
-        <IconButton
+        <CoreIconButton
           icon={faArrowRight}
           text="Next"
           onClick={onNext}

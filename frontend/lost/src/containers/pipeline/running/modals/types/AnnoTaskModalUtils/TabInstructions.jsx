@@ -8,7 +8,6 @@ import {
 } from '../../../../../../actions/annoTask/anno_task_api'
 import Select from 'react-select'
 import { useEffect, useState } from 'react'
-import IconButton from '../../../../../../components/IconButton'
 import { faEye } from '@fortawesome/free-solid-svg-icons'
 import ViewInstruction from '../../../../../../containers/Instruction/ViewInstruction'
 import CoreIconButton from '../../../../../../components/CoreIconButton'

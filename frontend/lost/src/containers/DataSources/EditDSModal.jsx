@@ -10,19 +10,14 @@ import {
   CRow,
 } from '@coreui/react'
 import { faAws, faMicrosoft } from '@fortawesome/free-brands-svg-icons'
-import {
-  faFile,
-  faNetworkWired,
-  faSave,
-  faTimes,
-} from '@fortawesome/free-solid-svg-icons'
+import { faFile, faNetworkWired, faSave } from '@fortawesome/free-solid-svg-icons'
 import { useEffect, useState } from 'react'
 import * as fbAPI from '../../actions/fb/fb_api'
 import { useOwnUser } from '../../actions/user/user_api'
 import BaseModal from '../../components/BaseModal'
 import LostFileBrowser from '../../components/FileBrowser/LostFileBrowser'
-import IconButton from '../../components/IconButton'
 import * as Notification from '../../components/Notification'
+import CoreIconButton from '../../components/CoreIconButton'
 
 const EditDSModal = ({
   isNewDs,
@@ -176,9 +171,8 @@ const EditDSModal = ({
         >
           {ownUser.roles.find((el) => el.name === 'Administrator') ? (
             <CCol md={2}>
-              <IconButton
+              <CoreIconButton
                 text="File"
-                isOutline={false}
                 icon={faFile}
                 style={{ marginRight: 8 }}
                 onClick={() => loadPreset('file')}
@@ -188,36 +182,32 @@ const EditDSModal = ({
             ''
           )}
           <CCol md={2}>
-            <IconButton
+            <CoreIconButton
               text="S3 Bucket"
-              isOutline={false}
               icon={faAws}
               style={{ marginRight: 8 }}
               onClick={() => loadPreset('s3')}
             />
           </CCol>
           <CCol md={3}>
-            <IconButton
+            <CoreIconButton
               text="Azure Blob Storage"
-              isOutline={false}
               icon={faMicrosoft}
               style={{ marginRight: 8 }}
               onClick={() => loadPreset('abfs')}
             />
           </CCol>
           <CCol md={2}>
-            <IconButton
+            <CoreIconButton
               text="SSH/ SFTP"
-              isOutline={false}
               icon={faNetworkWired}
               style={{ marginRight: 8 }}
               onClick={() => loadPreset('ssh')}
             />
           </CCol>
           <CCol md={2}>
-            <IconButton
+            <CoreIconButton
               text="FTP"
-              isOutline={false}
               icon={faNetworkWired}
               style={{ marginRight: 8 }}
               onClick={() => loadPreset('ftp')}
@@ -238,15 +228,12 @@ const EditDSModal = ({
         toggle={() => setBrowseOpen(!browseOpen)}
         // onClosed={onClosed}
         footer={
-          <>
-            <IconButton
-              isOutline={false}
-              icon={faSave}
-              color="primary"
-              text="Save Root Path"
-              onClick={saveBrowse}
-            />
-          </>
+          <CoreIconButton
+            icon={faSave}
+            color="primary"
+            text="Save Root Path"
+            onClick={saveBrowse}
+          />
         }
       >
         <LostFileBrowser
@@ -267,16 +254,13 @@ const EditDSModal = ({
           toggle={closeModal}
           onClosed={onClosed}
           footer={
-            <>
-              <IconButton
-                isOutline={false}
-                disabled={fs.name === '' || fs.rootPath === ''}
-                icon={faSave}
-                color="primary"
-                text="Save"
-                onClick={save}
-              />
-            </>
+            <CoreIconButton
+              disabled={fs.name === '' || fs.rootPath === ''}
+              icon={faSave}
+              color="primary"
+              text="Save"
+              onClick={save}
+            />
           }
         >
           {renderDsTypeButtons()}

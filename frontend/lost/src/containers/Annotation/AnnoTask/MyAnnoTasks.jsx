@@ -6,6 +6,7 @@ import {
   CCol,
   CFormInput,
   CModal,
+  CModalFooter,
   CProgress,
   CRow,
 } from '@coreui/react'
@@ -15,7 +16,6 @@ import { useCallback, useEffect, useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FaFilter, FaTrashAlt } from 'react-icons/fa'
 import { useDispatch, useSelector } from 'react-redux'
-import IconButton from '../../../components/IconButton'
 import AmountPerLabel from './AmountPerLabel'
 import { getColor } from './utils'
 import actions from '../../../actions'
@@ -234,19 +234,22 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
         </CCardHeader>
         <CCardBody style={{ height: '100%' }}>{renderStatistic()}</CCardBody>
       </CCard>
-      <CRow className="justify-content-end" style={{ marginRight: '5px' }}>
-        <IconButton
-          isOutline={false}
-          color="secondary"
-          icon={faTimes}
-          text="Close"
-          onClick={() => {
-            if (modalIsOpen) {
-              closeModal()
-            }
-          }}
-        />
-      </CRow>
+      <CModalFooter>
+        <CRow>
+          <CCol>
+            <CoreIconButton
+              color="secondary"
+              icon={faTimes}
+              text="Close"
+              onClick={() => {
+                if (modalIsOpen) {
+                  closeModal()
+                }
+              }}
+            />
+          </CCol>
+        </CRow>
+      </CModalFooter>
     </CModal>
   )
 

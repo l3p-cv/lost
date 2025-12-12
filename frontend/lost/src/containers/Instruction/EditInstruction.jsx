@@ -4,19 +4,17 @@ import MarkdownIt from 'markdown-it'
 import MdEditor from 'react-markdown-editor-lite'
 import 'react-markdown-editor-lite/lib/index.css'
 
-import { CButton, CFormInput } from '@coreui/react'
+import { CFormInput } from '@coreui/react'
 import { faFolderOpen } from '@fortawesome/free-solid-svg-icons'
 
 import * as fbAPI from '../../actions/fb/fb_api'
 import * as Notification from '../../components/Notification'
 import { useOwnUser } from '../../actions/user/user_api'
 
-import IconButton from '../../components/IconButton'
 import ImageBrowserModal from '../../components/FileBrowser/ImageBrowserModal'
-import { API_URL } from '../../lost_settings'
 import { getImageMarkdown } from '../../containers/InstructionMedia/media_api'
 import { useGetInstructions } from './instruction_api'
-import { set } from 'lodash'
+import CoreIconButton from '../../components/CoreIconButton'
 
 const mdParser = new MarkdownIt()
 
@@ -239,10 +237,13 @@ const EditInstruction = ({ instructionData, onSave, visLevel, onClose }) => {
         }}
       />
       <div className="mt-3 d-flex justify-content-between align-items-center">
-        <CButton className="save-button" color="primary" onClick={handleSave}>
-          Save
-        </CButton>
-        <IconButton
+        <CoreIconButton
+          text={'Save'}
+          className="save-button"
+          color="primary"
+          onClick={handleSave}
+        />
+        <CoreIconButton
           className="browse-files-button"
           icon={faFolderOpen}
           color="info"
@@ -250,7 +251,6 @@ const EditInstruction = ({ instructionData, onSave, visLevel, onClose }) => {
           onClick={handleBrowseClick}
         />
       </div>
-
       <ImageBrowserModal
         visible={browseOpen}
         onClose={() => setBrowseOpen(false)}

@@ -1,11 +1,11 @@
 import { faCloudUploadAlt } from '@fortawesome/free-solid-svg-icons'
 import { useState } from 'react'
 import { useUpdatePipelineArguments } from '../../../../../actions/pipeline/pipeline_api'
-import IconButton from '../../../../../components/IconButton'
 import CollapseCard from '../../../globalComponents/modals/CollapseCard'
 import ArgumentsTable from '../../../globalComponents/modals/ScriptArgumentsTable'
 import Table from '../../../globalComponents/modals/Table'
 import { CModalBody, CModalHeader, CProgress } from '@coreui/react'
+import CoreIconButton from '../../../../../components/CoreIconButton'
 
 const ScriptModal = (props) => {
   const [scriptArguments, setScriptArguments] = useState(props.script.arguments)
@@ -75,9 +75,8 @@ const ScriptModal = (props) => {
             data={scriptArguments}
             onInput={argumentsOnInput}
           />
-          <IconButton
+          <CoreIconButton
             color="primary"
-            isOutline={false}
             icon={faCloudUploadAlt}
             text="Update Arguments"
             onClick={() =>

@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react'
 import { useToggle } from 'react-use'
 import * as annotaskApi from '../../actions/annoTask/anno_task_api'
 import * as datasetApi from '../../actions/dataset/dataset_api'
-import IconButton from '../../components/IconButton'
 import DatasetEditModal from './DatasetEditModal'
 import DatasetExportModal from './DatasetExportModal'
 import DatasetTable from './DatasetTable'
@@ -168,16 +167,6 @@ const Datasets = () => {
 
       <CContainer style={{ marginTop: '15px' }}>
         <CRow>
-          {/* <CCol sm="auto">
-                        <IconButton
-                            isOutline={false}
-                            color="primary"
-                            icon={faTag}
-                            text="Assign Annotasks"
-                            onClick={openAssignAnnotaskMenu}
-                            style={{ marginTop: '15px' }}
-                        />
-                    </CCol> */}
           <TableHeader
             headline="Datasets"
             buttonStyle={{ marginTop: 15, marginBottom: 20 }}

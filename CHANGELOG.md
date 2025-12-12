@@ -65,6 +65,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Reworked Review Image-Search UI (table + buttons)
 - Reworked UI of Dataset exports
 - Began replacement of old Infobutton component
+- Began conversion of .jsx-Files to .tsx-Files (TableHeader, SelectFileButton)
 ### Fixed
 - Removed centered spinner of CoreDataTable, when faced with empty data, to not block the rest of the page
 - Fixed execution of DBPatcher at wrong place on start up
@@ -92,7 +93,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed unnecessary "close"-button for global instructions
 - Removed WorkingOnMIA, WorkingOnSIA - both replaced by AnnotationTop
 - Removed old DataTable component and everything importing from outdated 'react-table'
-- Removed unused components NewDataTable and SimpleTable
+- Removed unused components NewDataTable, SimpleTable and IconButton
 
 ## [2.7.0] - 2025-06-12 
 ### Added

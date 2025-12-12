@@ -2,10 +2,10 @@ import { faCheck, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { useNodesData, useReactFlow } from '@xyflow/react'
 import { isEmpty } from 'lodash'
 import { useDeleteLabel, useUpdateLabel } from '../../../actions/label/label-api'
-import IconButton from '../../../components/IconButton'
 import { getContrastColor } from '../../../utils/color-util'
 import { LabelEditorNodeData } from './LabelEditorNode'
 import { CFormInput, CInputGroup } from '@coreui/react'
+import CoreIconButton from '../../../components/CoreIconButton'
 
 export interface LabelEditorControlsProps {
   nodeId: string
@@ -104,14 +104,14 @@ const LabelEditorControls = ({
             })
           }}
         />
-        <IconButton
+        <CoreIconButton
           className="edit-label-save"
           color="success"
           onClick={handleSave}
           icon={faCheck}
           text="Save"
         />
-        <IconButton
+        <CoreIconButton
           color="danger"
           onClick={handleDelete}
           icon={faTrash}

@@ -18,7 +18,7 @@ import { FaExclamationTriangle } from 'react-icons/fa'
 import { PipelineTemplateResponse } from '../../../../actions/pipeline/model/pipeline-template-response'
 import { getFormattedPipelineRequestElements } from '../../../../actions/pipeline/pipeline-util'
 import { useCreateAndStartPipeline } from '../../../../actions/pipeline/pipeline_api'
-import IconButton from '../../../../components/IconButton'
+import CoreIconButton from '../../../../components/CoreIconButton'
 
 interface SubmitPipelineModalProps {
   isOpen: boolean
@@ -126,14 +126,11 @@ export const PipelineStartModal = ({
             </div>
           </CModalBody>
           <CModalFooter>
-            <IconButton
+            <CoreIconButton
               icon={faPlay}
               type="submit"
               text="Start Pipeline"
               color="primary"
-              isOutline={false}
-              isTextLeft={false}
-              style={{ marginBottom: 20 }}
               className="start-pipeline-btn"
             />
           </CModalFooter>

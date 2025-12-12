@@ -1,6 +1,5 @@
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import PropTypes from 'prop-types'
-import IconButton from './IconButton'
 import { CModal, CModalBody, CModalFooter, CModalHeader } from '@coreui/react'
 import CoreIconButton from './CoreIconButton'
 

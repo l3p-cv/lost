@@ -1,11 +1,11 @@
 import { faCircle, faEye, faInfoCircle } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
-import IconButton from '../../../../../components/IconButton'
 import * as Notification from '../../../../../components/Notification'
 import CollapseCard from '../../../globalComponents/modals/CollapseCard'
 import Table from '../../../globalComponents/modals/Table'
 import AnnoTaskTabs from './AnnoTaskModalUtils/AnnoTaskTabs'
 import { CModalBody, CModalHeader } from '@coreui/react'
+import CoreIconButton from '../../../../../components/CoreIconButton'
 
 function handleSiaRewiewClick(props, callback) {
   props.siaReviewSetElement(props.id)
@@ -69,10 +69,9 @@ const AnnoTaskModal = (props) => {
           hasAdaptConfiguration={true}
         ></AnnoTaskTabs>
         <hr></hr>
-        <IconButton
+        <CoreIconButton
           icon={faEye}
           color="primary"
-          // isOutline={false}
           style={{ marginLeft: 10, marginTop: 20, marginBottom: '1rem' }}
           onClick={(e) =>
             handleSiaRewiewClick(props, () => {
@@ -81,7 +80,7 @@ const AnnoTaskModal = (props) => {
           }
           text="Review Annotations"
         />
-        <IconButton
+        <CoreIconButton
           icon={faCircle}
           color="danger"
           style={{ marginLeft: 10, marginTop: 20, marginBottom: '1rem' }}
