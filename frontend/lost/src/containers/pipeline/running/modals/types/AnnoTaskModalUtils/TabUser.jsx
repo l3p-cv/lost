@@ -3,8 +3,9 @@ import { useGroups } from '../../../../../../actions/group/group-api'
 import { useAnnoTaskUser } from '../../../../../../actions/user/user_api'
 import { CenteredSpinner } from '../../../../../../components/CenteredSpinner'
 import CoreDataTable from '../../../../../../components/CoreDataTable'
-import IconButton from '../../../../../../components/IconButton'
 import { alertSuccess } from '../../../../globalComponents/Sweetalert'
+import InfoText from '../../../../../../components/InfoText'
+import CoreIconButton from '../../../../../../components/CoreIconButton'
 
 const selectUsers = (usersData) => {
   return usersData.users.map((user) => ({
@@ -44,10 +45,10 @@ const TabUser = ({ annotaskId, annotaskUser, changeUser }) => {
       header: 'Name',
       cell: (props) => {
         return (
-          <>
-            <b>{props.row.original.name}</b>
-            <div className="small text-muted">{`ID: ${props.row.original.idx}`}</div>
-          </>
+          <InfoText
+            text={props.row.original.name}
+            subText={`ID: ${props.row.original.idx}`}
+          />
         )
       },
     }),
@@ -55,11 +56,19 @@ const TabUser = ({ annotaskId, annotaskUser, changeUser }) => {
       header: 'Change',
       cell: (props) => {
         if (props.row.original.rawName === annotaskUser) {
-          return <IconButton color="success" isOutline={false} text="Selected" disabled />
+          return (
+            <CoreIconButton
+              color="success"
+              isOutline={false}
+              text="Selected"
+              disabled
+              overrideDisabledColor
+            />
+          )
         }
 
         return (
-          <IconButton
+          <CoreIconButton
             color="primary"
             text="Change"
             onClick={() => handleChangeUser(props.row.original.idx)}

@@ -30,6 +30,7 @@ type CoreIconButtonProps = {
   toolTip?: string
   tTipPlacement?: 'top' | 'left' | 'right' | 'auto' | 'bottom' | undefined
   shape?: string
+  overrideDisabledColor?: boolean
 }
 
 const CoreIconButton = ({
@@ -53,6 +54,7 @@ const CoreIconButton = ({
   toolTip = '',
   tTipPlacement = 'top',
   shape = '',
+  overrideDisabledColor = false,
 }: CoreIconButtonProps) => {
   let iconButtonIcon: IconDefinition | undefined = icon
   if (isBack) {
@@ -105,7 +107,7 @@ const CoreIconButton = ({
           variant={buttonVariant}
           disabled={disabled || isLoading}
           onClick={onClick}
-          color={disabled || isLoading ? 'secondary' : color}
+          color={!overrideDisabledColor && (disabled || isLoading) ? 'secondary' : color}
           shape={shape}
         >
           {renderContent()}
@@ -127,7 +129,7 @@ const CoreIconButton = ({
       variant={buttonVariant}
       disabled={disabled || isLoading}
       onClick={onClick}
-      color={disabled || isLoading ? 'secondary' : color}
+      color={!overrideDisabledColor && (disabled || isLoading) ? 'secondary' : color}
     >
       {renderContent()}
       {/* { props.text && (
