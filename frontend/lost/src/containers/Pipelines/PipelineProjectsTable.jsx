@@ -12,6 +12,7 @@ import CoreDataTable from '../../components/CoreDataTable'
 import BaseContainer from '../../components/BaseContainer'
 import CoreIconButton from '../../components/CoreIconButton'
 import ErrorBoundary from '../../components/ErrorBoundary'
+import InfoText from '../../components/InfoText'
 
 const PTTable = ({ visLevel }) => {
   const [tableData, setTableData] = useState([])
@@ -70,12 +71,10 @@ const PTTable = ({ visLevel }) => {
       header: 'Project / Imported on',
       cell: (props) => {
         return (
-          <>
-            <b>{props.row.original.pipeProject}</b>
-            <div className="small text-muted">
-              {new Date(props.row.original.date).toLocaleString()}
-            </div>
-          </>
+          <InfoText
+            text={props.row.original.pipeProject}
+            subText={new Date(props.row.original.date).toLocaleString()}
+          />
         )
       },
     }),

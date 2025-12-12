@@ -1,4 +1,4 @@
-import { CContainer, CTooltip, CProgress, CBadge } from '@coreui/react'
+import { CContainer, CProgress, CBadge } from '@coreui/react'
 import { faEye, faPlay, faPause, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
 import {
@@ -19,6 +19,7 @@ import { createColumnHelper } from '@tanstack/react-table'
 import TableHeader from '../../../components/TableHeader'
 import CoreIconButton from '../../../components/CoreIconButton'
 import ErrorBoundary from '../../../components/ErrorBoundary'
+import InfoText from '../../../components/InfoText'
 
 export const RunningPipelines = () => {
   const navigate = useNavigate()
@@ -162,36 +163,25 @@ export const RunningPipelines = () => {
       columnHelper.accessor('name', {
         header: 'Name',
         cell: (props) => (
-          <div>
-            <CTooltip content={props.row.original.description} placement="top">
-              <b style={{ textDecoration: 'grey dotted underline' }}>
-                {props.row.original.name}
-              </b>
-            </CTooltip>
-            <div className="small text-muted">{`ID: ${props.row.original.id}`}</div>
-          </div>
+          <InfoText
+            text={props.row.original.name}
+            subText={`ID: ${props.row.original.id}`}
+            toolTip={props.row.original.description}
+          />
         ),
       }),
       columnHelper.accessor('description', {
         header: 'Template',
         cell: (props) => {
           return (
-            <>
-              <CTooltip
-                content={getTemplateDescription({
-                  templates: templateData?.templates,
-                  templName: props.row.original.templateName,
-                })}
-                placement="top"
-              >
-                <b style={{ textDecoration: 'grey dotted underline' }}>
-                  {props.row.original.templateName.split('.')[1]}
-                </b>
-              </CTooltip>
-              <div className="small text-muted">
-                {props.row.original.templateName.split('.')[0]}
-              </div>
-            </>
+            <InfoText
+              text={props.row.original.templateName.split('.')[1]}
+              toolTip={getTemplateDescription({
+                templates: templateData?.templates,
+                templName: props.row.original.templateName,
+              })}
+              subText={props.row.original.templateName.split('.')[0]}
+            />
           )
         },
       }),

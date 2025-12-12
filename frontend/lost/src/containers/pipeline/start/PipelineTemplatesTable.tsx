@@ -12,6 +12,7 @@ import { createColumnHelper } from '@tanstack/react-table'
 import TableHeader from '../../../components/TableHeader'
 import CoreIconButton from '../../../components/CoreIconButton'
 import ErrorBoundary from '../../../components/ErrorBoundary'
+import InfoText from '../../../components/InfoText'
 
 export const PipelineTemplatesTable = () => {
   const navigate = useNavigate()
@@ -40,16 +41,11 @@ export const PipelineTemplatesTable = () => {
         header: 'Name/Project',
         cell: (props) => {
           return (
-            <>
-              <CTooltip content={props.row.original.description} placement="top">
-                <b style={{ textDecoration: 'grey dotted underline' }}>
-                  {props.row.original.name.split('.')[1]}
-                </b>
-              </CTooltip>
-              <div className="small text-muted">
-                {`${props.row.original.name.split('.')[0]}`}
-              </div>
-            </>
+            <InfoText
+              text={props.row.original.name.split('.')[1]}
+              subText={props.row.original.name.split('.')[0]}
+              toolTip={props.row.original.description}
+            />
           )
         },
       }),

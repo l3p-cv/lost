@@ -16,6 +16,7 @@ import BaseContainer from '../../components/BaseContainer'
 import { alertDeletion } from '../pipeline/globalComponents/Sweetalert'
 import CoreIconButton from '../../components/CoreIconButton'
 import ErrorBoundary from '../../components/ErrorBoundary'
+import InfoText from '../../components/InfoText'
 
 const RenderBadge = ({ key, text, color }) => (
   <div>
@@ -98,10 +99,10 @@ export const UsersTable = () => {
     columnHelper.accessor('user_name', {
       header: 'Username',
       cell: (props) => (
-        <>
-          <b>{props.row.original.user_name}</b>
-          <div className="small text-muted">{`ID: ${props.row.original.idx}`}</div>
-        </>
+        <InfoText
+          text={props.row.original.user_name}
+          subText={`ID: ${props.row.original.idx}`}
+        />
       ),
     }),
     columnHelper.accessor('roles', {
@@ -126,7 +127,6 @@ export const UsersTable = () => {
         const user_row = props.row
         return (
           <>
-            {/* {(props.row.original.apiToken && */}
             <CoreIconButton
               toolTip="Copy API Token to Clipboard"
               style={{ marginRight: '5px' }}
@@ -138,7 +138,6 @@ export const UsersTable = () => {
               }}
               icon={faCopy}
             />
-            {/* )} */}
             <CoreIconButton
               toolTip="Edit User"
               style={{ marginRight: '5px' }}

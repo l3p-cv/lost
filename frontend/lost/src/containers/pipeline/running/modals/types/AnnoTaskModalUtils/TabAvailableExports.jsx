@@ -11,6 +11,7 @@ import { createColumnHelper } from '@tanstack/react-table'
 import CoreDataTable from '../../../../../../components/CoreDataTable'
 import CoreIconButton from '../../../../../../components/CoreIconButton'
 import BaseContainer from '../../../../../../components/BaseContainer'
+import InfoText from '../../../../../../components/InfoText'
 
 const TabAvailableExports = (props) => {
   const {
@@ -77,12 +78,10 @@ const TabAvailableExports = (props) => {
       header: 'Name / Date',
       cell: (props) => {
         return (
-          <>
-            <b>{props.row.original.name}</b>
-            <div className="small text-muted">
-              {new Date(props.row.original.timestamp).toLocaleString()}
-            </div>
-          </>
+          <InfoText
+            text={props.row.original.name}
+            subText={new Date(props.row.original.timestamp).toLocaleString()}
+          />
         )
       },
     }),
@@ -90,10 +89,10 @@ const TabAvailableExports = (props) => {
       header: 'Annotask Progress',
       cell: (props) => {
         return (
-          <>
-            <b>{`${props.row.original.annotaskProgress} %`}</b>
-            <div className="small text-muted">{`${props.row.original.imgCount} Images`}</div>
-          </>
+          <InfoText
+            text={`${props.row.original.annotaskProgress} %`}
+            subText={`${props.row.original.imgCount} Images`}
+          />
         )
       },
     }),

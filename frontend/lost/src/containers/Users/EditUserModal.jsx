@@ -6,7 +6,6 @@ import { useCreateUser, useUpdateUser } from '../../actions/user/user_api'
 import { useLostConfig } from '../../hooks/useLostConfig'
 import {
   CBadge,
-  CButton,
   CCol,
   CFormInput,
   CModal,
@@ -18,22 +17,7 @@ import {
 import CoreIconButton from '../../components/CoreIconButton'
 import CoreDataTable from '../../components/CoreDataTable'
 import { createColumnHelper } from '@tanstack/react-table'
-
-const CenteredCell = ({ children, key }) => {
-  return (
-    <div
-      key={key}
-      style={{
-        textAlign: 'center',
-        position: 'relative',
-        top: '50%',
-        transform: 'translateY(-50%)',
-      }}
-    >
-      {children}
-    </div>
-  )
-}
+import InfoText from '../../components/InfoText'
 
 const ErrorLabel = ({ text }) => (
   <p style={{ marginTop: 30, marginBottom: 0, padding: 0, color: 'red' }}>{text}</p>
@@ -58,90 +42,6 @@ const EditUserModal = (props) => {
   const { data: groupsData } = useGroups()
   const { mutate: createUser } = useCreateUser()
   const { mutate: updateUser } = useUpdateUser()
-
-  const userNameField = () => {
-    return (
-      <>
-        <CenteredCell>
-          <CFormInput
-            autoFocus={focusedField === 0}
-            placeholder="Username"
-            disabled={!props.isNewUser}
-            defaultValue={user.user_name}
-            onChange={(e) => {
-              setFocusedFieled(0)
-              setUser({
-                ...user,
-                user_name: e.currentTarget.value,
-              })
-            }}
-          />
-        </CenteredCell>
-        {usernameError ? <ErrorLabel text={usernameError} /> : null}
-      </>
-    )
-  }
-
-  const emailField = () => (
-    <>
-      <CenteredCell>
-        <CFormInput
-          autoFocus={focusedField === 1}
-          placeholder="example@example.com"
-          defaultValue={user.email}
-          disabled={user.is_external}
-          onChange={(e) => {
-            setFocusedFieled(1)
-            setUser({ ...user, email: e.currentTarget.value })
-          }}
-        />
-      </CenteredCell>
-      {user.is_external ? <ExternalUserLabel text="External user" /> : null}
-      {emailError ? <ErrorLabel text="Email is not valid" /> : null}
-    </>
-  )
-
-  const passwordField = () => (
-    <>
-      <CenteredCell>
-        <CFormInput
-          autoFocus={focusedField === 2}
-          placeholder="*******"
-          type="password"
-          defaultValue={user.password}
-          disabled={user.is_external}
-          onChange={(e) => {
-            setFocusedFieled(2)
-            setUser({ ...user, password: e.currentTarget.value })
-          }}
-        />
-      </CenteredCell>
-      {user.is_external ? <ExternalUserLabel text="External user" /> : null}
-      {passwordError ? <ErrorLabel text={passwordError} /> : null}
-    </>
-  )
-
-  const confirmPasswordField = () => (
-    <>
-      <CenteredCell>
-        <CFormInput
-          autoFocus={focusedField === 3}
-          placeholder="*******"
-          type="password"
-          defaultValue={user.confirmPassword}
-          disabled={user.is_external}
-          onChange={(e) => {
-            setFocusedFieled(3)
-            setUser({
-              ...user,
-              confirmPassword: e.currentTarget.value,
-            })
-          }}
-        />
-      </CenteredCell>
-      {passwordConfirmError ? <ErrorLabel text="Passwords do not match" /> : null}
-    </>
-  )
 
   const rolesList = () => (
     <CRow className="flex-column">
@@ -199,12 +99,7 @@ const EditUserModal = (props) => {
     columnHelper.accessor('username', {
       header: 'Username',
       cell: () => {
-        return (
-          <>
-            <b>{user.user_name}</b>
-            <div className="small text-muted">{`ID: ${user.idx}`}</div>
-          </>
-        )
+        return <InfoText text={user.user_name} subText={`ID: ${user.idx}`} />
       },
     }),
     columnHelper.accessor('email', {
@@ -212,18 +107,16 @@ const EditUserModal = (props) => {
       cell: () => {
         return (
           <>
-            <CenteredCell>
-              <CFormInput
-                autoFocus={focusedField === 1}
-                placeholder="example@example.com"
-                defaultValue={user.email}
-                disabled={user.is_external}
-                onChange={(e) => {
-                  setFocusedFieled(1)
-                  setUser({ ...user, email: e.currentTarget.value })
-                }}
-              />
-            </CenteredCell>
+            <CFormInput
+              autoFocus={focusedField === 1}
+              placeholder="example@example.com"
+              defaultValue={user.email}
+              disabled={user.is_external}
+              onChange={(e) => {
+                setFocusedFieled(1)
+                setUser({ ...user, email: e.currentTarget.value })
+              }}
+            />
             {user.is_external ? <ExternalUserLabel text="External user" /> : null}
             {emailError ? <ErrorLabel text="Email is not valid" /> : null}
           </>
@@ -235,19 +128,17 @@ const EditUserModal = (props) => {
       cell: () => {
         return (
           <>
-            <CenteredCell>
-              <CFormInput
-                autoFocus={focusedField === 2}
-                placeholder="*******"
-                type="password"
-                defaultValue={user.password}
-                disabled={user.is_external}
-                onChange={(e) => {
-                  setFocusedFieled(2)
-                  setUser({ ...user, password: e.currentTarget.value })
-                }}
-              />
-            </CenteredCell>
+            <CFormInput
+              autoFocus={focusedField === 2}
+              placeholder="*******"
+              type="password"
+              defaultValue={user.password}
+              disabled={user.is_external}
+              onChange={(e) => {
+                setFocusedFieled(2)
+                setUser({ ...user, password: e.currentTarget.value })
+              }}
+            />
             {user.is_external ? <ExternalUserLabel text="External user" /> : null}
             {passwordError ? <ErrorLabel text={passwordError} /> : null}
           </>
@@ -259,22 +150,20 @@ const EditUserModal = (props) => {
       cell: () => {
         return (
           <>
-            <CenteredCell>
-              <CFormInput
-                autoFocus={focusedField === 3}
-                placeholder="*******"
-                type="password"
-                defaultValue={user.confirmPassword}
-                disabled={user.is_external}
-                onChange={(e) => {
-                  setFocusedFieled(3)
-                  setUser({
-                    ...user,
-                    confirmPassword: e.currentTarget.value,
-                  })
-                }}
-              />
-            </CenteredCell>
+            <CFormInput
+              autoFocus={focusedField === 3}
+              placeholder="*******"
+              type="password"
+              defaultValue={user.confirmPassword}
+              disabled={user.is_external}
+              onChange={(e) => {
+                setFocusedFieled(3)
+                setUser({
+                  ...user,
+                  confirmPassword: e.currentTarget.value,
+                })
+              }}
+            />
             {passwordConfirmError ? <ErrorLabel text="Passwords do not match" /> : null}
           </>
         )
@@ -289,11 +178,7 @@ const EditUserModal = (props) => {
     columnHelper.accessor('groups', {
       header: 'groups',
       cell: () => {
-        return (
-          <CRow className="justify-content-between">
-            <CCol>{groupsList()}</CCol>
-          </CRow>
-        )
+        return groupsList()
       },
     }),
   ]
@@ -379,14 +264,12 @@ const EditUserModal = (props) => {
         <CModalFooter>
           <CoreIconButton
             type="submit"
-            isOutline={false}
             icon={faSave}
             color="success"
             text="Save"
             onClick={save}
           />
           <CoreIconButton
-            isOutline={false}
             color="secondary"
             icon={faTimes}
             text="Close"

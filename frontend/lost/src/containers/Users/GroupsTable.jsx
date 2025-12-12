@@ -9,6 +9,7 @@ import BaseContainer from '../../components/BaseContainer'
 import { CFormInput, CInputGroup } from '@coreui/react'
 import CoreIconButton from '../../components/CoreIconButton'
 import ErrorBoundary from '../../components/ErrorBoundary'
+import InfoText from '../../components/InfoText'
 
 export const Groups = () => {
   const [newGroup, setNewGroup] = useState('')
@@ -34,10 +35,10 @@ export const Groups = () => {
       header: 'Group',
       cell: (props) => {
         return (
-          <>
-            <b>{props.row.original.name}</b>
-            <div className="small text-muted">{`ID: ${props.row.original.idx}`}</div>
-          </>
+          <InfoText
+            text={props.row.original.name}
+            subText={`ID: ${props.row.original.idx}`}
+          />
         )
       },
     }),

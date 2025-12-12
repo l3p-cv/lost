@@ -414,7 +414,7 @@ const TabGenerateExport = ({ annotaskId, imgCount, annotatedImgCount, setActive 
           onClick={() => onGenerateExport()}
           icon={faPlay}
           text="Generate export"
-          style={{ marginTop: '20px', marginRight: '20px', maxWidth: '175px' }}
+          style={{ marginTop: '40px', maxWidth: '175px' }}
         />
       </CRow>
     </CContainer>

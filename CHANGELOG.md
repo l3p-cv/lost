@@ -39,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - BaseModal now has "backdrop" option
 - Added spinner to CoreDataTable, for when data ist still loading (and gave it isLoading from all of its usages)
 - Added InfoText component, to streamline tooltips and texts
+- Option overrideDisabledColor added to CoreIconButton
 ### Changed
 - Replaced all usages of reactstrap and semantic-ui with CoreUI components and/or generic solutions 
 - moved quick_setup.py into main directory
@@ -63,6 +64,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Replaced DataTable component with CoreDataTable
 - Reworked Review Image-Search UI (table + buttons)
 - Reworked UI of Dataset exports
+- Began replacement of old Infobutton component
 ### Fixed
 - Removed centered spinner of CoreDataTable, when faced with empty data, to not block the rest of the page
 - Fixed execution of DBPatcher at wrong place on start up
