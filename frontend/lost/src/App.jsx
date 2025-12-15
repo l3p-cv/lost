@@ -54,8 +54,8 @@ i18n
 const TheLayout = React.lazy(() => import('./coreui_containers/TheLayout'))
 
 // Pages
-const Login = React.lazy(() => import('./containers/Login/Login'))
-const Logout = React.lazy(() => import('./containers/Logout/Logout'))
+const Login = React.lazy(() => import('./containers/Authentication/Login'))
+const Logout = React.lazy(() => import('./containers/Authentication/Logout'))
 
 function App() {
   const sendError = async (event) => {
@@ -64,10 +64,9 @@ function App() {
       const usedBrowser = event.currentTarget.clientInformation.userAgent
       const location = event.currentTarget.location.href
       const decodedToken = jwtDecode(localStorage.getItem('token'))
-      let userId = null
-      if (decodedToken) {
-        userId = decodedToken.identity
-      }
+
+      const userId = decodedToken?.identity ?? null
+
       const errorObj = {
         error,
         usedBrowser,
@@ -96,9 +95,9 @@ function App() {
           <Suspense fallback={<CenteredSpinner color="white" />}>
             <BrowserRouter>
               <Routes>
-                <Route path="/login" name="Login Page" element={<Login />} />
-                <Route path="/logout" name="Logout Page" element={<Logout />} />
-                <Route path="/*" name="Home" element={<TheLayout />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/logout" element={<Logout />} />
+                <Route path="/*" element={<TheLayout />} />
               </Routes>
             </BrowserRouter>
           </Suspense>

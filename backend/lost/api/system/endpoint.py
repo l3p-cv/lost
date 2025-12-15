@@ -29,12 +29,11 @@ class Version(Resource):
 
 @namespace.route("/settings")
 @api.doc(security="apikey")
-class Version(Resource):
+class Settings(Resource):
     @api.doc(description="LOST settings")
     @api.marshal_with(config)
     def get(self):
         return {
-            "autoLogoutTime": LOST_CONFIG.session_timeout * 60,
             "autoLogoutWarnTime": 1 * 60,
             "isDevMode": LOST_CONFIG.debug,
         }
