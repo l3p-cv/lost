@@ -2,8 +2,8 @@ import { CBadge, CCol, CRow } from '@coreui/react'
 import { useNodesData, useReactFlow } from '@xyflow/react'
 import Select from 'react-select'
 import { AvailableGroup } from '../../../../../../actions/pipeline/model/pipeline-template-response'
-import HelpButton from '../../../../../../components/HelpButton'
 import { AnnoTaskNodeData } from '../../../nodes'
+import InfoText from '../../../../../../components/InfoText'
 
 interface SelectUserProps {
   nodeId: string
@@ -48,10 +48,11 @@ export const SelectUser = ({ nodeId, availableGroups }: SelectUserProps) => {
       <h4 className="mb-3 text-center">User Selection</h4>
       <CRow className="justify-content-center">
         <CCol sm="6">
-          <span className="py-1 fs-6 text-muted fw-bold">User or Group &nbsp;</span>
-          <HelpButton
+          <InfoText
             id="anno-user-select"
-            text="Select a user or group to assign this annotation task."
+            text={'User or Group:'}
+            toolTip={'Select a user or group to assign this annotation task.'}
+            style={{ fontSize: 20, marginBottom: '10px' }}
           />
           <Select
             options={availableGroups}

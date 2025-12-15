@@ -19,6 +19,7 @@ import {
   CModalHeader,
 } from '@coreui/react'
 import LDivider from '../../../../components/LDivider'
+import CoreIconButton from '../../../../components/CoreIconButton'
 
 const DEFAULT_TEXT_PATH = 'No path selected!'
 
@@ -150,9 +151,9 @@ export const DatasourceModal = ({
             }
           }}
         >
-          <CDropdownToggle caret color="primary">
+          <CDropdownToggle caret color="primary" variant="outline">
             <FontAwesomeIcon icon={faDatabase} />
-            {selectedFs ? selectedFs.name : 'Select Datasource ...'}
+            {selectedFs ? ` ${selectedFs.name}` : ' Select Datasource ...'}
           </CDropdownToggle>
           <CDropdownMenu>
             {datasource.filesystems.map(
@@ -182,7 +183,6 @@ export const DatasourceModal = ({
   }, [datasourceNodeData.selectedPath, nodeId, updateNodeData])
 
   return (
-    //TODO: make sure it opens with the first click every time
     <>
       <CModal
         size="lg"
@@ -214,8 +214,9 @@ export const DatasourceModal = ({
           </div>
         </CModalBody>
         <CModalFooter>
-          <CButton
+          <CoreIconButton
             color="primary"
+            text="Done"
             onClick={() => {
               toggle()
               window.dispatchEvent(
@@ -229,9 +230,9 @@ export const DatasourceModal = ({
               localStorage.getItem('joyrideRunning') === 'true' &&
               (!selectedPath || selectedPath === DEFAULT_TEXT_PATH)
             }
-          >
-            Done
-          </CButton>
+          />
+          {/* Done
+          </CButton> */}
         </CModalFooter>
       </CModal>
     </>

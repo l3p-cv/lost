@@ -8,11 +8,10 @@ import {
   CFormLabel,
 } from '@coreui/react'
 import { useEffect } from 'react'
-import Select from 'react-select'
 import { useNodesData, useReactFlow } from '@xyflow/react'
-import HelpButton from '../../../../../../components/HelpButton'
 import { AnnoTaskNodeData } from '../../../nodes'
 import { useGetInstructions } from '../../../../../../containers/Instruction/instruction_api'
+import InfoText from '../../../../../../components/InfoText'
 
 interface UserInfoProps {
   nodeId: string
@@ -74,10 +73,13 @@ export const AnnoTaskInfo = ({ nodeId }: UserInfoProps) => {
               <CRow className="justify-content-center">
                 <CCol sm="10">
                   <CFormLabel>
-                    Name &nbsp;
-                    <HelpButton
-                      id="anno-start-name"
-                      text="Give your AnnotationTask a name. The name can also be seen by your annotators."
+                    <InfoText
+                      text={'Name:'}
+                      toolTip={
+                        'Give your AnnotationTask a name. The name can also be seen by your annotators.'
+                      }
+                      id={'anno-start-name'}
+                      style={{ fontSize: 20 }}
                     />
                   </CFormLabel>
                   <CInputGroup className="mb-3">
@@ -93,10 +95,13 @@ export const AnnoTaskInfo = ({ nodeId }: UserInfoProps) => {
                     ></CFormInput>
                   </CInputGroup>
                   <CFormLabel>
-                    Description &nbsp;
-                    <HelpButton
+                    <InfoText
+                      text={'Description:'}
+                      toolTip={
+                        'Give instructions / hints to your annotators so they know what to do.'
+                      }
                       id="anno-start-desc"
-                      text="Give instructions / hints to your annotators so they know what to do."
+                      style={{ fontSize: 20 }}
                     />
                   </CFormLabel>
                   {isLoading ? (

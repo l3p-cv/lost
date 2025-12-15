@@ -4,6 +4,7 @@ import Select from 'react-select'
 import { AvailableLabelTree } from '../../../../../../actions/pipeline/model/pipeline-template-response'
 import HelpButton from '../../../../../../components/HelpButton'
 import { AnnoTaskNodeData } from '../../../nodes'
+import InfoText from '../../../../../../components/InfoText'
 
 interface SelectTreeProps {
   nodeId: string
@@ -40,10 +41,13 @@ export const SelectTree = ({ nodeId, availableLabelTrees }: SelectTreeProps) => 
       <h4 className="mb-3 text-center">Label Tree Selection</h4>
       <CRow className="justify-content-center">
         <CCol sm="6">
-          <span className="py-1 fs-6 text-muted fw-bold">Label Tree &nbsp;</span>
-          <HelpButton
-            id="label-tree-select"
-            text="Choose a label tree to categorize your annotations. You can select the labels in the next step."
+          <InfoText
+            id="anno-user-select"
+            text={'Label Tree:'}
+            toolTip={
+              'Choose a label tree to categorize your annotations. You can select the labels in the next step.'
+            }
+            style={{ fontSize: 20, marginBottom: '10px' }}
           />
           <Select
             options={availableLabelTrees}

@@ -8,6 +8,7 @@ import HelpButton from '../../../../../../components/HelpButton'
 import DatasetEditModal from '../../../../../Datasets/DatasetEditModal'
 import { AnnoTaskNodeData } from '../../../nodes'
 import CoreIconButton from '../../../../../../components/CoreIconButton'
+import InfoText from '../../../../../../components/InfoText'
 
 interface SelectStorageSettingsProps {
   nodeId: string
@@ -57,12 +58,12 @@ export const SelectStorageSettings = ({ nodeId }: SelectStorageSettingsProps) =>
 
         <CRow className="justify-content-center">
           <CCol sm="6">
-            <span className="py-1 fs-6 text-muted fw-bold">Dataset &nbsp;</span>
-
-            <HelpButton
-              text={`Select the dataset where the annotations are linked to.`}
+            <InfoText
+              id="anno-user-select"
+              text={'Dataset:'}
+              toolTip={'Select the dataset where the annotations are linked to.'}
+              style={{ fontSize: 20, marginBottom: '10px' }}
             />
-
             <CRow>
               <CCol>
                 <Select
@@ -91,7 +92,6 @@ export const SelectStorageSettings = ({ nodeId }: SelectStorageSettingsProps) =>
             <CRow>
               <CCol>
                 <CoreIconButton
-                  isOutline={false}
                   color="primary"
                   icon={faBoxesPacking}
                   text="Create new dataset"

@@ -9,7 +9,7 @@ import {
   CRow,
 } from '@coreui/react'
 import { useEffect, useState } from 'react'
-import HelpButton from '../../../../../../components/HelpButton'
+import InfoText from '../../../../../../components/InfoText'
 
 export const SelectMIAConfiguration = ({ ...props }) => {
   const [configuration, setConfiguration] = useState()
@@ -46,35 +46,46 @@ export const SelectMIAConfiguration = ({ ...props }) => {
         <>
           <CRow style={{ margin: '5px' }}>
             <CCol sm="12">
-              <h4>MIA Configuration</h4>
-              <CRow>
-                <CCol sm="12">
+              <InfoText
+                text={'MIA Configuration:'}
+                style={{ fontSize: 20, marginBottom: '15px' }}
+              />
+              <CRow
+                style={{ marginLeft: '5px', marginBottom: '15px' }}
+                className="align-content-center"
+              >
+                <CCol sm="4" className="align-self-center">
+                  <InfoText
+                    text={'-Show proposed label:'}
+                    toolTip={'Show proposed label (if given)'}
+                    id="show-proposed-label"
+                    style={{ fontSize: 20 }}
+                  />
+                </CCol>
+                <CCol sm="1" className="align-self-center">
                   <CFormSwitch
-                    className={'mx-1'}
-                    variant={'3d'}
+                    // className={'mx-1'}
+                    // variant={'3d'}
+                    size="xl"
                     color={'primary'}
                     checked={configuration.showProposedLabel}
                     onChange={(e) =>
                       changeValue('show-proposed-label', !configuration.showProposedLabel)
                     }
                   />
-                  <b
-                    style={{
-                      marginLeft: '20px',
-                    }}
-                  >
-                    Show proposed label
-                    <HelpButton
-                      id="show-proposed-label"
-                      text={'Show proposed label (if given)'}
-                    />
-                  </b>
                 </CCol>
               </CRow>
-              <h4>Annotation Type</h4>
               <CRow>
                 <CCol sm="12">
                   <CRow style={{ marginLeft: '5px' }}>
+                    <InfoText
+                      text={'-Annotation Type:'}
+                      tTipPlacement="right"
+                      toolTip={
+                        'Wether annotation requests are based on whole images or two_d annotations (in example from a previous SIA annotation step)'
+                      }
+                      style={{ fontSize: 20, marginBottom: '15px' }}
+                    />
                     <CDropdown>
                       <CDropdownToggle color="primary">
                         {configuration.type}
@@ -94,52 +105,57 @@ export const SelectMIAConfiguration = ({ ...props }) => {
                         </CDropdownItem>
                       </CDropdownMenu>
                     </CDropdown>
-                    <b
-                      style={{
-                        marginLeft: '20px',
-                      }}
-                    >
-                      Annotation type
-                      <HelpButton
-                        id="anno-type"
-                        text={
-                          'Weather annotation requests are based on whole images or two_d annotations (in example from a previous SIA annotation step)'
-                        }
-                      />
-                    </b>
                   </CRow>
                 </CCol>
                 {configuration.type === 'annoBased' ? (
                   <>
-                    <CCol sm="12" style={{ marginTop: '15px' }}>
-                      <CFormSwitch
-                        className={'mx-1'}
-                        variant={'3d'}
-                        color={'primary'}
-                        checked={configuration.drawAnno}
-                        onChange={(e) =>
-                          changeValue('draw-anno', !configuration.drawAnno)
-                        }
-                      />
-                      <b
-                        style={{
-                          marginLeft: '20px',
-                        }}
+                    <CRow style={{ marginLeft: '5px' }}>
+                      <CCol
+                        sm="4"
+                        style={{ marginTop: '15px' }}
+                        className="align-self-center"
                       >
-                        Draw Anno
-                        <HelpButton
+                        <InfoText
+                          text={'-Draw Anno:'}
                           id="draw-anno"
-                          text={'Weather to draw two_d annnotations into the image'}
+                          toolTip={'Wether to draw two_d annnotations into the image'}
+                          style={{ fontSize: 20, marginBottom: '15px' }}
                         />
-                      </b>
-                    </CCol>
-                    <CCol sm="12">
-                      <CRow
-                        style={{
-                          marginLeft: '5px',
-                          marginTop: '10px',
-                        }}
+                      </CCol>
+                      <CCol sm="1" className="align-self-center">
+                        <CFormSwitch
+                          className={'mx-1'}
+                          size="xl"
+                          variant={'3d'}
+                          color={'primary'}
+                          checked={configuration.drawAnno}
+                          onChange={(e) =>
+                            changeValue('draw-anno', !configuration.drawAnno)
+                          }
+                        />
+                      </CCol>
+                    </CRow>
+                    <CRow style={{ marginLeft: '5px' }}>
+                      <CCol
+                        sm="4"
+                        style={{ marginTop: '15px' }}
+                        className="align-self-center"
                       >
+                        <InfoText
+                          text={'-Add Context:'}
+                          id="add-context"
+                          toolTip={`Add some amount of pixels will be added around the annotation when the
+                                                        annotation is cropped.
+                                                        The number of pixels that are add is calculated relative to the
+                                                        image size.
+                                                        So if you set addContext to 0.1,
+                                                        10 percent of the image size will be added to the crop.
+                                                        This setting is useful to provide the annotator some more visual
+                                                        context during the annotation step. `}
+                          style={{ fontSize: 20, marginBottom: '15px' }}
+                        />
+                      </CCol>
+                      <CCol sm="8" className="align-self-center">
                         <CFormInput
                           type="number"
                           min={0.0}
@@ -151,26 +167,8 @@ export const SelectMIAConfiguration = ({ ...props }) => {
                             changeValue('add-context', e.currentTarget.value)
                           }
                         />
-                        <b
-                          style={{
-                            marginLeft: '20px',
-                          }}
-                        >
-                          Add Context
-                          <HelpButton
-                            id="add-context"
-                            text={`Add some amount of pixels will be added around the annotation when the
-                                                        annotation is cropped.
-                                                        The number of pixels that are add is calculated relative to the
-                                                        image size.
-                                                        So if you set addContext to 0.1,
-                                                        10 percent of the image size will be added to the crop.
-                                                        This setting is useful to provide the annotator some more visual
-                                                        context during the annotation step. `}
-                          />
-                        </b>
-                      </CRow>
-                    </CCol>
+                      </CCol>
+                    </CRow>
                   </>
                 ) : (
                   ''

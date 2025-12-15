@@ -9,6 +9,7 @@ import {
 import { CenteredSpinner } from '../../../../../../components/CenteredSpinner'
 import HelpButton from '../../../../../../components/HelpButton'
 import { AnnoTaskNodeData } from '../../../nodes'
+import InfoText from '../../../../../../components/InfoText'
 
 interface SelectSiaConfigurationProps {
   nodeId: string
@@ -45,6 +46,7 @@ export const SelectSiaConfiguration = ({ nodeId }: SelectSiaConfigurationProps) 
         break
       case 'action-label':
         newConfiguration.annos.actions.label = value
+        newConfiguration.annos.multilabels = false
         break
       case 'action-multilabel':
         newConfiguration.annos.multilabels = value
@@ -57,6 +59,7 @@ export const SelectSiaConfiguration = ({ nodeId }: SelectSiaConfigurationProps) 
         break
       case 'image-label':
         newConfiguration.img.actions.label = value
+        newConfiguration.img.multilabels = false
         break
       case 'image-multilabel':
         newConfiguration.img.multilabels = value
@@ -77,6 +80,7 @@ export const SelectSiaConfiguration = ({ nodeId }: SelectSiaConfigurationProps) 
   }
 
   if (!configuration) return ''
+  const infoTextGrids = 2
 
   return (
     <>
@@ -84,33 +88,41 @@ export const SelectSiaConfiguration = ({ nodeId }: SelectSiaConfigurationProps) 
         <h4 className="mb-3 text-center">SIA Configuration</h4>
         <CRow style={{ margin: '5px' }}>
           <CCol sm="6">
-            <h4>Annotation Types</h4>
+            <h2>Annotation Types</h2>
             <CRow>
               <CCol sm="12" style={{ marginTop: '5px' }}>
                 <CRow>
-                  <CCol sm="2">
+                  <CCol sm={infoTextGrids * 2} className="align-self-center">
+                    <InfoText
+                      text={'BBox'}
+                      style={{ fontSize: 20 }}
+                      toolTip={'Allow to add / edit bboxes'}
+                      id="bbox"
+                    />
+                  </CCol>
+                  <CCol sm="1">
                     <CFormSwitch
                       size="xl"
-                      className={'mx-1'}
                       color={'primary'}
                       checked={configuration.tools.bbox}
                       onChange={() => changeValue('tool-bbox', !configuration.tools.bbox)}
                     />
                   </CCol>
-                  <CCol>
-                    <b>
-                      Bbox &nbsp;
-                      <HelpButton id="bbox" text={'Allow to add / edit bboxes'} />
-                    </b>
-                  </CCol>
                 </CRow>
               </CCol>
-              <CCol sm="12" style={{ marginTop: '5px' }}>
+              <CCol sm="12" style={{ marginTop: '10px' }}>
                 <CRow>
+                  <CCol sm={infoTextGrids * 2} className="align-self-center">
+                    <InfoText
+                      text={'Polygon'}
+                      style={{ fontSize: 20 }}
+                      toolTip={'Allow to add / edit polygons'}
+                      id="polygon"
+                    />
+                  </CCol>
                   <CCol sm="2">
                     <CFormSwitch
                       size="xl"
-                      className={'mx-1'}
                       color={'primary'}
                       checked={configuration.tools.polygon}
                       onChange={() =>
@@ -118,20 +130,21 @@ export const SelectSiaConfiguration = ({ nodeId }: SelectSiaConfigurationProps) 
                       }
                     />
                   </CCol>
-                  <CCol>
-                    <b>
-                      Polygon &nbsp;
-                      <HelpButton id="polygon" text={'Allow to add / edit polygons'} />
-                    </b>
-                  </CCol>
                 </CRow>
               </CCol>
-              <CCol sm="12" style={{ marginTop: '5px' }}>
+              <CCol sm="12" style={{ marginTop: '10px' }}>
                 <CRow>
-                  <CCol sm="2">
+                  <CCol sm={infoTextGrids * 2} className="align-self-center">
+                    <InfoText
+                      text={'Point'}
+                      style={{ fontSize: 20 }}
+                      toolTip={'Allow to add / edit points'}
+                      id="point"
+                    />
+                  </CCol>
+                  <CCol sm="1">
                     <CFormSwitch
                       size="xl"
-                      className={'mx-1'}
                       color={'primary'}
                       checked={configuration.tools.point}
                       onChange={() =>
@@ -139,45 +152,46 @@ export const SelectSiaConfiguration = ({ nodeId }: SelectSiaConfigurationProps) 
                       }
                     />
                   </CCol>
-                  <CCol>
-                    <b>
-                      Point &nbsp;
-                      <HelpButton id="point" text={'Allow to add / edit points'} />
-                    </b>
-                  </CCol>
                 </CRow>
               </CCol>
-              <CCol sm="12" style={{ marginTop: '5px' }}>
+              <CCol sm="12" style={{ marginTop: '10px' }}>
                 <CRow>
+                  <CCol sm={infoTextGrids * 2} className="align-self-center">
+                    <InfoText
+                      text={'Line'}
+                      style={{ fontSize: 20 }}
+                      toolTip={'Allow to add / edit lines'}
+                      id="line"
+                    />
+                  </CCol>
                   <CCol sm="2">
                     <CFormSwitch
                       size="xl"
-                      className={'mx-1'}
                       color={'primary'}
                       checked={configuration.tools.line}
                       onChange={() => changeValue('tool-line', !configuration.tools.line)}
                     />
-                  </CCol>
-                  <CCol>
-                    <b>
-                      Line &nbsp;
-                      <HelpButton id="line" text={'Allow to add / edit lines'} />
-                    </b>
                   </CCol>
                 </CRow>
               </CCol>
             </CRow>
           </CCol>
           <CCol sm="6">
-            {' '}
-            <h4>Annotation Actions</h4>
+            <h2>Annotation Actions</h2>
             <CRow>
               <CCol sm="12" style={{ marginTop: '5px' }}>
                 <CRow>
-                  <CCol sm="2">
+                  <CCol sm={infoTextGrids * 2} className="align-self-center">
+                    <InfoText
+                      text={'Draw'}
+                      style={{ fontSize: 20 }}
+                      toolTip={'Allow to add new annotations'}
+                      id="draw-anno"
+                    />
+                  </CCol>
+                  <CCol sm="1">
                     <CFormSwitch
                       size="xl"
-                      className={'mx-1'}
                       color={'primary'}
                       checked={configuration.annos.actions.draw}
                       onChange={() =>
@@ -185,20 +199,23 @@ export const SelectSiaConfiguration = ({ nodeId }: SelectSiaConfigurationProps) 
                       }
                     />
                   </CCol>
-                  <CCol>
-                    <b>
-                      Draw &nbsp;
-                      <HelpButton id="draw-anno" text={'Allow to add new annotations'} />
-                    </b>
-                  </CCol>
                 </CRow>
               </CCol>
-              <CCol sm="12" style={{ marginTop: '5px' }}>
+              <CCol sm="12" style={{ marginTop: '10px' }}>
                 <CRow>
-                  <CCol sm="2">
+                  <CCol sm={infoTextGrids * 2} className="align-self-center">
+                    <InfoText
+                      text={'Edit'}
+                      style={{ fontSize: 20 }}
+                      toolTip={
+                        'Allow to edit an annotation (move / change size and points)'
+                      }
+                      id="edit-anno"
+                    />
+                  </CCol>
+                  <CCol sm="1">
                     <CFormSwitch
                       size="xl"
-                      className={'mx-1'}
                       color={'primary'}
                       checked={configuration.annos.actions.edit}
                       onChange={() =>
@@ -206,25 +223,21 @@ export const SelectSiaConfiguration = ({ nodeId }: SelectSiaConfigurationProps) 
                       }
                     />
                   </CCol>
-                  <CCol>
-                    <b>
-                      Edit &nbsp;
-                      <HelpButton
-                        id="edit-anno"
-                        text={
-                          'Allow to edit an annotation (move / change size and points)'
-                        }
-                      />
-                    </b>
-                  </CCol>
                 </CRow>
               </CCol>
-              <CCol sm="12" style={{ marginTop: '5px' }}>
+              <CCol sm="12" style={{ marginTop: '10px' }}>
                 <CRow>
-                  <CCol sm="2">
+                  <CCol sm={infoTextGrids * 2} className="align-self-center">
+                    <InfoText
+                      text={'Label'}
+                      style={{ fontSize: 20 }}
+                      toolTip={'Allow to apply a label to an annotation'}
+                      id="label-anno"
+                    />
+                  </CCol>
+                  <CCol sm="1">
                     <CFormSwitch
                       size="xl"
-                      className={'mx-1'}
                       color={'primary'}
                       checked={configuration.annos.actions.label}
                       onChange={() =>
@@ -232,38 +245,28 @@ export const SelectSiaConfiguration = ({ nodeId }: SelectSiaConfigurationProps) 
                       }
                     />
                   </CCol>
-                  <CCol>
-                    <b>
-                      Label &nbsp;
-                      <HelpButton
-                        id="label-anno"
-                        text={'Allow to apply a label to an annotation'}
-                      />
-                    </b>
-                  </CCol>
                 </CRow>
               </CCol>
-              <CCol sm="12" style={{ marginTop: '5px' }}>
+              <CCol sm="12" style={{ marginTop: '10px' }}>
                 <CRow>
-                  <CCol sm="2">
+                  <CCol sm={infoTextGrids * 2} className="align-self-center">
+                    <InfoText
+                      text={'Multilabel'}
+                      style={{ fontSize: 20 }}
+                      toolTip={'Allow to apply multiple labels to an annotation'}
+                      id="multilabel-anno"
+                    />
+                  </CCol>
+                  <CCol sm="1">
                     <CFormSwitch
                       size="xl"
-                      className={'mx-1'}
                       color={'primary'}
                       checked={configuration.annos.multilabels}
                       onChange={() =>
                         changeValue('action-multilabel', !configuration.annos.multilabels)
                       }
+                      disabled={!configuration.annos.actions.label}
                     />
-                  </CCol>
-                  <CCol>
-                    <b>
-                      Multilabel &nbsp;
-                      <HelpButton
-                        id="multilabel-anno"
-                        text={'Allow to apply multiple labels to an annotation'}
-                      />
-                    </b>
                   </CCol>
                 </CRow>
               </CCol>
@@ -271,17 +274,16 @@ export const SelectSiaConfiguration = ({ nodeId }: SelectSiaConfigurationProps) 
           </CCol>
         </CRow>
         <hr />
-        <CRow style={{ margin: '5px' }}>
+        <CRow style={{ margin: '5px', marginTop: '20px', marginBottom: '20px' }}>
           <CCol sm="12" style={{ marginTop: '5px' }}>
-            <h4>
-              Minimum Annotation Size &nbsp;
-              <HelpButton
-                id="min-anno-area"
-                text={
-                  'Allow only annotations with an area greater than value in pixel ( only applies to polygons and bboxes)'
-                }
-              />
-            </h4>
+            <InfoText
+              text={'Minimum Annotation Size'}
+              toolTip={
+                'Allow only annotations with an area greater than value in pixel ( only applies to polygons and bboxes)'
+              }
+              id="min-anno-area"
+              style={{ fontSize: 20, marginBottom: '10px' }}
+            />
             <CFormInput
               type="number"
               min={1}
@@ -293,36 +295,40 @@ export const SelectSiaConfiguration = ({ nodeId }: SelectSiaConfigurationProps) 
         </CRow>
         <hr />
         <CRow style={{ margin: '5px' }}>
-          <CCol sm="12" style={{ marginTop: '5px' }}>
-            <h4>Image</h4>
-            <CCol sm="12" style={{ marginTop: '5px' }}>
+          <CCol sm="12">
+            <h2>Image</h2>
+            <CCol sm="12">
               <CRow>
-                <CCol sm="2">
+                <CCol sm={infoTextGrids} className="align-self-center">
+                  <InfoText
+                    text={'Junk'}
+                    style={{ fontSize: 20 }}
+                    toolTip={'Allow to mark images as junk'}
+                  />
+                </CCol>
+                <CCol sm="1" className="align-self-center">
                   <CFormSwitch
                     size="xl"
-                    className={'mx-1'}
                     color={'primary'}
                     checked={configuration.tools.junk}
                     onChange={() => changeValue('image-junk', !configuration.tools.junk)}
                   />
                 </CCol>
-                <CCol>
-                  <b>
-                    Junk &nbsp;
-                    <HelpButton
-                      id="junk-image"
-                      text={'Allow to mark whole image as junk'}
-                    />
-                  </b>
-                </CCol>
               </CRow>
             </CCol>
-            <CCol sm="12" style={{ marginTop: '5px' }}>
-              <CRow>
-                <CCol sm="2">
+            <CCol sm="12">
+              <CRow style={{ marginTop: '10px' }} className="align-content-center">
+                <CCol sm={infoTextGrids} className="align-self-center">
+                  <InfoText
+                    text={'Label'}
+                    style={{ fontSize: 20 }}
+                    toolTip={'Allow to label the whole image'}
+                    id="label-image"
+                  />
+                </CCol>
+                <CCol sm="1" className="align-self-center">
                   <CFormSwitch
                     size="xl"
-                    className={'mx-1'}
                     color={'primary'}
                     checked={configuration.img.actions.label}
                     onChange={() =>
@@ -330,38 +336,28 @@ export const SelectSiaConfiguration = ({ nodeId }: SelectSiaConfigurationProps) 
                     }
                   />
                 </CCol>
-                <CCol>
-                  <b>
-                    Label &nbsp;
-                    <HelpButton
-                      id="label-image"
-                      text={'Allow to label the whole image'}
-                    />
-                  </b>
-                </CCol>
               </CRow>
             </CCol>
-            <CCol sm="12" style={{ marginTop: '5px' }}>
+            <CCol sm="12" style={{ marginTop: '10px' }}>
               <CRow>
-                <CCol sm="2">
+                <CCol sm={infoTextGrids} className="align-self-center">
+                  <InfoText
+                    text={'Multilabel'}
+                    style={{ fontSize: 20 }}
+                    toolTip={'Allow to apply multiple labels to the whole image'}
+                    id="multilabel-image"
+                  />
+                </CCol>
+                <CCol sm="1" className="align-self-center">
                   <CFormSwitch
                     size="xl"
-                    className={'mx-1'}
                     color={'primary'}
                     checked={configuration.img.multilabels}
                     onChange={() =>
                       changeValue('image-multilabel', !configuration.img.multilabels)
                     }
+                    disabled={!configuration.img.actions.label}
                   />
-                </CCol>
-                <CCol>
-                  <b>
-                    Multilabel &nbsp;
-                    <HelpButton
-                      id="multilabel-image"
-                      text={'Allow to apply multiple labels to the whole image'}
-                    />
-                  </b>
                 </CCol>
               </CRow>
             </CCol>
@@ -369,9 +365,13 @@ export const SelectSiaConfiguration = ({ nodeId }: SelectSiaConfigurationProps) 
         </CRow>
 
         <hr />
-        <CRow style={{ margin: '5px' }}>
-          <CCol sm="12" style={{ marginTop: '5px' }}>
-            <h4>Inference Model</h4>
+        <CRow style={{ margin: '5px', marginTop: '20px', marginBottom: '20px' }}>
+          <CCol sm="12">
+            <InfoText
+              text={'Inference Model'}
+              toolTip={'Inference model to use in Annotask'}
+              style={{ fontSize: 20, marginBottom: '10px' }}
+            />
             {modelsData && (
               <Select
                 options={modelsData.models}
