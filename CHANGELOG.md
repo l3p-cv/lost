@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [unreleased] - 
 - your changes here
 
-## [3.0.0] - 
+## [3.0.0] - 2025-12-04
 ### Breaking Changes
 - The LOST docker container is now split into two containers: lost-frontend and lost-backend
 - Reworked LOST-SIA + wrappers
