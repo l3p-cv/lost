@@ -15,20 +15,15 @@ const refreshToken = async () => {
   const expirationTime = new Date(decodedToken.exp * 1000)
 
   // if refresh token also not valid anymore
-  if (expirationTime > new Date()) {
+  if (expirationTime < new Date()) {
     globalThis.location.replace('/logout#timeout')
   }
 
+  // replace with refresh token
+  axios.defaults.headers.Authorization = `Bearer ${jwt}`
+
   try {
-    const response = await axios.post(
-      `${API_URL}/user/refresh`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('refreshToken')}`,
-        },
-      },
-    )
+    const response = await axios.post(`${API_URL}/user/refresh`)
 
     localStorage.setItem('token', response.data.token)
     localStorage.setItem('refreshToken', response.data.refresh_token)
@@ -80,7 +75,8 @@ export const checkExpireDate = (secondsOfInactivity: number) => {
   if (!expirationDate || expirationDate < new Date()) {
     // check if refresh token is still valid
     const refreshExpirationDate = getTokenExpirationDate(true)
-    if (refreshExpirationDate && refreshExpirationDate < new Date()) {
+
+    if (refreshExpirationDate && refreshExpirationDate > new Date()) {
       // we can still use the refresh token
       return refreshToken()
     }
