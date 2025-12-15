@@ -34,7 +34,7 @@ class Settings(Resource):
     @api.marshal_with(config)
     def get(self):
         return {
-            "autoLogoutWarnTime": 1 * 60,
+            "autoLogoutWarnTime": 5 * 60,
             "isDevMode": LOST_CONFIG.debug,
         }
 
