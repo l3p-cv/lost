@@ -24,9 +24,11 @@ const InfoText = ({
     <div id={id} className={className} style={style}>
       <CRow>
         {!!toolTip && (
-          <CTooltip content={toolTip} placement={tTipPlacement}>
-            <b style={{ textDecoration: 'grey dotted underline' }}>{text}</b>
-          </CTooltip>
+          <CCol>
+            <CTooltip content={toolTip} placement={tTipPlacement}>
+              <b style={{ textDecoration: 'grey dotted underline' }}>{text}</b>
+            </CTooltip>
+          </CCol>
         )}
         {!toolTip && <b>{text}</b>}
       </CRow>

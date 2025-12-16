@@ -92,7 +92,7 @@ function CoreDataTable({
                   key={header.id}
                   style={{
                     textAlign: 'center',
-                    borderRight: '1px solid var(--cui-light)',
+                    borderBottom: '1px solid var(--cui-border-color)',
                     textDecoration: 'underline solid var(--cui-secondary)',
                   }}
                 >
@@ -123,7 +123,9 @@ function CoreDataTable({
                       verticalAlign: 'middle',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
-                      borderRight: '1px solid var(--cui-light)',
+                      borderLeft: '1px solid var(--cui-border-color)',
+                      borderBottom: '1px solid var(--cui-border-color)',
+                      borderRight: '1px solid var(--cui-border-color)',
                     }}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}

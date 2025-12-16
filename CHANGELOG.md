@@ -66,6 +66,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Reworked UI of Dataset exports
 - Began replacement of old Infobutton component
 - Began conversion of .jsx-Files to .tsx-Files (TableHeader, SelectFileButton)
+- Used component BaseModal whenever applicable + converted to .tsx
 ### Fixed
 - Removed centered spinner of CoreDataTable, when faced with empty data, to not block the rest of the page
 - Fixed execution of DBPatcher at wrong place on start up
@@ -82,6 +83,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Re-added rendering of footer for component BaseModal
 - Fixed and removed contraint over the input payload point set to use only 4 points as max limit in `/bboxFromPoints`. 
 - Fixed using alternative pagesizes for whole-data CoreDataTable
+- Fixed lingering bug when saving/updating userdata (EditUserModal)
+- Acutally show intended Icons in filter of "my annotation tasks"
+- Fixed border colors of CoreDataTable
 ### Removed
 - Removed all instances of reactstrap library
 - Removed all instances of semantic-ui library

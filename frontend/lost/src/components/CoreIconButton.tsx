@@ -101,7 +101,7 @@ const CoreIconButton = ({
         <CButton
           id={id}
           size={size}
-          // type={type}
+          type={type}
           className={className}
           style={style}
           variant={buttonVariant}
