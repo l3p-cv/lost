@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { CSSProperties, useEffect, useRef, useState } from 'react'
 import {
   CFormInput,
   CDropdown,
@@ -8,6 +8,22 @@ import {
   CCol,
   CCard,
 } from '@coreui/react'
+
+type Option = {
+  id: number
+  label: string
+}
+
+type DropdownInputProps = {
+  placeholder?: string
+  options?: Option[]
+  inputWidth?: number
+  className?: string | undefined
+  style?: CSSProperties
+  onLabelUpdate?: () => void
+  reset: boolean
+}
+
 export const Wrapper = ({ children }) => {
   return <div className="d-flex align-items-center">{children}</div>
 }
@@ -19,7 +35,7 @@ const DropdownInput = ({
   style,
   onLabelUpdate = () => {},
   reset,
-}) => {
+}: DropdownInputProps) => {
   const [inputValue, setInputValue] = useState('')
   const [isOpen, setIsOpen] = useState(false)
   const [filteredOptions, setFilteredOptions] = useState(options)
