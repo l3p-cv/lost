@@ -253,11 +253,12 @@ const EditDSModal = ({
           title="Edit Datasource"
           toggle={closeModal}
           onClosed={onClosed}
+          isShowCancelButton
           footer={
             <CoreIconButton
               disabled={fs.name === '' || fs.rootPath === ''}
               icon={faSave}
-              color="primary"
+              color="success"
               text="Save"
               onClick={save}
             />

@@ -6,6 +6,7 @@ import * as datasetApi from '../../actions/dataset/dataset_api'
 import { showError, showSuccess } from '../../components/Notification'
 import FilterableDropdown, { FilterItem } from '../../components/FilterableDropdown'
 import CoreIconButton from '../../components/CoreIconButton'
+import BaseModal from '../../components/BaseModal'
 
 const NOTIFICATION_TIMEOUT_MS = 5000
 
@@ -205,82 +206,61 @@ const DatasetEditModal = ({
   )
 
   return (
-    <CModal
-      visible={isVisible}
-      backdrop="static"
-      size="xl"
-      onClose={() => {
+    <BaseModal
+      title="Dataset"
+      isOpen={isVisible}
+      backdropOption="static"
+      onClosed={() => {
         setIsVisible(false)
       }}
     >
-      <CModalHeader>{idx === -1 ? 'Add' : 'Edit'} Dataset</CModalHeader>
-      <CModalBody>
-        <CRow>
-          <CCol sm="2">Name</CCol>
-          <CCol sm="6">
-            <CFormInput
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </CCol>
-        </CRow>
-        <CRow>&nbsp;</CRow>
-        <CRow>
-          <CCol sm="2">Description</CCol>
-          <CCol sm="6">
-            <CFormInput
-              type="text"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-          </CCol>
-        </CRow>
-        <CRow>&nbsp;</CRow>
-        <CRow>
-          <CCol sm="2">Parent Dataset</CCol>
-          <CCol sm="6">
-            <FilterableDropdown
-              items={parentDatasetOptions}
-              selectedItem={parentDataset}
-              onChange={(item) => setParentDataset(item)}
-            />
-          </CCol>
-        </CRow>
-        {/* <CRow>&nbsp;</CRow>
-                <CRow>
-                    <CCol sm="2">Datastore</CCol>
-                    <CCol sm="6">
-                        <Dropdown
-                            placeholder='Select Datastore'
-                            fluid
-                            search
-                            selection
-                            multiple={false}
-                            options={datastoreDropdownOptions}
-                            value={datastoreId}
-                            onChange={(_, data) => {
-                                setDatastoreId(data.value)
-                            }}
-                        />
-                    </CCol>
-                </CRow> */}
-        <CRow className="justify-content-center">
-          {/* <CCol sm="2">&nbsp;</CCol> */}
-          <CCol sm="6">
-            {idx !== -1 ? renderDeleteDatasetButton() : ''}
-            <CoreIconButton
-              // isOutline={false}
-              color="primary"
-              icon={faSave}
-              text={`${idx === -1 ? 'Add' : 'Update'} Dataset`}
-              onClick={() => (idx === -1 ? createDataset() : updateDataset())}
-              style={{ marginTop: '15px', float: 'right' }}
-            />
-          </CCol>
-        </CRow>
-      </CModalBody>
-    </CModal>
+      <CRow>
+        <CCol sm="2">Name</CCol>
+        <CCol sm="6">
+          <CFormInput
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </CCol>
+      </CRow>
+      <CRow>&nbsp;</CRow>
+      <CRow>
+        <CCol sm="2">Description</CCol>
+        <CCol sm="6">
+          <CFormInput
+            type="text"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+        </CCol>
+      </CRow>
+      <CRow>&nbsp;</CRow>
+      <CRow>
+        <CCol sm="2">Parent Dataset</CCol>
+        <CCol sm="6">
+          <FilterableDropdown
+            items={parentDatasetOptions}
+            selectedItem={parentDataset}
+            onChange={(item) => setParentDataset(item)}
+          />
+        </CCol>
+      </CRow>
+      <CRow className="justify-content-center">
+        {/* <CCol sm="2">&nbsp;</CCol> */}
+        <CCol sm="6">
+          {idx !== -1 ? renderDeleteDatasetButton() : ''}
+          <CoreIconButton
+            // isOutline={false}
+            color="primary"
+            icon={faSave}
+            text={`${idx === -1 ? 'Add' : 'Update'} Dataset`}
+            onClick={() => (idx === -1 ? createDataset() : updateDataset())}
+            style={{ marginTop: '15px', float: 'right' }}
+          />
+        </CCol>
+      </CRow>
+    </BaseModal>
   )
 }
 

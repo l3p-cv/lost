@@ -4,20 +4,12 @@ import validator from 'validator'
 import { useGroups } from '../../actions/group/group-api'
 import { useCreateUser, useUpdateUser } from '../../actions/user/user_api'
 import { useLostConfig } from '../../hooks/useLostConfig'
-import {
-  CBadge,
-  CCol,
-  CFormInput,
-  CModal,
-  CModalBody,
-  CModalFooter,
-  CModalHeader,
-  CRow,
-} from '@coreui/react'
+import { CBadge, CCol, CFormInput, CRow } from '@coreui/react'
 import CoreIconButton from '../../components/CoreIconButton'
 import CoreDataTable from '../../components/CoreDataTable'
 import { createColumnHelper } from '@tanstack/react-table'
 import InfoText from '../../components/InfoText'
+import BaseModal from '../../components/BaseModal'
 
 const ErrorLabel = ({ text }) => (
   <p style={{ marginTop: 30, marginBottom: 0, padding: 0, color: 'red' }}>{text}</p>
@@ -42,12 +34,16 @@ const EditUserModal = (props) => {
   const { data: groupsData } = useGroups()
   const { mutate: createUser } = useCreateUser()
   const { mutate: updateUser } = useUpdateUser()
+  const payload = {
+    ...user,
+    roles: user.roles.map((role) => role.name),
+    groups: user.groups.map((group) => group.name),
+  }
 
   const rolesList = () => (
     <CRow className="flex-column">
       {roles.map((guiSetupCat) => {
         const isActive = user.roles.some((role) => role.name === guiSetupCat)
-
         return (
           <CCol>
             <CBadge
@@ -222,16 +218,14 @@ const EditUserModal = (props) => {
 
     if (!isError) {
       // save user
-      user.roles = user.roles.map((role) => role.name)
-      user.groups = user.groups.map((group) => group.name)
       if (props.isNewUser) {
-        createUser(user, {
+        createUser(payload, {
           onSuccess: () => {
             props.closeModal()
           },
         })
       } else {
-        updateUser(user, {
+        updateUser(payload, {
           onSuccess: () => {
             props.closeModal()
           },
@@ -246,37 +240,32 @@ const EditUserModal = (props) => {
 
   return (
     groupsData && (
-      <CModal
-        size="xl"
-        visible={props.isOpen}
-        // toggle={props.closeModal}
-        onClose={() => {
+      <BaseModal
+        title="Edit User"
+        isOpen={props.isOpen}
+        onClosed={() => {
           props.onClosed()
           if (props.isOpen) {
             props.closeModal()
           }
         }}
+        footer={
+          <>
+            <CoreIconButton icon={faSave} color="success" text="Save" onClick={save} />
+            <CoreIconButton
+              color="secondary"
+              icon={faTimes}
+              text="Close"
+              onClick={() => {
+                cancel()
+                props.onClosed()
+              }}
+            />
+          </>
+        }
       >
-        <CModalHeader>{'Edit User'}</CModalHeader>
-        <CModalBody>
-          <CoreDataTable tableData={[user]} columns={userColumns} usePagination={false} />
-        </CModalBody>
-        <CModalFooter>
-          <CoreIconButton
-            type="submit"
-            icon={faSave}
-            color="success"
-            text="Save"
-            onClick={save}
-          />
-          <CoreIconButton
-            color="secondary"
-            icon={faTimes}
-            text="Close"
-            onClick={cancel}
-          />
-        </CModalFooter>
-      </CModal>
+        <CoreDataTable tableData={[user]} columns={userColumns} usePagination={false} />
+      </BaseModal>
     )
   )
 }

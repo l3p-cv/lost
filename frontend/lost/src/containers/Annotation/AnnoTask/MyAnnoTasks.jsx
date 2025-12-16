@@ -10,7 +10,14 @@ import {
   CProgress,
   CRow,
 } from '@coreui/react'
-import { faChartBar, faCheck, faPencil, faTimes } from '@fortawesome/free-solid-svg-icons'
+import {
+  faChartBar,
+  faCheck,
+  faFilter,
+  faPencil,
+  faTimes,
+  faTrash,
+} from '@fortawesome/free-solid-svg-icons'
 import { createColumnHelper } from '@tanstack/react-table'
 import { useCallback, useEffect, useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -25,6 +32,7 @@ import CoreDataTable from '../../../components/CoreDataTable'
 import CoreIconButton from '../../../components/CoreIconButton'
 import ErrorBoundary from '../../../components/ErrorBoundary'
 import InfoText from '../../../components/InfoText'
+import BaseModal from '../../../components/BaseModal'
 
 const { getAnnoTaskStatistic } = actions
 
@@ -218,39 +226,25 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
   }
 
   const renderStatisticModal = () => (
-    <CModal
-      visible={modalIsOpen}
-      onClose={() => {
+    <BaseModal
+      isOpen={modalIsOpen}
+      title="Statistics"
+      isShowCancelButton={true}
+      onClosed={() => {
         if (modalIsOpen) {
           closeModal()
         }
       }}
-      ariaHideApp={false}
-      contentLabel="Logfile"
+      toggle={() => {
+        if (modalIsOpen) {
+          closeModal()
+        }
+      }}
     >
       <CCard style={{ height: '90%' }}>
-        <CCardHeader>
-          <i className="icon-chart"></i> Statistics
-        </CCardHeader>
         <CCardBody style={{ height: '100%' }}>{renderStatistic()}</CCardBody>
       </CCard>
-      <CModalFooter>
-        <CRow>
-          <CCol>
-            <CoreIconButton
-              color="secondary"
-              icon={faTimes}
-              text="Close"
-              onClick={() => {
-                if (modalIsOpen) {
-                  closeModal()
-                }
-              }}
-            />
-          </CCol>
-        </CRow>
-      </CModalFooter>
-    </CModal>
+    </BaseModal>
   )
 
   const defineColumns = () => {
@@ -426,7 +420,7 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
                     isOutline={true}
                     style={{ marginLeft: 20 }}
                     text="Reset filter"
-                    icon={<FaTrashAlt />}
+                    icon={faTrash}
                   />
                   <CoreIconButton
                     onClick={() => applyFilter()}
@@ -434,7 +428,7 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
                     isOutline={true}
                     style={{ marginLeft: 20 }}
                     text="Apply filter"
-                    icon={<FaFilter />}
+                    icon={faFilter}
                   />
                 </CButtonToolbar>
                 <CButtonToolbar

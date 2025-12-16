@@ -11,19 +11,16 @@ import {
 } from '../../actions/inference-model/model-api'
 import {
   CButton,
-  CCol,
   CForm,
   CFormInput,
   CFormLabel,
   CFormSelect,
   CInputGroup,
-  CModal,
-  CModalBody,
-  CModalFooter,
-  CModalHeader,
   CRow,
 } from '@coreui/react'
 import CoreIconButton from '../../components/CoreIconButton'
+import BaseModal from '../../components/BaseModal'
+import { faSave } from '@fortawesome/free-solid-svg-icons'
 
 type ModelModalProps = {
   isOpen: boolean
@@ -151,115 +148,106 @@ export const InferenceModalConfigModal: React.FC<ModelModalProps> = ({
   const submitting = createMutation.isLoading || updateMutation.isLoading
 
   return (
-    <CModal
-      visible={isOpen}
-      onClose={() => {
-        if (isOpen) {
-          toggle()
-        }
+    <BaseModal
+      asForm={true}
+      isShowCancelButton
+      title={isEditMode ? 'Edit Inference Model' : 'Add Inference Model'}
+      isOpen={isOpen}
+      toggle={() => toggle()}
+      onSubmit={handleSubmit}
+      onClosed={() => {
+        isOpen = false
       }}
+      footer={
+        <CoreIconButton
+          color="success"
+          type="submit"
+          icon={faSave}
+          // disabled={submitting || !isFormValid()}
+          text={submitting ? 'Saving...' : isEditMode ? 'Update' : 'Create'}
+        />
+      }
     >
-      <CModalHeader>
-        {isEditMode ? 'Edit Inference Model' : 'Add Inference Model'}
-      </CModalHeader>
-      <CForm onSubmit={handleSubmit}>
-        <CModalBody>
-          <CFormLabel>Triton Server URL (gRPC)</CFormLabel>
-          <CInputGroup>
-            <CFormInput
-              name="serverUrl"
-              value={formData.serverUrl}
-              onChange={handleInputChange}
-              placeholder="gRPC URL"
-              required
-            />
-
-            {isValidGrpcUrl(formData.serverUrl) && (
-              <CButton
-                onClick={handleFetchModels}
-                disabled={isFetching}
-                style={{ height: '100%' }}
-                color="primary"
-              >
-                {isFetching ? 'Fetching...' : 'Fetch Models'}
-              </CButton>
-            )}
-          </CInputGroup>
-          <CRow>
-            {!isValidGrpcUrl(formData.serverUrl) && (
-              <small className="text-danger">Enter a valid gRPC URL</small>
-            )}
-          </CRow>
-
-          {modelsFetched && modelOptions.length > 0 && (
-            <>
-              <CFormLabel>Model</CFormLabel>
-              <CInputGroup>
-                <CFormSelect
-                  options={modelOptions}
-                  // @ts-expect-error using custom form data
-                  onChange={handleModelSelect}
-                  value={modelOptions.find((opt) => opt.value === formData.name)}
-                  placeholder="Select a model"
-                />
-              </CInputGroup>
-            </>
-          )}
-          <CFormLabel>Display Name</CFormLabel>
-          <CInputGroup>
-            <CFormInput
-              name="displayName"
-              value={formData.displayName}
-              onChange={handleInputChange}
-              placeholder="Display Name"
-            />
-          </CInputGroup>
-          <CFormLabel>Task Type</CFormLabel>
-          <CInputGroup>
-            <CFormSelect
-              options={taskTypeOptions}
-              value={taskTypeOptions.find((opt) => opt.value === formData.taskType)}
-              // @ts-expect-error using custom form data
-              onChange={handleSelectChange<number>('taskType')}
-            />
-          </CInputGroup>
-          <CFormLabel>Model Type</CFormLabel>
-          <CInputGroup>
-            <CFormSelect
-              options={modelTypeOptions}
-              value={modelTypeOptions.find((opt) => opt.value === formData.modelType)}
-              // @ts-expect-error using custom form data
-              onChange={handleSelectChange<string>('modelType')}
-            />
-          </CInputGroup>
-
-          <CFormLabel>Description</CFormLabel>
-          <CInputGroup>
-            <CFormInput
-              type="textarea"
-              name="description"
-              value={formData.description}
-              onChange={handleInputChange}
-            />
-          </CInputGroup>
-        </CModalBody>
-
-        <CModalFooter>
-          <CoreIconButton
-            color="primary"
-            onClick={toggle}
-            disabled={submitting}
-            text={'Cancel'}
+      <CForm>
+        <CFormLabel>Triton Server URL (gRPC)</CFormLabel>
+        <CInputGroup>
+          <CFormInput
+            name="serverUrl"
+            value={formData.serverUrl}
+            onChange={handleInputChange}
+            placeholder="gRPC URL"
+            required
           />
-          <CButton
-            color="primary"
-            type="submit"
-            // disabled={submitting || !isFormValid()}
-          >
-            {submitting ? 'Saving...' : isEditMode ? 'Update' : 'Create'}
-          </CButton>
-        </CModalFooter>
+
+          {isValidGrpcUrl(formData.serverUrl) && (
+            <CButton
+              onClick={handleFetchModels}
+              disabled={isFetching}
+              style={{ height: '100%' }}
+              color="primary"
+            >
+              {isFetching ? 'Fetching...' : 'Fetch Models'}
+            </CButton>
+          )}
+        </CInputGroup>
+        <CRow>
+          {!isValidGrpcUrl(formData.serverUrl) && (
+            <small className="text-danger">Enter a valid gRPC URL</small>
+          )}
+        </CRow>
+
+        {modelsFetched && modelOptions.length > 0 && (
+          <>
+            <CFormLabel>Model</CFormLabel>
+            <CInputGroup>
+              <CFormSelect
+                options={modelOptions}
+                // @ts-expect-error using custom form data
+                onChange={handleModelSelect}
+                value={modelOptions.find((opt) => opt.value === formData.name)}
+                placeholder="Select a model"
+              />
+            </CInputGroup>
+          </>
+        )}
+        <CFormLabel>Display Name</CFormLabel>
+        <CInputGroup>
+          <CFormInput
+            name="displayName"
+            value={formData.displayName}
+            onChange={handleInputChange}
+            placeholder="Display Name"
+          />
+        </CInputGroup>
+        <CFormLabel>Task Type</CFormLabel>
+        <CInputGroup>
+          <CFormSelect
+            options={taskTypeOptions}
+            value={taskTypeOptions.find((opt) => opt.value === formData.taskType)}
+            // @ts-expect-error using custom form data
+            onChange={handleSelectChange<number>('taskType')}
+          />
+        </CInputGroup>
+        <CFormLabel>Model Type</CFormLabel>
+        <CInputGroup>
+          <CFormSelect
+            options={modelTypeOptions}
+            value={modelTypeOptions.find((opt) => opt.value === formData.modelType)}
+            // @ts-expect-error using custom form data
+            onChange={handleSelectChange<string>('modelType')}
+          />
+        </CInputGroup>
+
+        <CFormLabel>Description</CFormLabel>
+        <CInputGroup>
+          <CFormInput
+            type="textarea"
+            name="description"
+            value={formData.description}
+            onChange={handleInputChange}
+          />
+        </CInputGroup>
       </CForm>
-    </CModal>
+    </BaseModal>
   )
 }
