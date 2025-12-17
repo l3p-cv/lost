@@ -6,30 +6,16 @@ import { initReactI18next } from 'react-i18next'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { Provider } from 'react-redux'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import deTranslation from './assets/locales/de'
-import enTranslation from './assets/locales/en'
+import deTranslation from './assets/locales/de.json'
+import enTranslation from './assets/locales/en.json'
 import { CenteredSpinner } from './components/CenteredSpinner'
 import { LostConfigProvider } from './contexts/LostConfigContext'
 import { API_URL } from './lost_settings'
 import './scss/style.scss'
 import { store } from './store'
 import { flatObj } from './utils'
-const queryClient = new QueryClient()
 
-// Containers
-const IS_DEV = true
-const VITE_BACKEND_PORT = 80
-let apiUrl = ''
-let socketUrl = ''
-if (IS_DEV) {
-  apiUrl = `${globalThis.location.origin.replace(/:\d+?$/, '')}:${VITE_BACKEND_PORT}/api`
-  socketUrl = `${globalThis.location.origin.replace(/:\d+?$/, '')}:${VITE_BACKEND_PORT}`
-} else {
-  apiUrl = `${globalThis.location.origin}/api`
-  socketUrl = `${globalThis.location.origin}`
-}
-globalThis.API_URL = apiUrl
-globalThis.SOCKET_URL = socketUrl
+const queryClient = new QueryClient()
 const resources = {
   en: {
     translation: flatObj(enTranslation),
@@ -38,6 +24,7 @@ const resources = {
     translation: flatObj(deTranslation),
   },
 }
+
 i18n
   .use(initReactI18next) // passes i18n down to react-i18next
   .init({
