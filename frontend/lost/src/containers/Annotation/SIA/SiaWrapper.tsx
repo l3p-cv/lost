@@ -5,6 +5,7 @@ import type {
   ImageLabelData,
   ImageSwitchData,
   SiaResponse,
+  ImageEditData,
 } from '../../../actions/sia/sia_api'
 import {
   useGetSiaImage,
@@ -18,6 +19,7 @@ import type {
   Point,
   PolygonOperationResult,
   SIANotification,
+  TimeTravelChanges,
   ToolCoordinates,
 } from 'lost-sia'
 
@@ -863,6 +865,56 @@ const SiaWrapper = ({
     }
   }
 
+  const handleTimeTravel = (timeTravelChanges: TimeTravelChanges) => {
+    if (annoData === undefined) return
+
+    const currentImageData = annoData.image
+    const imageEditData: ImageEditData = {
+      imgId: currentImageData.id,
+      imgActions: currentImageData.imgActions,
+      annoTime: currentImageData.annoTime,
+    }
+
+    // handle added annotations
+    for (const annotation of timeTravelChanges.addedAnnotations) {
+      const newAnnotation: Annotation = {
+        ...annotation,
+        status: AnnotationStatus.CREATING, // mark as new so the anno is created at the server
+      }
+      const annotationInOldFormat: LegacyAnnotation =
+        legacyHelper.convertAnnoToOldFormat(newAnnotation)
+
+      const changes: EditAnnotationData = {
+        annoTaskId,
+        annotation: annotationInOldFormat,
+        imageEditData,
+      }
+      sendCreateAnnotation(changes)
+    }
+
+    // handle deleted annotations
+    for (const annotation of timeTravelChanges.removedAnnotations) {
+      const annotationInOldFormat = legacyHelper.convertAnnoToOldFormat(annotation)
+      const deleteAnnotationData: EditAnnotationData = {
+        annoTaskId,
+        annotation: annotationInOldFormat,
+        imageEditData,
+      }
+      sendDeleteAnnotation(deleteAnnotationData)
+    }
+
+    // handle changed annotations
+    for (const annotation of timeTravelChanges.changedAnnotations) {
+      const annotationInOldFormat = legacyHelper.convertAnnoToOldFormat(annotation)
+      const editAnnotationData: EditAnnotationData = {
+        annoTaskId,
+        annotation: annotationInOldFormat,
+        imageEditData,
+      }
+      sendEditAnnotation(editAnnotationData)
+    }
+  }
+
   useEffect(() => {
     if (polygonDiffReponse === undefined) return
     handlePolygonOperationResponse(polygonDiffReponse)
@@ -1058,6 +1110,7 @@ const SiaWrapper = ({
           onIsImageJunk={junkImage}
           onNotification={handleNotification}
           onSelectAnnotation={handleSelectAnnotation}
+          onTimeTravel={handleTimeTravel}
         />
       </div>
     </>

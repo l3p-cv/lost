@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { useMutation, UseMutationResult, useQuery, UseQueryResult } from 'react-query'
 import { API_URL } from '../../lost_settings'
 import { Label } from 'lost-sia'
@@ -10,9 +10,21 @@ import {
 
 export type SiaApi = {
   useGetPossibleLabels: (annoTaskId: number) => UseQueryResult
-  useCreateAnnotation: () => UseMutationResult
-  useEditAnnotation: () => UseMutationResult
-  useDeleteAnnotation: () => UseMutationResult
+  useCreateAnnotation: () => UseMutationResult<
+    EditAnnotationResponse,
+    AxiosError,
+    EditAnnotationData
+  >
+  useEditAnnotation: () => UseMutationResult<
+    EditAnnotationResponse,
+    AxiosError,
+    EditAnnotationData
+  >
+  useDeleteAnnotation: () => UseMutationResult<
+    EditAnnotationResponse,
+    AxiosError,
+    EditAnnotationData
+  >
   useUpdateImageLabel: () => UseMutationResult
 }
 
@@ -103,7 +115,7 @@ export const useGetSiaImage = (imageRequestData: SiaImageRequest) => {
     ['getsiaimage', imageRequestData],
     () =>
       axios
-        .post(`${API_URL}/sia/image/${imageRequestData!.imageId}/filters`, {
+        .post(`${API_URL}/sia/image/${imageRequestData.imageId}/filters`, {
           filters: imageRequestData.appliedFilters,
         })
         .then((res) => res.data)
@@ -155,17 +167,19 @@ export const useCreateAnnotation = () => {
 }
 
 export const useEditAnnotation = () => {
-  return useMutation(({ annotation, imageEditData }: EditAnnotationData) => {
-    const requestData = {
-      action: 'annoEdited',
-      anno: annotation,
-      img: imageEditData,
-    }
+  return useMutation<EditAnnotationResponse, AxiosError, EditAnnotationData>(
+    ({ annotation, imageEditData }: EditAnnotationData) => {
+      const requestData = {
+        action: 'annoEdited',
+        anno: annotation,
+        img: imageEditData,
+      }
 
-    return axios
-      .patch(API_URL + `/sia`, requestData)
-      .then((res): EditAnnotationResponse => res.data)
-  })
+      return axios
+        .patch(API_URL + `/sia`, requestData)
+        .then((res): EditAnnotationResponse => res.data)
+    },
+  )
 }
 
 export const useDeleteAnnotation = () => {
