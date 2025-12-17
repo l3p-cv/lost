@@ -54,6 +54,7 @@ export const TemplateView = () => {
         )
       }
     }
+
     if (node.type === 'annoTaskNode') {
       setTimeout(() => {
         const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true'

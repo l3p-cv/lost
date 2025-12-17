@@ -183,57 +183,55 @@ export const DatasourceModal = ({
 
   return (
     //TODO: make sure it opens with the first click every time
-    <>
-      <CModal
-        size="lg"
-        onShow={verifyNode}
-        visible={isOpen}
-        onClose={() => {
-          if (isOpen) {
-            toggle()
-          }
-          verifyNode()
-        }}
-      >
-        <CModalHeader>Datasource</CModalHeader>
-        <CModalBody>
-          <div>
-            <div id="datasource-dropdown-container">{datasourceDropDown()}</div>
-            <LDivider text={'File Browser'} className="fw-bold fs-5"></LDivider>
-            <div id="file-browser-container">
-              <LostFileBrowser
-                fs={selectedFs}
-                onPathSelected={(path) => selectItem(path)}
-                initPath={initPath}
-              />
-            </div>
-            <LDivider text={'Selected Datasource'} className="fw-bold fs-5"></LDivider>
-            <CBadge color={selectedPathColor} id="selected-datasource-path">
-              <FontAwesomeIcon icon={faFolderOpen} /> {selectedPath}
-            </CBadge>
+    <CModal
+      size="lg"
+      onShow={verifyNode}
+      visible={isOpen}
+      onClose={() => {
+        if (isOpen) {
+          toggle()
+        }
+        verifyNode()
+      }}
+    >
+      <CModalHeader>Datasource</CModalHeader>
+      <CModalBody>
+        <div>
+          <div id="datasource-dropdown-container">{datasourceDropDown()}</div>
+          <LDivider text={'File Browser'} className="fw-bold fs-5"></LDivider>
+          <div id="file-browser-container">
+            <LostFileBrowser
+              fs={selectedFs}
+              onPathSelected={(path) => selectItem(path)}
+              initPath={initPath}
+            />
           </div>
-        </CModalBody>
-        <CModalFooter>
-          <CButton
-            color="primary"
-            onClick={() => {
-              toggle()
-              window.dispatchEvent(
-                new CustomEvent('joyride-next-step', {
-                  detail: { step: 'done-clicked' },
-                }),
-              )
-            }}
-            id="done-button"
-            disabled={
-              localStorage.getItem('joyrideRunning') === 'true' &&
-              (!selectedPath || selectedPath === DEFAULT_TEXT_PATH)
-            }
-          >
-            Done
-          </CButton>
-        </CModalFooter>
-      </CModal>
-    </>
+          <LDivider text={'Selected Datasource'} className="fw-bold fs-5"></LDivider>
+          <CBadge color={selectedPathColor} id="selected-datasource-path">
+            <FontAwesomeIcon icon={faFolderOpen} /> {selectedPath}
+          </CBadge>
+        </div>
+      </CModalBody>
+      <CModalFooter>
+        <CButton
+          color="primary"
+          onClick={() => {
+            toggle()
+            window.dispatchEvent(
+              new CustomEvent('joyride-next-step', {
+                detail: { step: 'done-clicked' },
+              }),
+            )
+          }}
+          id="done-button"
+          disabled={
+            localStorage.getItem('joyrideRunning') === 'true' &&
+            (!selectedPath || selectedPath === DEFAULT_TEXT_PATH)
+          }
+        >
+          Done
+        </CButton>
+      </CModalFooter>
+    </CModal>
   )
 }

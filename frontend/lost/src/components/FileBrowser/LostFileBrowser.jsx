@@ -8,7 +8,7 @@ import {
   FileNavbar,
   FileToolbar,
   setChonkyDefaults,
-} from 'chonky'
+} from 'chonky2'
 import { ChonkyIconFA } from 'chonky-icon-fontawesome'
 import { useEffect, useMemo, useState } from 'react'
 import { useDropzone } from 'react-dropzone'

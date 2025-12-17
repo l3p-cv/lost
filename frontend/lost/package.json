@@ -22,7 +22,7 @@
     "@tanstack/react-table": "^8.21.3",
     "@xyflow/react": "^12.6.4",
     "axios": "^1.9.0",
-    "chonky": "^2.3.2",
+    "chonky2": "^6.5.8",
     "chonky-icon-fontawesome": "2.3.2",
     "file-saver": "^2.0.5",
     "i18next": "^25.7.2",
