@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [unreleased] - 
 ### Changed
 - Updated React to 19.2.1 (major update from v18)
+- Switched chonky filebrowser to chonky2 (chonky is not maintained anymore)
 - Reworked authentication + inactivity warning
 ### Added
 - Added SIA time travel (undo/redo changes using ctrl + z/y)
