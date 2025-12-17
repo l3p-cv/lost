@@ -1,43 +1,51 @@
 import React from 'react'
-import HelpButton from '../../../../components/HelpButton'
+import { CFormInput } from '@coreui/react'
+import InfoText from '../../../../components/InfoText'
+import { createColumnHelper } from '@tanstack/react-table'
+import CoreDataTable from '../../../../components/CoreDataTable'
 
-const ArgumentsTable = (props) => {
-  if (props.data) {
-    return (
-      <div style={{ marginLeft: 15, marginRight: 15 }}>
-        <table className="table table-bordered">
-          <thead>
-            <tr>
-              <th>Key</th>
-              <th>Value</th>
-            </tr>
-          </thead>
-          <tbody>
-            {Object.keys(props.data).map((key) => {
-              return (
-                <tr key={key}>
-                  <th>
-                    {key} <HelpButton id={key} text={props.data[key].help} />
-                  </th>
-                  <td>
-                    <input
-                      onInput={props.onInput}
-                      className="form-control"
-                      data-ref={key}
-                      defaultValue={props.data[key].value}
-                      disabled={props.onInput ? '' : 'disabled'}
-                    />
-                  </td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
-      </div>
-    )
-  } else {
-    return <></>
-  }
+const ArgumentsTable = ({ data, onInput }) => {
+  const columnHelper = createColumnHelper()
+
+  const tableData = React.useMemo(
+    () =>
+      Object.entries(data).map(([key, value]) => ({
+        key,
+        value: value.value,
+        help: value.help,
+      })),
+    [data],
+  )
+
+  const columns = React.useMemo(
+    () => [
+      columnHelper.accessor('key', {
+        header: 'Key',
+        cell: ({ row }) => (
+          <InfoText
+            id={row.original.key}
+            text={row.original.key}
+            toolTip={row.original.help}
+          />
+        ),
+      }),
+
+      columnHelper.accessor('value', {
+        header: 'Value',
+        cell: ({ row }) => (
+          <CFormInput
+            size="sm"
+            defaultValue={row.original.value}
+            data-ref={row.original.key}
+            onInput={onInput} // or onBlur if you want even fewer events
+          />
+        ),
+      }),
+    ],
+    [onInput],
+  )
+
+  return <CoreDataTable tableData={tableData} columns={columns} usePagination={false} />
 }
 
 export default ArgumentsTable

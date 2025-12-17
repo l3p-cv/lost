@@ -1,94 +1,116 @@
-import { faCircle, faEye, faInfoCircle } from '@fortawesome/free-solid-svg-icons'
+import { faCircle, faEye } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
 import * as Notification from '../../../../../components/Notification'
-import CollapseCard from '../../../globalComponents/modals/CollapseCard'
-import Table from '../../../globalComponents/modals/Table'
 import AnnoTaskTabs from './AnnoTaskModalUtils/AnnoTaskTabs'
-import { CModalBody, CModalHeader } from '@coreui/react'
+import { CCol, CRow } from '@coreui/react'
 import CoreIconButton from '../../../../../components/CoreIconButton'
+import BaseModal from '../../../../../components/BaseModal'
+import CoreDataTable from '../../../../../components/CoreDataTable'
+import { createColumnHelper } from '@tanstack/react-table'
 
-function handleSiaRewiewClick(props, callback) {
-  props.siaReviewSetElement(props.id)
-  props.chooseAnnoTask(props.annoTask.id, callback)
-}
+const AnnoTaskModal = ({
+  modalOpened,
+  annoTask,
+  id,
+  state,
+  changeUser,
+  chooseAnnoTask,
+  siaReviewSetElement,
+  forceAnnotationRelease,
+  onClose,
+}) => {
+  function handleSiaRewiewClick(callback) {
+    siaReviewSetElement(id)
+    chooseAnnoTask(annoTask.id, callback)
+  }
 
-function annotationReleaseSuccessful() {
-  Notification.showSuccess('Annotations were successfully released.')
-}
+  function annotationReleaseSuccessful() {
+    Notification.showSuccess('Annotations were successfully released.')
+  }
 
-function handleForceAnnotationRelease(props) {
-  props.forceAnnotationRelease(props.annoTask.id, annotationReleaseSuccessful)
-}
-
-const AnnoTaskModal = (props) => {
+  function handleForceAnnotationRelease() {
+    forceAnnotationRelease(annoTask.id, annotationReleaseSuccessful)
+  }
   const navigate = useNavigate()
 
+  const columnHelper = createColumnHelper()
+  const columns = [
+    columnHelper.accessor('taskName', {
+      header: () => 'Attribute',
+      cell: ({ row }) => {
+        return <b>{`${row.original.key}:`}</b>
+      },
+    }),
+    columnHelper.accessor('taskName', {
+      header: () => 'Value',
+      cell: ({ row }) => {
+        return <>{row.original.value}</>
+      },
+    }),
+  ]
+
   return (
-    <>
-      <CModalHeader>Annotation Task</CModalHeader>
-      <CModalBody>
-        <Table
-          style={{ marginBottom: '20px' }}
-          data={[
-            {
-              key: 'Annotation Task Name',
-              value: props.annoTask.name,
-            },
-            {
-              key: 'Pipe Element ID',
-              value: props.id,
-            },
-          ]}
-        />
-        <CollapseCard icon={faInfoCircle}>
-          <Table
-            data={[
-              {
-                key: 'Annotation Task ID',
-                value: props.annoTask.id,
-              },
-              {
-                key: 'Type',
-                value: props.annoTask.type,
-              },
-              {
-                key: 'Status',
-                value: props.state,
-              },
-            ]}
+    <BaseModal title="Annotation Task" isOpen={modalOpened} size="lg" onClosed={onClose}>
+      <CoreDataTable
+        rowHeight="35px"
+        tableData={[
+          {
+            key: 'Annotation Task Name',
+            value: annoTask.name,
+          },
+          {
+            key: 'Annotation Task ID',
+            value: annoTask.id,
+          },
+          {
+            key: 'Pipe Element ID',
+            value: id,
+          },
+          {
+            key: 'Type',
+            value: annoTask.type,
+          },
+          {
+            key: 'Status',
+            value: state,
+          },
+        ]}
+        columns={columns}
+        usePagination={false}
+      />
+      <hr />
+      <AnnoTaskTabs
+        annotask={annoTask}
+        changeUser={changeUser}
+        datasetList={[]}
+        datastoreList={[]}
+        hasChangeUser={true}
+        hasShowLabels={true}
+        hasAdaptConfiguration={true}
+      />
+      <CRow className="justify-content-end">
+        <CCol sm="auto">
+          <CoreIconButton
+            icon={faEye}
+            color="primary"
+            style={{ marginLeft: 10, marginTop: 20, marginBottom: '1rem' }}
+            onClick={(e) =>
+              handleSiaRewiewClick(() => {
+                navigate(`/annotasks/${annoTask.id}/review`)
+              })
+            }
+            text="Review Annotations"
           />
-        </CollapseCard>
-        <div></div>
-        <AnnoTaskTabs
-          annotask={props.annoTask}
-          changeUser={props.changeUser}
-          datasetList={[]}
-          datastoreList={[]}
-          hasChangeUser={true}
-          hasShowLabels={true}
-          hasAdaptConfiguration={true}
-        ></AnnoTaskTabs>
-        <hr></hr>
-        <CoreIconButton
-          icon={faEye}
-          color="primary"
-          style={{ marginLeft: 10, marginTop: 20, marginBottom: '1rem' }}
-          onClick={(e) =>
-            handleSiaRewiewClick(props, () => {
-              navigate(`/annotasks/${props.annoTask.id}/review`)
-            })
-          }
-          text="Review Annotations"
-        />
-        <CoreIconButton
-          icon={faCircle}
-          color="danger"
-          style={{ marginLeft: 10, marginTop: 20, marginBottom: '1rem' }}
-          onClick={(e) => handleForceAnnotationRelease(props)}
-          text="Force Annotation Release"
-        />
-      </CModalBody>
-    </>
+          <CoreIconButton
+            icon={faCircle}
+            color="danger"
+            style={{ marginLeft: 10, marginTop: 20, marginBottom: '1rem' }}
+            onClick={(e) => handleForceAnnotationRelease()}
+            text="Force Annotation Release"
+          />
+        </CCol>
+      </CRow>
+    </BaseModal>
   )
 }
 

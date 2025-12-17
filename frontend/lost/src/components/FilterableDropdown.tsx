@@ -6,8 +6,6 @@ import {
   CFormInput,
   CDropdownToggle,
 } from '@coreui/react'
-import { faCaretDown } from '@fortawesome/free-solid-svg-icons'
-import CoreIconButton from './CoreIconButton'
 
 export type FilterItem = {
   key: number

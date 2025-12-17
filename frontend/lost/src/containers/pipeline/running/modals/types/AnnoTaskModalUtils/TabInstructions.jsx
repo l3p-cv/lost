@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react'
 import { faEye } from '@fortawesome/free-solid-svg-icons'
 import ViewInstruction from '../../../../../../containers/Instruction/ViewInstruction'
 import CoreIconButton from '../../../../../../components/CoreIconButton'
+import InfoText from '../../../../../../components/InfoText'
 
 const TabInstructions = ({ annotask, updateAnnotask }) => {
   const { instructionId } = annotask
@@ -122,11 +123,13 @@ const TabInstructions = ({ annotask, updateAnnotask }) => {
   return (
     <CRow className="justify-content-center">
       <CCol sm="6" style={{ position: 'relative' }}>
-        {/* TODO: underline and make hover tooltip; new component */}
-        <span className="py-1 fs-6 text-muted fw-bold">Instructions &nbsp;</span>
-        <HelpButton
+        <InfoText
+          text={'Instructions'}
+          toolTip={
+            'Give instructions / hints to your annotators so they know what to do.'
+          }
           id="anno-start-desc"
-          text="Give instructions / hints to your annotators so they know what to do."
+          style={{ fontSize: 20, marginBottom: '15px' }}
         />
 
         {isLoading ? (
@@ -168,7 +171,6 @@ const TabInstructions = ({ annotask, updateAnnotask }) => {
             color="primary"
             onClick={handleSave}
             disabled={isSaving || isSelectLoading}
-            // size="sm"
             style={{ flex: 1 }}
             text={isSaving ? 'Saving...' : 'Save Instruction'}
           />
@@ -182,7 +184,6 @@ const TabInstructions = ({ annotask, updateAnnotask }) => {
                 : 'View Instruction'
             }
             style={{ flex: 1 }}
-            // size="sm"
             disabled={instructionId == null || isSelectLoading}
           />
         </div>

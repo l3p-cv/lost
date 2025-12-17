@@ -30,6 +30,8 @@ import {
   CModalFooter,
   CModalHeader,
 } from '@coreui/react'
+import BaseModal from '../../../components/BaseModal'
+import InfoText from '../../../components/InfoText'
 
 const downloadJSON = (obj, fileName = 'data.json') => {
   const jsonString = JSON.stringify(obj, null, 2)
@@ -81,7 +83,6 @@ const Toolbar = (props) => {
         toggle={toggleLogfileModal}
         pipelineId={props.data?.id}
       />
-      {/* TODO: add tooltips */}
       <CoreIconButton
         className="pipeline-running-toolbar-button"
         onClick={() => {
@@ -145,58 +146,55 @@ const Toolbar = (props) => {
             id="pipeline-button-delete-pipeline"
             onClick={deletePipelineHandler}
             color="danger"
-            outline={true}
             size="lg"
             icon={faTrash}
             loadingSize="2x"
             toolTip="Delete Pipeline"
           />
           <GrayLine />
-          <CModal visible={modal} onClose={toggleModal} className={props.className}>
-            <CModalHeader>Regenerate Pipeline</CModalHeader>
-            <CModalBody>
-              <CForm>
-                <CFormLabel>Pipeline Name</CFormLabel>
-                &nbsp;
-                <HelpButton
-                  id={'pipeline-start-name'}
-                  text={'Give your pipeline a name so that you can identify it later.'}
-                />
-                <CInputGroup>
-                  <CFormInput
-                    defaultValue={name}
-                    onChange={(e) => setName(e.target.value)}
-                    type="text"
-                  />
-                </CInputGroup>
-                <CFormLabel>Pipeline Description</CFormLabel>
-                &nbsp;
-                <HelpButton
-                  id={'pipeline-start-desc'}
-                  text={
-                    'Give your pipeline a description so that you still know later what you started it for.'
-                  }
-                />
-                <CInputGroup>
-                  <CFormInput
-                    defaultValue={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    type="text"
-                  />
-                </CInputGroup>
-              </CForm>
-            </CModalBody>
-            <CModalFooter>
+          <BaseModal
+            size="lg"
+            isOpen={modal}
+            onClosed={toggleModal}
+            className={props.className}
+            title="Regenerate Pipeline"
+            footer={
               <CoreIconButton
-                isOutline={false}
-                color="primary"
-                disabled={description === undefined || name === undefined}
+                color="success"
+                disabled={description === '' || name === ''}
                 icon={faRedo}
                 text="Regenerate"
                 onClick={regeneratePipelineHandler}
               />
-            </CModalFooter>
-          </CModal>
+            }
+          >
+            <CForm>
+              <InfoText
+                text={'Pipeline Name'}
+                toolTip={'Give your pipeline a name so that you can identify it later.'}
+                style={{ fontSize: 20, marginBottom: '10px' }}
+                id={'pipeline-start-name'}
+              />
+              <CFormInput
+                defaultValue={name}
+                onChange={(e) => setName(e.target.value)}
+                type="text"
+              />
+              <InfoText
+                text={'Pipeline Description'}
+                toolTip={
+                  'Give your pipeline a description so that you still know later what you started it for.'
+                }
+                id={'pipeline-start-desc'}
+                style={{ fontSize: 20, marginBottom: '10px', marginTop: '20px' }}
+              />
+              <CFormInput
+                defaultValue={description}
+                onChange={(e) => setDescription(e.target.value)}
+                type="text"
+              />
+            </CForm>
+          </BaseModal>
         </>
       )}
     </div>

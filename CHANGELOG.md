@@ -40,6 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added spinner to CoreDataTable, for when data ist still loading (and gave it isLoading from all of its usages)
 - Added InfoText component, to streamline tooltips and texts
 - Option overrideDisabledColor added to CoreIconButton
+- BaseModal has onShow() option now
 ### Changed
 - Replaced all usages of reactstrap and semantic-ui with CoreUI components and/or generic solutions 
 - moved quick_setup.py into main directory
@@ -67,6 +68,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Began replacement of old Infobutton component
 - Began conversion of .jsx-Files to .tsx-Files (TableHeader, SelectFileButton)
 - Used component BaseModal whenever applicable + converted to .tsx
+- Rewrote pipeline modals (UI streamline; all except LoopModal and DataExportModal)
 ### Fixed
 - Removed centered spinner of CoreDataTable, when faced with empty data, to not block the rest of the page
 - Fixed execution of DBPatcher at wrong place on start up

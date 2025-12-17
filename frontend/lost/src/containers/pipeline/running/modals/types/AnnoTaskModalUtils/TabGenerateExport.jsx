@@ -387,18 +387,15 @@ const TabGenerateExport = ({ annotaskId, imgCount, annotatedImgCount, setActive 
                       />
                     </CCol>
                     <CCol>
-                      <b
-                        style={{
-                          marginLeft: '20px',
-                        }}
-                      >
-                        Export to Datastore
-                        <HelpButton
+                      <Infotext
                           id="store-to-datastore"
-                          text={`If this setting is active, 
-                                the exported file will be saved on the selected datastore instead of this LOST instance.`}
-                        />
-                      </b>
+                          text="Export to Datastore"
+                          tooltip="If this setting is active, 
+                                the exported file will be saved on the selected datastore instead of this LOST instance."
+                          style={{
+                          marginLeft: '20px',
+                          fontSize: 20
+                        }}/>
                     </CCol>
                   </CRow>
                 </CCol>

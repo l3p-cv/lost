@@ -18,6 +18,7 @@ type BaseModalProps = {
   fullscreen?: boolean
   asForm?: boolean
   onSubmit?: (e: React.FormEvent<HTMLFormElement>) => void
+  onShow?: () => void
 }
 
 const BaseModal: React.FC<BaseModalProps> = ({
@@ -36,6 +37,7 @@ const BaseModal: React.FC<BaseModalProps> = ({
   fullscreen = false,
   asForm = false,
   onSubmit = () => {},
+  onShow = () => {},
 }) => {
   const Wrapper = asForm ? 'form' : 'div'
   const renderTitle = () => {
@@ -83,6 +85,7 @@ const BaseModal: React.FC<BaseModalProps> = ({
   }
   return (
     <CModal
+      onShow={onShow}
       id={id}
       size={size}
       visible={isOpen}

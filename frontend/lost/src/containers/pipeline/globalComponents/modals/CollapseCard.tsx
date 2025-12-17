@@ -1,17 +1,32 @@
 import { CButton, CCollapse } from '@coreui/react'
-import { faAngleDown, faAngleUp, faInfo } from '@fortawesome/free-solid-svg-icons'
+import {
+  faAngleDown,
+  faAngleUp,
+  faInfo,
+  IconDefinition,
+} from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useState } from 'react'
+
+type CollapseCustomProps = {
+  initOpen?: boolean
+  btnOutline?: 'outline' | 'ghost' | ''
+  btnColor?: string
+  icon?: IconDefinition
+  iconColor?: string
+  buttonText?: null | string
+  children?: React.ReactNode
+}
 
 const CollapseCustom = ({
   initOpen = false,
   btnOutline = '',
-  btnColor = 'secondary',
+  btnColor = 'primary',
   icon = faInfo,
-  iconColor = '#00294B',
+  iconColor = '', // '#00294B',
   buttonText = 'More Information',
   children,
-}) => {
+}: CollapseCustomProps) => {
   const [collapse, setCollapse] = useState(initOpen)
 
   const toggle = () => setCollapse(!collapse)

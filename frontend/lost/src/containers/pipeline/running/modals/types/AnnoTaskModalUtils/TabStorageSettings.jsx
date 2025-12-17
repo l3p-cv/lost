@@ -3,10 +3,10 @@ import { faBoxesPacking } from '@fortawesome/free-solid-svg-icons'
 import { useEffect, useState } from 'react'
 import * as annoTaskApi from '../../../../../../actions/annoTask/anno_task_api'
 import * as datasetApi from '../../../../../../actions/dataset/dataset_api'
-import HelpButton from '../../../../../../components/HelpButton'
 import { showSuccess } from '../../../../../../components/Notification'
 import DatasetEditModal from '../../../../../Datasets/DatasetEditModal'
 import CoreIconButton from '../../../../../../components/CoreIconButton'
+import InfoText from '../../../../../../components/InfoText'
 
 const NOTIFICATION_TIMEOUT_MS = 5000
 
@@ -102,15 +102,14 @@ const TabStorageSettings = ({ annotaskId }) => {
     <>
       <CContainer>
         <CRow style={{ marginLeft: '5px' }}>
-          <CCol sm="6">
+          <CCol sm="12">
             <CRow xs={{ gutterY: 3 }}>
               {/* <CCol sm="12">
-                            <h4>
-                                Destination Datastore
-                                <HelpButton
-                                    text={`Select the datastore where the annotations are saved after the pipeline has finished.`}
-                                />
-                            </h4>
+                            <InfoText
+                              text={'Destination Datastore'}
+                              toolTip={'Select the datastore where the annotations are saved after the pipeline has finished'}
+                              style={{ fontSize: 20, marginBottom: '15px' }}
+                            />
                             <CRow>
                                 <CCol>
                                     <Dropdown
@@ -129,12 +128,11 @@ const TabStorageSettings = ({ annotaskId }) => {
                             </CRow>
                         </CCol> */}
               <CCol sm="12">
-                <h4>
-                  Dataset
-                  <HelpButton
-                    text={`Select the dataset where the annotations are linked to.`}
-                  />
-                </h4>
+                <InfoText
+                  text={'Dataset'}
+                  toolTip={'Select the dataset where the annotations are linked to'}
+                  style={{ fontSize: 20, marginBottom: '15px' }}
+                />
                 <CRow>
                   <CCol>
                     <CFormSelect
@@ -163,8 +161,8 @@ const TabStorageSettings = ({ annotaskId }) => {
                     ></CFormSelect>
                   </CCol>
                 </CRow>
-                <CRow>
-                  <CCol>
+                <CRow className="justify-content-end">
+                  <CCol sm="auto" className="align-self-end">
                     <CoreIconButton
                       color="primary"
                       icon={faBoxesPacking}

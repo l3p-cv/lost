@@ -3,92 +3,116 @@ import { useState } from 'react'
 import { useUpdatePipelineArguments } from '../../../../../actions/pipeline/pipeline_api'
 import CollapseCard from '../../../globalComponents/modals/CollapseCard'
 import ArgumentsTable from '../../../globalComponents/modals/ScriptArgumentsTable'
-import Table from '../../../globalComponents/modals/Table'
-import { CModalBody, CModalHeader, CProgress } from '@coreui/react'
+import { CCol, CProgress, CRow } from '@coreui/react'
 import CoreIconButton from '../../../../../components/CoreIconButton'
+import BaseModal from '../../../../../components/BaseModal'
+import { createColumnHelper } from '@tanstack/react-table'
+import CoreDataTable from '../../../../../components/CoreDataTable'
+import React from 'react'
+import { useEffect } from 'react'
 
-const ScriptModal = (props) => {
-  const [scriptArguments, setScriptArguments] = useState(props.script.arguments)
-  const progress = props.script.progress
+const ScriptModal = ({ script, id, state, modalOpened, onClose }) => {
+  const [commitVersion, setCommitVersion] = useState(0)
+  const [scriptArguments, setScriptArguments] = useState(script.arguments)
+
+  const progress = script.progress
+  const draftArgumentsRef = React.useRef({})
 
   const { mutate: updatePipelineArguments } = useUpdatePipelineArguments()
+
+  useEffect(() => {
+    setScriptArguments(script.arguments)
+  }, [script.arguments])
 
   const argumentsOnInput = (e) => {
     const key = e.target.getAttribute('data-ref')
     const value = e.target.value
-    setScriptArguments({
-      ...scriptArguments,
-      [key]: {
-        ...scriptArguments[key],
-        value,
-      },
-    })
+    // Store draft ONLY, no state update
+    draftArgumentsRef.current[key] = value
   }
 
+  const buildUpdatedArguments = () => {
+    const updated = { ...scriptArguments }
+
+    Object.entries(draftArgumentsRef.current).forEach(([key, value]) => {
+      updated[key] = {
+        ...updated[key],
+        value,
+      }
+    })
+
+    return updated
+  }
+
+  const onUpdateArguments = () => {
+    const updated = buildUpdatedArguments()
+
+    updatePipelineArguments({
+      elementId: id,
+      updatedArguments: updated,
+    })
+
+    setScriptArguments(updated)
+    draftArgumentsRef.current = {}
+    setCommitVersion((v) => v + 1)
+  }
+
+  const tData = [
+    ['Script Name:', script.name],
+    ['Description:', script.description],
+    ['Pipe Element ID:', id],
+    ['Script ID:', script.id],
+    ['Path:', script.path],
+    ['Status:', state],
+    ['Error Message:', script.errorMsg, { color: 'red' }],
+  ].map(([key, value, valueStyle]) => ({
+    key,
+    value,
+    valueStyle,
+  }))
+
+  const columnHelper = createColumnHelper()
+  const columns = [
+    columnHelper.accessor('taskName', {
+      header: () => 'Attribute',
+      cell: ({ row }) => {
+        return <b>{row.original.key}</b>
+      },
+    }),
+    columnHelper.accessor('taskName', {
+      header: () => 'Value',
+      cell: ({ row }) => {
+        return <>{row.original.value}</>
+      },
+    }),
+  ]
+
   return (
-    <>
-      <CModalHeader>Script</CModalHeader>
-      <CModalBody>
-        <Table
-          data={[
-            {
-              key: 'Script Name',
-              value: props.script.name,
-            },
-            {
-              key: 'Description',
-              value: props.script.description,
-            },
-            {
-              key: 'Pipe Element ID',
-              value: props.id,
-            },
-          ]}
-        />
-        <CProgress color="info" value={progress}>
-          {progress}
-        </CProgress>
-        <CollapseCard>
-          <Table
-            data={[
-              {
-                key: 'Script ID',
-                value: props.script.id,
-              },
-              {
-                key: 'Path',
-                value: props.script.path,
-              },
-              {
-                key: 'Status',
-                value: props.state,
-              },
-              {
-                key: 'Error Message',
-                value: props.script.errorMsg,
-                valueStyle: { color: 'red' },
-              },
-            ]}
-          />
-          <ArgumentsTable
-            showUpdateButton
-            data={scriptArguments}
-            onInput={argumentsOnInput}
-          />
-          <CoreIconButton
-            color="primary"
-            icon={faCloudUploadAlt}
-            text="Update Arguments"
-            onClick={() =>
-              updatePipelineArguments({
-                elementId: props.id,
-                updatedArguments: scriptArguments,
-              })
-            }
-          />
-        </CollapseCard>
-      </CModalBody>
-    </>
+    <BaseModal
+      title="Script"
+      isOpen={modalOpened}
+      onClosed={onClose}
+      isShowCancelButton
+      toggle={onClose}
+    >
+      <CoreDataTable tableData={tData} usePagination={false} columns={columns} />
+      <CProgress color="info" value={progress}>
+        {progress}
+      </CProgress>
+      <CollapseCard>
+        <ArgumentsTable data={scriptArguments} onInput={argumentsOnInput} />
+        <CRow className="justify-content-end">
+          <CCol sm="auto">
+            <CoreIconButton
+              color="primary"
+              icon={faCloudUploadAlt}
+              text="Update Arguments"
+              onClick={onUpdateArguments}
+            />
+          </CCol>
+        </CRow>
+      </CollapseCard>
+    </BaseModal>
   )
 }
 

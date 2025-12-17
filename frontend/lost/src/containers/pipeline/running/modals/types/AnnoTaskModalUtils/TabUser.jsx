@@ -1,11 +1,11 @@
 import { createColumnHelper } from '@tanstack/react-table'
 import { useGroups } from '../../../../../../actions/group/group-api'
 import { useAnnoTaskUser } from '../../../../../../actions/user/user_api'
-import { CenteredSpinner } from '../../../../../../components/CenteredSpinner'
 import CoreDataTable from '../../../../../../components/CoreDataTable'
 import { alertSuccess } from '../../../../globalComponents/Sweetalert'
 import InfoText from '../../../../../../components/InfoText'
 import CoreIconButton from '../../../../../../components/CoreIconButton'
+import { useMemo } from 'react'
 
 const selectUsers = (usersData) => {
   return usersData.users.map((user) => ({
@@ -33,10 +33,6 @@ const TabUser = ({ annotaskId, annotaskUser, changeUser }) => {
 
   function handleChangeUser(groupId) {
     changeUser(annotaskId, groupId, changeUserSuccessful)
-  }
-
-  if (isUsersLoading || isGroupsLoading) {
-    return <CenteredSpinner />
   }
 
   const columnHelper = createColumnHelper()
@@ -77,11 +73,17 @@ const TabUser = ({ annotaskId, annotaskUser, changeUser }) => {
       },
     }),
   ]
-
+  const tableData = useMemo(() => {
+    return users && groups ? [...users, ...groups] : []
+  }, [users, groups])
   return (
     <>
       {users && groups ? (
-        <CoreDataTable tableData={[...users, ...groups]} columns={columns} />
+        <CoreDataTable
+          tableData={tableData}
+          columns={columns}
+          isLoading={isUsersLoading || isGroupsLoading}
+        />
       ) : (
         ''
       )}

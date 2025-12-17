@@ -13,20 +13,45 @@ const { siaReviewSetElement, chooseAnnoTask, forceAnnotationRelease, changeUser 
   actionsAll
 
 const BaseModal = (props) => {
+  const onClose = (opened) => {
+    if (opened) {
+      props.toggleModal()
+    }
+  }
   const selectModal = () => {
     if (props.data && props.modalOpened) {
       if ('datasource' in props.data) {
-        return <DatasourceModal {...props.data} />
+        return (
+          <DatasourceModal
+            id={props.data.id}
+            modalOpened={true}
+            state={props.data.state}
+            datasource={props.data.datasource}
+            onClose={() => onClose(props.modalOpened)}
+          />
+        )
       } else if ('script' in props.data) {
-        return <ScriptModal {...props.data} />
+        return (
+          <ScriptModal
+            script={props.data.script}
+            id={props.data.id}
+            modalOpened={true}
+            state={props.data.state}
+            onClose={() => onClose(props.modalOpened)}
+          />
+        )
       } else if ('annoTask' in props.data) {
         return (
           <AnnoTaskModal
+            id={props.data.id}
+            modalOpened={true}
+            state={props.data.state}
+            annoTask={props.data.annoTask}
             siaReviewSetElement={props.siaReviewSetElement}
             chooseAnnoTask={props.chooseAnnoTask}
             forceAnnotationRelease={props.forceAnnotationRelease}
             changeUser={props.changeUser}
-            {...props.data}
+            onClose={() => onClose(props.modalOpened)}
           />
         )
       } else if ('dataExport' in props.data) {
@@ -38,7 +63,11 @@ const BaseModal = (props) => {
   }
 
   const renderModals = () => {
-    return (
+    return 'annoTask' in props.data ||
+      'script' in props.data ||
+      'datasource' in props.data ? (
+      selectModal()
+    ) : (
       <CModal
         size="lg"
         visible={props.modalOpened}
