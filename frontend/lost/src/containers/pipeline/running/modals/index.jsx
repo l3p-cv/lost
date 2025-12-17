@@ -63,9 +63,9 @@ const BaseModal = (props) => {
   }
 
   const renderModals = () => {
-    return 'annoTask' in props.data ||
-      'script' in props.data ||
-      'datasource' in props.data ? (
+    return 'annoTask' in props?.data ||
+      'script' in props?.data ||
+      'datasource' in props?.data ? (
       selectModal()
     ) : (
       <CModal
@@ -90,7 +90,9 @@ const BaseModal = (props) => {
     )
   }
 
-  return <div>{renderModals()}</div>
+  if (props.data) {
+    return <div>{renderModals()}</div>
+  }
 }
 
 export default connect(null, {
