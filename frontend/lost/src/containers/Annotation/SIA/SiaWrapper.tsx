@@ -894,7 +894,20 @@ const SiaWrapper = ({
 
     // handle deleted annotations
     for (const annotation of timeTravelChanges.removedAnnotations) {
-      const annotationInOldFormat = legacyHelper.convertAnnoToOldFormat(annotation)
+      // search the mapping if annotation has no external id
+      // annotations that are deleted right after they were created
+      if (annotation.externalId == '') {
+        const externalAnnoId = annotationIdMapping[annotation.internalId]
+        if (externalAnnoId) annotation.externalId = externalAnnoId
+      }
+
+      // set status to deleted (server ignores deletion reuquest otherwise)
+      const deletedAnnotation = {
+        ...annotation,
+        status: AnnotationStatus.DELETED,
+      }
+
+      const annotationInOldFormat = legacyHelper.convertAnnoToOldFormat(deletedAnnotation)
       const deleteAnnotationData: EditAnnotationData = {
         annoTaskId,
         annotation: annotationInOldFormat,
