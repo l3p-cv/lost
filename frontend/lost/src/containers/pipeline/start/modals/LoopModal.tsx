@@ -1,8 +1,9 @@
 import { useNodesData, useReactFlow } from '@xyflow/react'
 import { useCallback } from 'react'
-import { CFormInput, CModal, CModalBody, CModalHeader } from '@coreui/react'
-import Table from '../../globalComponents/modals/Table'
+import { CCol, CFormInput, CRow } from '@coreui/react'
 import { LoopNodeData } from '../nodes'
+import BaseModal from '../../../../components/BaseModal'
+import InfoText from '../../../../components/InfoText'
 
 interface LoopModalProps {
   nodeId: string
@@ -29,40 +30,35 @@ export const LoopModal = ({ nodeId, isOpen, toggle }: LoopModalProps) => {
   )
 
   return (
-    <>
-      <CModal
-        size="lg"
-        visible={isOpen}
-        onClose={() => {
-          if (isOpen) {
-            toggle()
-          }
-        }}
-      >
-        <CModalHeader>Loop</CModalHeader>
-        <CModalBody>
-          <Table
-            data={[
-              {
-                key: 'Max Iteration',
-                value:
-                  typeof loopNodeData.maxIteration === 'number' ? (
-                    <CFormInput
-                      min={-1}
-                      onInput={onInput}
-                      defaultValue={loopNodeData.maxIteration}
-                      placeholder="Amount"
-                      type="number"
-                      step="1"
-                    />
-                  ) : (
-                    'Infinity'
-                  ),
-              },
-            ]}
-          />
-        </CModalBody>
-      </CModal>
-    </>
+    <BaseModal
+      isOpen={isOpen}
+      onClosed={() => {
+        if (isOpen) {
+          toggle()
+        }
+      }}
+      title="Loop"
+      size="lg"
+    >
+      <CRow style={{ marginLeft: '15px' }}>
+        <CCol sm="3" className="align-self-center">
+          <InfoText text={'Max Iteration: '} style={{ fontSize: 20 }} />
+        </CCol>
+        <CCol>
+          {typeof loopNodeData.maxIteration === 'number' ? (
+            <CFormInput
+              min={-1}
+              onInput={onInput}
+              defaultValue={loopNodeData.maxIteration}
+              placeholder="Amount"
+              type="number"
+              step="1"
+            />
+          ) : (
+            <b>'Infinity'</b>
+          )}
+        </CCol>
+      </CRow>
+    </BaseModal>
   )
 }

@@ -1,49 +1,61 @@
-import Table from '../../../globalComponents/modals/Table'
-import { CModalBody, CModalHeader } from '@coreui/react'
+import { createColumnHelper } from '@tanstack/react-table'
+import BaseModal from '../../../../../components/BaseModal'
+import CoreDataTable from '../../../../../components/CoreDataTable'
 
-const LoopModal = (props) => {
+const LoopModal = ({ id, loop, state, modalOpened, onClose }) => {
+  const columnHelper = createColumnHelper()
+  const columns = [
+    columnHelper.accessor('taskName', {
+      header: () => 'Attribute',
+      cell: ({ row }) => {
+        return <b>{`${row.original.key}:`}</b>
+      },
+    }),
+    columnHelper.accessor('taskName', {
+      header: () => 'Value',
+      cell: ({ row }) => {
+        return <>{row.original.value}</>
+      },
+    }),
+  ]
+  const tData = [
+    {
+      key: 'Element ID',
+      value: id,
+    },
+    {
+      key: 'Loop ID',
+      value: loop.id,
+    },
+    {
+      key: 'Breakloop',
+      value: String(loop.isBreakLoop),
+    },
+    {
+      key: 'Iteration',
+      value: loop.iteration,
+    },
+    {
+      key: 'Max Iteration',
+      value:
+        typeof loop.maxIteration === 'number' && loop.maxIteration > -1
+          ? loop.maxIteration
+          : 'Infinity',
+    },
+    {
+      key: 'Jump ID',
+      value: loop.peJumpId,
+    },
+    {
+      key: 'Status',
+      value: state,
+    },
+  ]
+
   return (
-    <>
-      <CModalHeader>Loop Modal</CModalHeader>
-      <CModalBody>
-        <Table
-          data={[
-            {
-              key: 'Element ID',
-              value: props.id,
-            },
-            {
-              key: 'Loop ID',
-              value: props.loop.id,
-            },
-            {
-              key: 'Breakloop',
-              value: String(props.loop.isBreakLoop),
-            },
-            {
-              key: 'Iteration',
-              value: props.loop.iteration,
-            },
-            {
-              key: 'Max Iteration',
-              value:
-                typeof props.loop.maxIteration === 'number' &&
-                props.loop.maxIteration > -1
-                  ? props.loop.maxIteration
-                  : 'Infinity',
-            },
-            {
-              key: 'Jump ID',
-              value: props.loop.peJumpId,
-            },
-            {
-              key: 'Status',
-              value: props.state,
-            },
-          ]}
-        />
-      </CModalBody>
-    </>
+    <BaseModal title="Loop Modal" isOpen={modalOpened} onClosed={onClose}>
+      <CoreDataTable tableData={tData} columns={columns} usePagination={false} />
+    </BaseModal>
   )
 }
 
