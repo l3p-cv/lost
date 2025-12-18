@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import {
   faPlus,
-  faTimes,
   faUpload,
   faEarth,
   faFileZipper,
@@ -11,10 +10,10 @@ import { useDropzone } from 'react-dropzone'
 import { CRow, CCol, CForm, CFormInput } from '@coreui/react'
 import * as pipelinedProjectsApi from '../../actions/pipeline/pipeline_projects_api'
 import * as Notification from '../../components/Notification'
-import HelpButton from '../../components/HelpButton'
 import CollapseCard from '../../containers/pipeline/globalComponents/modals/CollapseCard'
 import CoreIconButton from '../../components/CoreIconButton'
 import TableHeader from '../../components/TableHeader'
+import InfoText from '../../components/InfoText'
 const AddPipelineProject = ({ visLevel, projectNames = [], refetch }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -221,6 +220,10 @@ const AddPipelineProject = ({ visLevel, projectNames = [], refetch }) => {
                       </b>
                     </aside>
                   </section>
+                </CCol>
+              </CRow>
+              <CRow className="mt-3 justify-content-end">
+                <CCol sm="auto">
                   <CoreIconButton
                     style={{
                       marginLeft: '5px',
@@ -244,6 +247,16 @@ const AddPipelineProject = ({ visLevel, projectNames = [], refetch }) => {
                 <CCol sm="12">
                   <CForm>
                     <CRow>
+                      <CCol md={2} className="align-self-center">
+                        <InfoText
+                          text="Git Url:"
+                          toolTip={`Enter a git url to a public git repository that 
+                                                contains the LOST pipeline project. `}
+                          style={{ fontSize: 20 }}
+                          id="url"
+                          tTipPlacement="right"
+                        />
+                      </CCol>
                       <CCol md={6}>
                         <CFormInput
                           type="text"
@@ -252,18 +265,18 @@ const AddPipelineProject = ({ visLevel, projectNames = [], refetch }) => {
                           onChange={(e) => setGitUrl(e.currentTarget.value)}
                         />
                       </CCol>
-                      <CCol md={6}>
-                        <span style={{ verticalAlign: 'middle' }}>
-                          <b>Git Url</b>
-                        </span>
-                        <HelpButton
-                          id="url"
-                          text={`Enter a git url to a public git repository that 
-                                                contains the LOST pipeline project. `}
-                        />
-                      </CCol>
                     </CRow>
                     <CRow className="mt-3">
+                      <CCol md={2} className="align-self-center">
+                        <InfoText
+                          text="Git Branch:"
+                          toolTip={`Specify a branch or tag name of the Git repository to checkout on import to this branch or tag. 
+                                            If no branch is specified, "main" is used by default. `}
+                          style={{ fontSize: 20 }}
+                          id="branch"
+                          tTipPlacement="right"
+                        />
+                      </CCol>
                       <CCol md={6}>
                         <CFormInput
                           type="text"
@@ -272,21 +285,10 @@ const AddPipelineProject = ({ visLevel, projectNames = [], refetch }) => {
                           onChange={(e) => setGitBranch(e.currentTarget.value)}
                         />
                       </CCol>
-                      <CCol md={6}>
-                        <span style={{ verticalAlign: 'middle' }}>
-                          <b>Git Branch</b>
-                        </span>
-
-                        <HelpButton
-                          id="branch"
-                          text={`Specify a branch or tag name of the Git repository to checkout on import to this branch or tag. 
-                                            If no branch is specified, "main" is used by default. `}
-                        />
-                      </CCol>
                     </CRow>
 
-                    <CRow className="mt-3">
-                      <CCol>
+                    <CRow className="mt-3 justify-content-end">
+                      <CCol md="auto">
                         <CoreIconButton
                           color="primary"
                           disabled={gitUrl === undefined}

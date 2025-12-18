@@ -10,8 +10,11 @@ import InfoText from '../../../../../../components/InfoText'
 
 const NOTIFICATION_TIMEOUT_MS = 5000
 
-// const TabStorageSettings = ({ datastoreList }) => {
-const TabStorageSettings = ({ annotaskId }) => {
+type TabStorageSettingsProps = {
+  annotaskId: number | string
+}
+
+const TabStorageSettings = ({ annotaskId }: TabStorageSettingsProps) => {
   const { data: flatDatasetList, refetch: reloadFlatDatasetList } =
     datasetApi.useFlatDatasets()
   const { data: storageSettings, refetch: getStorageSettings } =
@@ -19,25 +22,9 @@ const TabStorageSettings = ({ annotaskId }) => {
   const { data: updateStorageSettingsResponse, mutate: updateStorageSettings } =
     annoTaskApi.useUpdateStorageSettings()
 
-  // const [datastoreDropdownOptions, setDatastoreDropdownOptions] = useState([])
   const [datasetDropdownOptions, setDatasetDropdownOptions] = useState([])
-
-  // const [selectedDatastoreID, setSelectedDatastoreID] = useState("0")
   const [selectedDatasetID, setSelectedDatasetID] = useState()
   const [isCreateDatasetModalOpen, setIsCreateDatasetModalOpen] = useState(false)
-
-  // convert the datasource list (id: name) to a list compatible to the Dropdown options
-  // const converDatasourcesToDropdownOptions = (datastores) => {
-  //     const options = []
-  //     Object.keys(datastores).forEach((datasourceID) => {
-  //         options.push({
-  //             key: datasourceID,
-  //             value: datasourceID,
-  //             text: datastores[datasourceID]
-  //         })
-  //     })
-  //     setDatastoreDropdownOptions(options)
-  // }
 
   const convertDatasetToDropdownOptions = (datasets) => {
     const options = [
@@ -71,10 +58,6 @@ const TabStorageSettings = ({ annotaskId }) => {
     setSelectedDatasetID(datasetId)
   }, [storageSettings])
 
-  // useEffect(() => {
-  //     converDatasourcesToDropdownOptions(datastoreList)
-  // }, [datastoreList])
-
   useEffect(() => {
     convertDatasetToDropdownOptions(flatDatasetList)
   }, [flatDatasetList])
@@ -104,29 +87,6 @@ const TabStorageSettings = ({ annotaskId }) => {
         <CRow style={{ marginLeft: '5px' }}>
           <CCol sm="12">
             <CRow xs={{ gutterY: 3 }}>
-              {/* <CCol sm="12">
-                            <InfoText
-                              text={'Destination Datastore'}
-                              toolTip={'Select the datastore where the annotations are saved after the pipeline has finished'}
-                              style={{ fontSize: 20, marginBottom: '15px' }}
-                            />
-                            <CRow>
-                                <CCol>
-                                    <Dropdown
-                                        placeholder='Select Datastore'
-                                        fluid
-                                        search
-                                        selection
-                                        multiple={false}
-                                        options={datastoreDropdownOptions}
-                                        value={selectedDatastoreID}
-                                        onChange={(_, data) => {
-                                            setSelectedDatastoreID(data.value)
-                                        }}
-                                    />
-                                </CCol>
-                            </CRow>
-                        </CCol> */}
               <CCol sm="12">
                 <InfoText
                   text={'Dataset'}

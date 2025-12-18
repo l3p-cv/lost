@@ -22,6 +22,16 @@ import TabStorageSettings from './TabStorageSettings'
 import TabUser from './TabUser'
 import TabInstructions from './TabInstructions'
 
+type AnnoTaskTabsProps = {
+  annotask: {}
+  changeUser: () => void
+  hasChangeUser: boolean
+  hasShowLabels: boolean
+  hasAdaptConfiguration: boolean
+  active: number
+  setActive: () => void
+}
+
 const AnnoTaskTabs = ({
   annotask,
   changeUser,
@@ -32,7 +42,7 @@ const AnnoTaskTabs = ({
   hasAdaptConfiguration = true,
   active = 0,
   setActive,
-}) => {
+}: AnnoTaskTabsProps) => {
   // const [active, setActive] = useState(0) // now given from the parent
   const [internalActive, internalSetActive] = useState(0)
   const effectiveActive = setActive ? active : internalActive

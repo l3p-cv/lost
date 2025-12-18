@@ -18,7 +18,19 @@ import * as Notification from '../../../../../../components/Notification'
 import CoreIconButton from '../../../../../../components/CoreIconButton'
 import InfoText from '../../../../../../components/InfoText'
 
-const TabGenerateExport = ({ annotaskId, imgCount, annotatedImgCount, setActive }) => {
+type TabGenerateExportProps = {
+  annotaskId: number | string
+  imgCount: number
+  annotatedImgCount: number
+  setActive: (arg1: number) => void
+}
+
+const TabGenerateExport = ({
+  annotaskId,
+  imgCount,
+  annotatedImgCount,
+  setActive,
+}: TabGenerateExportProps) => {
   const {
     data: annoTaskExportData,
     mutate: generateExport,
@@ -404,15 +416,17 @@ const TabGenerateExport = ({ annotaskId, imgCount, annotatedImgCount, setActive 
           </CRow>
         </CCol>
       </CRow>
-      <CRow className="justify-content-center">
-        <CoreIconButton
-          disabled={newExport.exportName === ''}
-          color="primary"
-          onClick={() => onGenerateExport()}
-          icon={faPlay}
-          text="Generate export"
-          style={{ marginTop: '40px', maxWidth: '175px' }}
-        />
+      <CRow className="justify-content-end">
+        <CCol sm="auto">
+          <CoreIconButton
+            disabled={newExport.exportName === ''}
+            color="primary"
+            onClick={() => onGenerateExport()}
+            icon={faPlay}
+            text="Generate export"
+            style={{ marginTop: '40px', maxWidth: '175px' }}
+          />
+        </CCol>
       </CRow>
     </CContainer>
   )

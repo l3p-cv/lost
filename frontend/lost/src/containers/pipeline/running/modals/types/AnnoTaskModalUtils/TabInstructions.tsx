@@ -1,7 +1,6 @@
-import { CCol, CRow, CButton, CSpinner, CBadge } from '@coreui/react'
-import HelpButton from '../../../../../../components/HelpButton'
+import { CCol, CRow, CSpinner, CBadge } from '@coreui/react'
 import { showSuccess, showError } from '../../../../../../components/Notification'
-import { useGetInstructions } from '../../../../../../containers/Instruction/instruction_api'
+import { useGetInstructions } from '../../../../../Instruction/instruction_api'
 import {
   useUpdateInstruction,
   useGetCurrentInstruction,
@@ -9,11 +8,16 @@ import {
 import Select from 'react-select'
 import { useEffect, useState } from 'react'
 import { faEye } from '@fortawesome/free-solid-svg-icons'
-import ViewInstruction from '../../../../../../containers/Instruction/ViewInstruction'
+import ViewInstruction from '../../../../../Instruction/ViewInstruction'
 import CoreIconButton from '../../../../../../components/CoreIconButton'
 import InfoText from '../../../../../../components/InfoText'
 
-const TabInstructions = ({ annotask, updateAnnotask }) => {
+type TabInstructionsProps = {
+  annotask: { id: number | string; instructionId: number | string }
+  updateAnnotask: (arg1: any) => void
+}
+
+const TabInstructions = ({ annotask, updateAnnotask }: TabInstructionsProps) => {
   const { instructionId } = annotask
 
   const {

@@ -68,7 +68,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Began replacement of old Infobutton component
 - Began conversion of .jsx-Files to .tsx-Files (TableHeader, SelectFileButton)
 - Used component BaseModal whenever applicable + converted to .tsx
-- Rewrote pipeline modals (UI streamline; all except LoopModal and DataExportModal)
+- Rewrote pipeline modals (UI streamline) and changed them to typescript
 ### Fixed
 - Removed centered spinner of CoreDataTable, when faced with empty data, to not block the rest of the page
 - Fixed execution of DBPatcher at wrong place on start up

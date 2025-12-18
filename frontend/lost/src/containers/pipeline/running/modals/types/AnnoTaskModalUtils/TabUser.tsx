@@ -23,7 +23,13 @@ const selectGroups = (groupsData) => {
   }))
 }
 
-const TabUser = ({ annotaskId, annotaskUser, changeUser }) => {
+type TabUserProps = {
+  annotaskId: number | string
+  annotaskUser: string
+  changeUser: (arg1: number | string, arg2: number | string, arg3: () => void) => void
+}
+
+const TabUser = ({ annotaskId, annotaskUser, changeUser }: TabUserProps) => {
   const { data: users, isLoading: isUsersLoading } = useAnnoTaskUser(selectUsers)
   const { data: groups, isLoading: isGroupsLoading } = useGroups(selectGroups)
 
