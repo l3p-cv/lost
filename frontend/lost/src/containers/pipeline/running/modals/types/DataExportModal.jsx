@@ -2,12 +2,12 @@ import { faDownload } from '@fortawesome/free-solid-svg-icons'
 import { saveAs } from 'file-saver'
 
 import { API_URL } from '../../../../../lost_settings'
-import { CModalBody, CModalHeader } from '@coreui/react'
 import { createColumnHelper } from '@tanstack/react-table'
 import CoreDataTable from '../../../../../components/CoreDataTable'
 import CoreIconButton from '../../../../../components/CoreIconButton'
+import BaseModal from '../../../../../components/BaseModal'
 
-const DataExportModal = ({ dataExport }) => {
+const DataExportModal = ({ dataExport, modalOpen, onClose }) => {
   const downloadFile = (de_id, fileName) => {
     fetch(`${API_URL}/data/export/${de_id}`, {
       method: 'GET',
@@ -49,12 +49,9 @@ const DataExportModal = ({ dataExport }) => {
   ]
 
   return (
-    <>
-      <CModalHeader>Data Export</CModalHeader>
-      <CModalBody>
-        <CoreDataTable tableData={dataExport} columns={columns} />
-      </CModalBody>
-    </>
+    <BaseModal title="Data Export" isOpen={modalOpen} onClosed={onClose}>
+      <CoreDataTable tableData={dataExport} columns={columns} />
+    </BaseModal>
   )
 }
 
