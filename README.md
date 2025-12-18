@@ -83,7 +83,7 @@ LOST releases are hosted on DockerHub and shipped in Containers. For a quick set
 4. Run quick_setup script:
 
     ```bash
-    python3 quick_setup.py /path/to/install/lost --release 3.0.0-alpha.2
+    python3 quick_setup.py /path/to/install/lost --release 3.0.0
     ```
 
 5. Run LOST:  
