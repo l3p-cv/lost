@@ -8,8 +8,6 @@ const PageSizeNavigator = ({
   setTargetPage,
   setPaginationState = () => {},
   possiblePageSizes = [10, 20, 50, 100],
-  buttonWidth,
-  minButtonWidth,
   wide = true,
 }) => {
   const handleSubmit = (value) => {

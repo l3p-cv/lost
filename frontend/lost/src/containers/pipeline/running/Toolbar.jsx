@@ -4,7 +4,6 @@ import {
   faPlay,
   faRedo,
   faStickyNote,
-  faTimes,
   faTrash,
 } from '@fortawesome/free-solid-svg-icons'
 import saveAs from 'file-saver'
@@ -15,21 +14,11 @@ import {
   usePausePipeline,
   usePlayPipeline,
 } from '../../../actions/pipeline/pipeline_api'
-import HelpButton from '../../../components/HelpButton'
 import GrayLine from '../globalComponents/GrayLine'
 import { alertDeletePipeline } from '../globalComponents/Sweetalert'
 import { PipelineLogModal } from './PipelineLogModal'
 import CoreIconButton from '../../../components/CoreIconButton'
-import {
-  CForm,
-  CFormInput,
-  CFormLabel,
-  CInputGroup,
-  CModal,
-  CModalBody,
-  CModalFooter,
-  CModalHeader,
-} from '@coreui/react'
+import { CForm, CFormInput } from '@coreui/react'
 import BaseModal from '../../../components/BaseModal'
 import InfoText from '../../../components/InfoText'
 

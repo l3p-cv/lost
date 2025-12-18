@@ -7,7 +7,6 @@ import {
   useModels,
 } from '../../../../../../actions/inference-model/model-api'
 import { CenteredSpinner } from '../../../../../../components/CenteredSpinner'
-import HelpButton from '../../../../../../components/HelpButton'
 import { AnnoTaskNodeData } from '../../../nodes'
 import InfoText from '../../../../../../components/InfoText'
 

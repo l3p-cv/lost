@@ -21,7 +21,6 @@ function CoreDataTable({
   pageSize = 10,
   rowHeight = '55px',
   onPaginationChange = () => {},
-  onColumnFiltersChange = () => {},
   pageIndex = 0,
   wholeData = true,
   paginationLarge = true,
@@ -29,8 +28,6 @@ function CoreDataTable({
   setExpanded = undefined,
   getRowClassName = () => '',
 }) {
-  const [columnFilters, setColumnFilters] = useState([])
-  const [doRerender, setDoRerender] = useState(false)
   const [paginationState, setPaginationState] = useState(() => ({
     pageIndex: pageIndex,
     pageSize,

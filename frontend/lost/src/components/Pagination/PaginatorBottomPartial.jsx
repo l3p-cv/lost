@@ -28,15 +28,12 @@ const PaginatorBottomPartial = ({
   ])
 
   const [targetPage, setTargetPage] = useState(paginationState.pageIndex + 1)
-  let buttonFontsize = '1rem'
   let buttonWidth = '100%'
   let minButtonWidth = '200px'
   let nextText = 'Next'
   let prevText = 'Previous'
 
   if (!large) {
-    // buttonFontsize = "0.8rem"
-    // buttonWidth = "50%"
     minButtonWidth = '100px'
     nextText = ''
     prevText = ''

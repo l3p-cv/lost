@@ -26,15 +26,11 @@ const PaginatorBottomWhole = ({
   ])
 
   const [targetPage, setTargetPage] = useState(table.getState().pagination.pageIndex + 1)
-  let buttonFontsize = '1rem'
-  // let buttonWidth = "100%"
   let minButtonWidth = '200px'
   let nextText = 'Next'
   let prevText = 'Previous'
 
   if (!large) {
-    // buttonFontsize = "0.8rem"
-    // buttonWidth = "50%"
     minButtonWidth = '100px'
     nextText = ''
     prevText = ''
@@ -156,9 +152,7 @@ const PaginatorBottomWhole = ({
             totalPages={totalPages}
             targetPage={targetPage}
             setTargetPage={setTargetPage}
-            // setPaginationState={setPaginationState}
             possiblePageSizes={possiblePageSizes}
-            // buttonWidth={buttonWidth}
             minButtonWidth={minButtonWidth}
             wide={large}
           />

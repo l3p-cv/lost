@@ -9,7 +9,6 @@ import {
   CRow,
 } from '@coreui/react'
 import { useNodesData, useReactFlow } from '@xyflow/react'
-import HelpButton from '../../../../../../components/HelpButton'
 import { AnnoTaskNodeData } from '../../../nodes'
 import InfoText from '../../../../../../components/InfoText'
 

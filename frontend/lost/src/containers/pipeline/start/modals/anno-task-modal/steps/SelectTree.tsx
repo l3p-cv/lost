@@ -2,7 +2,6 @@ import { CCol, CRow } from '@coreui/react'
 import { useNodesData, useReactFlow } from '@xyflow/react'
 import Select from 'react-select'
 import { AvailableLabelTree } from '../../../../../../actions/pipeline/model/pipeline-template-response'
-import HelpButton from '../../../../../../components/HelpButton'
 import { AnnoTaskNodeData } from '../../../nodes'
 import InfoText from '../../../../../../components/InfoText'
 

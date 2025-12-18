@@ -1,6 +1,18 @@
 import PaginatorBottomPartial from './PaginatorBottomPartial'
 import PaginatorBottomWhole from './PaginatorBottomWhole'
 
+type PaginationWrapperProps = {
+  table
+  pageSize: number
+  paginationState: { pageSize: number; pagieIndex: number }
+  visible: boolean
+  totalPages: number
+  wholeData: boolean
+  pageCount: number
+  large: boolean
+  setPaginationState: (arg1: number) => void
+}
+
 const PaginationWrapper = ({
   table,
   pageSize,
@@ -11,7 +23,7 @@ const PaginationWrapper = ({
   wholeData = true,
   pageCount = undefined,
   large = true,
-}) => {
+}: PaginationWrapperProps) => {
   if (wholeData) {
     return (
       <PaginatorBottomWhole
