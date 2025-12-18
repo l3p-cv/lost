@@ -1,4 +1,3 @@
-import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { connect } from 'react-redux'
 import actionsAll from '../../../../actions'
 import AnnoTaskModal from './types/AnnoTaskModal'
@@ -6,8 +5,6 @@ import DataExportModal from './types/DataExportModal'
 import DatasourceModal from './types/DatasourceModal'
 import LoopModal from './types/LoopModal'
 import ScriptModal from './types/ScriptModal'
-import { CModal, CModalFooter } from '@coreui/react'
-import CoreIconButton from '../../../../components/CoreIconButton'
 
 const { siaReviewSetElement, chooseAnnoTask, forceAnnotationRelease, changeUser } =
   actionsAll
@@ -55,43 +52,29 @@ const BaseModal = (props) => {
           />
         )
       } else if ('dataExport' in props.data) {
-        return <DataExportModal {...props.data} />
+        return (
+          <DataExportModal
+            dataExport={{ ...props.data }}
+            onClose={() => onClose(props.modalOpened)}
+            modalOpened={true}
+          />
+        )
       } else if ('loop' in props.data) {
-        return <LoopModal {...props.data} />
+        return (
+          <LoopModal
+            modalOpened={true}
+            onClose={() => onClose(props.modalOpened)}
+            id={props.data.id}
+            state={props.data.state}
+            loop={props.data.loop}
+          />
+        )
       }
     }
   }
 
-  const renderModals = () => {
-    return 'annoTask' in props?.data ||
-      'script' in props?.data ||
-      'datasource' in props?.data ? (
-      selectModal()
-    ) : (
-      <CModal
-        size="lg"
-        visible={props.modalOpened}
-        onClose={() => {
-          if (props.modalOpened) {
-            props.toggleModal()
-          }
-        }}
-      >
-        {selectModal()}
-        <CModalFooter>
-          <CoreIconButton
-            color="secondary"
-            icon={faTimes}
-            text="Close"
-            onClick={props.toggleModal}
-          />
-        </CModalFooter>
-      </CModal>
-    )
-  }
-
   if (props.data) {
-    return <div>{renderModals()}</div>
+    return selectModal()
   }
 }
 

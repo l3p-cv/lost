@@ -7,7 +7,13 @@ import CoreDataTable from '../../../../../components/CoreDataTable'
 import CoreIconButton from '../../../../../components/CoreIconButton'
 import BaseModal from '../../../../../components/BaseModal'
 
-const DataExportModal = ({ dataExport, modalOpen, onClose }) => {
+type DataExportModalProps = {
+  modalOpened: boolean
+  onClose: () => void
+  dataExport: [{ id: number | string; file_name: string; file_path: string }]
+}
+
+const DataExportModal = ({ dataExport, modalOpened, onClose }: DataExportModalProps) => {
   const downloadFile = (de_id, fileName) => {
     fetch(`${API_URL}/data/export/${de_id}`, {
       method: 'GET',
@@ -49,7 +55,7 @@ const DataExportModal = ({ dataExport, modalOpen, onClose }) => {
   ]
 
   return (
-    <BaseModal title="Data Export" isOpen={modalOpen} onClosed={onClose}>
+    <BaseModal title="Data Export" isOpen={modalOpened} onClosed={onClose}>
       <CoreDataTable tableData={dataExport} columns={columns} />
     </BaseModal>
   )

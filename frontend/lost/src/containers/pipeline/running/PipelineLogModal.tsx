@@ -1,5 +1,6 @@
 import { usePipelineLogs } from '../../../actions/pipeline/pipeline_api'
-import { CFormTextarea, CModal, CModalBody, CModalHeader } from '@coreui/react'
+import { CFormTextarea } from '@coreui/react'
+import BaseModal from '../../../components/BaseModal'
 
 interface PipelineLogModalProps {
   pipelineId: string
@@ -14,25 +15,23 @@ export const PipelineLogModal = ({
   const { data: logs, isLoading, isError } = usePipelineLogs(pipelineId, isOpen)
 
   return (
-    <CModal
-      visible={isOpen}
-      onClose={() => {
+    <BaseModal
+      title="Pipeline Logs"
+      isOpen={isOpen}
+      onClosed={() => {
         if (isOpen) {
           toggle()
         }
       }}
       size="xl"
     >
-      <CModalHeader>Pipeline Logs</CModalHeader>
-      <CModalBody>
-        {isLoading ? (
-          <CFormTextarea value="Loading logs..." readOnly rows={10} />
-        ) : isError ? (
-          <CFormTextarea value="Error fetching logs." readOnly rows={10} />
-        ) : (
-          <CFormTextarea value={logs} readOnly rows={10} />
-        )}
-      </CModalBody>
-    </CModal>
+      {isLoading ? (
+        <CFormTextarea value="Loading logs..." readOnly rows={10} />
+      ) : isError ? (
+        <CFormTextarea value="Error fetching logs." readOnly rows={10} />
+      ) : (
+        <CFormTextarea value={logs} readOnly rows={10} />
+      )}
+    </BaseModal>
   )
 }

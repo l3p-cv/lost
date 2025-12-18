@@ -11,7 +11,23 @@ import CoreDataTable from '../../../../../components/CoreDataTable'
 import React from 'react'
 import { useEffect } from 'react'
 
-const ScriptModal = ({ script, id, state, modalOpened, onClose }) => {
+type ScriptModalProps = {
+  id: number | string
+  state: string
+  onClose: () => void
+  modalOpened: boolean
+  script: {
+    name: string
+    description: string
+    id: number | string
+    path: string
+    errorMsg: string
+    progress: number
+    arguments: {}
+  }
+}
+
+const ScriptModal = ({ script, id, state, modalOpened, onClose }: ScriptModalProps) => {
   const [commitVersion, setCommitVersion] = useState(0)
   const [scriptArguments, setScriptArguments] = useState(script.arguments)
 
@@ -88,16 +104,10 @@ const ScriptModal = ({ script, id, state, modalOpened, onClose }) => {
   ]
 
   return (
-    <BaseModal
-      title="Script"
-      isOpen={modalOpened}
-      onClosed={onClose}
-      isShowCancelButton
-      toggle={onClose}
-    >
+    <BaseModal title="Script" isOpen={modalOpened} onClosed={onClose}>
       <CoreDataTable tableData={tData} usePagination={false} columns={columns} />
       <CProgress color="info" value={progress}>
-        {progress}
+        {`${progress}%`}
       </CProgress>
       <CollapseCard>
         <ArgumentsTable data={scriptArguments} onInput={argumentsOnInput} />

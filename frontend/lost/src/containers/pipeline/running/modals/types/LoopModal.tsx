@@ -2,7 +2,21 @@ import { createColumnHelper } from '@tanstack/react-table'
 import BaseModal from '../../../../../components/BaseModal'
 import CoreDataTable from '../../../../../components/CoreDataTable'
 
-const LoopModal = ({ id, loop, state, modalOpened, onClose }) => {
+type LoopModalProps = {
+  id: number | number
+  state: string
+  modalOpened: boolean
+  onClose: () => void
+  loop: {
+    id: string | number
+    isBreakLoop: boolean
+    iteration: number
+    maxIteration: number // -1 means Infinity
+    peJumpId: string
+  }
+}
+
+const LoopModal = ({ id, loop, state, modalOpened, onClose }: LoopModalProps) => {
   const columnHelper = createColumnHelper()
   const columns = [
     columnHelper.accessor('taskName', {

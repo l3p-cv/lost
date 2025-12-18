@@ -8,6 +8,18 @@ import BaseModal from '../../../../../components/BaseModal'
 import CoreDataTable from '../../../../../components/CoreDataTable'
 import { createColumnHelper } from '@tanstack/react-table'
 
+type AnnoTaskModalProps = {
+  modalOpened: boolean
+  annoTask: { name: string; id: number | string; type: string }
+  id: number | string
+  state: string
+  changeUser: () => void
+  chooseAnnoTask: (arg1: number | string, arg2: () => void) => void
+  siaReviewSetElement: (arg1: number | string) => void
+  forceAnnotationRelease: (arg1: number | string, arg2: any) => void
+  onClose: () => void
+}
+
 const AnnoTaskModal = ({
   modalOpened,
   annoTask,
@@ -18,7 +30,7 @@ const AnnoTaskModal = ({
   siaReviewSetElement,
   forceAnnotationRelease,
   onClose,
-}) => {
+}: AnnoTaskModalProps) => {
   function handleSiaRewiewClick(callback) {
     siaReviewSetElement(id)
     chooseAnnoTask(annoTask.id, callback)

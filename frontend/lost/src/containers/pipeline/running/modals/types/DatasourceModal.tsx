@@ -2,7 +2,21 @@ import { createColumnHelper } from '@tanstack/react-table'
 import CoreDataTable from '../../../../../components/CoreDataTable'
 import BaseModal from '../../../../../components/BaseModal'
 
-const DatasourceModal = ({ datasource, state, id, modalOpened, onClose }) => {
+type DatasourceModalProps = {
+  id: number | string
+  state: string
+  modalOpened: boolean
+  onClose: () => void
+  datasource: { rawFilePath: string; id: number | string }
+}
+
+const DatasourceModal = ({
+  datasource,
+  state,
+  id,
+  modalOpened,
+  onClose,
+}: DatasourceModalProps) => {
   const columnHelper = createColumnHelper()
   const columns = [
     columnHelper.accessor('taskName', {
