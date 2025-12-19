@@ -8,14 +8,12 @@ const TheHeader = ({ numNavItems, canShowSidebar, setCanShowSidebar, showJoyride
     if (numNavItems) {
       if (numNavItems > 1) {
         return (
-          <>
-            <CHeaderToggler
-              className="ps-1"
-              onClick={() => setCanShowSidebar(!canShowSidebar)}
-            >
-              <CIcon icon={cilMenu} size="lg" />
-            </CHeaderToggler>
-          </>
+          <CHeaderToggler
+            className="ps-1"
+            onClick={() => setCanShowSidebar(!canShowSidebar)}
+          >
+            <CIcon icon={cilMenu} size="lg" />
+          </CHeaderToggler>
         )
       }
     }
@@ -25,7 +23,7 @@ const TheHeader = ({ numNavItems, canShowSidebar, setCanShowSidebar, showJoyride
   return (
     <CHeader>
       {renderSidebarToggler()}
-      <CHeaderBrand className="mx-auto d-lg-none" to="/dashboard">
+      <CHeaderBrand className="mx-auto d-lg-none" as="a" href="/dashboard">
         <img alt="" style={{ height: 40 }} className="img-avatar" />
       </CHeaderBrand>
 

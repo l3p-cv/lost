@@ -18,17 +18,11 @@ const Cluster = () => {
   const workingOnAnnoTask = useSelector((state) => state.annoTask.workingOnAnnoTask)
 
   useEffect(() => {
-    getMiaAnnos(maxAmount)
-  }, [])
-
-  useEffect(() => {
     if (workingOnAnnoTask) {
       const { size, finished } = workingOnAnnoTask
       if (size - finished > 0) {
-        if (images.length === 0) {
-          dispatch(getMiaAnnos(maxAmount))
-          dispatch(getMiaLabel())
-        }
+        dispatch(getMiaAnnos(maxAmount))
+        dispatch(getMiaLabel())
       }
     } else {
       dispatch(getWorkingOnAnnoTask())

@@ -13,10 +13,8 @@ import { useOwnUser } from '../../actions/user/user_api'
 
 import IconButton from '../../components/IconButton'
 import ImageBrowserModal from '../../components/FileBrowser/ImageBrowserModal'
-import { API_URL } from '../../lost_settings'
 import { getImageMarkdown } from '../../containers/InstructionMedia/media_api'
 import { useGetInstructions } from './instruction_api'
-import { set } from 'lodash'
 
 const mdParser = new MarkdownIt()
 

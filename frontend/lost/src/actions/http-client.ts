@@ -9,7 +9,7 @@ import { isEmpty } from 'lodash'
 import { API_URL } from '../lost_settings'
 
 class HttpClient {
-  private client: AxiosInstance
+  private readonly client: AxiosInstance
 
   constructor() {
     this.client = axios.create({
@@ -67,31 +67,31 @@ class HttpClient {
     return response.data
   }
 
-  getFormattedQueryParams(obj: object) {
-    const toSnakeCase = (str: string): string => {
-      return str.replace(/([A-Z])/g, '_$1').toLowerCase()
-    }
+  // getFormattedQueryParams(obj: object) {
+  //   const toSnakeCase = (str: string): string => {
+  //     return str.replace(/([A-Z])/g, '_$1').toLowerCase()
+  //   }
 
-    const queryParams = Object.entries(obj).flatMap(([key, value]) => {
-      const snakeCaseKey = toSnakeCase(key)
+  //   const queryParams = Object.entries(obj).flatMap(([key, value]) => {
+  //     const snakeCaseKey = toSnakeCase(key)
 
-      if (
-        value == undefined ||
-        value == null ||
-        (Array.isArray(value) && isEmpty(value))
-      ) {
-        return []
-      }
+  //     if (
+  //       value == undefined ||
+  //       value == null ||
+  //       (Array.isArray(value) && isEmpty(value))
+  //     ) {
+  //       return []
+  //     }
 
-      if (Array.isArray(value)) {
-        return value.map((v) => `${snakeCaseKey}=${encodeURIComponent(v)}`)
-      }
+  //     if (Array.isArray(value)) {
+  //       return value.map((v) => `${snakeCaseKey}=${encodeURIComponent(v)}`)
+  //     }
 
-      return `${snakeCaseKey}=${encodeURIComponent(value)}`
-    })
+  //     return `${snakeCaseKey}=${encodeURIComponent(value)}`
+  //   })
 
-    return queryParams.join('&')
-  }
+  //   return queryParams.join('&')
+  // }
 }
 
 const httpClient = new HttpClient()
