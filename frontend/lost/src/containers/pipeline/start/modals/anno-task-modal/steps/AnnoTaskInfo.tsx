@@ -96,7 +96,7 @@ export const AnnoTaskInfo = ({ nodeId }: UserInfoProps) => {
                   </CInputGroup>
                   <CFormLabel>
                     <InfoText
-                      text={'Description:'}
+                      text={'Instructions:'}
                       toolTip={
                         'Give instructions / hints to your annotators so they know what to do.'
                       }
