@@ -94,6 +94,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed lingering bug when saving/updating userdata (EditUserModal)
 - Acutally show intended Icons in filter of "my annotation tasks"
 - Fixed border colors of CoreDataTable
+- Added missing import of "delete_ds_export" to endpoint.py
 ### Removed
 - Removed all instances of reactstrap library
 - Removed all instances of semantic-ui library

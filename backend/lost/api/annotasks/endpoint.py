@@ -31,7 +31,7 @@ from lost.logic import anno_task as annotask_service
 from lost.logic import dask_session, sia
 from lost.logic.db_access import UserDbAccess
 from lost.logic.file_access import UserFileAccess
-from lost.logic.jobs.jobs import export_ds, force_anno_release
+from lost.logic.jobs.jobs import export_ds, force_anno_release, delete_ds_export
 from lost.logic.sia import SiaSerialize, SiaUpdateOneThing, get_image_progress
 from lost.settings import DATA_URL, LOST_CONFIG
 
