@@ -14,7 +14,7 @@ import {
 import { useState } from 'react'
 import { FaLock, FaUser } from 'react-icons/fa'
 import { useLogin } from '../../actions/auth'
-import Loading from '../../components/Loading'
+import CenteredSpinner from '../../components/CenteredSpinner'
 
 const Login = () => {
   const { mutate: login, status: loginStatus } = useLogin()
@@ -70,7 +70,7 @@ const Login = () => {
                     </CInputGroup>
                     {loginStatus === 'loading' ? (
                       <CRow className="justify-content-center">
-                        <Loading size="3x"></Loading>
+                        <CenteredSpinner />
                       </CRow>
                     ) : (
                       ''

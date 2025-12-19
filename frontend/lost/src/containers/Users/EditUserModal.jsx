@@ -11,14 +11,6 @@ import { createColumnHelper } from '@tanstack/react-table'
 import InfoText from '../../components/InfoText'
 import BaseModal from '../../components/BaseModal'
 
-const ErrorLabel = ({ text }) => (
-  <p style={{ marginTop: 30, marginBottom: 0, padding: 0, color: 'red' }}>{text}</p>
-)
-
-const ExternalUserLabel = ({ text }) => (
-  <p style={{ marginTop: 30, marginBottom: 0, padding: 0, color: 'blue' }}>{text}</p>
-)
-
 const EditUserModal = (props) => {
   const { roles } = useLostConfig()
 
@@ -39,6 +31,14 @@ const EditUserModal = (props) => {
     roles: user.roles.map((role) => role.name),
     groups: user.groups.map((group) => group.name),
   }
+
+  const ErrorLabel = ({ text }) => (
+    <p style={{ marginTop: 30, marginBottom: 0, padding: 0, color: 'red' }}>{text}</p>
+  )
+
+  const ExternalUserLabel = ({ text }) => (
+    <p style={{ marginTop: 30, marginBottom: 0, padding: 0, color: 'blue' }}>{text}</p>
+  )
 
   const rolesList = () => (
     <CRow className="flex-column">

@@ -8,6 +8,7 @@ import DatasetEditModal from '../../../../../Datasets/DatasetEditModal'
 import { AnnoTaskNodeData } from '../../../nodes'
 import CoreIconButton from '../../../../../../components/CoreIconButton'
 import InfoText from '../../../../../../components/InfoText'
+import CenteredSpinner from '../../../../../../components/CenteredSpinner'
 
 interface SelectStorageSettingsProps {
   nodeId: string
@@ -43,7 +44,7 @@ export const SelectStorageSettings = ({ nodeId }: SelectStorageSettingsProps) =>
   const [isCreateDatasetModalOpen, setIsCreateDatasetModalOpen] = useState(false)
 
   if (isLoading || isFetching) {
-    return <p>Loading...</p>
+    return <CenteredSpinner />
   }
 
   if (isError) {

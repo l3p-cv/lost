@@ -1,7 +1,7 @@
 import React from 'react'
 import { CWidgetStatsA } from '@coreui/react'
 import { CChart } from '@coreui/react-chartjs'
-import Loading from './Loading'
+import CenteredSpinner from './CenteredSpinner'
 
 const LineChartWidget = ({ title, value, chartData }) => {
   const lineChartOptions = {
@@ -52,7 +52,7 @@ const LineChartWidget = ({ title, value, chartData }) => {
         value=""
         chart={
           <div style={{ marginLeft: '15px', marginBottom: '15px' }}>
-            <Loading size="2xl" />
+            <CenteredSpinner />
           </div>
         }
       ></CWidgetStatsA>

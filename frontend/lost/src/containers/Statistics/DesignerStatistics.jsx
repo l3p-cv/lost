@@ -4,8 +4,8 @@ import * as statistics_api from '../../actions/statistics/statistics_api'
 import { CCol, CContainer, CRow, CWidgetStatsD } from '@coreui/react'
 
 import { CChart } from '@coreui/react-chartjs'
-import Loading from '../../components/Loading'
 import AnnosPerHour from './AnnosPerHour'
+import CenteredSpinner from '../../components/CenteredSpinner'
 
 const DesignerStatistics = () => {
   const { mutate: getDesignerStatistics, data: designerStatistics } =
@@ -69,7 +69,7 @@ const DesignerStatistics = () => {
           Let perform your first annotation right now to get your designer statistics !
         </CRow>
         <CRow style={{ display: 'flex', justifyContent: 'center' }}>
-          <Loading size="3x" />
+          <CenteredSpinner />
         </CRow>
       </>
     )

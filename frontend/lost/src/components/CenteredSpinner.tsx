@@ -1,6 +1,10 @@
 import { CSpinner } from '@coreui/react'
 
-export const CenteredSpinner = ({ color = 'primary' }) => {
+type CenteredSpinnerProps = {
+  color?: string
+}
+
+export const CenteredSpinner = ({ color = 'primary' }: CenteredSpinnerProps) => {
   return (
     <div
       style={{
@@ -18,3 +22,5 @@ export const CenteredSpinner = ({ color = 'primary' }) => {
     </div>
   )
 }
+
+export default CenteredSpinner

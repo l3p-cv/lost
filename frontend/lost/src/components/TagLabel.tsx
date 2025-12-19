@@ -1,4 +1,14 @@
-import React from 'react'
+import React, { CSSProperties } from 'react'
+
+type TagLabelProps = {
+  label
+  color: string
+  size: number
+  triangleSize: number
+  onClick: (() => void) | null
+  style: CSSProperties
+  className: string
+}
 
 const TagLabel = ({
   label,
@@ -8,10 +18,7 @@ const TagLabel = ({
   onClick = null,
   style = {},
   className = '',
-}) => {
-  // const bodySize = triangleSize*1.414
-  // const triangleSize=bodySize*0.7072135785
-
+}: TagLabelProps) => {
   const containerStyle = {
     display: 'inline-flex',
     alignItems: 'center',
@@ -22,7 +29,6 @@ const TagLabel = ({
     padding: `0 1rem 0 0.75rem`,
     borderRadius: '0 0.25rem 0.25rem 0',
     marginLeft: `${triangleSize / 1.4}px`, // hypothenuse of the halfed square
-    // cursor: 'default',
     position: 'relative',
     overflow: 'visible', // allow triangle to stick out
     cursor: onClick ? 'pointer' : 'default',

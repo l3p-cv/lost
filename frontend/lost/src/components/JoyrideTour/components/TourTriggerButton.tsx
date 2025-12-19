@@ -3,7 +3,11 @@ import { CButton } from '@coreui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons'
 
-const TourTriggerButton = ({ onStartTour }) => {
+type TourTriggerButtonProps = {
+  onStartTour: (arg1: string) => void
+}
+
+const TourTriggerButton = ({ onStartTour }: TourTriggerButtonProps) => {
   return (
     <CButton color="link" onClick={onStartTour} title="Start Tour">
       <FontAwesomeIcon icon={faInfoCircle} />
