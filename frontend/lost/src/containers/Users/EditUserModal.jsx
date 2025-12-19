@@ -26,6 +26,28 @@ const EditUserModal = (props) => {
   const { data: groupsData } = useGroups()
   const { mutate: createUser } = useCreateUser()
   const { mutate: updateUser } = useUpdateUser()
+
+  const userNameField = () => {
+    return (
+      <>
+        <CFormInput
+          autoFocus={focusedField === 0}
+          placeholder="Username"
+          disabled={!props.isNewUser}
+          defaultValue={user.user_name}
+          onChange={(e) => {
+            setFocusedFieled(0)
+            setUser({
+              ...user,
+              user_name: e.currentTarget.value,
+            })
+          }}
+        />
+        {usernameError ? <ErrorLabel text={usernameError} /> : null}
+      </>
+    )
+  }
+
   const payload = {
     ...user,
     roles: user.roles.map((role) => role.name),
@@ -95,7 +117,7 @@ const EditUserModal = (props) => {
     columnHelper.accessor('username', {
       header: 'Username',
       cell: () => {
-        return <InfoText text={user.user_name} subText={`ID: ${user.idx}`} />
+        return userNameField()
       },
     }),
     columnHelper.accessor('email', {
