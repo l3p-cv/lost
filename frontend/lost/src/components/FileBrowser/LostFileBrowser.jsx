@@ -8,13 +8,11 @@ import {
   FileNavbar,
   FileToolbar,
   setChonkyDefaults,
-} from 'chonky'
+} from 'chonky2'
 import { ChonkyIconFA } from 'chonky-icon-fontawesome'
 import { useEffect, useMemo, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import * as Notification from '../Notification'
-// import axios from 'axios'
-// import {API_URL} from '../../lost_settings'
 import * as fbaccess from '../../access/fb'
 import * as fb_api from '../../actions/fb/fb_api'
 import CoreIconButton from '../CoreIconButton'

@@ -13,7 +13,7 @@ import { useOwnUser } from '../../actions/user/user_api'
 
 import ImageBrowserModal from '../../components/FileBrowser/ImageBrowserModal'
 import { getImageMarkdown } from '../../containers/InstructionMedia/media_api'
-import { useGetInstructions } from './instruction_api'
+// import { useGetInstructions } from './instruction_api'
 import CoreIconButton from '../../components/CoreIconButton'
 
 const mdParser = new MarkdownIt()
@@ -36,7 +36,7 @@ const EditInstruction = ({ instructionData, onSave, visLevel, onClose }) => {
   } = fbAPI.useGetFullFs()
   const { mutateAsync: mkDir } = fbAPI.useMkDir()
   const { mutateAsync: getFSListNew } = fbAPI.useGetFSList()
-  const { data: instructions, isLoading } = useGetInstructions(visLevel)
+  // const { data: instructions, isLoading } = useGetInstructions(visLevel)
 
   useEffect(() => {
     setOption(instructionData?.option || '')

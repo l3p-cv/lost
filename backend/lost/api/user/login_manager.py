@@ -32,7 +32,7 @@ class LoginManager:
     def create_jwt(self, user_id: int, roles: list[Role], expires=None):
         if not expires:
             expires = datetime.timedelta(minutes=LOST_CONFIG.session_timeout)
-        expires_refresh = datetime.timedelta(minutes=LOST_CONFIG.session_timeout + 2)
+        expires_refresh = datetime.timedelta(minutes=LOST_CONFIG.session_timeout + 5)
 
         # get all roles of user as str
         user_role_names: list[str] = []

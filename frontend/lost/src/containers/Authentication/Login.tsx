@@ -11,13 +11,21 @@ import {
   CFormInput,
   CContainer,
 } from '@coreui/react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { FaLock, FaUser } from 'react-icons/fa'
-import { useLogin } from '../../actions/auth'
 import CenteredSpinner from '../../components/CenteredSpinner'
+import { useLogin } from '../../actions/auth/auth_api'
+import { useNavigate } from 'react-router-dom'
+import { showError } from '../../components/Notification'
 
 const Login = () => {
-  const { mutate: login, status: loginStatus } = useLogin()
+  const navigate = useNavigate()
+  const {
+    mutate: login,
+    status: loginStatus,
+    data: loginResponse,
+    error: loginError,
+  } = useLogin()
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -29,6 +37,32 @@ const Login = () => {
       userName: username,
     })
   }
+
+  useEffect(() => {
+    if (loginError == undefined) return
+
+    if (loginError.status === 401) return showError('Invalid credentials')
+
+    return showError('Unknown error')
+  }, [loginError])
+
+  useEffect(() => {
+    // check if response contains everything we need
+    if (
+      loginStatus !== 'success' ||
+      loginResponse?.token == undefined ||
+      loginResponse?.refresh_token == undefined
+    )
+      return
+
+    // save credentials
+    localStorage.setItem('username', username)
+    localStorage.setItem('token', loginResponse.token)
+    localStorage.setItem('refreshToken', loginResponse.refresh_token)
+
+    // go to main page
+    navigate('/')
+  }, [loginResponse, loginStatus])
 
   return (
     <div className="app flex-row align-items-center">

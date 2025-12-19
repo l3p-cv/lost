@@ -1,22 +1,32 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useLogout } from '../../actions/auth'
+import { useLogout } from '../../actions/auth/auth_api'
 import { CButton, CCard, CCardBody, CCardGroup, CContainer, CRow } from '@coreui/react'
 
 const Logout = () => {
   const navigate = useNavigate()
-  const isTimeout = window.location.hash.replace('#', '') === 'timeout'
+  const urlHash = globalThis.location.hash.replace('#', '')
+  const isInactivity = ['timeout', 'inactivity'].includes(urlHash)
 
   const { mutate: logout, isLoading, isError } = useLogout()
 
+  let logoutText = 'You have been successfully logged out.'
+  if (isInactivity) logoutText = 'Your session has expired due to inactivity'
+  if (isError) logoutText = 'An error occurred while logging out.'
+
   useEffect(() => {
     // don't try to log out if we are already
-    if (localStorage.getItem('token') === null) return
+    if (
+      localStorage.getItem('token') === null &&
+      localStorage.getItem('refreshToken') === null
+    )
+      return
 
     logout(undefined, {
       onSuccess: () => {
         // Clear auth token
         localStorage.removeItem('token')
+        localStorage.removeItem('refreshToken')
 
         // Clear all Joyride/tour-related state
         localStorage.removeItem('currentStep')
@@ -34,21 +44,10 @@ const Logout = () => {
           <img src="/assets/lost_logo.png" alt="" style={{ width: '500px' }} />
         </CRow>
         <CRow className="justify-content-center">
-          <CCardGroup>
+          <CCardGroup style={{ maxWidth: '800px', alignItems: 'center' }}>
             <CCard className="p-4">
               <CCardBody>
-                {isError ? (
-                  <div> An error occurred while logging out. </div>
-                ) : isLoading ? (
-                  <div>Logging out...</div>
-                ) : (
-                  <div>
-                    {isTimeout
-                      ? 'Your session has expired due to inactivity'
-                      : 'You have been successfully logged out.'}
-                    &nbsp;
-                  </div>
-                )}
+                {logoutText}
                 <div
                   style={{
                     display: 'flex',

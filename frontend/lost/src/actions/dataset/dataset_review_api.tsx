@@ -118,15 +118,6 @@ export const useDeleteAnnotation = () => {
   })
 }
 
-export const useGetUIConfig = () => {
-  // insert default config if no config in storage (first run)
-  if (localStorage.getItem('sia-ui-config') === null) {
-    localStorage.setItem('sia-ui-config', JSON.stringify(SIA_INITIAL_UI_CONFIG))
-  }
-
-  return uiConfig
-}
-
 export type ImageSearchRequestData = {
   id: number
   query: string

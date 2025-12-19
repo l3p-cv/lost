@@ -5,7 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [unreleased] - 
+<<<<<<< HEAD
 ### Added
+- Added SIA time travel (undo/redo changes using ctrl + z/y)
 - BaseModal now has backdropOption (which can be true, false or 'static'); used 'static' for EditInstruction
 - Groups and Roles viewable und "My Profile"
 - AnnotationTop component to use for each SIA/MIA
@@ -15,6 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Option overrideDisabledColor added to CoreIconButton
 - BaseModal has onShow() option now
 ### Changed
+- Updated React to 19.2.1 (major update from v18)
+- Switched chonky filebrowser to chonky2 (chonky is not maintained anymore)
+- Reworked authentication + inactivity warning
 - Rewrote ImageFilterButton (to use CButton + CTooltip)
 - Rewrote image Search in SIA Toolbar (additional button, to end the search-mode)
 - Reworte useAnnotask() in anno_task_api (kept old implementation as useAnnotaskOld())
