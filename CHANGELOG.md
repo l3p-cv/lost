@@ -5,7 +5,38 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [unreleased] - 
-- your changes here
+### Added
+- BaseModal now has backdropOption (which can be true, false or 'static'); used 'static' for EditInstruction
+- Groups and Roles viewable und "My Profile"
+- AnnotationTop component to use for each SIA/MIA
+- BaseModal now has "backdrop" option
+- Added spinner to CoreDataTable, for when data ist still loading (and gave it isLoading from all of its usages)
+- Added InfoText component, to streamline tooltips and texts
+- Option overrideDisabledColor added to CoreIconButton
+- BaseModal has onShow() option now
+### Changed
+- Rewrote ImageFilterButton (to use CButton + CTooltip)
+- Rewrote image Search in SIA Toolbar (additional button, to end the search-mode)
+- Reworte useAnnotask() in anno_task_api (kept old implementation as useAnnotaskOld())
+- Replaced DataTable component with CoreDataTable
+- Reworked Review Image-Search UI (table + buttons)
+- Reworked UI of Dataset exports
+- Began replacement of old Infobutton component
+- Began conversion of .jsx-Files to .tsx-Files
+- Used component BaseModal whenever applicable + converted to .tsx
+- Rewrote pipeline modals (UI streamline) and changed them to typescript
+- Replaced component Loading with CenteredSpinner
+### Fixed
+- Fixed using alternative pagesizes for whole-data CoreDataTable
+- Fixed lingering bug when saving/updating userdata (EditUserModal)
+- Acutally show intended Icons in filter of "my annotation tasks"
+- Fixed border colors of CoreDataTable
+- Added missing import of "delete_ds_export" to endpoint.py
+### Removed
+- Removed WorkingOnMIA, WorkingOnSIA - both replaced by AnnotationTop
+- Removed old DataTable component and everything importing from outdated 'react-table'
+- Removed unused components NewDataTable, SimpleTable
+- Removed now unused components IconButton, Progress, Helpbutton, Loading
 
 ## [3.0.0] - 2025-12-04
 ### Breaking Changes
@@ -38,14 +69,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added /polygon_operations endpoint with perform_polygon_operations for union, intersection, and difference of polygons and bounding boxes, including validations.
 - Added Swagger UI documentation for the new polygon operations API
 - Added pytest coverage for polygon operations including mixed polygon and bbox scenarios
-- BaseModal now has backdropOption (which can be true, false or 'static'); used 'static' for EditInstruction
-- Groups and Roles viewable und "My Profile"
-- AnnotationTop component to use for each SIA/MIA
-- BaseModal now has "backdrop" option
-- Added spinner to CoreDataTable, for when data ist still loading (and gave it isLoading from all of its usages)
-- Added InfoText component, to streamline tooltips and texts
-- Option overrideDisabledColor added to CoreIconButton
-- BaseModal has onShow() option now
 ### Changed
 - Replaced all usages of reactstrap and semantic-ui with CoreUI components and/or generic solutions 
 - moved quick_setup.py into main directory
@@ -64,17 +87,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Big update of LOST Documentation (now with docusaurus)
 - Moved development.md from documentation to new frontend_development
 - Changed the polygon operations endpoints to use data instead of coordinates.
-- Rewrote ImageFilterButton (to use CButton + CTooltip)
-- Rewrote image Search in SIA Toolbar (additional button, to end the search-mode)
-- Reworte useAnnotask() in anno_task_api (kept old implementation as useAnnotaskOld())
-- Replaced DataTable component with CoreDataTable
-- Reworked Review Image-Search UI (table + buttons)
-- Reworked UI of Dataset exports
-- Began replacement of old Infobutton component
-- Began conversion of .jsx-Files to .tsx-Files
-- Used component BaseModal whenever applicable + converted to .tsx
-- Rewrote pipeline modals (UI streamline) and changed them to typescript
-- Replaced component Loading with CenteredSpinner
 ### Fixed
 - Removed centered spinner of CoreDataTable, when faced with empty data, to not block the rest of the page
 - Fixed execution of DBPatcher at wrong place on start up
@@ -90,11 +102,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Resolved issue with image folder selection during tours
 - Re-added rendering of footer for component BaseModal
 - Fixed and removed contraint over the input payload point set to use only 4 points as max limit in `/bboxFromPoints`. 
-- Fixed using alternative pagesizes for whole-data CoreDataTable
-- Fixed lingering bug when saving/updating userdata (EditUserModal)
-- Acutally show intended Icons in filter of "my annotation tasks"
-- Fixed border colors of CoreDataTable
-- Added missing import of "delete_ds_export" to endpoint.py
 ### Removed
 - Removed all instances of reactstrap library
 - Removed all instances of semantic-ui library
@@ -104,10 +111,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed unused BaseModal from globalComponents
 - Removed ToolbarTooltip from containers/pipeline/running (replaced with CoreUI functionality)
 - Removed unnecessary "close"-button for global instructions
-- Removed WorkingOnMIA, WorkingOnSIA - both replaced by AnnotationTop
-- Removed old DataTable component and everything importing from outdated 'react-table'
-- Removed unused components NewDataTable, SimpleTable
-- Removed now unused components IconButton, Progress, Helpbutton, Loading
 
 ## [2.7.0] - 2025-06-12 
 ### Added
