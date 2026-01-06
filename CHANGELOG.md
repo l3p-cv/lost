@@ -42,6 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed old DataTable component and everything importing from outdated 'react-table'
 - Removed unused components NewDataTable, SimpleTable
 - Removed now unused components IconButton, Progress, Helpbutton, Loading
+- Removed unused "MiaImage.js" (NewMIAImage replaces it for a long time now)
 
 ## [3.0.0] - 2025-12-04
 ### Breaking Changes
