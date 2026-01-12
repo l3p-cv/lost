@@ -1,36 +1,21 @@
-import React, { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import actions from '../../../actions'
 import MIAImage from './NewMIAImage'
-
-import { CAlert, CButton } from '@coreui/react'
+import { useFinishMia } from '../../../api/mia'
+import { CAlert, CButton, CCol, CRow } from '@coreui/react'
 import './Cluster.scss'
+import CenteredSpinner from '../../../components/CenteredSpinner'
 
-const { getMiaAnnos, getWorkingOnAnnoTask, getMiaLabel, finishMia } = actions
-
-const Cluster = () => {
+const Cluster = ({ images, zoom, workingOnAnnoTask, imageActiveStates }) => {
   const navigate = useNavigate()
-  const dispatch = useDispatch()
-  const images = useSelector((state) => state.mia.images)
-  const maxAmount = useSelector((state) => state.mia.maxAmount)
-  const zoom = useSelector((state) => state.mia.zoom)
-  const workingOnAnnoTask = useSelector((state) => state.annoTask.workingOnAnnoTask)
-
-  useEffect(() => {
-    if (workingOnAnnoTask) {
-      const { size, finished } = workingOnAnnoTask
-      if (size - finished > 0) {
-        dispatch(getMiaAnnos(maxAmount))
-        dispatch(getMiaLabel())
-      }
-    } else {
-      dispatch(getWorkingOnAnnoTask())
-    }
-  }, [workingOnAnnoTask])
-
-  const dispatchWorkingAnnoTasks = () => {
-    dispatch(getWorkingOnAnnoTask())
+  const { mutate: finishMia, isLoading } = useFinishMia()
+  const handleFinish = () => {
+    finishMia(undefined, {
+      onSuccess: () => {
+        // queryClient.invalidateQueries(['workingAnnoTask'])
+        navigate('/dashboard')
+      },
+    })
   }
 
   const renderFinishTask = () => {
@@ -38,31 +23,30 @@ const Cluster = () => {
       const { size, finished } = workingOnAnnoTask
       if (size - finished === 0) {
         return (
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <div>
-              <CAlert color="success">
-                No more images available. Please press finish in order to continue the
-                pipeline.
-              </CAlert>
-              <CButton
-                color="primary"
-                size="lg"
-                onClick={() =>
-                  dispatch(finishMia(navigate('/dashboard'), dispatchWorkingAnnoTasks))
-                }
-              >
-                <i className="fa fa-check"></i> Finish Task
-              </CButton>{' '}
-            </div>
-          </div>
+          <CRow>
+            <CRow className="justify-content-center" style={{ marginTop: '40px' }}>
+              <CCol xs="5" className="d-flex">
+                <CAlert color="success">
+                  No more images available. Please press finish in order to continue the
+                  pipeline.
+                </CAlert>
+              </CCol>
+            </CRow>
+            <CRow className="justify-content-center">
+              <CCol xs="2">
+                <CButton color="primary" size="lg" onClick={handleFinish}>
+                  <i className="fa fa-check"></i> Finish Task
+                </CButton>
+              </CCol>
+            </CRow>
+          </CRow>
         )
       }
     }
     return (
       <div style={{ display: 'flex', justifyContent: 'center' }}>
         <div>
-          {/* <Spinner color="primary" /> */}
-          <i className="fa fa-image fa-spin fa-4x"></i>
+          <CenteredSpinner />
         </div>
       </div>
     )
@@ -71,13 +55,17 @@ const Cluster = () => {
   if (images.length > 0) {
     return (
       <div className="mia-images">
-        {images.map((image) => {
+        {images.map((imageData) => {
+          const imageActiveState = {
+            value: imageActiveStates.value[imageData.id],
+            set: imageActiveStates.set,
+          }
           return (
             <MIAImage
-              key={image.id}
-              image={image}
-              miaKey={image.id}
+              key={imageData.id}
+              imageBase={imageData}
               height={zoom}
+              imageActiveState={imageActiveState}
             ></MIAImage>
           )
         })}

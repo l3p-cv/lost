@@ -49,8 +49,6 @@ const AnnotationTop = ({
   const pipelineName = annoTask?.pipelineName ?? annoTask?.pipeline_name
   const createdAt = annoTask?.createdAt ?? annoTask?.created_at
 
-  console.log('AannoTask: ', annoTask)
-
   return (
     <CContainer fluid>
       <CRow className="justify-content-center" style={{ marginTop: '20px' }}>

@@ -3,11 +3,11 @@ import React, { CSSProperties } from 'react'
 type TagLabelProps = {
   label
   color: string
-  size: number
-  triangleSize: number
-  onClick: (() => void) | null
-  style: CSSProperties
-  className: string
+  size?: number
+  triangleSize?: number
+  onClick?: (() => void) | null
+  style?: CSSProperties
+  className?: string
 }
 
 const TagLabel = ({

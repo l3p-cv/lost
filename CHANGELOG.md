@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added InfoText component, to streamline tooltips and texts
 - Option overrideDisabledColor added to CoreIconButton
 - BaseModal has onShow() option now
+- Queries for MIA (replacing redux)
 ### Changed
 - Updated React to 19.2.1 (major update from v18)
 - Switched chonky filebrowser to chonky2 (chonky is not maintained anymore)
@@ -31,6 +32,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Used component BaseModal whenever applicable + converted to .tsx
 - Rewrote pipeline modals (UI streamline) and changed them to typescript
 - Replaced component Loading with CenteredSpinner
+- Reworked architecture of MIA components (so that they use queries, not redux)
+- Query useGetCurentAnnotask now uses 'currentannotask' instead of 'getcurrentannotask' as queryname
 ### Fixed
 - Fixed using alternative pagesizes for whole-data CoreDataTable
 - Fixed lingering bug when saving/updating userdata (EditUserModal)

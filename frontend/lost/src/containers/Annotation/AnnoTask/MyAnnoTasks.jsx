@@ -2,11 +2,8 @@ import {
   CButtonToolbar,
   CCard,
   CCardBody,
-  CCardHeader,
   CCol,
   CFormInput,
-  CModal,
-  CModalFooter,
   CProgress,
   CRow,
 } from '@coreui/react'
@@ -15,13 +12,11 @@ import {
   faCheck,
   faFilter,
   faPencil,
-  faTimes,
   faTrash,
 } from '@fortawesome/free-solid-svg-icons'
 import { createColumnHelper } from '@tanstack/react-table'
 import { useCallback, useEffect, useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FaFilter, FaTrashAlt } from 'react-icons/fa'
 import { useDispatch, useSelector } from 'react-redux'
 import AmountPerLabel from './AmountPerLabel'
 import { getColor } from './utils'
@@ -35,23 +30,6 @@ import InfoText from '../../../components/InfoText'
 import BaseModal from '../../../components/BaseModal'
 
 const { getAnnoTaskStatistic } = actions
-
-const customStyles = {
-  content: {
-    top: '50%',
-    left: '50%',
-    right: 'auto',
-    bottom: 'auto',
-    marginRight: '-50%',
-    transform: 'translate(-50%, -50%)',
-    width: '85%',
-    height: '85%',
-    maxWidth: '75rem',
-  },
-  overlay: {
-    backgroundColor: 'rgba(0,0,0,0.75)',
-  },
-}
 
 const MyAnnoTasks = ({ callBack, annoTasks }) => {
   const { t } = useTranslation()

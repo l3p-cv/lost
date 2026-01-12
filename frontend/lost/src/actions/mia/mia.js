@@ -41,29 +41,6 @@ export const getMiaImage = (img) => async (dispatch) => {
   // return await http.get(config)
 }
 
-export const miaZoomIn = (zoom) => (dispatch) => {
-  let newZoom = (zoom *= 1.2)
-  if (newZoom > 1920) {
-    newZoom = 1920
-  }
-  localStorage.setItem('mia-zoom', newZoom)
-  dispatch({ type: TYPES.MIA_ZOOM, payload: newZoom })
-}
-
-export const miaZoomOut = (zoom) => (dispatch) => {
-  let newZoom = (zoom *= 0.8)
-  if (newZoom < 20) {
-    newZoom = 20
-  }
-  localStorage.setItem('mia-zoom', newZoom)
-  dispatch({ type: TYPES.MIA_ZOOM, payload: newZoom })
-}
-
-export const miaAmount = (amount) => (dispatch) => {
-  localStorage.setItem('mia-max-amount', amount)
-  dispatch({ type: TYPES.MIA_AMOUNT, payload: amount })
-}
-
 export const miaToggleActive = (payload) => (dispatch) => {
   dispatch({ type: TYPES.MIA_TOGGLE_ACTIVE, payload: payload.image })
 }

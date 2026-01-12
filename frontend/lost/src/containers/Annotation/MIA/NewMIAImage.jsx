@@ -1,38 +1,40 @@
 import React, { useEffect, useState } from 'react'
 import { TransformWrapper, TransformComponent } from '@pronestor/react-zoom-pan-pinch'
-import { useDispatch } from 'react-redux'
-import actions from '../../../actions'
 import BaseModal from '../../../components/BaseModal'
 import ImageLoading from './ImageLoading'
 import { CRow, CFormSwitch } from '@coreui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { useGetMiaImage } from '../../../api/mia'
+// import { MiaImageRequest } from '../../../types/MiaTypes'
 
-const MIAImage = (props) => {
-  const [image, setImage] = useState({ id: props.image.id, data: '' })
+const MIAImage = ({ height, imageBase, imageActiveState }) => {
   const [clicks, setClicks] = useState(0)
-  const [timer, setTimer] = useState(undefined)
+  const [timer, setTimer] = useState(-1) // HACK: undefined
   const [classes, setClasses] = useState('')
   const [modalOpen, setModalOpen] = useState(false)
+  // const [isActive, setIsActive] = useState(imageBase.is_active ?? true)
+  // TODO: restructure isActive -> needed in Control
+  // TODO:
 
-  const dispatch = useDispatch()
+  const [imgRequestData, setImgRequestData] = useState({
+    addContext: -1,
+    imageId: imageBase.id,
+    drawAnno: false,
+    type: imageBase.type,
+  })
+
+  const miaImage = useGetMiaImage(imgRequestData)
 
   useEffect(() => {
-    const mImg = dispatch(actions.getMiaImage(props.image))
-    mImg.then((response) => {
-      setImage({ ...image, data: response.data })
-    })
-  }, [])
-
-  useEffect(() => {
-    if (props.image.is_active) {
+    if (imageActiveState.value) {
       setClasses(classes.replace(' mia-image-inactive', ''))
     } else {
       if (!classes.includes(' mia-image-inactive')) {
         setClasses(`${classes} mia-image-inactive`)
       }
     }
-  }, [props])
+  }, [imageActiveState.value])
 
   const imageClick = () => {
     let newClicks = clicks + 1
@@ -42,30 +44,10 @@ const MIAImage = (props) => {
         setTimeout(() => {
           // reset.
           setClicks(0)
-          if (props.image.is_active) {
-            dispatch(
-              actions.miaToggleActive({
-                image: {
-                  ...props.image,
-                  is_active: false,
-                  imgActions: props.image.imgActions
-                    ? [...props.image.imgActions, 'miaClick']
-                    : ['miaClick'],
-                },
-              }),
-            )
+          if (imageActiveState.value) {
+            imageActiveState.set(imageBase.id, false)
           } else {
-            dispatch(
-              actions.miaToggleActive({
-                image: {
-                  ...props.image,
-                  is_active: true,
-                  imgActions: props.image.imgActions
-                    ? [...props.image.imgActions, 'miaClick']
-                    : ['miaClick'],
-                },
-              }),
-            )
+            imageActiveState.set(imageBase.id, true)
           }
         }, 250),
       )
@@ -73,11 +55,6 @@ const MIAImage = (props) => {
       setTimer(clearTimeout(timer))
       setClicks(0)
       setModalOpen(true)
-      // if (classes.includes(' mia-image-zoomed')) {
-      //     setClasses(classes.replace(' mia-image-zoomed', ''))
-      // } else {
-      //     setClasses(`${classes} mia-image-zoomed`)
-      // }
     }
   }
   const modalFooter = () => {
@@ -87,20 +64,11 @@ const MIAImage = (props) => {
           className={'mx-1'}
           variant={'3d'}
           color={'primary'}
-          checked={props.image.is_active}
-          onChange={(e) =>
-            dispatch(
-              actions.miaToggleActive({
-                image: {
-                  ...props.image,
-                  is_active: !props.image.is_active,
-                },
-              }),
-            )
-          }
+          checked={imageActiveState.value}
+          onChange={() => imageActiveState.set(imageBase.id, !imageActiveState.value)}
         />
         <div style={{ marginRight: '50px' }}>
-          {props.image.is_active ? (
+          {imageActiveState.value ? (
             <>
               <FontAwesomeIcon
                 className="mr-3"
@@ -127,6 +95,7 @@ const MIAImage = (props) => {
       </>
     )
   }
+
   return (
     <>
       <BaseModal
@@ -136,29 +105,29 @@ const MIAImage = (props) => {
         toggle={() => setModalOpen(false)}
         footer={modalFooter()}
       >
-        <div key={props.miaKey}>
+        <div key={imageBase.id}>
           <CRow className="justify-content-center">
             <TransformWrapper>
               <TransformComponent>
-                <img style={{ maxWidth: '100%' }} src={image.data} alt="" />
+                <img style={{ maxWidth: '100%' }} src={miaImage.data} alt="" />
               </TransformComponent>
             </TransformWrapper>
           </CRow>
         </div>
       </BaseModal>
-      {image.data ? (
+      {!miaImage.isLoading ? (
         <>
           <div style={{ display: 'inline', position: 'relative' }}>
             <img
-              alt={props.miaKey}
-              id={props.miaKey}
+              alt={imageBase.id}
+              id={imageBase.id}
               onClick={() => imageClick()}
-              src={image.data}
+              src={miaImage.data}
               className={`mia-image ${classes}`}
-              height={props.height}
+              height={height}
               style={{ display: 'inline' }}
             />
-            {props.image.is_active ? (
+            {imageActiveState.value ? (
               ''
             ) : (
               <FontAwesomeIcon

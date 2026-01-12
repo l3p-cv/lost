@@ -48,7 +48,7 @@ export const useUpdateInstruction = () => {
 
 export const useGetCurrentAnnotask = () => {
   return useQuery(
-    ['getcurrentannotask'],
+    ['currentannotask'],
     () => axios.get(`${API_URL}/annotasks/working`).then((res) => res.data),
     {
       refetchOnWindowFocus: false,
