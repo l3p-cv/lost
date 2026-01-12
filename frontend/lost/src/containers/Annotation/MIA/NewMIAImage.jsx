@@ -13,9 +13,6 @@ const MIAImage = ({ height, imageBase, imageActiveState }) => {
   const [timer, setTimer] = useState(-1) // HACK: undefined
   const [classes, setClasses] = useState('')
   const [modalOpen, setModalOpen] = useState(false)
-  // const [isActive, setIsActive] = useState(imageBase.is_active ?? true)
-  // TODO: restructure isActive -> needed in Control
-  // TODO:
 
   const [imgRequestData, setImgRequestData] = useState({
     addContext: -1,

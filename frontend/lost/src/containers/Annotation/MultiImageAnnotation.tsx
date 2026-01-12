@@ -9,12 +9,10 @@ import { useGetMiaAnnos, useGetMiaLabel } from '../../api/mia'
 // import { MiaImageRequest } from '../../types/MiaTypes'
 import Control from './MIA/Control'
 import Cluster from './MIA/Cluster'
-import { useQueryClient } from 'react-query'
 
 const MultiImageAnnotation = () => {
   const [selectedLabel, setSelectedLabel] = useState(null)
   const [maxAmount, setMaxAmount] = useState(10)
-  const queryClient = useQueryClient()
 
   const { data: currentAnnotask, isLoading: taskIsLoading } =
     annotaskApi.useGetCurrentAnnotask()
@@ -64,10 +62,6 @@ const MultiImageAnnotation = () => {
 
   // reload annotation task data after switching images
   if (taskIsLoading || annoIsLoading || lblIsLoading) return <CenteredSpinner />
-
-  console.log('AnnoData: ', annoData)
-
-  // TODO: refetch images???
 
   return (
     <CRow>

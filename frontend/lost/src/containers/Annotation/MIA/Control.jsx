@@ -86,15 +86,6 @@ const Control = ({
   }
 
   const handleSubmit = () => {
-    // const updateData = {
-    //   images: [...miaAnnos.images],
-    //   labels: [{ ...selectedLabelState.value }],
-    //   // imageActiveStates
-    //   // TODO: is_active!!!
-    // }
-
-    ///
-
     const updateData = {
       images: miaAnnos.images.map((img) => ({
         ...img,
@@ -102,10 +93,6 @@ const Control = ({
       })),
       labels: [{ ...selectedLabelState.value }],
     }
-    ///
-    console.log('ImagesActive: ', imageActiveStates)
-    console.log('UPDATE: ', updateData)
-    // updateMia(updateData) // TODO: fix!!!
     updateMia(updateData, {
       onSuccess: async () => {
         hist.push(updateData, 'next')
@@ -114,10 +101,6 @@ const Control = ({
         setSelectedLblIdStr('')
         await queryClient.invalidateQueries(['miaAnnos'])
         await queryClient.invalidateQueries(['currentannotask'])
-        // await queryClient.invalidateQueries({
-        //   queryKey: ['miaimage'],
-        //   refetchActive: true,
-        // })
       },
     })
 
