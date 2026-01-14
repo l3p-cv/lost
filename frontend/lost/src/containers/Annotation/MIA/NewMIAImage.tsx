@@ -6,11 +6,19 @@ import { CRow, CFormSwitch } from '@coreui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { useGetMiaImage } from '../../../api/mia'
-// import { MiaImageRequest } from '../../../types/MiaTypes'
 
-const MIAImage = ({ height, imageBase, imageActiveState }) => {
+type MIAImageProps = {
+  height: number | string
+  imageBase: { id: number; type: string }
+  imageActiveState: {
+    value: boolean
+    set: (id: number, active: boolean) => void
+  }
+}
+
+const MIAImage = ({ height, imageBase, imageActiveState }: MIAImageProps) => {
   const [clicks, setClicks] = useState(0)
-  const [timer, setTimer] = useState(-1) // HACK: undefined
+  const [timer, setTimer] = useState(-1)
   const [classes, setClasses] = useState('')
   const [modalOpen, setModalOpen] = useState(false)
 
@@ -59,7 +67,6 @@ const MIAImage = ({ height, imageBase, imageActiveState }) => {
       <>
         <CFormSwitch
           className={'mx-1'}
-          variant={'3d'}
           color={'primary'}
           checked={imageActiveState.value}
           onChange={() => imageActiveState.set(imageBase.id, !imageActiveState.value)}

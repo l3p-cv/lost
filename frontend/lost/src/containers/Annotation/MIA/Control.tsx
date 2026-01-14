@@ -20,17 +20,22 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import CoreIconButton from '../../../components/CoreIconButton'
 import TagLabel from '../../../components/TagLabel'
-
-import UndoRedo from '../../../libs/hist'
 import './Tag.scss'
-import { useUpdateMia, useGetSpecialMiaAnnos } from '../../../api/mia'
+import { useUpdateMia, useGetSpecialMiaAnnos, useGoBackMia } from '../../../api/mia'
 import { useQueryClient } from 'react-query'
+import { StateManager } from '../../../types/MiaTypes'
 
-// TODO: comment out, once it is typescripted
-// type AnnotationState = {
-//   value: MiaAnnotationChangeRequest
-//   set: React.Dispatch<React.SetStateAction<MiaAnnotationChangeRequest>>
-// }
+type ControlProps = {
+  zoomState: StateManager<number>
+  maxAmountState: StateManager<number>
+  labels: Record<number, boolean>
+  selectedLabelState: StateManager<{
+    value: { label: string; id: number } | undefined
+    color: string
+  }>
+  miaAnnos: { proposedLabel?: string; images: [] }
+  imageActiveStates: StateManager<Boolean>
+}
 
 const Control = ({
   zoomState,
@@ -39,7 +44,7 @@ const Control = ({
   selectedLabelState,
   miaAnnos,
   imageActiveStates,
-}) => {
+}: ControlProps) => {
   const selectStyle = {
     width: '250px',
     maxWidth: '250px',
@@ -47,12 +52,24 @@ const Control = ({
     borderTopRightRadius: 5,
     borderBottomRightRadius: 5,
   }
-  const hist = new UndoRedo()
+
   const [newProposedLbl, setNewProposedLbl] = useState(true)
   const [selectedLblIdStr, setSelectedLblIdStr] = useState('')
   const { mutate: updateMia } = useUpdateMia()
   const queryClient = useQueryClient()
   const proposedLabel = miaAnnos?.proposedLabel
+  const { mutate: goBackMia, isLoading } = useGoBackMia()
+  const [earliestId, setEarliestId] = useState(-1)
+
+  const { data, refetch } = useGetSpecialMiaAnnos(undefined, {
+    enabled: false,
+    onSuccess: (data) => {
+      data.images.forEach((img) => {
+        imageActiveStates.set(img.id, img.is_active)
+      })
+      selectedLabelState.set(data.labels?.[0])
+    },
+  })
 
   const zoomIn = () => {
     const newZoom = Math.min(zoomState.value * 1.2, 1920)
@@ -95,7 +112,6 @@ const Control = ({
     }
     updateMia(updateData, {
       onSuccess: async () => {
-        hist.push(updateData, 'next')
         selectedLabelState.set(undefined)
         setNewProposedLbl(true)
         setSelectedLblIdStr('')
@@ -112,19 +128,13 @@ const Control = ({
     selectedLabelState.set(undefined)
   }
 
+  // TODO: Goal with server-side undo:
   const handleUndo = () => {
-    if (!hist.isEmpty()) {
-      const cState = hist.undoMia()
-
-      const miaIds = {
-        miaIds: cState.entry.images.map((image) => {
-          return image.id
-        }),
-      }
-      console.log('MIA IDs: ', miaIds)
-      useGetSpecialMiaAnnos(miaIds)
-      hist.undoMia()
-    }
+    goBackMia({
+      maxAmount: maxAmountState.value,
+      currentAmount: miaAnnos.images.length,
+      firstId: earliestId,
+    })
   }
 
   useEffect(() => {
@@ -234,7 +244,7 @@ const Control = ({
           <CoreIconButton
             icon={faArrowLeft}
             isOutline={true}
-            disabled={hist.isEmpty()} // TODO: wrong with current implementation!!!
+            disabled={hasPrevious} // TODO: define hasPrevious
             color="primary"
             onClick={handleUndo}
             toolTip="Undo last Label Selection"

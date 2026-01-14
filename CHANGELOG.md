@@ -34,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Replaced component Loading with CenteredSpinner
 - Reworked architecture of MIA components (so that they use queries, not redux)
 - Query useGetCurentAnnotask now uses 'currentannotask' instead of 'getcurrentannotask' as queryname
+- Converted MIA-Components to .tsx
 ### Fixed
 - Fixed using alternative pagesizes for whole-data CoreDataTable
 - Fixed lingering bug when saving/updating userdata (EditUserModal)
