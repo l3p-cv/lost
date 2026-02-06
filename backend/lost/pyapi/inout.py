@@ -542,9 +542,8 @@ class ScriptOutput(Output):
             # if img_labels is not None:
             if "img_lbl" in df:
                 img_lbls = df["img_lbl"].values[0]
-                if img_lbls:
-                    if len(img_lbls) > 0:
-                        self._update_labels(img_lbls, img_anno, lbl_map)
+                if img_lbls is not None and len(img_lbls) > 0:
+                    self._update_labels(img_lbls, img_anno, lbl_map)
             if "anno_data" in df:
                 anno_df = df[~df["anno_data"].isnull()]
                 if len(anno_df) > 0:

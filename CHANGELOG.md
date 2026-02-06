@@ -5,7 +5,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [unreleased] - 
-<<<<<<< HEAD
 ### Added
 - Added SIA time travel (undo/redo changes using ctrl + z/y)
 - BaseModal now has backdropOption (which can be true, false or 'static'); used 'static' for EditInstruction
@@ -37,6 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Acutally show intended Icons in filter of "my annotation tasks"
 - Fixed border colors of CoreDataTable
 - Added missing import of "delete_ds_export" to endpoint.py
+- Fix numpy 2.x incompability in inout.py
 ### Removed
 - Removed WorkingOnMIA, WorkingOnSIA - both replaced by AnnotationTop
 - Removed old DataTable component and everything importing from outdated 'react-table'
