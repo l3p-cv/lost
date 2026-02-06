@@ -15,7 +15,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from lost import settings
 from lost.db import dtype
 
-DB_VERSION = "0.4.0"
+DB_VERSION = "0.5.0"
 DB_VERSION_KEY = "lost_db_version"
 
 # Set conventions for foreign key name generation
