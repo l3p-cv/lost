@@ -11,6 +11,8 @@ import {
   CRow,
 } from '@coreui/react'
 import {
+  faAngleDoubleLeft,
+  faAngleDoubleRight,
   faArrowLeft,
   faArrowRight,
   faArrowsAltH,
@@ -21,20 +23,29 @@ import {
 import CoreIconButton from '../../../components/CoreIconButton'
 import TagLabel from '../../../components/TagLabel'
 import './Tag.scss'
-import { useUpdateMia, useGetSpecialMiaAnnos, useGoBackMia } from '../../../api/mia'
-import { useQueryClient } from 'react-query'
-import { StateManager } from '../../../types/MiaTypes'
+import {
+  useUpdateMia,
+  useGetSpecialMiaAnnos,
+  useGoBackMia,
+  useGoToFirstMIA,
+  useGoToLatestMIA,
+} from '../../../api/mia'
+import { MiaAnnosResponse, StateManager } from '../../../types/MiaTypes'
 
 type ControlProps = {
   zoomState: StateManager<number>
   maxAmountState: StateManager<number>
   labels: Record<number, boolean>
   selectedLabelState: StateManager<{
-    value: { label: string; id: number } | undefined
+    labelProps: { label: string | undefined; id: number | undefined } | undefined
     color: string
   }>
-  miaAnnos: { proposedLabel?: string; images: [] }
-  imageActiveStates: StateManager<Boolean>
+  miaAnnos: MiaAnnosResponse
+  imageActiveStates: {
+    value: Record<number, boolean>
+    set: (id: number, active: boolean) => void
+  }
+  annotaskFinishedLbls: number
 }
 
 const Control = ({
@@ -44,6 +55,7 @@ const Control = ({
   selectedLabelState,
   miaAnnos,
   imageActiveStates,
+  annotaskFinishedLbls,
 }: ControlProps) => {
   const selectStyle = {
     width: '250px',
@@ -51,15 +63,22 @@ const Control = ({
     borderRadius: 0,
     borderTopRightRadius: 5,
     borderBottomRightRadius: 5,
+    annotaskFinishedLbls: 0,
   }
 
   const [newProposedLbl, setNewProposedLbl] = useState(true)
   const [selectedLblIdStr, setSelectedLblIdStr] = useState('')
   const { mutate: updateMia } = useUpdateMia()
-  const queryClient = useQueryClient()
   const proposedLabel = miaAnnos?.proposedLabel
-  const { mutate: goBackMia, isLoading } = useGoBackMia()
-  const [earliestId, setEarliestId] = useState(-1)
+  const currentChunk = miaAnnos?.chunk
+  const currentUpdateIds = [...new Set(miaAnnos.images.map((img) => img.updateId))]
+  const hasPrev = annotaskFinishedLbls == 0 ? false : currentChunk?.hasPrev
+  const isLatest =
+    (currentUpdateIds.length == 1 && currentUpdateIds[0] == -1) ||
+    miaAnnos.images.length == 0
+  const { mutate: goBackMia, isLoading: goBackisLoading } = useGoBackMia()
+  const { mutate: goToFirstMia, isLoading: goFirstLoading } = useGoToFirstMIA()
+  const { mutate: goToLatestMia, isLoading: goLatestLoading } = useGoToLatestMIA()
 
   const { data, refetch } = useGetSpecialMiaAnnos(undefined, {
     enabled: false,
@@ -115,12 +134,8 @@ const Control = ({
         selectedLabelState.set(undefined)
         setNewProposedLbl(true)
         setSelectedLblIdStr('')
-        await queryClient.invalidateQueries(['miaAnnos'])
-        await queryClient.invalidateQueries(['currentannotask'])
       },
     })
-
-    // TODO: wrong image shown in next batch, when not F5...
   }
 
   const handleMaxAmount = (e) => {
@@ -128,17 +143,25 @@ const Control = ({
     selectedLabelState.set(undefined)
   }
 
-  // TODO: Goal with server-side undo:
   const handleUndo = () => {
+    console.log('Data: ', currentChunk.id, currentUpdateIds)
     goBackMia({
+      currentChunkId: currentChunk.id,
+      currentUpdateIds: currentUpdateIds, // TODO: undefined even if miaAnnos there
       maxAmount: maxAmountState.value,
-      currentAmount: miaAnnos.images.length,
-      firstId: earliestId,
     })
   }
 
+  const handleGoToFirst = () => {
+    goToFirstMia(maxAmountState.value)
+  }
+
+  const handleGoToLatest = () => {
+    goToLatestMia(maxAmountState.value)
+  }
+
   useEffect(() => {
-    selectedLabelState.set(undefined)
+    selectedLabelState.set({ value: undefined, color: '' })
   }, [proposedLabel, labels])
 
   useEffect(() => {
@@ -155,12 +178,14 @@ const Control = ({
     if (selectedLabelState.value) {
       return (
         <TagLabel
-          label={selectedLabelState.value.label}
+          label={selectedLabelState.value.labelProps?.label}
           color={selectedLabelState.value.color}
         />
       )
     }
   }
+
+  console.log('Chunk: ', currentChunk)
 
   return (
     <CRow
@@ -242,9 +267,17 @@ const Control = ({
       <CCol xs="1" sm="1" lg="1" className="d-flex justify-content-start">
         <CButtonGroup>
           <CoreIconButton
+            icon={faAngleDoubleLeft}
+            isOutline={true}
+            disabled={!hasPrev}
+            color="primary"
+            onClick={handleGoToFirst}
+            toolTip="Go to first images"
+          />
+          <CoreIconButton
             icon={faArrowLeft}
             isOutline={true}
-            disabled={hasPrevious} // TODO: define hasPrevious
+            disabled={!hasPrev}
             color="primary"
             onClick={handleUndo}
             toolTip="Undo last Label Selection"
@@ -256,6 +289,14 @@ const Control = ({
             color="primary"
             onClick={handleSubmit}
             toolTip="Give Images selected Label"
+          />
+          <CoreIconButton
+            icon={faAngleDoubleRight}
+            isOutline={true}
+            disabled={isLatest}
+            color="primary"
+            onClick={handleGoToLatest}
+            toolTip="Go to latest images"
           />
         </CButtonGroup>
       </CCol>

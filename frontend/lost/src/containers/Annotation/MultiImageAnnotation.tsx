@@ -77,6 +77,7 @@ const MultiImageAnnotation = () => {
             labels={labels.labels}
             miaAnnos={annoData}
             imageActiveStates={imageActiveStates}
+            annotaskFinishedLbls={currentAnnotask.finished}
           />
           <Cluster
             images={annoData.images}

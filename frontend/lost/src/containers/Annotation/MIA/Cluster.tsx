@@ -5,13 +5,12 @@ import { useFinishMia } from '../../../api/mia'
 import { CAlert, CButton, CCol, CRow } from '@coreui/react'
 import './Cluster.scss'
 import CenteredSpinner from '../../../components/CenteredSpinner'
-import { StateManager } from '../../../types/MiaTypes'
 
 type ClusterProps = {
   images: [{ id: number; type: string }]
   zoom: number
   workingOnAnnoTask: any
-  ImageActiveStates: {
+  imageActiveStates: {
     value: Record<number, boolean>
     set: (id: number, active: boolean) => void
   }
@@ -24,7 +23,7 @@ const Cluster = ({
   imageActiveStates,
 }: ClusterProps) => {
   const navigate = useNavigate()
-  const { mutate: finishMia, isLoading } = useFinishMia()
+  const { mutate: finishMia } = useFinishMia()
   const handleFinish = () => {
     finishMia(undefined, {
       onSuccess: () => {

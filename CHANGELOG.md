@@ -5,7 +5,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [unreleased] - 
-<<<<<<< HEAD
 ### Added
 - Added SIA time travel (undo/redo changes using ctrl + z/y)
 - BaseModal now has backdropOption (which can be true, false or 'static'); used 'static' for EditInstruction
@@ -17,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Option overrideDisabledColor added to CoreIconButton
 - BaseModal has onShow() option now
 - Queries for MIA (replacing redux)
+- New values "anno_update_id" and "anno_chunk_id" to annotations
+- "Got to first/latest" buttons added to MIA UI
 ### Changed
 - Updated React to 19.2.1 (major update from v18)
 - Switched chonky filebrowser to chonky2 (chonky is not maintained anymore)
@@ -35,6 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Reworked architecture of MIA components (so that they use queries, not redux)
 - Query useGetCurentAnnotask now uses 'currentannotask' instead of 'getcurrentannotask' as queryname
 - Converted MIA-Components to .tsx
+- Reworked MIA navigation (backend and frontend) with new db-values
 ### Fixed
 - Fixed using alternative pagesizes for whole-data CoreDataTable
 - Fixed lingering bug when saving/updating userdata (EditUserModal)
@@ -47,6 +49,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed unused components NewDataTable, SimpleTable
 - Removed now unused components IconButton, Progress, Helpbutton, Loading
 - Removed unused "MiaImage.js" (NewMIAImage replaces it for a long time now)
+- Removed old MIA-API
+- Removed libs/hist.js (was only used in MIA; lost-sia package has own copy of file)
 
 ## [3.0.0] - 2025-12-04
 ### Breaking Changes

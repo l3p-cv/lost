@@ -8,8 +8,8 @@ import { Dispatch, SetStateAction } from 'react'
 export type MiaImageRequest = {
   imageId: number
   addContext: number
-  drawAnno: boolean // TODO: validate
-  type: string // TODO: validate
+  drawAnno: boolean
+  type: string
 }
 
 export type StateManager<T> = {
@@ -23,9 +23,24 @@ export type UpdateMiaPayload = {
 }
 
 export type GoBackPayload = {
+  currentChunkId: number
+  currentUpdateIds: number[]
   maxAmount: number
-  currentAmount: number
-  firstId: number
 }
 
-// export type AnnotationCoordinates = Point | Point[]
+export type MiaAnnosResponse = {
+  proposedLabel?: string
+  chunk: {
+    id: number
+    hasPrev: boolean
+  }
+  updateIds: number[]
+  images: MiaImage[]
+}
+
+export type MiaImage = {
+  id: number
+  type: 'imageBased' | 'twodBased'
+  imgActions: []
+  updateId: number
+}

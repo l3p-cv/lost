@@ -3,12 +3,12 @@
 import axios, { AxiosError } from 'axios'
 import { useMutation, UseMutationResult, useQuery, UseQueryResult } from 'react-query'
 import { API_URL } from '../lost_settings'
-import { Label } from 'lost-sia'
 import {
   LegacyAnnotation,
   LegacyAnnotationResponse,
 } from '../containers/Annotation/SIA/legacyHelper'
 import { useQueryClient } from 'react-query'
+import { UpdateMiaPayload, GoBackPayload } from '../types/MiaTypes'
 
 export type MiaApi = {
   useGetPossibleLabels: (annoTaskId: number) => UseQueryResult
@@ -158,7 +158,6 @@ export const useGetMiaLabel = () => {
   })
 }
 
-// TODO: add callback???
 export const useFinishMia = () => {
   return useMutation({
     mutationFn: async () => {
@@ -170,7 +169,7 @@ export const useFinishMia = () => {
 export const useUpdateMia = () => {
   const queryClient = useQueryClient()
 
-  return useMutation({
+  return useMutation<void, Error, UpdateMiaPayload>({
     mutationFn: async (data) => {
       await axios.patch(`${API_URL}/mia`, data)
     },
@@ -182,9 +181,55 @@ export const useUpdateMia = () => {
   })
 }
 
-// TODO: implement
 export const useGoBackMia = () => {
   const queryClient = useQueryClient()
-  return
-  // TODO
+
+  return useMutation<MiaAnnosResponse, Error, GoBackPayload>({
+    mutationFn: async (payload: GoBackPayload) => {
+      const url = new URL(`${API_URL}/mia/prev`)
+      url.searchParams.append('currentChunkId', String(payload.currentChunkId))
+      payload.currentUpdateIds?.forEach((id) => {
+        url.searchParams.append('currentUpdateIds', String(id))
+      })
+      const { data } = await axios.get(url.toString())
+      return data
+    },
+    onSuccess: (data, payload) => {
+      queryClient.setQueryData(['miaAnnos', payload.maxAmount], data)
+    },
+  })
+}
+
+export const useGoToFirstMIA = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation<MiaAnnosResponse, Error, number>({
+    mutationFn: async () => {
+      const { data } = await axios.get(`${API_URL}/mia/first`, {
+        headers: { 'Content-Type': 'application/json' },
+      })
+      console.log('FIRST RESPOND: ', data)
+      return data
+    },
+    onSuccess: (data, maxAmount) => {
+      queryClient.setQueryData(['miaAnnos', maxAmount], data)
+    },
+  })
+}
+
+export const useGoToLatestMIA = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation<MiaAnnosResponse, Error, number>({
+    mutationFn: async () => {
+      const { data } = await axios.get(`${API_URL}/mia/latest`, {
+        headers: { 'Content-Type': 'application/json' },
+      })
+      console.log('Latest RESPOND: ', data)
+      return data
+    },
+    onSuccess: (data, maxAmount) => {
+      queryClient.setQueryData(['miaAnnos', maxAmount], data)
+    },
+  })
 }
