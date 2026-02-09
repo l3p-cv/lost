@@ -22,10 +22,9 @@ import type {
   TimeTravelChanges,
   ToolCoordinates,
 } from 'lost-sia'
-
 import { Sia } from 'lost-sia'
 import { useNavigate } from 'react-router-dom'
-import { CButton, CButtonGroup, CCol, CTooltip } from '@coreui/react'
+import { CButtonGroup, CCol } from '@coreui/react'
 // import {
 //     INFERENCE_MODEL_TYPE,
 //     useTritonInference,
@@ -38,7 +37,6 @@ import {
   showWarning,
 } from '../../../components/Notification'
 import NavigationButtons from './NavigationButtons'
-
 import {
   Annotation,
   AnnotationStatus,
@@ -60,7 +58,6 @@ import SIAImageSearchModal, {
 } from '../../Datasets/SIAImageSearchModal'
 import { faMagnifyingGlassMinus, faSearch } from '@fortawesome/free-solid-svg-icons'
 import { TimeUtils } from 'lost-sia/utils'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import imageSearch, { FirstLastResult } from './imageSearch'
 import CoreIconButton from '../../../components/CoreIconButton'
 
@@ -71,6 +68,7 @@ type SiaWrapperProps = {
   isDatasetMode?: boolean
   isImageSearchEnabled?: boolean
   siaApi: SiaApi
+  isReview: boolean
   onSetAnnotationRequestData: (changeRequest: ImageSwitchData) => void
 }
 
@@ -100,6 +98,7 @@ const SiaWrapper = ({
   isDatasetMode = false,
   isImageSearchEnabled = false,
   siaApi,
+  isReview = false,
   onSetAnnotationRequestData,
 }: SiaWrapperProps) => {
   const navigate = useNavigate()
@@ -280,10 +279,12 @@ const SiaWrapper = ({
   }, [imageJunkResponse, handleResponse])
 
   useEffect(() => {
-    // a sucessful request just returns null
-    if (updateImageLabelResponse === undefined || updateImageLabelResponse === null)
+    if (
+      updateImageLabelResponse === undefined ||
+      updateImageLabelResponse === null ||
+      updateImageLabelResponse === 'success'
+    )
       return
-
     handleNotification({
       title: 'Error updating image label',
       message: 'Error updating image label',
@@ -535,7 +536,11 @@ const SiaWrapper = ({
       annoTime: newAnnoTime,
     }
 
-    sendUpdateImageLabel(imageData)
+    if (isReview) {
+      sendUpdateImageLabel({ imageEditData: imageData, annoTaskId })
+    } else {
+      sendUpdateImageLabel(imageData)
+    }
   }
 
   const junkImage = (newJunkState) => {

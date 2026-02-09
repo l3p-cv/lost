@@ -28,7 +28,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 
 import { faSquare, faSquareCheck } from '@fortawesome/free-regular-svg-icons'
-import * as datasetReviewApi from '../../actions/dataset/dataset_review_api'
+import * as datasetReviewApi from '../../api/dataset_review_api'
 import { Label, TagLabel } from 'lost-sia'
 import CoreIconButton from '../../components/CoreIconButton'
 import BaseContainer from '../../components/BaseContainer'
