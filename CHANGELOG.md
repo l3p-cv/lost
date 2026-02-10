@@ -37,7 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Query useGetCurentAnnotask now uses 'currentannotask' instead of 'getcurrentannotask' as queryname
 - Converted MIA-Components to .tsx
 - Reworked MIA navigation (backend and frontend) with new db-values (path 0.5.0)
-- Moved dataset_review_api and mia_api to new api directory
+- Moved and renamed dataset_review_api, anno_task_api and mia_api to new api directory
 ### Fixed
 - Fixed using alternative pagesizes for whole-data CoreDataTable
 - Fixed lingering bug when saving/updating userdata (EditUserModal)
@@ -52,6 +52,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed unused "MiaImage.js" (NewMIAImage replaces it for a long time now)
 - Removed old MIA-API
 - Removed libs/hist.js (was only used in MIA; lost-sia package has own copy of file)
+- Deleted unused SiaReviewComponent
+- Removed react-redux package
 
 ## [3.0.0] - 2025-12-04
 ### Breaking Changes

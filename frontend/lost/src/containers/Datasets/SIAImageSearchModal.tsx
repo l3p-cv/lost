@@ -1,34 +1,17 @@
-import {
-  CContainer,
-  CCol,
-  CFormInput,
-  CModal,
-  CModalBody,
-  CModalHeader,
-  CRow,
-  CTable,
-  CTableBody,
-  CTableHead,
-} from '@coreui/react'
+import { CCol, CFormInput, CModal, CModalBody, CModalHeader, CRow } from '@coreui/react'
 import {
   createColumnHelper,
-  flexRender,
   getCoreRowModel,
   getExpandedRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { Fragment, useEffect, useState } from 'react'
-import {
-  faAngleLeft,
-  faAngleRight,
-  faArrowRight,
-  faSearch,
-} from '@fortawesome/free-solid-svg-icons'
+import { useEffect, useState } from 'react'
+import { faArrowRight, faSearch } from '@fortawesome/free-solid-svg-icons'
 
 import { faSquare, faSquareCheck } from '@fortawesome/free-regular-svg-icons'
-import * as datasetReviewApi from '../../api/dataset_review_api'
+import * as datasetReviewApi from '../../api/dataset_review'
 import { Label, TagLabel } from 'lost-sia'
 import CoreIconButton from '../../components/CoreIconButton'
 import BaseContainer from '../../components/BaseContainer'

@@ -13,7 +13,7 @@ import { useInterval } from 'react-use'
 
 import { CNav, CNavItem, CNavLink, CTabContent, CTabPane } from '@coreui/react'
 
-import * as annoTaskApi from '../../../../../../actions/annoTask/anno_task_api'
+import * as annoTaskApi from '../../../../../../api/anno_task'
 import TabAdaptConfiguration from './TabAdaptConfiguration'
 import TabAvailableExports from './TabAvailableExports'
 import TabGenerateExport from './TabGenerateExport'

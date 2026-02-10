@@ -4,7 +4,6 @@ import { jwtDecode } from 'jwt-decode'
 import React, { Suspense } from 'react'
 import { initReactI18next } from 'react-i18next'
 import { QueryClient, QueryClientProvider } from 'react-query'
-import { Provider } from 'react-redux'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import deTranslation from './assets/locales/de.json'
 import enTranslation from './assets/locales/en.json'
@@ -12,7 +11,6 @@ import { CenteredSpinner } from './components/CenteredSpinner'
 import { LostConfigProvider } from './contexts/LostConfigContext'
 import { API_URL } from './lost_settings'
 import './scss/style.scss'
-import { store } from './store'
 import { flatObj } from './utils'
 
 const queryClient = new QueryClient()
@@ -76,21 +74,19 @@ function App() {
   })
 
   return (
-    <Provider store={store}>
-      <QueryClientProvider client={queryClient}>
-        <LostConfigProvider>
-          <Suspense fallback={<CenteredSpinner color="white" />}>
-            <BrowserRouter>
-              <Routes>
-                <Route path="/login" element={<Login />} />
-                <Route path="/logout" element={<Logout />} />
-                <Route path="/*" element={<TheLayout />} />
-              </Routes>
-            </BrowserRouter>
-          </Suspense>
-        </LostConfigProvider>
-      </QueryClientProvider>
-    </Provider>
+    <QueryClientProvider client={queryClient}>
+      <LostConfigProvider>
+        <Suspense fallback={<CenteredSpinner color="white" />}>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/logout" element={<Logout />} />
+              <Route path="/*" element={<TheLayout />} />
+            </Routes>
+          </BrowserRouter>
+        </Suspense>
+      </LostConfigProvider>
+    </QueryClientProvider>
   )
 }
 

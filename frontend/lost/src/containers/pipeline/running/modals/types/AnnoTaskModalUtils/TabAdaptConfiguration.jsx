@@ -1,4 +1,4 @@
-import * as annoTaskApi from '../../../../../../actions/annoTask/anno_task_api'
+import * as annoTaskApi from '../../../../../../api/anno_task'
 import SelectMIAConfiguration from './SelectMIAConfiguration'
 import SelectSIAConfiguration from './SelectSIAConfiguration'
 

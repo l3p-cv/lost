@@ -1,13 +1,8 @@
-import { connect } from 'react-redux'
-import actionsAll from '../../../../actions'
 import AnnoTaskModal from './types/AnnoTaskModal'
 import DataExportModal from './types/DataExportModal'
 import DatasourceModal from './types/DatasourceModal'
 import LoopModal from './types/LoopModal'
 import ScriptModal from './types/ScriptModal'
-
-const { siaReviewSetElement, chooseAnnoTask, forceAnnotationRelease, changeUser } =
-  actionsAll
 
 const BaseModal = (props) => {
   const onClose = (opened) => {
@@ -78,9 +73,4 @@ const BaseModal = (props) => {
   }
 }
 
-export default connect(null, {
-  siaReviewSetElement,
-  chooseAnnoTask,
-  forceAnnotationRelease,
-  changeUser,
-})(BaseModal)
+export default BaseModal

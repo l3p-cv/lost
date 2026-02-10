@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react'
 import { getColor } from './utils'
 import { useGetInstructions } from '../../Instruction/instruction_api' // API hook for instructions
-import { useGetCurrentInstruction } from '../../../actions/annoTask/anno_task_api' // Fetch current instruction
+import { useGetCurrentInstruction } from '../../../api/anno_task' // Fetch current instruction
 import ViewInstruction from '../../Instruction/ViewInstruction' // Import ViewInstruction component
 import CoreIconButton from '../../../components/CoreIconButton'
 import { CCol, CContainer, CProgress, CRow, CTooltip } from '@coreui/react'

@@ -12,16 +12,37 @@ amount_per_label = api.model(
     },
 )
 
-statistics = api.model(
-    "Anno Task List",
+statistic_detail = api.model(
+    "StatisticDetail",
     {
-        "amountPerLabel": fields.Nested(
-            amount_per_label, description="Amount of annos per Label", attribute="amount_per_label"
+        "amountPerLabel": fields.List(
+            fields.Nested(amount_per_label),
+            description="Amount of annos per Label",
+            attribute="amount_per_label",
         ),
-        "secondsPerAnno": fields.String(description="Seconds taken per anno", attribute="seconds_per_anno"),
+        "secondsPerAnno": fields.String(
+            description="Seconds taken per anno",
+            attribute="seconds_per_anno",
+        ),
     },
 )
 
+annotask_statistics = api.model(
+    "AnnoTaskStatistics",
+    {
+        "name": fields.String,
+        "id": fields.Integer,
+        "progress": fields.Float,
+        "pipelineName": fields.String(attribute="pipeline_name"),
+        "pipelineCreator": fields.String(attribute="pipeline_creator"),
+        "group": fields.String,
+        "type": fields.String,
+        "finished": fields.Integer,
+        "size": fields.Integer,
+        "status": fields.String,
+        "statistic": fields.Nested(statistic_detail),
+    },
+)
 
 # label_leaf = api.model('Label Leaf',{
 #     'id':fields.Integer(description='Label ID'),
@@ -101,7 +122,7 @@ anno_task = api.model(
         "finished": fields.Integer(description="The finished status of the anno task"),
         "size": fields.Integer(description="The size of the anno task"),
         "status": fields.String(description="The status of the anno task"),
-        "statistic": fields.Nested(statistics, description="The statistics of the anno task"),
+        "statistic": fields.Nested(statistic_detail, description="The statistics of the anno task"),
         "userName": fields.String(description="The name of the user working on the anno task", attribute="user_name"),
         "progress": fields.Float(description="The progress of the anno task"),
         "imgCount": fields.Integer(description="The image count of the anno task", attribute="img_count"),

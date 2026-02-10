@@ -4,7 +4,7 @@ import { useState } from 'react'
 
 import { CCol, CRow } from '@coreui/react'
 import CenteredSpinner from '../../components/CenteredSpinner'
-import * as annotaskApi from '../../actions/annoTask/anno_task_api'
+import * as annotaskApi from '../../api/anno_task'
 import { useGetMiaAnnos, useGetMiaLabel } from '../../api/mia'
 // import { MiaImageRequest } from '../../types/MiaTypes'
 import Control from './MIA/Control'
