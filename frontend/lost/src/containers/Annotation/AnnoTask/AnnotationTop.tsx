@@ -8,7 +8,6 @@ import CoreIconButton from '../../../components/CoreIconButton'
 import { CCol, CContainer, CProgress, CRow, CTooltip } from '@coreui/react'
 import { faCrown, faEye } from '@fortawesome/free-solid-svg-icons'
 
-// TODO: use image (gotten by siaAPI)
 const AnnotationTop = ({
   annoTask,
   annoData = null,
@@ -21,6 +20,15 @@ const AnnotationTop = ({
   const { data: instructions, isLoading, error } = useGetInstructions('all') // API hook to fetch instructions
   const { data: currentInstruction } = useGetCurrentInstruction(annoTask?.id) // Fetch current instruction based on annoTask.id
   const [selectedInstruction, setSelectedInstruction] = useState(null)
+  const [currentImage, setCurrentImage] = useState(null)
+  const [totalImages, setTotalImages] = useState(null)
+
+  useEffect(() => {
+    if (!!annoData?.image) {
+      setCurrentImage(annoData.image.number)
+      setTotalImages(annoData.image.amount)
+    }
+  }, [annoData])
 
   useEffect(() => {
     if (!instructions) return
@@ -91,7 +99,7 @@ const AnnotationTop = ({
               <br />
               <strong className="h4">
                 {isSIA
-                  ? `${annoData?.image.number}/${annoData?.image.amount}`
+                  ? `${currentImage}/${totalImages}`
                   : `${annoTask.finished}/${annoTask.size}`}
               </strong>
             </CCol>

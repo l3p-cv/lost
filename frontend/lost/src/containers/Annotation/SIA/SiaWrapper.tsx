@@ -24,7 +24,7 @@ import type {
 } from 'lost-sia'
 import { Sia } from 'lost-sia'
 import { useNavigate } from 'react-router-dom'
-import { CButtonGroup, CCol } from '@coreui/react'
+import { CButtonGroup, CCol, CSpinner } from '@coreui/react'
 // import {
 //     INFERENCE_MODEL_TYPE,
 //     useTritonInference,
@@ -1098,7 +1098,7 @@ const SiaWrapper = ({
         />
       )}
       <div
-        style={wrapperStyle}
+        style={{ ...wrapperStyle, position: 'relative' }}
         onKeyDown={(e) => {
           if (!e.repeat) handleWrapperKeydown(e.key)
         }}
@@ -1129,6 +1129,21 @@ const SiaWrapper = ({
           onSelectAnnotation={handleSelectAnnotation}
           onTimeTravel={handleTimeTravel}
         />
+        {!imageBlob && !isSiaLoading && (
+          <div
+            style={{
+              position: 'absolute',
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              zIndex: 10,
+            }}
+          >
+            <CSpinner />
+          </div>
+        )}
       </div>
     </>
   )

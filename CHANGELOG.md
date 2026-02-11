@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Queries for MIA (replacing redux)
 - New values "anno_update_id" and "anno_chunk_id" to annotations
 - "Got to first/latest" buttons added to MIA UI
+- Loading-spinner when changing SIA images
 ### Changed
 - Updated React to 19.2.1 (major update from v18)
 - Switched chonky filebrowser to chonky2 (chonky is not maintained anymore)
@@ -44,6 +45,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Acutally show intended Icons in filter of "my annotation tasks"
 - Fixed border colors of CoreDataTable
 - Added missing import of "delete_ds_export" to endpoint.py
+- No longer showing "undefined" when changing SIA-Images
 ### Removed
 - Removed WorkingOnMIA, WorkingOnSIA - both replaced by AnnotationTop
 - Removed old DataTable component and everything importing from outdated 'react-table'
