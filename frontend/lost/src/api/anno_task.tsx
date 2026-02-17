@@ -180,3 +180,25 @@ export const useFilterLabels = () => {
     },
   )
 }
+
+export const forceAnnotationRelease = async (id: number, callBack: () => void) => {
+  try {
+    await axios.post(API_URL + `/annotasks/${id}/force_release`)
+    callBack()
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+export const changeUser = async (
+  annotaskId: number,
+  groupId: number,
+  callBack: () => void,
+) => {
+  try {
+    await axios.patch(API_URL + `/annotasks/${annotaskId}/group`, { groupId })
+    callBack()
+  } catch (e) {
+    console.error(e)
+  }
+}

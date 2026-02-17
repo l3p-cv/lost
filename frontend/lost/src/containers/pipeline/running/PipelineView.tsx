@@ -8,7 +8,7 @@ import { usePipeline } from '../../../actions/pipeline/pipeline_api'
 import BaseContainer from '../../../components/BaseContainer'
 import { CenteredSpinner } from '../../../components/CenteredSpinner'
 import { LivePipeline } from './LivePipeline'
-import Modal from './modals'
+import PipeElementBaseModal from './modals'
 import Toolbar from './Toolbar'
 
 export const PipelineView = () => {
@@ -46,7 +46,7 @@ export const PipelineView = () => {
       }
     }
   }
-
+  console.log('Modal Data: ', modalData)
   return (
     data && (
       <CContainer style={{ marginTop: '15px' }}>
@@ -60,7 +60,7 @@ export const PipelineView = () => {
                 initialEdges={data.graph.edges}
                 onNodeClick={handleNodeClick}
               />
-              <Modal
+              <PipeElementBaseModal
                 data={modalData}
                 modalOpened={isModalOpen}
                 toggleModal={toggleModal}

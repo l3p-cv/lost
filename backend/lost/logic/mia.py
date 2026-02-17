@@ -21,7 +21,7 @@ def get_next(db_man, default_user_id, max_amount):
             return __get_next_image_anno(db_man, default_user_id, at, max_amount)
     images = dict()
     images["images"] = list()
-    images["chunk"] = {"hasPrev": True, "id": -1}
+    images["chunk"] = {"hasPrev": True, "id": -1} # TODO: not always true!!!
     images["updateIds"] = []
     return images
 
@@ -87,7 +87,7 @@ def get_latest(db_man, default_user_id):
 
 
 class ImageSerialize:
-    def __init__(self, db_man, annos, user_id, has_prev, proposedLabel=True,):
+    def __init__(self, db_man, annos, user_id, has_prev=False, proposedLabel=True,):
         self.mia_json = dict()
         self.db_man = db_man
         self.annos = annos
@@ -231,7 +231,20 @@ def __get_latest_update_id(db_man, user_id, at, chunk_id, model_anno):
     return latest_update_id, flat_update_ids
 
 
-def __get_next_two_d_anno(db_man, user_id, at, max_amount, current_chunk_id):
+def __check_annos_have_prev(db_man, at, annos, model_anno, user_id):
+    chunk_id = annos[0].chunk_id
+    if chunk_id > 1:
+        return True
+    
+    chunk_update_ids = db_man.get_chunk_update_ids(user_id, at.idx, model_anno, chunk_id)
+    current_update_ids = set([anno.update_id for anno in annos])
+    if len(chunk_update_ids) > len(current_update_ids):
+        return True
+    else:
+        return False
+
+
+def __get_next_two_d_anno(db_man, user_id, at, max_amount):
     model_anno = model.TwoDAnno
     #################### get locked priority ########################
     annos = __get_filtered_image_annotations_by_state(db_man, at, state.Anno.LOCKED_PRIORITY, 
@@ -240,7 +253,8 @@ def __get_next_two_d_anno(db_man, user_id, at, max_amount, current_chunk_id):
         for anno in annos:
             anno.timestamp_lock = datetime.now()
             db_man.save_obj(anno)
-        image_serialize = TwoDSerialize(db_man, annos, user_id, at, True, proposedLabel=True)
+        has_prev = __check_annos_have_prev(db_man, at, annos, model_anno, user_id)
+        image_serialize = TwoDSerialize(db_man, annos, user_id, at, has_prev, proposedLabel=True)
         image_serialize.serialize()
         return image_serialize.mia_json
 
@@ -266,7 +280,8 @@ def __get_next_two_d_anno(db_man, user_id, at, max_amount, current_chunk_id):
         for anno in annos:
             anno.timestamp_lock = datetime.now()
             db_man.save_obj(anno)
-        image_serialize = TwoDSerialize(db_man, annos, user_id, at.idx, True)
+        has_prev = __check_annos_have_prev(db_man, at, annos, model_anno, user_id)
+        image_serialize = TwoDSerialize(db_man, annos, user_id, at.idx, has_prev)
         image_serialize.serialize()
         return image_serialize.mia_json
 
@@ -292,7 +307,8 @@ def __get_next_two_d_anno(db_man, user_id, at, max_amount, current_chunk_id):
             anno.user_id = user_id
             db_man.add(anno)
         db_man.commit()
-        image_serialize = TwoDSerialize(db_man, annos, user_id, at.idx, True)
+        has_prev = __check_annos_have_prev(db_man, at, annos, model_anno, user_id)
+        image_serialize = TwoDSerialize(db_man, annos, user_id, at.idx, has_prev)
         image_serialize.serialize()
         return image_serialize.mia_json
 
@@ -308,7 +324,8 @@ def __get_next_image_anno(db_man, user_id, at, max_amount):
         for anno in annos:
             anno.timestamp_lock = datetime.now()
             db_man.save_obj(anno)
-        image_serialize = ImageSerialize(db_man, annos, user_id, True)
+        has_prev = __check_annos_have_prev(db_man, at, annos, model_anno, user_id)
+        image_serialize = ImageSerialize(db_man, annos, user_id, has_prev)
         image_serialize.serialize()
         return image_serialize.mia_json
         #################### get view locked ########################
@@ -334,7 +351,8 @@ def __get_next_image_anno(db_man, user_id, at, max_amount):
         for anno in annos:
             anno.timestamp_lock = datetime.now()
             db_man.save_obj(anno)
-        image_serialize = ImageSerialize(db_man, annos, user_id, True)
+        has_prev = __check_annos_have_prev(db_man, at, annos, model_anno, user_id)
+        image_serialize = ImageSerialize(db_man, annos, user_id, has_prev)
         image_serialize.serialize()
         return image_serialize.mia_json
     # -- fill with new annos if size < max_amount
@@ -362,7 +380,8 @@ def __get_next_image_anno(db_man, user_id, at, max_amount):
             anno.user_id = user_id
             db_man.add(anno)
         db_man.commit()
-        image_serialize = ImageSerialize(db_man, annos, user_id, True)
+        has_prev = __check_annos_have_prev(db_man, at, annos, model_anno, user_id)
+        image_serialize = ImageSerialize(db_man, annos, user_id, has_prev)
         image_serialize.serialize()
         return image_serialize.mia_json
     

@@ -4,7 +4,8 @@ import DatasourceModal from './types/DatasourceModal'
 import LoopModal from './types/LoopModal'
 import ScriptModal from './types/ScriptModal'
 
-const BaseModal = (props) => {
+const PipeElementBaseModal = (props) => {
+  console.log('Props: ', props)
   const onClose = (opened) => {
     if (opened) {
       props.toggleModal()
@@ -39,10 +40,6 @@ const BaseModal = (props) => {
             modalOpened={true}
             state={props.data.state}
             annoTask={props.data.annoTask}
-            siaReviewSetElement={props.siaReviewSetElement}
-            chooseAnnoTask={props.chooseAnnoTask}
-            forceAnnotationRelease={props.forceAnnotationRelease}
-            changeUser={props.changeUser}
             onClose={() => onClose(props.modalOpened)}
           />
         )
@@ -73,4 +70,4 @@ const BaseModal = (props) => {
   }
 }
 
-export default BaseModal
+export default PipeElementBaseModal

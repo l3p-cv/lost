@@ -10,6 +10,7 @@ type ClusterProps = {
   images: [{ id: number; type: string }]
   zoom: number
   workingOnAnnoTask: any
+  imgaesLoading: boolean
   imageActiveStates: {
     value: Record<number, boolean>
     set: (id: number, active: boolean) => void
@@ -19,6 +20,7 @@ type ClusterProps = {
 const Cluster = ({
   images,
   zoom,
+  imgaesLoading,
   workingOnAnnoTask,
   imageActiveStates,
 }: ClusterProps) => {
@@ -58,6 +60,18 @@ const Cluster = ({
         )
       }
     }
+    if (!imgaesLoading) {
+      return (
+        <CRow className="justify-content-center" style={{ marginTop: '40px' }}>
+          <CCol xs="5" className="d-flex">
+            <CAlert color="warning">
+              It seems like another user still hase images left to annotate.
+            </CAlert>
+          </CCol>
+        </CRow>
+      )
+    }
+
     return (
       <div style={{ display: 'flex', justifyContent: 'center' }}>
         <div>
@@ -67,7 +81,8 @@ const Cluster = ({
     )
   }
 
-  if (images.length > 0) {
+  console.log(images)
+  if (images.length > 0 && !imgaesLoading) {
     return (
       <div className="mia-images">
         {images.map((imageData) => {

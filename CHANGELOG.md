@@ -39,6 +39,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Converted MIA-Components to .tsx
 - Reworked MIA navigation (backend and frontend) with new db-values (path 0.5.0)
 - Moved and renamed dataset_review_api, anno_task_api and mia_api to new api directory
+- Renamed second "BaseModal" to "PipeElementBaseModal" for more clarity (BaseModal already exists)
+- Replaced all async (dispatch) methods with equivalent not interacting with Redux
 ### Fixed
 - Fixed using alternative pagesizes for whole-data CoreDataTable
 - Fixed lingering bug when saving/updating userdata (EditUserModal)
@@ -56,6 +58,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed libs/hist.js (was only used in MIA; lost-sia package has own copy of file)
 - Deleted unused SiaReviewComponent
 - Removed react-redux package and all reducers
+- SiaReview and annotask acctions/directory
 
 ## [3.0.0] - 2025-12-04
 ### Breaking Changes
