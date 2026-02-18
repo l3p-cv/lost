@@ -41,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Moved and renamed dataset_review_api, anno_task_api and mia_api to new api directory
 - Renamed second "BaseModal" to "PipeElementBaseModal" for more clarity (BaseModal already exists)
 - Replaced all async (dispatch) methods with equivalent not interacting with Redux
+- Unfinished Annotask/Dataset exports now deletable (to prevent other errors)
 ### Fixed
 - Fixed using alternative pagesizes for whole-data CoreDataTable
 - Fixed lingering bug when saving/updating userdata (EditUserModal)
@@ -48,6 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed border colors of CoreDataTable
 - Added missing import of "delete_ds_export" to endpoint.py
 - No longer showing "undefined" when changing SIA-Images
+- Fixed error when creating new nodes
 ### Removed
 - Removed WorkingOnMIA, WorkingOnSIA - both replaced by AnnotationTop
 - Removed old DataTable component and everything importing from outdated 'react-table'

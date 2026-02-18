@@ -64,8 +64,8 @@ export const LabelTreeEditor: React.FC<LabelTreeFlowProps> = ({
   useAutoLayout(defaultLayoutOptions)
 
   useEffect(() => {
-    fitView()
-  }, [nodes, fitView])
+    fitView({ duration: 400 })
+  }, [nodes.length, fitView])
 
   const handleNodeClick = (_event: React.MouseEvent, node: Node) => {
     if (readonly) return
