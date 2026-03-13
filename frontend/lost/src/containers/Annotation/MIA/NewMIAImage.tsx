@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { TransformWrapper, TransformComponent } from '@pronestor/react-zoom-pan-pinch'
 import BaseModal from '../../../components/BaseModal'
 import ImageLoading from './ImageLoading'
-import { CRow, CFormSwitch } from '@coreui/react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { CRow, CFormSwitch, CCol } from '@coreui/react'
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { useGetMiaImage } from '../../../api/mia'
+import CoreIconButton from '../../../components/CoreIconButton'
 
 type MIAImageProps = {
   height: number | string
@@ -64,39 +64,33 @@ const MIAImage = ({ height, imageBase, imageActiveState }: MIAImageProps) => {
   }
   const modalFooter = () => {
     return (
-      <>
-        <CFormSwitch
-          className={'mx-1'}
-          color={'primary'}
-          checked={imageActiveState.value}
-          onChange={() => imageActiveState.set(imageBase.id, !imageActiveState.value)}
-        />
-        <div style={{ marginRight: '50px' }}>
+      <CRow>
+        <CCol className="d-flex align-items-center">
+          <CFormSwitch
+            className={'mx-1'}
+            size="xl"
+            checked={imageActiveState.value}
+            onChange={() => imageActiveState.set(imageBase.id, !imageActiveState.value)}
+          />
           {imageActiveState.value ? (
-            <>
-              <FontAwesomeIcon
-                className="mr-3"
-                size={'1x'}
-                color={'green'}
-                icon={faCheck}
-              />
-              &nbsp;
-              <b>Included</b>
-            </>
+            <CoreIconButton
+              text=" Included"
+              color="success"
+              isOutline={false}
+              icon={faCheck}
+              inverse
+            />
           ) : (
-            <>
-              <FontAwesomeIcon
-                className="mr-3"
-                size={'1x'}
-                color={'red'}
-                icon={faTimes}
-              />
-              &nbsp;
-              <b>Excluded</b>
-            </>
+            <CoreIconButton
+              text="Excluded"
+              color="danger"
+              isOutline={false}
+              icon={faTimes}
+              inverse
+            />
           )}
-        </div>
-      </>
+        </CCol>
+      </CRow>
     )
   }
 
@@ -131,17 +125,6 @@ const MIAImage = ({ height, imageBase, imageActiveState }: MIAImageProps) => {
               height={height}
               style={{ display: 'inline' }}
             />
-            {imageActiveState.value ? (
-              ''
-            ) : (
-              <FontAwesomeIcon
-                style={{ position: 'absolute', bottom: 0, left: '45%' }}
-                className="mr-3"
-                size={'2x'}
-                color={'red'}
-                icon={faTimes}
-              />
-            )}
           </div>
         </>
       ) : (

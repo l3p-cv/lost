@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New values "anno_update_id" and "anno_chunk_id" to annotations
 - "Got to first/latest" buttons added to MIA UI
 - Loading-spinner when changing SIA images
+- Added "inverse" argument to CoreIconButton
+- Added "permanent reverse" button to MIA
 ### Changed
 - Updated React to 19.2.1 (major update from v18)
 - Switched chonky filebrowser to chonky2 (chonky is not maintained anymore)
@@ -42,6 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Renamed second "BaseModal" to "PipeElementBaseModal" for more clarity (BaseModal already exists)
 - Replaced all async (dispatch) methods with equivalent not interacting with Redux
 - Unfinished Annotask/Dataset exports now deletable (to prevent other errors)
+- Overhaul of MIA UI regarding inactive images
 ### Fixed
 - Fixed using alternative pagesizes for whole-data CoreDataTable
 - Fixed lingering bug when saving/updating userdata (EditUserModal)

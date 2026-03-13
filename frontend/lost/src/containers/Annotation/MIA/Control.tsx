@@ -16,6 +16,8 @@ import {
   faArrowLeft,
   faArrowRight,
   faArrowsAltH,
+  faLock,
+  faLockOpen,
   faSearchMinus,
   faSearchPlus,
   faTag,
@@ -46,6 +48,7 @@ type ControlProps = {
     set: (id: number, active: boolean) => void
   }
   annotaskFinishedLbls: number
+  permaReverseState: StateManager<boolean>
 }
 
 const Control = ({
@@ -56,6 +59,7 @@ const Control = ({
   miaAnnos,
   imageActiveStates,
   annotaskFinishedLbls,
+  permaReverseState,
 }: ControlProps) => {
   const selectStyle = {
     width: '250px',
@@ -79,6 +83,7 @@ const Control = ({
   const { mutate: goBackMia, isLoading: goBackisLoading } = useGoBackMia()
   const { mutate: goToFirstMia, isLoading: goFirstLoading } = useGoToFirstMIA()
   const { mutate: goToLatestMia, isLoading: goLatestLoading } = useGoToLatestMIA()
+  const anySelected = Object.values(imageActiveStates.value).some(Boolean)
 
   const { data, refetch } = useGetSpecialMiaAnnos(undefined, {
     enabled: false,
@@ -108,6 +113,11 @@ const Control = ({
   }
   const handleAddLabel = (label) => {
     selectedLabelState.set(label)
+  }
+
+  const handlePermaReverse = () => {
+    permaReverseState.set(!permaReverseState.value)
+    handleReverse()
   }
 
   const handleLabelChange = (e) => {
@@ -227,6 +237,13 @@ const Control = ({
             toolTip="Reverse Selection"
             isOutline={true}
           />
+          <CoreIconButton
+            onClick={handlePermaReverse}
+            color={'primary'}
+            icon={permaReverseState.value ? faLock : faLockOpen}
+            toolTip="Reverse Selection Mode"
+            isOutline={!permaReverseState.value}
+          />
           <CDropdown>
             <CDropdownToggle color="primary" variant="outline" caret>
               Amount
@@ -285,7 +302,11 @@ const Control = ({
           <CoreIconButton
             icon={faArrowRight}
             isOutline={true}
-            disabled={selectedLabelState.value && miaAnnos.images.length ? false : true}
+            disabled={
+              anySelected && !!selectedLabelState.value?.label && miaAnnos.images.length
+                ? false
+                : true
+            }
             color="primary"
             onClick={handleSubmit}
             toolTip="Give Images selected Label"
