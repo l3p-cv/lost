@@ -2,7 +2,7 @@ import { faDownload, faTrash } from '@fortawesome/free-solid-svg-icons'
 import axios from 'axios'
 import { saveAs } from 'file-saver'
 import { useEffect } from 'react'
-import * as annoTaskApi from '../../../../../../actions/annoTask/anno_task_api'
+import * as annoTaskApi from '../../../../../../api/anno_task'
 import * as Notification from '../../../../../../components/Notification'
 import { getColor } from '../../../../../../containers/Annotation/AnnoTask/utils'
 import { API_URL } from '../../../../../../lost_settings'
@@ -127,7 +127,6 @@ const TabAvailableExports = (props) => {
         return (
           <CoreIconButton
             color="danger"
-            disabled={props.row.original.progress < 100}
             icon={faTrash}
             onClick={() => handleAnnotaskExportDelete(props.row.original.id)}
           />

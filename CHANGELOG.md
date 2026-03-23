@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased] - 
 ### Added
+- Your stuff here
+
+## [3.1.0] - 2026-03-23
+### Added
 - Added SIA time travel (undo/redo changes using ctrl + z/y)
 - BaseModal now has backdropOption (which can be true, false or 'static'); used 'static' for EditInstruction
 - Groups and Roles viewable und "My Profile"
@@ -15,6 +19,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added InfoText component, to streamline tooltips and texts
 - Option overrideDisabledColor added to CoreIconButton
 - BaseModal has onShow() option now
+- Queries for MIA (replacing redux)
+- New values "anno_update_id" and "anno_chunk_id" to annotations
+- "Got to first/latest" buttons added to MIA UI
+- Loading-spinner when changing SIA images
+- Added "inverse" argument to CoreIconButton
+- Added "permanent reverse" button to MIA
+- Loading feedback when applying filters to SIA images
 ### Changed
 - Updated React to 19.2.1 (major update from v18)
 - Switched chonky filebrowser to chonky2 (chonky is not maintained anymore)
@@ -30,6 +41,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Used component BaseModal whenever applicable + converted to .tsx
 - Rewrote pipeline modals (UI streamline) and changed them to typescript
 - Replaced component Loading with CenteredSpinner
+- Reworked architecture of MIA components (so that they use queries, not redux)
+- Query useGetCurentAnnotask now uses 'currentannotask' instead of 'getcurrentannotask' as queryname
+- Converted MIA-Components to .tsx
+- Reworked MIA navigation (backend and frontend) with new db-values (path 0.5.0)
+- Moved and renamed dataset_review_api, anno_task_api and mia_api to new api directory
+- Renamed second "BaseModal" to "PipeElementBaseModal" for more clarity (BaseModal already exists)
+- Replaced all async (dispatch) methods with equivalent not interacting with Redux
+- Unfinished Annotask/Dataset exports now deletable (to prevent other errors)
+- Overhaul of MIA UI regarding inactive images
+- Made time frame for authentication reset longer
 ### Fixed
 - Fixed using alternative pagesizes for whole-data CoreDataTable
 - Fixed lingering bug when saving/updating userdata (EditUserModal)
@@ -37,11 +58,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed border colors of CoreDataTable
 - Added missing import of "delete_ds_export" to endpoint.py
 - Fix numpy 2.x incompability in inout.py
+- No longer showing "undefined" when changing SIA-Images
+- Fixed error when creating new nodes
+- Reactivated SIA filter menu
+- Bilateral filter settings stay saved after closing menu
+- Fixed minor chunk_id/update_id errors
 ### Removed
 - Removed WorkingOnMIA, WorkingOnSIA - both replaced by AnnotationTop
 - Removed old DataTable component and everything importing from outdated 'react-table'
 - Removed unused components NewDataTable, SimpleTable
 - Removed now unused components IconButton, Progress, Helpbutton, Loading
+- Removed unused "MiaImage.js" (NewMIAImage replaces it for a long time now)
+- Removed old MIA-API
+- Removed libs/hist.js (was only used in MIA; lost-sia package has own copy of file)
+- Deleted unused SiaReviewComponent
+- Removed react-redux package and all reducers
+- SiaReview and annotask acctions/directory
 
 ## [3.0.0] - 2025-12-04
 ### Breaking Changes

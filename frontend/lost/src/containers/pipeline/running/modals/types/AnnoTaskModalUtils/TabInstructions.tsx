@@ -4,7 +4,7 @@ import { useGetInstructions } from '../../../../../Instruction/instruction_api'
 import {
   useUpdateInstruction,
   useGetCurrentInstruction,
-} from '../../../../../../actions/annoTask/anno_task_api'
+} from '../../../../../../api/anno_task'
 import Select from 'react-select'
 import { useEffect, useState } from 'react'
 import { faEye } from '@fortawesome/free-solid-svg-icons'

@@ -2,13 +2,12 @@
 import React, { useState, useEffect } from 'react'
 import { getColor } from './utils'
 import { useGetInstructions } from '../../Instruction/instruction_api' // API hook for instructions
-import { useGetCurrentInstruction } from '../../../actions/annoTask/anno_task_api' // Fetch current instruction
+import { useGetCurrentInstruction } from '../../../api/anno_task' // Fetch current instruction
 import ViewInstruction from '../../Instruction/ViewInstruction' // Import ViewInstruction component
 import CoreIconButton from '../../../components/CoreIconButton'
 import { CCol, CContainer, CProgress, CRow, CTooltip } from '@coreui/react'
 import { faCrown, faEye } from '@fortawesome/free-solid-svg-icons'
 
-// TODO: use image (gotten by siaAPI)
 const AnnotationTop = ({
   annoTask,
   annoData = null,
@@ -21,6 +20,15 @@ const AnnotationTop = ({
   const { data: instructions, isLoading, error } = useGetInstructions('all') // API hook to fetch instructions
   const { data: currentInstruction } = useGetCurrentInstruction(annoTask?.id) // Fetch current instruction based on annoTask.id
   const [selectedInstruction, setSelectedInstruction] = useState(null)
+  const [currentImage, setCurrentImage] = useState(null)
+  const [totalImages, setTotalImages] = useState(null)
+
+  useEffect(() => {
+    if (!!annoData?.image) {
+      setCurrentImage(annoData.image.number)
+      setTotalImages(annoData.image.amount)
+    }
+  }, [annoData])
 
   useEffect(() => {
     if (!instructions) return
@@ -48,8 +56,6 @@ const AnnotationTop = ({
   // HACK: stil some inconsistent naming in the apis...
   const pipelineName = annoTask?.pipelineName ?? annoTask?.pipeline_name
   const createdAt = annoTask?.createdAt ?? annoTask?.created_at
-
-  console.log('AannoTask: ', annoTask)
 
   return (
     <CContainer fluid>
@@ -93,7 +99,7 @@ const AnnotationTop = ({
               <br />
               <strong className="h4">
                 {isSIA
-                  ? `${annoData?.image.number}/${annoData?.image.amount}`
+                  ? `${currentImage}/${totalImages}`
                   : `${annoTask.finished}/${annoTask.size}`}
               </strong>
             </CCol>

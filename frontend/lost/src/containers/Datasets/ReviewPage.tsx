@@ -1,10 +1,9 @@
-import { CCol, CRow } from '@coreui/react'
 import { useParams } from 'react-router-dom'
 import SiaWrapper from '../Annotation/SIA/SiaWrapper'
 import { CSSProperties, useEffect, useState } from 'react'
-import siaApi, { ReviewData, useReview } from '../../actions/dataset/dataset_review_api'
+import siaApi, { ReviewData, useReview } from '../../api/dataset_review'
 import { ImageSwitchData } from '../../actions/sia/sia_api'
-import { useAnnotask } from '../../actions/annoTask/anno_task_api'
+import { useAnnotask } from '../../api/anno_task'
 import AnnotationTop from '../Annotation/AnnoTask/AnnotationTop'
 
 const DatasetsReviewComponent = () => {
@@ -68,6 +67,7 @@ const DatasetsReviewComponent = () => {
           isDatasetMode={true}
           isImageSearchEnabled={true}
           siaApi={siaApi}
+          isReview={true}
           onSetAnnotationRequestData={(imageSwitchData: ImageSwitchData) => {
             const newReviewData: ReviewData = {
               isAnnotaskReview: false,

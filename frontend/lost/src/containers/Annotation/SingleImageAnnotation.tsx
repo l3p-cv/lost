@@ -1,7 +1,7 @@
 import { CSSProperties, useEffect, useState } from 'react'
 
 import SiaWrapper from './SIA/SiaWrapper'
-import * as annotaskApi from '../../actions/annoTask/anno_task_api'
+import * as annotaskApi from '../../api/anno_task'
 import siaApi, {
   SiaAnnotationChangeRequest,
   useGetSiaAnnos, // no image switcher???

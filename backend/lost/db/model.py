@@ -15,7 +15,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from lost import settings
 from lost.db import dtype
 
-DB_VERSION = "0.4.0"
+DB_VERSION = "0.5.0"
 DB_VERSION_KEY = "lost_db_version"
 
 # Set conventions for foreign key name generation
@@ -186,6 +186,8 @@ class TwoDAnno(Base):
     meta = Column(Text)
     meta_blob = Column(BLOB)
     is_example = Column(Boolean)
+    update_id = Column(Integer)
+    chunk_id = Column(Integer)
 
     def __init__(
         self,
@@ -206,6 +208,8 @@ class TwoDAnno(Base):
         meta=None,
         is_example=False,
         meta_blob=None,
+        update_id=-1,
+        chunk_id=-1
     ):
         self.anno_task_id = anno_task_id
         self.user_id = user_id
@@ -224,6 +228,8 @@ class TwoDAnno(Base):
         self.meta = meta
         self.meta_blob = meta_blob
         self.is_example = is_example
+        self.update_id = update_id
+        self.chunk_id=chunk_id
         # if label_leaf_id is not None:
         #     self.label = Label(label_leaf_id=label_leaf_id)
 
@@ -283,6 +289,8 @@ class TwoDAnno(Base):
             "anno_style": self.get_anno_style(),
             "anno_format": "rel",
             "anno_comment": self.description,
+            "anno_update_id": self.update_id,
+            "anno_chunk_id": self.chunk_id
         }
         try:
             if self.meta_blob is not None:
@@ -675,6 +683,8 @@ class ImageAnno(Base):
     meta = Column(Text)
     meta_blob = Column(BLOB)
     img_actions = Column(Text)
+    update_id = Column(Integer)
+    chunk_id = Column(Integer)
 
     def __init__(
         self,
@@ -695,6 +705,8 @@ class ImageAnno(Base):
         meta=None,
         meta_blob=None,
         img_actions=None,
+        update_id=-1,
+        chunk_id=-1
     ):
         self.anno_task_id = anno_task_id
         self.user_id = user_id
@@ -713,6 +725,8 @@ class ImageAnno(Base):
         self.meta = meta
         self.meta_blob = meta_blob
         self.img_actions = img_actions
+        self.update_id = update_id
+        self.chunk_id = chunk_id
         # if label_leaf_id is not None:
         #     self.label = Label(label_leaf_id=label_leaf_id)
 
@@ -800,6 +814,8 @@ class ImageAnno(Base):
             "img_user": None,
             "img_is_junk": self.is_junk,
             "img_fs_name": self.fs.name,
+            "img_update_id": self.update_id,
+            "img_chunk_id": self.chunk_id
         }
         try:
             # TODO: Take care when same meta data is stored for image an 2d anno!

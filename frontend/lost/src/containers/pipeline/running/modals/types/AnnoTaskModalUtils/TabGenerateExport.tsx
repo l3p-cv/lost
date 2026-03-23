@@ -13,7 +13,7 @@ import {
   CRow,
 } from '@coreui/react'
 import { faPlay } from '@fortawesome/free-solid-svg-icons'
-import * as annoTaskApi from '../../../../../../actions/annoTask/anno_task_api'
+import * as annoTaskApi from '../../../../../../api/anno_task'
 import * as Notification from '../../../../../../components/Notification'
 import CoreIconButton from '../../../../../../components/CoreIconButton'
 import InfoText from '../../../../../../components/InfoText'

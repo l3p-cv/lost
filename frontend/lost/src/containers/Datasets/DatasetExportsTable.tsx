@@ -64,7 +64,6 @@ export const DatasetExportsTable = ({ datasetId }: DatasetExportsTableProps) => 
                 color={progress < 100 ? 'info' : 'success'}
                 value={100}
                 animated={progress < 100}
-                // striped={progress < 100}
               >
                 <strong>{progress < 100 ? 'In progress' : 'Completed'}</strong>
               </CProgress>
@@ -79,7 +78,6 @@ export const DatasetExportsTable = ({ datasetId }: DatasetExportsTableProps) => 
         return (
           <CoreIconButton
             color="danger"
-            disabled={props.row.original.progress < 100}
             icon={faTrash}
             onClick={() => handleDatasetExportDelete(props.row.original.id)}
           />

@@ -7,16 +7,13 @@ import CoreIconButton from '../../../../../components/CoreIconButton'
 import BaseModal from '../../../../../components/BaseModal'
 import CoreDataTable from '../../../../../components/CoreDataTable'
 import { createColumnHelper } from '@tanstack/react-table'
+import { changeUser, forceAnnotationRelease } from '../../../../../api/anno_task'
 
 type AnnoTaskModalProps = {
   modalOpened: boolean
   annoTask: { name: string; id: number | string; type: string }
   id: number | string
   state: string
-  changeUser: () => void
-  chooseAnnoTask: (arg1: number | string, arg2: () => void) => void
-  siaReviewSetElement: (arg1: number | string) => void
-  forceAnnotationRelease: (arg1: number | string, arg2: any) => void
   onClose: () => void
 }
 
@@ -25,17 +22,8 @@ const AnnoTaskModal = ({
   annoTask,
   id,
   state,
-  changeUser,
-  chooseAnnoTask,
-  siaReviewSetElement,
-  forceAnnotationRelease,
   onClose,
 }: AnnoTaskModalProps) => {
-  function handleSiaRewiewClick(callback) {
-    siaReviewSetElement(id)
-    chooseAnnoTask(annoTask.id, callback)
-  }
-
   function annotationReleaseSuccessful() {
     Notification.showSuccess('Annotations were successfully released.')
   }
@@ -53,7 +41,7 @@ const AnnoTaskModal = ({
         return <b>{`${row.original.key}:`}</b>
       },
     }),
-    columnHelper.accessor('taskName', {
+    columnHelper.accessor('taskNameVal', {
       header: () => 'Value',
       cell: ({ row }) => {
         return <>{row.original.value}</>
@@ -106,18 +94,16 @@ const AnnoTaskModal = ({
             icon={faEye}
             color="primary"
             style={{ marginLeft: 10, marginTop: 20, marginBottom: '1rem' }}
-            onClick={(e) =>
-              handleSiaRewiewClick(() => {
-                navigate(`/annotasks/${annoTask.id}/review`)
-              })
-            }
+            onClick={() => {
+              navigate(`/annotasks/${annoTask.id}/review`)
+            }}
             text="Review Annotations"
           />
           <CoreIconButton
             icon={faCircle}
             color="danger"
             style={{ marginLeft: 10, marginTop: 20, marginBottom: '1rem' }}
-            onClick={(e) => handleForceAnnotationRelease()}
+            onClick={() => handleForceAnnotationRelease()}
             text="Force Annotation Release"
           />
         </CCol>

@@ -10,6 +10,7 @@ type ImageFilterButtonProps = {
   appliedFilters?: ImageFilter[]
   tooltip?: String
   onFiltersChanged: (filters: ImageFilter[]) => void
+  imageIsLoading?: boolean
 }
 
 const ImageFilterButton = ({
@@ -17,6 +18,7 @@ const ImageFilterButton = ({
   appliedFilters = [],
   tooltip = '',
   onFiltersChanged = () => {},
+  imageIsLoading = false,
 }: ImageFilterButtonProps) => {
   const customPopoverStyle = {
     '--cui-popover-max-width': '300px',
@@ -26,20 +28,23 @@ const ImageFilterButton = ({
   return (
     <CPopover
       placement="bottom"
-      trigger="click" // closes when clicking somewhere else
+      trigger="click"
       content={
         <ImageFilterUi
           appliedFilters={appliedFilters}
           onFiltersChanged={onFiltersChanged}
+          imageIsLoading={imageIsLoading}
         />
       }
       style={customPopoverStyle}
     >
-      <CTooltip content={tooltip} placement="top">
-        <CButton color="primary" disabled={isDisabled} variant="outline">
-          <FontAwesomeIcon icon={faFilter as IconProp} />
-        </CButton>
-      </CTooltip>
+      <span className="d-inline-block">
+        <CTooltip content={tooltip} placement="top">
+          <CButton color="primary" disabled={isDisabled} variant="outline">
+            <FontAwesomeIcon icon={faFilter as IconProp} />
+          </CButton>
+        </CTooltip>
+      </span>
     </CPopover>
   )
 }

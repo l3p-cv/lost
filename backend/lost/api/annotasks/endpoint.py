@@ -14,6 +14,7 @@ from lost.api.annotasks.api_definition import (
     anno_task_list,
     review_images,
     review_options,
+    annotask_statistics,
     storage_settings,
 )
 from lost.api.annotasks.parsers import (
@@ -756,3 +757,23 @@ class AnnotaskReview(Resource):
         json_response["current_annotask_idx"] = current_annotask_idx
 
         return json_response
+
+@namespace.route("/statistics/<int:annotask_id>")
+@namespace.param("annotask_id", "The id of the annotask.")
+@api.doc(security="apikey")
+class Statistics(Resource):
+    @api.doc(security="apikey", description="Get the infos and statistics for the Annotask")
+    @api.marshal_with(annotask_statistics)
+    @jwt_required()
+    def get(self, annotask_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.ANNOTATOR):
+            dbm.close_session()
+            return api.abort(403, f"You need to be {roles.ANNOTATOR} in order to perform this request.")
+        else:
+            re = annotask_service.get_annotask_statistics(dbm, annotask_id)
+            dbm.close_session()
+            
+            return re

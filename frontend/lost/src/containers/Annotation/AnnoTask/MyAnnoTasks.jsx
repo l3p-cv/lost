@@ -2,11 +2,8 @@ import {
   CButtonToolbar,
   CCard,
   CCardBody,
-  CCardHeader,
   CCol,
   CFormInput,
-  CModal,
-  CModalFooter,
   CProgress,
   CRow,
 } from '@coreui/react'
@@ -15,18 +12,14 @@ import {
   faCheck,
   faFilter,
   faPencil,
-  faTimes,
   faTrash,
 } from '@fortawesome/free-solid-svg-icons'
 import { createColumnHelper } from '@tanstack/react-table'
 import { useCallback, useEffect, useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FaFilter, FaTrashAlt } from 'react-icons/fa'
-import { useDispatch, useSelector } from 'react-redux'
 import AmountPerLabel from './AmountPerLabel'
 import { getColor } from './utils'
-import actions from '../../../actions'
-import * as atActions from '../../../actions/annoTask/anno_task_api'
+import * as atActions from '../../../api/anno_task'
 import DropdownInput from '../../../components/DropdownInput'
 import CoreDataTable from '../../../components/CoreDataTable'
 import CoreIconButton from '../../../components/CoreIconButton'
@@ -34,26 +27,7 @@ import ErrorBoundary from '../../../components/ErrorBoundary'
 import InfoText from '../../../components/InfoText'
 import BaseModal from '../../../components/BaseModal'
 
-const { getAnnoTaskStatistic } = actions
-
-const customStyles = {
-  content: {
-    top: '50%',
-    left: '50%',
-    right: 'auto',
-    bottom: 'auto',
-    marginRight: '-50%',
-    transform: 'translate(-50%, -50%)',
-    width: '85%',
-    height: '85%',
-    maxWidth: '75rem',
-  },
-  overlay: {
-    backgroundColor: 'rgba(0,0,0,0.75)',
-  },
-}
-
-const MyAnnoTasks = ({ callBack, annoTasks }) => {
+const MyAnnoTasks = ({ callBack }) => {
   const { t } = useTranslation()
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [aTData, setATData] = useState([])
@@ -62,18 +36,18 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
   const [pageSize, setPageSize] = useState(10)
   const [annoTaskListRandKey, setAnnoTaskListRandKey] = useState()
   const [datatableInfo, setDatatableInfo] = useState()
-  const dispatch = useDispatch()
-  const specificAnnoTaskStatistic = useSelector(
-    (state) => state.annoTask.annoTaskStatistic,
-  )
   const [resetFilters, setResetFilters] = useState(false)
   const [beginFilterDate, setBeginFilterDate] = useState()
   const [endFilterDate, setEndFilterDate] = useState()
   const [filteredStates, setFilteredStates] = useState([])
   const [filteredName, setFilteredName] = useState('')
+  const [specificStatisticId, setSpecificStatisticId] = useState(0)
 
   const openModal = useCallback(() => setModalIsOpen(true), [])
   const closeModal = useCallback(() => setModalIsOpen(false), [])
+
+  const { data: specificAnnoTaskStatistic, isLoading: atStatisticIsLoading } =
+    atActions.useGetAnnoTaskStatistic(specificStatisticId)
 
   const handleRowClick = useCallback(
     (annoTask) => {
@@ -99,10 +73,10 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
 
   const handleStatisticsClick = useCallback(
     (annoTask) => {
-      dispatch(getAnnoTaskStatistic(annoTask.id))
+      setSpecificStatisticId(annoTask.id)
       openModal()
     },
-    [dispatch, openModal],
+    [openModal],
   )
   useEffect(() => {
     fetchFilterLabels()

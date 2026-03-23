@@ -1,7 +1,7 @@
 import { CCol, CContainer, CFormSelect, CRow } from '@coreui/react'
 import { faBoxesPacking } from '@fortawesome/free-solid-svg-icons'
 import { useEffect, useState } from 'react'
-import * as annoTaskApi from '../../../../../../actions/annoTask/anno_task_api'
+import * as annoTaskApi from '../../../../../../api/anno_task'
 import * as datasetApi from '../../../../../../actions/dataset/dataset_api'
 import { showSuccess } from '../../../../../../components/Notification'
 import DatasetEditModal from '../../../../../Datasets/DatasetEditModal'

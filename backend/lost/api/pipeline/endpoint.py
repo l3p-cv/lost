@@ -132,7 +132,6 @@ class PipelineListPaged(Resource):
             group_ids = [g.group_id for g in user.groups]
             re, pages = pipeline_service.get_pipelines_paged(dbm, group_ids, page_index, page_size)
             dbm.close_session()
-            print("PIPE JSON: ", re)
             # print("--- PipelineList result ---")
             # print(re)
             return {"pipelines": re, "pages": pages}
@@ -496,8 +495,7 @@ class Logs(Resource):
             resp.headers["Content-Type"] = "text/csv"
             return resp
 
-
-@namespace.route("/element/<int:pipeline_element_id>/review")
+@namespace.route("/element/<int:anno_task_id>/review")
 @api.doc(security="apikey")
 class Review(Resource):
     @jwt_required()
@@ -506,7 +504,7 @@ class Review(Resource):
     @api.param("lastImgId", "ID of the last image")
 
     # TODO: NEEDS TO BE TRANSFORMED TO GET METHOD
-    def post(self, pipeline_element_id):
+    def post(self, anno_task_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
@@ -521,7 +519,7 @@ class Review(Resource):
             return re
 
     @jwt_required()
-    def put(self, pipeline_element_id):
+    def put(self, anno_task_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
@@ -531,7 +529,7 @@ class Review(Resource):
 
         else:
             data = json.loads(request.data)
-            re = sia.review_update(dbm, data, user.idx, pipeline_element_id)
+            re = sia.review_update(dbm, data, user.idx, anno_task_id)
             dbm.close_session()
             return re
 

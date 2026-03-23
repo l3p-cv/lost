@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { useMutation, useQuery } from 'react-query'
-import { API_URL } from '../../lost_settings'
+import { API_URL } from '../lost_settings'
 
 import { uiConfig, SIA_INITIAL_UI_CONFIG } from 'lost-sia/utils'
 
@@ -9,8 +9,8 @@ import {
   EditAnnotationResponse,
   ImageData,
   ImageLabelData,
-} from '../sia/sia_api'
-import { LegacyAnnotationResponse } from '../../containers/Annotation/SIA/legacyHelper'
+} from '../actions/sia/sia_api'
+import { LegacyAnnotationResponse } from '../containers/Annotation/SIA/legacyHelper'
 import { Label } from 'lost-sia'
 
 export type SiaDatasetResponse = {
@@ -171,14 +171,23 @@ export const useGetDatasetPossibleLabels = (datasetId) => {
 }
 
 export const useUpdateImageLabel = () => {
-  return useMutation((imageEditData: ImageLabelData) => {
-    const requestData = {
-      action: 'imgLabelUpdate',
-      img: imageEditData,
-    }
-
-    return axios.patch(API_URL + `/sia`, requestData).then((res) => res.data)
-  })
+  return useMutation(
+    ({
+      imageEditData,
+      annoTaskId,
+    }: {
+      imageEditData: ImageLabelData
+      annoTaskId: number
+    }) => {
+      const requestData = {
+        action: 'imgLabelUpdate',
+        img: imageEditData,
+      }
+      return axios
+        .put(API_URL + `/pipeline/element/${annoTaskId}/review`, requestData)
+        .then((res) => res.data)
+    },
+  )
 }
 
 export default {

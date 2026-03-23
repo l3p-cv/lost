@@ -31,6 +31,7 @@ type CoreIconButtonProps = {
   tTipPlacement?: 'top' | 'left' | 'right' | 'auto' | 'bottom' | undefined
   shape?: string
   overrideDisabledColor?: boolean
+  inverse?: boolean
 }
 
 const CoreIconButton = ({
@@ -55,6 +56,7 @@ const CoreIconButton = ({
   tTipPlacement = 'top',
   shape = '',
   overrideDisabledColor = false,
+  inverse = false,
 }: CoreIconButtonProps) => {
   let iconButtonIcon: IconDefinition | undefined = icon
   if (isBack) {
@@ -81,7 +83,12 @@ const CoreIconButton = ({
     }
     const ic =
       iconButtonIcon && iconButtonIcon.iconName && iconButtonIcon.prefix ? (
-        <FontAwesomeIcon key="icon" icon={iconButtonIcon} size={loadingSize || '2x'} />
+        <FontAwesomeIcon
+          key="icon"
+          inverse={inverse}
+          icon={iconButtonIcon}
+          size={loadingSize || '2x'}
+        />
       ) : null
     const iconButtonText = text ? (
       <span key="text" style={{ marginLeft: margin, marginRight: margin }}>

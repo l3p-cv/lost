@@ -1,7 +1,7 @@
 import axios from 'axios'
-import { API_URL } from '../../lost_settings'
+import { API_URL } from '../lost_settings'
 import { useMutation, useQuery } from 'react-query'
-import { showError, showSuccess } from '../../components/Notification'
+import { showError, showSuccess } from '../components/Notification'
 
 export const useUpdateConfig = () => {
   return useMutation((data) =>
@@ -48,7 +48,7 @@ export const useUpdateInstruction = () => {
 
 export const useGetCurrentAnnotask = () => {
   return useQuery(
-    ['getcurrentannotask'],
+    ['currentannotask'],
     () => axios.get(`${API_URL}/annotasks/working`).then((res) => res.data),
     {
       refetchOnWindowFocus: false,
@@ -56,6 +56,15 @@ export const useGetCurrentAnnotask = () => {
       staleTime: 0,
     },
   )
+}
+
+// TODO: refine, implement and test
+export const useGetAllAnnotasks = () => {
+  return useQuery([], () => axios.get(`${API_URL}/annotasks`).then((res) => res.data), {
+    refetchOnWindowFocus: false,
+    cacheTime: 0,
+    staleTime: 0,
+  })
 }
 
 export const useGetCurrentInstruction = (annotaskId) => {
@@ -124,7 +133,19 @@ export const useAnnotaskOld = () => {
 
 export const useChooseAnnotask = () => {
   return useMutation((annoTaskId) =>
-    axios.post(`${API_URL}/annotasks?id=${annoTaskId}`).then((res) => res.data),
+    axios.post(`${API_URL}/annotasks`, { id: annoTaskId }).then((res) => res.data),
+  )
+}
+
+export const useGetAnnoTaskStatistic = (annoTaskId: number) => {
+  return useQuery(
+    ['annoTaskStatistic', annoTaskId],
+    () =>
+      axios.get(`${API_URL}/annotasks/statistics/${annoTaskId}`).then((res) => res.data),
+    {
+      refetchOnWindowFocus: false,
+      enabled: !!annoTaskId && annoTaskId > 0,
+    },
   )
 }
 
@@ -132,7 +153,7 @@ export const useChooseAnnotask = () => {
 //     return useMutation((datatableInfo) =>
 //         axios
 //             .post(`${API_URL}/annotask/annotask_list_filter`, datatableInfo)
-//             .then((res) => res.data),
+//             .then((res) => res.data),getAnnoTaskStatistic
 //     )
 // }
 
@@ -156,4 +177,26 @@ export const useFilterLabels = () => {
       enabled: false,
     },
   )
+}
+
+export const forceAnnotationRelease = async (id: number, callBack: () => void) => {
+  try {
+    await axios.post(API_URL + `/annotasks/${id}/force_release`)
+    callBack()
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+export const changeUser = async (
+  annotaskId: number,
+  groupId: number,
+  callBack: () => void,
+) => {
+  try {
+    await axios.patch(API_URL + `/annotasks/${annotaskId}/group`, { groupId })
+    callBack()
+  } catch (e) {
+    console.error(e)
+  }
 }

@@ -308,12 +308,12 @@ def update_one_thing(db_man, data, user_id):
     return sia_update.update()
 
 
-def review_update(db_man, data, user_id, pe_id):
+def review_update(db_man, data, user_id, at_id):
     """Update Image and TwoDAnnotation from SIA
     :type db_man: lost.db.access.DBMan
     """
-    pe = db_man.get_pipe_element(pipe_e_id=pe_id)
-    at = pe.anno_task
+    at = db_man.get_anno_task(at_id)
+    print("IMG DATA: ", data)
     sia_update = SiaUpdate(db_man, data, user_id, at, sia_type="review")
     return sia_update.update()
 
@@ -576,16 +576,17 @@ class SiaUpdate:
         self.timestamp = datetime.now()
         self.db_man = db_man
         self.user_id = user_id
+        self.img_data = data['img']
         self.at = anno_task  # type: lost.db.model.AnnoTask
         # self.sia_history_file = FileMan(self.db_man.lostconfig).get_sia_history_path(self.at)
         self.iteration = db_man.get_pipe_element(pipe_e_id=self.at.pipe_element_id).iteration
-        self.image_anno = self.db_man.get_image_annotation(data["imgId"])
+        self.image_anno = self.db_man.get_image_annotation(self.img_data["imgId"])
         self.image_anno.timestamp = self.timestamp
         if self.image_anno.anno_time is None:
             self.image_anno.anno_time = 0.0
         if self.sia_type == "sia":
             # Do not update image annotation time for sia review
-            self.image_anno.anno_time = data["annoTime"]
+            self.image_anno.anno_time = self.img_data["annoTime"]
         self.b_boxes = list()
         self.points = list()
         self.lines = list()
@@ -596,25 +597,32 @@ class SiaUpdate:
         self.history_json["annotations"]["unchanged"] = list()
         self.history_json["annotations"]["changed"] = list()
         self.history_json["annotations"]["deleted"] = list()
-        self._update_img_labels(data)
-        self.image_anno.is_junk = data["isJunk"]
+        self._update_img_labels(self.img_data)
+        if "isJunk" in self.img_data:
+            self.image_anno.is_junk = self.img_data["isJunk"]
 
         # store certain annotations
-        if "bBoxes" in data["annotations"]:
-            self.b_boxes = data["annotations"]["bBoxes"]
+        if "annotations" in data:
+            if "bBoxes" in data["annotations"]:
+                self.b_boxes = data["annotations"]["bBoxes"]
+            else:
+                self.b_boxes = None
+            if "points" in data["annotations"]:
+                self.points = data["annotations"]["points"]
+            else:
+                self.points = None
+            if "lines" in data["annotations"]:
+                self.lines = data["annotations"]["lines"]
+            else:
+                self.lines = None
+            if "polygons" in data["annotations"]:
+                self.polygons = data["annotations"]["polygons"]
+            else:
+                self.polygons = None
         else:
             self.b_boxes = None
-        if "points" in data["annotations"]:
-            self.points = data["annotations"]["points"]
-        else:
             self.points = None
-        if "lines" in data["annotations"]:
-            self.lines = data["annotations"]["lines"]
-        else:
             self.lines = None
-        if "polygons" in data["annotations"]:
-            self.polygons = data["annotations"]["polygons"]
-        else:
             self.polygons = None
 
     def _update_img_labels(self, data):

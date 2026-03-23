@@ -376,8 +376,99 @@ class DBMan:
                 model.ImageAnno.anno_task_id == anno_task_id,
                 model.ImageAnno.sim_class == sim_class,
             )
+            .order_by(model.ImageAnno.idx.asc())
             .limit(amount)
             .all()
+        )
+
+    def get_latest_update_id(self, user_id, anno_task_id, model_anno):
+        """Get newest update_id in task for user"""
+        return(
+        self.session.query(model_anno.update_id)
+        .filter(
+            model_anno.anno_task_id == anno_task_id,
+            model_anno.user_id == user_id,
+            model_anno.state.in_([
+                state.Anno.LABELED,
+                state.Anno.LOCKED,
+                state.Anno.LOCKED_PRIORITY,
+                state.Anno.LABELED_LOCKED
+            ]),
+        )
+        .order_by(model_anno.update_id.desc())
+        .limit(1)
+        .scalar()
+        )
+    
+    def get_latest_chunk_id(self, user_id, anno_task_id, model_anno):
+        return(
+        self.session.query(model_anno.chunk_id)
+        .filter(
+            model_anno.anno_task_id == anno_task_id,
+            model_anno.user_id == user_id,
+            model_anno.state.in_([
+                state.Anno.LABELED,
+                state.Anno.LOCKED,
+                state.Anno.LOCKED_PRIORITY,
+                state.Anno.LABELED_LOCKED
+            ]),
+        )
+        .order_by(model_anno.chunk_id.desc())
+        .limit(1)
+        .scalar()
+        )
+    
+
+    def get_chunk_update_ids(self, user_id, anno_task_id, model_anno, chunk_id):
+        return(
+        self.session.query(model_anno.update_id)
+        .filter(
+            model_anno.anno_task_id == anno_task_id,
+            model_anno.user_id == user_id,
+            model_anno.chunk_id == chunk_id,
+            model_anno.state.in_([
+                state.Anno.LABELED,
+                state.Anno.LOCKED,
+                state.Anno.LOCKED_PRIORITY,
+                state.Anno.LABELED_LOCKED
+            ]),
+        )
+        .order_by(model_anno.update_id.desc())
+        .distinct()
+        .all()
+        )
+    
+    def get_mia_update_chunk(self, model_anno, anno_task_id, chunk_id, update_ids, user_id):
+        "Get image annotations before a certain id"
+        return (
+        self.session.query(model_anno)
+        .filter(
+            model_anno.anno_task_id == anno_task_id,
+            model_anno.user_id == user_id,
+            model_anno.chunk_id == chunk_id,
+            model_anno.update_id.in_(update_ids),
+            model_anno.state.in_([
+                state.Anno.LABELED,
+                state.Anno.LOCKED,
+                state.Anno.LOCKED_PRIORITY,
+                state.Anno.LABELED_LOCKED
+            ]),
+        )
+        .order_by(model_anno.idx.desc())
+        .all()
+        )
+
+    def get_whole_chunk(self, user_id, anno_task_id, model_anno, chunk_id):
+        "Get all entries of a specific chunk"
+        return(
+        self.session.query(model_anno)
+        .filter(
+            model_anno.anno_task_id == anno_task_id,
+            model_anno.user_id == user_id,
+            model_anno.chunk_id == chunk_id,
+        )
+        .order_by(model_anno.idx.desc())
+        .all()
         )
 
     def get_random_sim_class_img_anno(self, anno_task_id):
@@ -808,6 +899,7 @@ class DBMan:
                 model.TwoDAnno.anno_task_id == anno_task_id,
                 model.TwoDAnno.sim_class == sim_class,
             )
+            .order_by(model.TwoDAnno.idx.asc())
             .limit(amount)
             .all()
         )

@@ -1,15 +1,11 @@
-import { connect } from 'react-redux'
-import actionsAll from '../../../../actions'
 import AnnoTaskModal from './types/AnnoTaskModal'
 import DataExportModal from './types/DataExportModal'
 import DatasourceModal from './types/DatasourceModal'
 import LoopModal from './types/LoopModal'
 import ScriptModal from './types/ScriptModal'
 
-const { siaReviewSetElement, chooseAnnoTask, forceAnnotationRelease, changeUser } =
-  actionsAll
-
-const BaseModal = (props) => {
+const PipeElementBaseModal = (props) => {
+  console.log('Props: ', props)
   const onClose = (opened) => {
     if (opened) {
       props.toggleModal()
@@ -44,10 +40,6 @@ const BaseModal = (props) => {
             modalOpened={true}
             state={props.data.state}
             annoTask={props.data.annoTask}
-            siaReviewSetElement={props.siaReviewSetElement}
-            chooseAnnoTask={props.chooseAnnoTask}
-            forceAnnotationRelease={props.forceAnnotationRelease}
-            changeUser={props.changeUser}
             onClose={() => onClose(props.modalOpened)}
           />
         )
@@ -78,9 +70,4 @@ const BaseModal = (props) => {
   }
 }
 
-export default connect(null, {
-  siaReviewSetElement,
-  chooseAnnoTask,
-  forceAnnotationRelease,
-  changeUser,
-})(BaseModal)
+export default PipeElementBaseModal
