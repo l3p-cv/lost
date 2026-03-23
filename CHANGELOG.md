@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Loading-spinner when changing SIA images
 - Added "inverse" argument to CoreIconButton
 - Added "permanent reverse" button to MIA
+- Loading feedback when applying filters to SIA images
 ### Changed
 - Updated React to 19.2.1 (major update from v18)
 - Switched chonky filebrowser to chonky2 (chonky is not maintained anymore)
@@ -45,6 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Replaced all async (dispatch) methods with equivalent not interacting with Redux
 - Unfinished Annotask/Dataset exports now deletable (to prevent other errors)
 - Overhaul of MIA UI regarding inactive images
+- Made time frame for authentication reset longer
 ### Fixed
 - Fixed using alternative pagesizes for whole-data CoreDataTable
 - Fixed lingering bug when saving/updating userdata (EditUserModal)
@@ -53,6 +55,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added missing import of "delete_ds_export" to endpoint.py
 - No longer showing "undefined" when changing SIA-Images
 - Fixed error when creating new nodes
+- Reactivated SIA filter menu
+- Bilateral filter settings stay saved after closing menu
 ### Removed
 - Removed WorkingOnMIA, WorkingOnSIA - both replaced by AnnotationTop
 - Removed old DataTable component and everything importing from outdated 'react-table'

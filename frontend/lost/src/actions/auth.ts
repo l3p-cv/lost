@@ -64,10 +64,10 @@ const getTokenExpirationDate = (isRefreshToken: boolean = false): Date | undefin
 
 export const checkExpireDate = (secondsOfInactivity: number) => {
   const expirationDate = getTokenExpirationDate()
-  const timeInOneMinute = new Date(Date.now() + 60000)
+  const timeInTenMinutes = new Date(Date.now() + 600000)
 
   // if token is valid for less than one minute and user was active recently
-  if (expirationDate && timeInOneMinute > expirationDate && secondsOfInactivity < 30) {
+  if (expirationDate && timeInTenMinutes > expirationDate && secondsOfInactivity < 60) {
     return refreshToken()
   }
 
@@ -85,3 +85,4 @@ export const checkExpireDate = (secondsOfInactivity: number) => {
     globalThis.location.href = `${globalThis.location.origin}/logout#timeout`
   }
 }
+// TODO: hau user raus - error notification if anno not saved

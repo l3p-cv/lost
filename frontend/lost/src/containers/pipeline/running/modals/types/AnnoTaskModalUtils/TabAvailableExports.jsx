@@ -127,7 +127,6 @@ const TabAvailableExports = (props) => {
         return (
           <CoreIconButton
             color="danger"
-            disabled={props.row.original.progress < 100}
             icon={faTrash}
             onClick={() => handleAnnotaskExportDelete(props.row.original.id)}
           />

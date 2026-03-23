@@ -6,7 +6,7 @@ import { CRow, CFormSwitch, CCol } from '@coreui/react'
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { useGetMiaImage } from '../../../api/mia'
 import CoreIconButton from '../../../components/CoreIconButton'
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 type MIAImageProps = {
   height: number | string
   imageBase: { id: number; type: string }
@@ -21,7 +21,12 @@ const MIAImage = ({ height, imageBase, imageActiveState }: MIAImageProps) => {
   const [timer, setTimer] = useState(-1)
   const [classes, setClasses] = useState('')
   const [modalOpen, setModalOpen] = useState(false)
-
+  const iconStyle = {
+    position: 'absolute',
+    top: '4',
+    left: '4',
+    fontSize: '1.5rem',
+  }
   const [imgRequestData, setImgRequestData] = useState({
     addContext: -1,
     imageId: imageBase.id,
@@ -115,7 +120,7 @@ const MIAImage = ({ height, imageBase, imageActiveState }: MIAImageProps) => {
       </BaseModal>
       {!miaImage.isLoading ? (
         <>
-          <div style={{ display: 'inline', position: 'relative' }}>
+          <div style={{ display: 'inline-block', position: 'relative' }}>
             <img
               alt={imageBase.id}
               id={imageBase.id}
@@ -123,8 +128,24 @@ const MIAImage = ({ height, imageBase, imageActiveState }: MIAImageProps) => {
               src={miaImage.data}
               className={`mia-image ${classes}`}
               height={height}
-              style={{ display: 'inline' }}
+              style={{ display: 'block' }}
             />
+
+            {imageActiveState.value ? (
+              <FontAwesomeIcon
+                style={iconStyle}
+                // size={'2x'}
+                color={'#0d0'}
+                icon={faCheck}
+              />
+            ) : (
+              <FontAwesomeIcon
+                style={iconStyle}
+                // size={'2x'}
+                color={'red'}
+                icon={faTimes}
+              />
+            )}
           </div>
         </>
       ) : (

@@ -7,15 +7,18 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
 import { IconProp } from '@fortawesome/fontawesome-svg-core'
 import BilateralFilterComponent from './BilateralFilterComponent'
+import CoreIconButton from '../../../../components/CoreIconButton'
 
 type ImageFilterUiProps = {
   appliedFilters?: ImageFilter[]
   onFiltersChanged?: (filters: ImageFilter[]) => void
+  imageIsLoading?: boolean
 }
 
 const ImageFilterUi = ({
   appliedFilters = [],
   onFiltersChanged = (_) => {},
+  imageIsLoading = false,
 }: ImageFilterUiProps) => {
   const [isHistogramActive, setIsHistogramActive] = useState<boolean>(false)
   const [isCannyActive, setIsCannyActive] = useState<boolean>(false)
@@ -41,6 +44,13 @@ const ImageFilterUi = ({
         setCannyThreshholds({
           min: filter.configuration.lowerThreshold,
           max: filter.configuration.upperThreshold,
+        })
+      } else if (filter.name == 'bilateral') {
+        setIsBilateralActive(true)
+        setBilateralFilterConfig({
+          diameter: filter.configuration.diameter,
+          sigmaColor: filter.configuration.sigmaColor,
+          sigmaSpace: filter.configuration.sigmaSpace,
         })
       }
     })
@@ -107,10 +117,12 @@ const ImageFilterUi = ({
         />
       </CRow>
       <CRow>
-        <CButton color="primary" variant="outline" onClick={sendFilterUpdate}>
-          <FontAwesomeIcon icon={faCheck as IconProp} />
-          &nbsp; Save
-        </CButton>
+        <CoreIconButton
+          text="Save"
+          icon={faCheck}
+          onClick={sendFilterUpdate}
+          isLoading={imageIsLoading}
+        />
       </CRow>
     </CContainer>
   )

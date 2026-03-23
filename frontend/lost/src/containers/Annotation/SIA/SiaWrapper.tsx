@@ -156,7 +156,8 @@ const SiaWrapper = ({
   const { data: possibleLabels } = siaApi.useGetPossibleLabels(annoTaskId)
 
   // request will automatically refetch when its state (parameter) changes
-  const { data: imageBlobRequest } = useGetSiaImage(imageRequestData)
+  const { data: imageBlobRequest, isLoading: imageIsLoading } =
+    useGetSiaImage(imageRequestData)
   const [imageBlob, setImageBlob] = useState<string | undefined>()
 
   const [isImageSearchButtonTooltipOpen, setIsImageSearchButtonTooltipOpen] =
@@ -1012,10 +1013,12 @@ const SiaWrapper = ({
               appliedFilters={appliedImageFilters}
               tooltip={'Open Filter Options'}
               onFiltersChanged={setAppliedImageFilters}
+              imageIsLoading={imageIsLoading}
             />
             <CoreIconButton
               toolTip="Open image search"
               color="primary"
+              disabled={!isReview}
               icon={faSearch}
               onClick={() => {
                 setIsImgSearchModalVisible(true)

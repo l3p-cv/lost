@@ -13,6 +13,7 @@ import Cluster from './MIA/Cluster'
 const MultiImageAnnotation = () => {
   const [selectedLabel, setSelectedLabel] = useState(null)
   const [maxAmount, setMaxAmount] = useState(10)
+  const [permaReverse, setPermaReverse] = useState(false)
 
   const { data: currentAnnotask, isLoading: taskIsLoading } =
     annotaskApi.useGetCurrentAnnotask()
@@ -22,6 +23,11 @@ const MultiImageAnnotation = () => {
   const selectedLabelState = {
     value: selectedLabel,
     set: setSelectedLabel,
+  }
+
+  const permaReverseState = {
+    value: permaReverse,
+    set: setPermaReverse,
   }
 
   const amountState = {
@@ -42,7 +48,7 @@ const MultiImageAnnotation = () => {
 
     setImagesActive(
       annoData.images.reduce((acc, img) => {
-        acc[img.id] = true
+        acc[img.id] = !permaReverse
         return acc
       }, {}),
     )
@@ -78,6 +84,7 @@ const MultiImageAnnotation = () => {
             miaAnnos={annoData}
             imageActiveStates={imageActiveStates}
             annotaskFinishedLbls={currentAnnotask.finished}
+            permaReverseState={permaReverseState}
           />
           <Cluster
             images={annoData.images}
