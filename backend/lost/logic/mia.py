@@ -40,7 +40,6 @@ def get_prev(db_man, default_user_id, chunk_id, update_ids):
             model_anno = model.ImageAnno
         # full_chunk = __get_has_full_chunk(db_man, update_ids, model_anno, default_user_id, at, chunk_id)
         # TODO: use full_chunk
-        print("RETURN AS WANTED!!!")
         return __get_prev_annos(db_man, default_user_id, at, model_anno, chunk_id, update_ids)
 
     images = dict()
@@ -254,7 +253,7 @@ def __get_next_two_d_anno(db_man, user_id, at, max_amount):
             anno.timestamp_lock = datetime.now()
             db_man.save_obj(anno)
         has_prev = __check_annos_have_prev(db_man, at, annos, model_anno, user_id)
-        image_serialize = TwoDSerialize(db_man, annos, user_id, at, has_prev, proposedLabel=True)
+        image_serialize = TwoDSerialize(db_man, annos, user_id, at.idx, has_prev, proposedLabel=True)
         image_serialize.serialize()
         return image_serialize.mia_json
 
@@ -401,7 +400,7 @@ def __get_filtered_image_annotations_by_state(db_man, at, state, user_id, amount
     if model_anno == model.ImageAnno:
         annos = db_man.get_image_annotations_by_state(at.idx, state, user_id, amount)
     elif model_anno == model.TwoDAnno:
-        annos = db_man.get_two_d_anno_by_sim_class(at.idx, state, user_id, amount)
+        annos = db_man.get_two_d_anno_by_state(at.idx, state, user_id, amount)
 
     return __filter_annos_by_first_chunk(annos)
 
@@ -459,7 +458,6 @@ def __get_prev_annos(db_man, user_id, at, model_anno, chunk_id, update_ids):
 
 def __serialize_annos(db_man, annos, user_id, has_prev):
     if not annos:
-        print("DID NOT HAVE ANNOS!!!")
         return {"images": []}
     
     annos = sorted(annos, key=lambda a: a.idx)
@@ -557,8 +555,6 @@ def get_proposed_label(db_man, anno, user_id):
         try:
             if "showProposedLabel" in config:
                 if config["showProposedLabel"] == True:
-                    print("####################################")
-                    print(config)
                     label_trees = get_label_trees(db_man, user_id)
                     # for tree in label_trees['labels']:
                     for leaf in label_trees["labels"]:

@@ -32,7 +32,6 @@ class Update(Resource):
             dbm.close_session()
             return re
 
-# TODO: do not get other chunk-id images into the next-stuff
 @namespace.route("/next/<int:max_amount>")
 @api.doc(security="apikey")
 class Next(Resource):
@@ -156,7 +155,7 @@ class First(Resource):
 
 @namespace.route("/latest")
 @api.doc(security="apikey")
-class First(Resource):
+class Latest(Resource):
     @api.doc(security="apikey", description="Get latest MIA anno")
     @jwt_required()
     @namespace.expect()

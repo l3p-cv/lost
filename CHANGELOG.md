@@ -57,6 +57,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed error when creating new nodes
 - Reactivated SIA filter menu
 - Bilateral filter settings stay saved after closing menu
+- Fixed minor chunk_id/update_id errors
 ### Removed
 - Removed WorkingOnMIA, WorkingOnSIA - both replaced by AnnotationTop
 - Removed old DataTable component and everything importing from outdated 'react-table'

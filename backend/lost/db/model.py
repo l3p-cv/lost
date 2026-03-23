@@ -228,7 +228,7 @@ class TwoDAnno(Base):
         self.meta = meta
         self.meta_blob = meta_blob
         self.is_example = is_example
-        self.update_id = update_id,
+        self.update_id = update_id
         self.chunk_id=chunk_id
         # if label_leaf_id is not None:
         #     self.label = Label(label_leaf_id=label_leaf_id)

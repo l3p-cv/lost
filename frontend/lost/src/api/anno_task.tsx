@@ -141,9 +141,7 @@ export const useGetAnnoTaskStatistic = (annoTaskId: number) => {
   return useQuery(
     ['annoTaskStatistic', annoTaskId],
     () =>
-      axios
-        .get(`${API_URL}/annotasks/statistics/${annoTaskId}`) // TODO: check path
-        .then((res) => res.data),
+      axios.get(`${API_URL}/annotasks/statistics/${annoTaskId}`).then((res) => res.data),
     {
       refetchOnWindowFocus: false,
       enabled: !!annoTaskId && annoTaskId > 0,

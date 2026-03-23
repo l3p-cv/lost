@@ -132,7 +132,6 @@ class PipelineListPaged(Resource):
             group_ids = [g.group_id for g in user.groups]
             re, pages = pipeline_service.get_pipelines_paged(dbm, group_ids, page_index, page_size)
             dbm.close_session()
-            print("PIPE JSON: ", re)
             # print("--- PipelineList result ---")
             # print(re)
             return {"pipelines": re, "pages": pages}
@@ -530,7 +529,6 @@ class Review(Resource):
 
         else:
             data = json.loads(request.data)
-            print("DATA: ", data)
             re = sia.review_update(dbm, data, user.idx, anno_task_id)
             dbm.close_session()
             return re

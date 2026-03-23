@@ -197,9 +197,6 @@ def write_df(base_path, df, export_type, zip_file=None, fs_stream=None):
             fs_stream.write(bytestream.read())
         else:
             raise Exception("Either zip_file or fs_stream need to be provided!")
-    import sys
-    df['anno_update_id'] = [aui[0] if isinstance(aui, tuple) else aui for aui in df['anno_update_id']] # HACK
-    df['img_update_id'] = [aui[0] if isinstance(aui, tuple) else aui for aui in df['img_update_id']] # HACK
     df = prep_parquet(df, True)
     # ds = lds.LOSTDataset(df)
     if export_type == "LOST_Dataset":
@@ -386,8 +383,6 @@ def export_dataset_parquet(user_id, path, fs_id, dataset_id, annotated_only):
             my_logger.warning(f"Dataset not found ds_id: {dataset_id}!")
 
         ds = lds.LOSTDataset(df_list, fm.fs)
-        ds['anno_update_id'] = [aui[0] if isinstance(aui, tuple) else aui for aui in ds['anno_update_id']] # HACK
-        ds['img_update_id'] = [aui[0] if isinstance(aui, tuple) else aui for aui in ds['img_update_id']] # HACK
         ds.to_parquet(store_path)
         my_logger.info(f"Export to {path} was successfull!")
         dataset_export.progress = 100

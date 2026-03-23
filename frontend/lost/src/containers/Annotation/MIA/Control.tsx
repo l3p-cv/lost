@@ -154,7 +154,6 @@ const Control = ({
   }
 
   const handleUndo = () => {
-    console.log('Data: ', currentChunk.id, currentUpdateIds)
     goBackMia({
       currentChunkId: currentChunk.id,
       currentUpdateIds: currentUpdateIds, // TODO: undefined even if miaAnnos there
@@ -178,8 +177,6 @@ const Control = ({
     if (!proposedLabel) return
     if (!newProposedLbl) return
 
-    console.log('selectedLabel', selectedLabelState.value)
-    console.log('proposedLabel', proposedLabel)
     handleAddLabel(labels.find((value) => value.id === proposedLabel))
     setNewProposedLbl(false)
   }, [miaAnnos.images])
@@ -195,8 +192,6 @@ const Control = ({
     }
   }
 
-  console.log('Chunk: ', currentChunk)
-
   return (
     <CRow
       className="align-items-center"
@@ -206,7 +201,6 @@ const Control = ({
     >
       <CCol xs="4" sm="4" lg="4" className="d-flex justify-content-center">
         {/* TODO: INCLUDE JUNK BUTTON!!! */}
-        {/* TODO: INCLUDE Permanent Reverse!!! */}
         <CButtonGroup>
           <CoreIconButton
             onClick={zoomIn}
