@@ -1,6 +1,7 @@
 import axios, { AxiosError } from 'axios'
 import { useMutation, UseMutationResult, useQuery, UseQueryResult } from 'react-query'
 import { API_URL } from '../../lost_settings'
+import { showError } from '../../components/Notification'
 import { Label } from 'lost-sia'
 import { SiaImageRequest } from '../../types/SiaTypes'
 import {
@@ -153,17 +154,22 @@ export const useGetSiaConfiguration = () => {
 }
 
 export const useCreateAnnotation = () => {
-  return useMutation(({ annotation, imageEditData }: EditAnnotationData) => {
-    const requestData = {
-      action: 'annoCreated',
-      anno: annotation,
-      img: imageEditData,
-    }
+  return useMutation(
+    ({ annotation, imageEditData }: EditAnnotationData) => {
+      const requestData = {
+        action: 'annoCreated',
+        anno: annotation,
+        img: imageEditData,
+      }
 
-    return axios
-      .patch(API_URL + `/sia`, requestData)
-      .then((res): EditAnnotationResponse => res.data)
-  })
+      return axios
+        .patch(API_URL + `/sia`, requestData)
+        .then((res): EditAnnotationResponse => res.data)
+    },
+    {
+      onError: () => showError('Failed to save annotation.'),
+    },
+  )
 }
 
 export const useEditAnnotation = () => {
@@ -179,47 +185,67 @@ export const useEditAnnotation = () => {
         .patch(API_URL + `/sia`, requestData)
         .then((res): EditAnnotationResponse => res.data)
     },
+    {
+      onError: () => showError('Failed to save annotation.'),
+    },
   )
 }
 
 export const useDeleteAnnotation = () => {
-  return useMutation(({ annotation, imageEditData }: EditAnnotationData) => {
-    const requestData = {
-      action: 'annoDeleted',
-      anno: annotation,
-      img: imageEditData,
-    }
+  return useMutation(
+    ({ annotation, imageEditData }: EditAnnotationData) => {
+      const requestData = {
+        action: 'annoDeleted',
+        anno: annotation,
+        img: imageEditData,
+      }
 
-    return axios
-      .patch(API_URL + `/sia`, requestData)
-      .then((res): EditAnnotationResponse => res.data)
-  })
+      return axios
+        .patch(API_URL + `/sia`, requestData)
+        .then((res): EditAnnotationResponse => res.data)
+    },
+    {
+      onError: () => showError('Failed to delete annotation.'),
+    },
+  )
 }
 
 export const useUpdateImageLabel = () => {
-  return useMutation((imageEditData: ImageLabelData) => {
-    const requestData = {
-      action: 'imgLabelUpdate',
-      img: imageEditData,
-    }
+  return useMutation(
+    (imageEditData: ImageLabelData) => {
+      const requestData = {
+        action: 'imgLabelUpdate',
+        img: imageEditData,
+      }
 
-    return axios.patch(API_URL + `/sia`, requestData).then((res) => res.data)
-  })
+      return axios.patch(API_URL + `/sia`, requestData).then((res) => res.data)
+    },
+    {
+      onError: () => showError('Failed to update image label.'),
+    },
+  )
 }
 
 export const useImageJunk = () => {
-  return useMutation((imageJunkData: ImageJunkData) => {
-    const requestData = {
-      action: 'imgJunkUpdate',
-      img: imageJunkData,
-    }
+  return useMutation(
+    (imageJunkData: ImageJunkData) => {
+      const requestData = {
+        action: 'imgJunkUpdate',
+        img: imageJunkData,
+      }
 
-    return axios.patch(API_URL + `/sia`, requestData).then((res) => res.data)
-  })
+      return axios.patch(API_URL + `/sia`, requestData).then((res) => res.data)
+    },
+    {
+      onError: () => showError('Failed to update junk status.'),
+    },
+  )
 }
 
 export const useFinishAnnotask = () => {
-  return useMutation(() => axios.post(API_URL + `/sia/finish`).then((res) => res.data))
+  return useMutation(() => axios.post(API_URL + `/sia/finish`).then((res) => res.data), {
+    onError: () => showError('Failed to finish annotation task.'),
+  })
 }
 
 // default export that is compliant with the various SIA types (annotation, annotask review, dataset review)

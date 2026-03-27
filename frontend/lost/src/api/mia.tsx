@@ -3,6 +3,7 @@
 import axios, { AxiosError } from 'axios'
 import { useMutation, UseMutationResult, useQuery, UseQueryResult } from 'react-query'
 import { API_URL } from '../lost_settings'
+import { showError } from '../components/Notification'
 import {
   LegacyAnnotation,
   LegacyAnnotationResponse,
@@ -178,6 +179,7 @@ export const useUpdateMia = () => {
       queryClient.invalidateQueries(['currentannotask'])
       queryClient.invalidateQueries(['miaimage'])
     },
+    onError: () => showError('Failed to save annotation.'),
   })
 }
 

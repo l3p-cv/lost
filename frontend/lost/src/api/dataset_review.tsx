@@ -1,9 +1,7 @@
 import axios from 'axios'
 import { useMutation, useQuery } from 'react-query'
 import { API_URL } from '../lost_settings'
-
-import { uiConfig, SIA_INITIAL_UI_CONFIG } from 'lost-sia/utils'
-
+import { showError } from '../components/Notification'
 import {
   EditAnnotationData,
   EditAnnotationResponse,
@@ -77,45 +75,60 @@ export const useGetImage = () => {
 }
 
 export const useCreateAnnotation = () => {
-  return useMutation(({ annoTaskId, annotation, imageEditData }: EditAnnotationData) => {
-    const requestData = {
-      action: 'annoCreated',
-      anno: annotation,
-      img: imageEditData,
-    }
+  return useMutation(
+    ({ annoTaskId, annotation, imageEditData }: EditAnnotationData) => {
+      const requestData = {
+        action: 'annoCreated',
+        anno: annotation,
+        img: imageEditData,
+      }
 
-    return axios
-      .patch(API_URL + `/annotasks/${annoTaskId}/annotation`, requestData)
-      .then((res): EditAnnotationResponse => res.data)
-  })
+      return axios
+        .patch(API_URL + `/annotasks/${annoTaskId}/annotation`, requestData)
+        .then((res): EditAnnotationResponse => res.data)
+    },
+    {
+      onError: () => showError('Failed to save annotation.'),
+    },
+  )
 }
 
 export const useEditAnnotation = () => {
-  return useMutation(({ annoTaskId, annotation, imageEditData }: EditAnnotationData) => {
-    const requestData = {
-      action: 'annoEdited',
-      anno: annotation,
-      img: imageEditData,
-    }
+  return useMutation(
+    ({ annoTaskId, annotation, imageEditData }: EditAnnotationData) => {
+      const requestData = {
+        action: 'annoEdited',
+        anno: annotation,
+        img: imageEditData,
+      }
 
-    return axios
-      .patch(API_URL + `/annotasks/${annoTaskId}/annotation`, requestData)
-      .then((res): EditAnnotationResponse => res.data)
-  })
+      return axios
+        .patch(API_URL + `/annotasks/${annoTaskId}/annotation`, requestData)
+        .then((res): EditAnnotationResponse => res.data)
+    },
+    {
+      onError: () => showError('Failed to save annotation.'),
+    },
+  )
 }
 
 export const useDeleteAnnotation = () => {
-  return useMutation(({ annoTaskId, annotation, imageEditData }: EditAnnotationData) => {
-    const requestData = {
-      action: 'annoDeleted',
-      anno: annotation,
-      img: imageEditData,
-    }
+  return useMutation(
+    ({ annoTaskId, annotation, imageEditData }: EditAnnotationData) => {
+      const requestData = {
+        action: 'annoDeleted',
+        anno: annotation,
+        img: imageEditData,
+      }
 
-    return axios
-      .patch(API_URL + `/annotasks/${annoTaskId}/annotation`, requestData)
-      .then((res): EditAnnotationResponse => res.data)
-  })
+      return axios
+        .patch(API_URL + `/annotasks/${annoTaskId}/annotation`, requestData)
+        .then((res): EditAnnotationResponse => res.data)
+    },
+    {
+      onError: () => showError('Failed to delete annotation.'),
+    },
+  )
 }
 
 export type ImageSearchRequestData = {
@@ -186,6 +199,9 @@ export const useUpdateImageLabel = () => {
       return axios
         .put(API_URL + `/pipeline/element/${annoTaskId}/review`, requestData)
         .then((res) => res.data)
+    },
+    {
+      onError: () => showError('Failed to update image label.'),
     },
   )
 }
