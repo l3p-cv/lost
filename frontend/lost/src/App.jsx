@@ -12,6 +12,7 @@ import { LostConfigProvider } from './contexts/LostConfigContext'
 import { API_URL } from './lost_settings'
 import './scss/style.scss'
 import { flatObj } from './utils'
+import OidcCallbackHandler from './containers/Authentication/OidcCallbackHandler'
 
 const queryClient = new QueryClient()
 const resources = {
@@ -81,7 +82,14 @@ function App() {
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/logout" element={<Logout />} />
-              <Route path="/*" element={<TheLayout />} />
+              <Route
+                path="/*"
+                element={
+                  <OidcCallbackHandler>
+                    <TheLayout />
+                  </OidcCallbackHandler>
+                }
+              />
             </Routes>
           </BrowserRouter>
         </Suspense>

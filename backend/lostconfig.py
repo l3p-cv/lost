@@ -150,6 +150,16 @@ class LOSTConfig(object):
         self.ldap_config['LDAP_USER_LOGIN_ATTR'] = ge('LOST_LDAP_USER_LOGIN_ATTR', 'uid')
         self.ldap_config['LDAP_USE_SSL'] = ge('LOST_LDAP_USE_SSL', False)
         self.ldap_config['LDAP_ADD_SERVER'] = ge('LOST_LDAP_ADD_SERVER', True)
+        
+        # OpenID Connect configuration
+        self.openid_url = ge("LOST_OPENID_URL", "http://localhost:9000")
+        self.openid_client_id = ge("LOST_OPENID_CLIENT_ID", "lost")
+        self.openid_client_secret = ge("LOST_OPENID_CLIENT_SECRET", "")
+        self.openid_redirect_uri = ge("LOST_OPENID_REDIRECT_URI", "http://localhost:8000/api/v1/auth/callback")
+        self.openid_app_slug = ge("LOST_OPENID_APP_SLUG", "lost")
+        self.oidc_jwt_algorithm = ge("LOST_JWT_ALGORITHM", "RS256")
+        self.oidc_jwt_issuer = ge("LOST_JWT_ISSUER", "http://localhost:9000/application/o/lost/")
+        self.frontend_url = ge("LOST_FRONTEND_URL", "http://localhost:3000")
 
         # Mail configuration
         self.send_mail = ge('LOST_MAIL_ACTIVE', False)
