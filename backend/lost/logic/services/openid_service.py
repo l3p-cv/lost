@@ -359,7 +359,7 @@ def build_token_redirect(dbm: DBMan, user: DBUser):
     # username and password is intentionally empty
     # we already authenticated the user and just want to create the JWT
     lm = LoginManager(dbm, "", "")
-    access_token, refresh_token = lm.create_jwt(user.idx, user.roles)
+    access_token, refresh_token = lm.create_jwt(user.idx, user.user_name, user.roles)
 
     frontend_url = _CONFIG.frontend_url.rstrip("/")
     redirect_url = f"{frontend_url}/#token={access_token}&refreshToken={refresh_token}"

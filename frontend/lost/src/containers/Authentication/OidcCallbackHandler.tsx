@@ -1,5 +1,6 @@
 import { CAlert, CSpinner } from '@coreui/react'
 import axios from 'axios'
+import { jwtDecode } from 'jwt-decode'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -54,7 +55,10 @@ const OidcCallbackHandler = ({ children }) => {
       window.location.pathname + window.location.search,
     )
 
+    const decodedToken = jwtDecode(token)
+
     // save credentials
+    localStorage.setItem('username', decodedToken.username)
     localStorage.setItem('token', token)
     localStorage.setItem('refreshToken', refreshToken)
     axios.defaults.headers.common.Authorization = `Bearer ${token}`
