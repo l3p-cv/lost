@@ -79,6 +79,7 @@ const Login = () => {
         <CCol className="d-flex">
           <CoreIconButton
             isOutline={false}
+            isLoading={canShowOpenIdLoading}
             icon={faFingerprint}
             color={'primary'}
             text={`Login using ${_oidcName}`}
@@ -89,14 +90,6 @@ const Login = () => {
           />
         </CCol>
       </CRow>
-    )
-  }
-
-  const renderOpenIdLoading = () => {
-    return (
-      <div className="d-flex justify-content-center align-items-center min-vh-100">
-        <CSpinner color="primary" variant="grow" />
-      </div>
     )
   }
 
@@ -154,7 +147,6 @@ const Login = () => {
                     </CRow>
                   </CForm>
                   {_oidcName && renderOpenIdLogin()}
-                  {canShowOpenIdLoading && renderOpenIdLoading()}
                 </CCardBody>
               </CCard>
             </CCardGroup>
