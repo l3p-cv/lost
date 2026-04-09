@@ -75,37 +75,13 @@ The Frontend is developed with React and CoreUI (and Redux, but this will be rem
 > npm i
 > ```
 
-3. \[Optional\] Set the ports as you need them in the compose.yaml
+1. \[Optional\] Set the ports as you need them in the compose.yaml
 
-4. Start development server with
+2. Start development server with
 
 > ``` bash
 > npm start
 > ```
-
-  <!-- -------------------------------------------------------------------------
-  Application                         Directory
-
-  -------------------------------------------------------------------------
-  Dashboard                           src/components/Dashboard
-
-  SIA (Single Image Annotation)       src/components/SIA
-
-  MIA (Multi Image Annotation)        src/components/MIA
-
-  Running Pipeline                    src/components/pipeline/src/running
-
-  Start Pipeline                      src/components/pipeline/src/start
-
-  Labels                              src/components/Labels
-
-  Workers                             src/components/Workers
-
-Users                               src/components/Users
-
-  -------------------------------------------------------------------------
-
-  : Frontend Applications -->
 
 To access the most common parts to develop for the frontend, search the
 [**containers**](https://github.com/l3p-cv/lost/tree/master/frontend/lost/src/containers)
