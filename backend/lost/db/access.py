@@ -383,92 +383,91 @@ class DBMan:
 
     def get_latest_update_id(self, user_id, anno_task_id, model_anno):
         """Get newest update_id in task for user"""
-        return(
-        self.session.query(model_anno.update_id)
-        .filter(
-            model_anno.anno_task_id == anno_task_id,
-            model_anno.user_id == user_id,
-            model_anno.state.in_([
-                state.Anno.LABELED,
-                state.Anno.LOCKED,
-                state.Anno.LOCKED_PRIORITY,
-                state.Anno.LABELED_LOCKED
-            ]),
+        return (
+            self.session.query(model_anno.update_id)
+            .filter(
+                model_anno.anno_task_id == anno_task_id,
+                model_anno.user_id == user_id,
+                model_anno.state.in_([
+                    state.Anno.LABELED,
+                    state.Anno.LOCKED,
+                    state.Anno.LOCKED_PRIORITY,
+                    state.Anno.LABELED_LOCKED,
+                ]),
+            )
+            .order_by(model_anno.update_id.desc())
+            .limit(1)
+            .scalar()
         )
-        .order_by(model_anno.update_id.desc())
-        .limit(1)
-        .scalar()
-        )
-    
+
     def get_latest_chunk_id(self, user_id, anno_task_id, model_anno):
-        return(
-        self.session.query(model_anno.chunk_id)
-        .filter(
-            model_anno.anno_task_id == anno_task_id,
-            model_anno.user_id == user_id,
-            model_anno.state.in_([
-                state.Anno.LABELED,
-                state.Anno.LOCKED,
-                state.Anno.LOCKED_PRIORITY,
-                state.Anno.LABELED_LOCKED
-            ]),
+        return (
+            self.session.query(model_anno.chunk_id)
+            .filter(
+                model_anno.anno_task_id == anno_task_id,
+                model_anno.user_id == user_id,
+                model_anno.state.in_([
+                    state.Anno.LABELED,
+                    state.Anno.LOCKED,
+                    state.Anno.LOCKED_PRIORITY,
+                    state.Anno.LABELED_LOCKED,
+                ]),
+            )
+            .order_by(model_anno.chunk_id.desc())
+            .limit(1)
+            .scalar()
         )
-        .order_by(model_anno.chunk_id.desc())
-        .limit(1)
-        .scalar()
-        )
-    
 
     def get_chunk_update_ids(self, user_id, anno_task_id, model_anno, chunk_id):
-        return(
-        self.session.query(model_anno.update_id)
-        .filter(
-            model_anno.anno_task_id == anno_task_id,
-            model_anno.user_id == user_id,
-            model_anno.chunk_id == chunk_id,
-            model_anno.state.in_([
-                state.Anno.LABELED,
-                state.Anno.LOCKED,
-                state.Anno.LOCKED_PRIORITY,
-                state.Anno.LABELED_LOCKED
-            ]),
+        return (
+            self.session.query(model_anno.update_id)
+            .filter(
+                model_anno.anno_task_id == anno_task_id,
+                model_anno.user_id == user_id,
+                model_anno.chunk_id == chunk_id,
+                model_anno.state.in_([
+                    state.Anno.LABELED,
+                    state.Anno.LOCKED,
+                    state.Anno.LOCKED_PRIORITY,
+                    state.Anno.LABELED_LOCKED,
+                ]),
+            )
+            .order_by(model_anno.update_id.desc())
+            .distinct()
+            .all()
         )
-        .order_by(model_anno.update_id.desc())
-        .distinct()
-        .all()
-        )
-    
+
     def get_mia_update_chunk(self, model_anno, anno_task_id, chunk_id, update_ids, user_id):
         "Get image annotations before a certain id"
         return (
-        self.session.query(model_anno)
-        .filter(
-            model_anno.anno_task_id == anno_task_id,
-            model_anno.user_id == user_id,
-            model_anno.chunk_id == chunk_id,
-            model_anno.update_id.in_(update_ids),
-            model_anno.state.in_([
-                state.Anno.LABELED,
-                state.Anno.LOCKED,
-                state.Anno.LOCKED_PRIORITY,
-                state.Anno.LABELED_LOCKED
-            ]),
-        )
-        .order_by(model_anno.idx.desc())
-        .all()
+            self.session.query(model_anno)
+            .filter(
+                model_anno.anno_task_id == anno_task_id,
+                model_anno.user_id == user_id,
+                model_anno.chunk_id == chunk_id,
+                model_anno.update_id.in_(update_ids),
+                model_anno.state.in_([
+                    state.Anno.LABELED,
+                    state.Anno.LOCKED,
+                    state.Anno.LOCKED_PRIORITY,
+                    state.Anno.LABELED_LOCKED,
+                ]),
+            )
+            .order_by(model_anno.idx.desc())
+            .all()
         )
 
     def get_whole_chunk(self, user_id, anno_task_id, model_anno, chunk_id):
         "Get all entries of a specific chunk"
-        return(
-        self.session.query(model_anno)
-        .filter(
-            model_anno.anno_task_id == anno_task_id,
-            model_anno.user_id == user_id,
-            model_anno.chunk_id == chunk_id,
-        )
-        .order_by(model_anno.idx.desc())
-        .all()
+        return (
+            self.session.query(model_anno)
+            .filter(
+                model_anno.anno_task_id == anno_task_id,
+                model_anno.user_id == user_id,
+                model_anno.chunk_id == chunk_id,
+            )
+            .order_by(model_anno.idx.desc())
+            .all()
         )
 
     def get_random_sim_class_img_anno(self, anno_task_id):
@@ -616,6 +615,20 @@ class DBMan:
         return self.session.query(sqlalchemy.func.count(model.ImageAnno.idx)).filter(
             model.ImageAnno.anno_task_id == anno_task_id, model.ImageAnno.iteration == iteration
         )
+
+    def get_image_counts_for_annotask_list(self, annotask_ids):
+        """Returns {anno_task_id: total_image_count} for all given IDs in one query."""
+        if not annotask_ids:
+            return {}
+        rows = (
+            self.session.query(
+                model.ImageAnno.anno_task_id, sqlalchemy.func.count(model.ImageAnno.idx).label("nr_images")
+            )
+            .filter(model.ImageAnno.anno_task_id.in_(annotask_ids))
+            .group_by(model.ImageAnno.anno_task_id)
+            .all()
+        )
+        return {row.anno_task_id: row.nr_images for row in rows}
 
     def get_all_image_annos_by_iteration(self, anno_task_id, iteration):
         """Get all image annotation of an annotation task by iteration"""

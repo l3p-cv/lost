@@ -357,9 +357,13 @@ class DatasetListPaged(Resource):
             return f"You need to be {roles.DESIGNER} in order to perform this request.", 401
         else:
             ds_no_parent_page, pages = dbm.get_datasets_paged(page_index, page_size)
+            # collect all annotask IDs from the whole page first
+            all_annotask_ids = self.__collect_annotask_ids(ds_no_parent_page)
+            image_counts = dbm.get_image_counts_for_annotask_list(all_annotask_ids)
+
             datasets_json = []
             for dataset in ds_no_parent_page:
-                datasets_json.append(self.__build_dataset_children_tree_dict(dataset))
+                datasets_json.append(self.__build_dataset_children_tree_dict(dataset, image_counts))
 
             # Only add Annotasks without DS for final page
             if page_index + 1 == pages:
@@ -381,24 +385,37 @@ class DatasetListPaged(Resource):
 
             return jsonify({"datasets": datasets_json, "pages": pages})
 
-    def __build_dataset_children_tree_dict(self, dataset):
+    def __collect_annotask_ids(self, datasets):
+        ids = []
+        for ds in datasets:
+            for at in ds.annotask_children or []:
+                ids.append(at.idx)
+            for child_ds in ds.dataset_children:
+                ids.extend(self.__collect_annotask_ids([child_ds]))
+        return ids
+
+    def __build_dataset_children_tree_dict(self, dataset, image_counts):
         dataset.is_reviewable = False
         children_dicts = []
 
+        total_images = 0
         for child in dataset.dataset_children:
-            # also check for children of children
-            child_dict = self.__build_dataset_children_tree_dict(child)
+            child_dict = self.__build_dataset_children_tree_dict(child, image_counts)
             if child.is_reviewable:
                 dataset.is_reviewable = True
+            total_images += child_dict.get("nr_images", 0)
             children_dicts.append(child_dict)
 
-        # add annotask children (annotasks can't have a child)
         for annotask in dataset.annotask_children or []:
+            at_dict = annotask.to_dict()
             dataset.is_reviewable = True
-            children_dicts.append(annotask.to_dict())
+            at_dict["nr_images"] = image_counts.get(annotask.idx, 0)
+            total_images += at_dict["nr_images"]
+            children_dicts.append(at_dict)
 
         dataset_dict = dataset.to_dict()
         dataset_dict["children"] = children_dicts
+        dataset_dict["nr_images"] = total_images
 
         return dataset_dict
 

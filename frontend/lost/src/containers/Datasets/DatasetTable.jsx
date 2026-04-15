@@ -8,7 +8,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { createColumnHelper } from '@tanstack/react-table'
-import React, { Fragment, useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import CoreDataTable from '../../components/CoreDataTable'
 import CoreIconButton from '../../components/CoreIconButton'
@@ -17,7 +17,6 @@ import InfoText from '../../components/InfoText'
 
 const DatasetTable = ({
   datasetList,
-  // datastores,
   onExportButtonClicked,
   onEditButtonClicked,
   page,
@@ -112,24 +111,18 @@ const DatasetTable = ({
           return '-'
         },
       }),
-      // columnHelper.accessor('datastoreId', {
-      //     header: () => 'Datastore',
-      //     cell: info => {
-      //         const datastoreID = info.renderValue()
-
-      //         if (datastoreID in datastores) {
-      //             return datastores[datastoreID]
-      //         }
-
-      //         return ""
-      //     }
-      // }),
+      columnHelper.accessor('nrImages', {
+        header: () => 'Nr. Images',
+        cell: ({ row }) => {
+          return row.original.nr_images
+        },
+      }),
       columnHelper.accessor('createdAt', {
         header: () => 'Created at',
         cell: ({ row }) => {
           if (row.original.isMetaDataset) return ''
           if (row.original.isAnnotask) return row.original.created_at
-          return row.original.createdAt // isDataset
+          return row.original.createdAt
         },
       }),
       columnHelper.display({

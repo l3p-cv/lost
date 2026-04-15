@@ -758,6 +758,7 @@ class AnnotaskReview(Resource):
 
         return json_response
 
+
 @namespace.route("/statistics/<int:annotask_id>")
 @namespace.param("annotask_id", "The id of the annotask.")
 @api.doc(security="apikey")
@@ -775,5 +776,5 @@ class Statistics(Resource):
         else:
             re = annotask_service.get_annotask_statistics(dbm, annotask_id)
             dbm.close_session()
-            
+
             return re
