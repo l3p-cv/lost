@@ -1,4 +1,4 @@
-import { CSSProperties, useCallback, useEffect, useState } from 'react'
+import { CSSProperties, useCallback, useEffect, useRef, useState } from 'react'
 import type {
   SiaApi,
   EditAnnotationData,
@@ -146,6 +146,10 @@ const SiaWrapper = ({
   // To identify them later on, we store a mapping between the external and SIAs internal id for freshly created annos
   const [annotationIdMapping, setAnnotationIdMapping] = useState({})
 
+  // Edits that arrived before the server returned a DB id for a freshly created annotation.
+  // Keyed by SIA internalId. Flushed once the createAnnotation response arrives and the mapping is populated.
+  const pendingEditsRef = useRef<Record<number, EditAnnotationData>>({})
+
   // image id in filesystem
   const [appliedImageFilters, setAppliedImageFilters] = useState<ImageFilter[]>([])
   const [imageId, setImageId] = useState<number>(-1)
@@ -186,6 +190,7 @@ const SiaWrapper = ({
     siaApi.useCreateAnnotation()
   const { data: editAnnotationResponse, mutate: sendEditAnnotation } =
     siaApi.useEditAnnotation()
+
   const { data: deleteAnnotationResponse, mutate: sendDeleteAnnotation } =
     siaApi.useDeleteAnnotation()
   const { data: updateImageLabelResponse, mutate: sendUpdateImageLabel } =
@@ -239,6 +244,20 @@ const SiaWrapper = ({
     newAnnotationIdMapping[siaInternalAnnoId] = createAnnotationResponse.dbId
 
     setAnnotationIdMapping(newAnnotationIdMapping)
+
+    // flush any edit that arrived before the server responded with the DB id
+    const pendingEdit = pendingEditsRef.current[siaInternalAnnoId]
+    if (pendingEdit !== undefined) {
+      // patch in the now-known external id
+      sendEditAnnotation({
+        ...pendingEdit,
+        annotation: {
+          ...pendingEdit.annotation,
+          id: `${createAnnotationResponse.dbId}`,
+        },
+      })
+      delete pendingEditsRef.current[siaInternalAnnoId]
+    }
   }, [createAnnotationResponse])
 
   const handleResponse = useCallback((response: object | string): boolean => {
@@ -481,7 +500,30 @@ const SiaWrapper = ({
 
       // search for an external anno id in the mapping
       const externalAnnoId = annotationIdMapping[newAnnotation.internalId]
-      if (externalAnnoId) newAnnotation.externalId = externalAnnoId
+      if (externalAnnoId) {
+        newAnnotation.externalId = externalAnnoId
+      } else {
+        // The createAnnotation response hasn't arrived yet — no DB id available.
+        // Queue this edit so it can be sent once the server responds with the real id.
+        if (annoData === undefined) return
+        const imageEditTime: number = TimeUtils.getRoundedDuration(
+          imageLoadedTimestamp,
+          performance.now(),
+        )
+        const currentImageData = annoData.image
+        const imageData = {
+          imgId: currentImageData.id,
+          imgActions: currentImageData.imgActions,
+          annoTime: currentImageData.annoTime + imageEditTime,
+        }
+        // overwrite any previous pending edit for this annotation (last label wins)
+        pendingEditsRef.current[newAnnotation.internalId] = {
+          annoTaskId,
+          annotation: legacyHelper.convertAnnoToOldFormat(newAnnotation),
+          imageEditData: imageData,
+        }
+        return
+      }
     }
 
     const annotationInOldFormat = legacyHelper.convertAnnoToOldFormat(newAnnotation)
@@ -1122,7 +1164,6 @@ const SiaWrapper = ({
           onAnnoCreated={(annotation) => {
             // do nothing when initially creating an annotation
             // @TODO adapt backend to support partly-finished annotations
-            console.log('ANNO CREATED', annotation)
           }}
           onAnnoCreationFinished={createAnnotation}
           onAnnoDeleted={deleteAnnotation}
