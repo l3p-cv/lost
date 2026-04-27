@@ -21,6 +21,7 @@ import jwt
 from jwt import PyJWKClient, ExpiredSignatureError, InvalidTokenError
 import requests
 from flask import redirect
+from werkzeug.exceptions import Forbidden
 
 from lostconfig import LOSTConfig
 from lost.db import roles
@@ -379,11 +380,6 @@ def update_user_roles(user: DBUser, new_roles: list[str]) -> None:
     needed_role_names: set[str] = set(new_roles)
     current_user_roles: list = user.roles  # list[UserRoles]
     current_role_names: set[str] = {ur.role.name for ur in current_user_roles}
-
-    print("1FFFFFFFFFFFFFF", flush=True)
-    print(needed_role_names, flush=True)
-    print(current_role_names, flush=True)
-    print("2FFFFFFFFFFFFFF", flush=True)
 
     roles_to_remove = [ur for ur in current_user_roles if ur.role.name not in needed_role_names]
     roles_to_add = needed_role_names - current_role_names

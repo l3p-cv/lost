@@ -162,7 +162,7 @@ class LOSTConfig(object):
         )
         self.openid_annotator_group_name = ge("LOST_OPENID_ANNOTATOR_GROUP_NAME", "")
         self.openid_admin_group_name = ge("LOST_OPENID_ADMIN_GROUP_NAME", "")
-        self.oidc_jwt_algorithm = ge("JWT_ALGORITHM", "RS256")
+        self.oidc_jwt_algorithm = ge("LOST_JWT_ALGORITHM", "RS256")
         self.oidc_jwt_issuer = ge(
             "LOST_JWT_ISSUER", "http://localhost:9000/application/o/cm/"
         )

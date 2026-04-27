@@ -7,23 +7,24 @@ import { exchangeOidcCode } from '../../actions/auth/auth_api'
 /**
  * OidcCallbackHandler
  *
- * Wraps the normal app content. On mount it checks whether the URL fragment
- * contains OIDC tokens delivered by the backend callback redirect:
+ * Wraps the normal app content. On mount it checks whether the URL query string
+ * contains an OIDC authorization code delivered by the backend callback redirect:
  *
- *   {FRONTEND_URL}/#token=<access_token>&refreshToken=<refresh_token>
+ *   {FRONTEND_URL}/?code=<temp_code>
  *
- * If tokens are found they are extracted, stored, the fragment is removed from
- * the URL (so tokens don't linger in browser history), and the app navigates
+ * If a code is found it is exchanged for access/refresh tokens via the backend
+ * token-exchange endpoint. On success the tokens are stored, the code is removed
+ * from the URL (so it doesn't linger in browser history), and the app navigates
  * to the root so the authenticated layout picks up the new token.
  *
- * If the fragment is absent the children are rendered normally, so the rest of
- * the application is completely unaffected.
+ * If no code query parameter is present the children are rendered normally, so
+ * the rest of the application is completely unaffected.
  */
 const OidcCallbackHandler = ({ children }) => {
   const navigate = useNavigate()
   // const dispatch = useDispatch()
   // null  = not yet checked
-  // false = no OIDC fragment, render children normally
+  // false = no OIDC code query param, render children normally
   // true  = processing / done
   const [oidcHandled, setOidcHandled] = useState<boolean | null>(null)
   const [errorText, setErrorText] = useState<string | null>(null)
@@ -66,7 +67,7 @@ const OidcCallbackHandler = ({ children }) => {
     const authCode = new URL(globalThis.location.href).searchParams.get('code')
 
     if (authCode === null) {
-      // No OIDC code — render the normal app
+      // No OIDC authorization code — render the normal app
       setOidcHandled(false)
       return
     }
@@ -86,7 +87,7 @@ const OidcCallbackHandler = ({ children }) => {
     )
   }
 
-  // OIDC error (fragment was present but tokens were missing/malformed)
+  // OIDC error (code was present but token exchange failed or returned incomplete data)
   if (oidcHandled === true && errorText) {
     return (
       <div className="d-flex justify-content-center align-items-center min-vh-100">
@@ -98,7 +99,7 @@ const OidcCallbackHandler = ({ children }) => {
   }
 
   // Either OIDC was handled successfully (navigate already called) or there
-  // was no fragment — render children normally.
+  // was no code param — render children normally.
   return <>{children}</>
 }
 

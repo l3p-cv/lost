@@ -1020,6 +1020,25 @@ class DBMan:
             return None
         return entry
 
+    def delete_expired_oidc_temp_codes(self) -> int:
+        """Bulk-delete all OidcTempCode rows whose expires_at is in the past.
+
+        Intended to be called periodically by a cron job to prevent the table
+        from growing indefinitely due to codes that were never exchanged (e.g.
+        the user closed the browser before completing the OIDC flow).
+
+        Returns:
+            The number of rows deleted.
+        """
+        now = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
+        count = (
+            self.session.query(model.OidcTempCode)
+            .filter(model.OidcTempCode.expires_at < now)
+            .delete(synchronize_session=False)
+        )
+        self.session.commit()
+        return count
+
     def get_users(self):
         return self.session.query(model.User).all()
 
