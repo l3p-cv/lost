@@ -152,13 +152,20 @@ class LOSTConfig(object):
         self.ldap_config['LDAP_ADD_SERVER'] = ge('LOST_LDAP_ADD_SERVER', True)
         
         # OpenID Connect configuration
-        self.openid_url = ge("LOST_OPENID_URL", "http://localhost:9000")
+        self.openid_jwks_uri = ge("LOST_OPENID_JWKS_URI", "http://localhost:9000")
+        self.openid_auth_endpoint = ge("LOST_OPENID_AUTH_ENDPOINT", "http://localhost:9000")
+        self.openid_token_endpoint = ge("LOST_OPENID_TOKEN_ENDPOINT", "http://localhost:9000")
         self.openid_client_id = ge("LOST_OPENID_CLIENT_ID", "lost")
         self.openid_client_secret = ge("LOST_OPENID_CLIENT_SECRET", "")
-        self.openid_redirect_uri = ge("LOST_OPENID_REDIRECT_URI", "http://localhost:8000/api/v1/auth/callback")
-        self.openid_app_slug = ge("LOST_OPENID_APP_SLUG", "lost")
-        self.oidc_jwt_algorithm = ge("LOST_JWT_ALGORITHM", "RS256")
-        self.oidc_jwt_issuer = ge("LOST_JWT_ISSUER", "http://localhost:9000/application/o/lost/")
+        self.openid_redirect_uri = ge(
+            "LOST_OPENID_REDIRECT_URI", "http://localhost:8000/api/auth/callback"
+        )
+        self.openid_annotator_group_name = ge("LOST_OPENID_ANNOTATOR_GROUP_NAME", "")
+        self.openid_admin_group_name = ge("LOST_OPENID_ADMIN_GROUP_NAME", "")
+        self.oidc_jwt_algorithm = ge("JWT_ALGORITHM", "RS256")
+        self.oidc_jwt_issuer = ge(
+            "LOST_JWT_ISSUER", "http://localhost:9000/application/o/cm/"
+        )
         self.frontend_url = ge("LOST_FRONTEND_URL", "http://localhost:3000")
 
         # Mail configuration

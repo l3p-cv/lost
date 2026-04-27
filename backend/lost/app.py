@@ -16,7 +16,7 @@ from lost.api.config.endpoint import namespace as config_namespace
 from lost.api.data.endpoint import namespace as data_namespace
 
 # from lost.api.annotasks.endpoint import namespace as annotasks_namespace
-from lost.api.auth.endpoint import namespace as openid_namespace
+from lost.api.auth.OpenidEndpoint import namespace as openid_namespace
 from lost.api.dataset.endpoint import namespace as dataset_namespace
 from lost.api.filebrowser.endpoint import namespace as filebrowser_namespace
 from lost.api.group.endpoint import namespace as group_namespace

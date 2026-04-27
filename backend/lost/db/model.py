@@ -132,6 +132,42 @@ class UserGroups(Base):
     user = relationship("User", back_populates="groups", lazy="joined")
 
 
+class OidcTempCode(Base):
+    """One-time short-lived code that proxies an OIDC JWT pair.
+
+    After a successful OIDC login the server stores the real access- and
+    refresh-tokens here and redirects the browser with only the opaque
+    ``code`` in the URL.  The frontend must exchange the code (POST to
+    ``/api/v1/auth/openid/token``) within ``_TEMP_CODE_TTL`` seconds.
+    The row is deleted on first successful exchange (single-use).
+
+    Attributes:
+        idx (int): Primary key.
+        code (str): Cryptographically random opaque string (URL-safe base64,
+            ~43 chars).  Unique and indexed for fast lookup.
+        access_token (str): The JWT access token issued for the user.
+        refresh_token (str): The JWT refresh token issued for the user.
+        created_at (DateTime): UTC timestamp when the row was inserted.
+        expires_at (DateTime): UTC timestamp after which the code is invalid.
+    """
+
+    __tablename__ = "oidc_temp_code"
+
+    idx = Column(Integer, primary_key=True)
+    code = Column(String(255), nullable=False, unique=True, index=True)
+    access_token = Column(Text, nullable=False)
+    refresh_token = Column(Text, nullable=False)
+    created_at = Column(DateTime, nullable=False)
+    expires_at = Column(DateTime, nullable=False)
+
+    def __init__(self, code, access_token, refresh_token, created_at, expires_at):
+        self.code = code
+        self.access_token = access_token
+        self.refresh_token = refresh_token
+        self.created_at = created_at
+        self.expires_at = expires_at
+
+
 class TwoDAnno(Base):
     """A TwoDAnno represents a 2D annotation/ drawing for an image.
 

@@ -1,8 +1,8 @@
 import { CAlert, CSpinner } from '@coreui/react'
 import axios from 'axios'
-import { jwtDecode } from 'jwt-decode'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { exchangeOidcCode } from '../../actions/auth/auth_api'
 
 /**
  * OidcCallbackHandler
@@ -27,20 +27,20 @@ const OidcCallbackHandler = ({ children }) => {
   // true  = processing / done
   const [oidcHandled, setOidcHandled] = useState<boolean | null>(null)
   const [errorText, setErrorText] = useState<string | null>(null)
+  const requestInFlight = useRef<boolean>(false)
 
-  useEffect(() => {
-    const hash = window.location.hash
-    if (!hash || !hash.includes('token=')) {
-      // No OIDC fragment — render the normal app
-      setOidcHandled(false)
+  const handleOidcCode = async (authCode) => {
+    let token, refreshToken
+    try {
+      const data = await exchangeOidcCode(authCode)
+      token = data.token
+      refreshToken = data.refreshToken
+    } catch (e) {
+      console.log(e)
+      setErrorText('SSO login failed: could not exchange authorization code for tokens.')
+      setOidcHandled(true)
       return
     }
-
-    // Parse the fragment as query-string parameters
-    // hash looks like: "#token=xxx&refreshToken=yyy"
-    const params = new URLSearchParams(hash.slice(1)) // strip leading '#'
-    const token = params.get('token')
-    const refreshToken = params.get('refreshToken')
 
     if (!token || !refreshToken) {
       setErrorText('SSO login failed: incomplete token data received.')
@@ -48,17 +48,10 @@ const OidcCallbackHandler = ({ children }) => {
       return
     }
 
-    // Strip the fragment from the URL so tokens don't remain in browser history
-    window.history.replaceState(
-      null,
-      '',
-      window.location.pathname + window.location.search,
-    )
+    // Strip the code from the URL so it doesn't remain in browser history
+    globalThis.history.replaceState(null, '', globalThis.location.pathname)
 
-    const decodedToken = jwtDecode(token)
-
-    // save credentials
-    localStorage.setItem('username', decodedToken.username)
+    // Store tokens exactly the same way as the password login flow
     localStorage.setItem('token', token)
     localStorage.setItem('refreshToken', refreshToken)
     axios.defaults.headers.common.Authorization = `Bearer ${token}`
@@ -67,9 +60,24 @@ const OidcCallbackHandler = ({ children }) => {
     navigate('/')
 
     setOidcHandled(true)
+  }
+
+  useEffect(() => {
+    const authCode = new URL(globalThis.location.href).searchParams.get('code')
+
+    if (authCode === null) {
+      // No OIDC code — render the normal app
+      setOidcHandled(false)
+      return
+    }
+
+    // prevent multiple calls (e.g. React StrictMode double-invoke)
+    if (requestInFlight.current) return
+    requestInFlight.current = true
+    handleOidcCode(authCode)
   }, [])
 
-  // Still checking
+  // Still checking - show spinner
   if (oidcHandled === null) {
     return (
       <div className="pt-3 text-center">

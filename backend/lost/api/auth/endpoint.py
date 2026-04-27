@@ -14,7 +14,7 @@ GET /auth/openid/callback
     the local user, and redirects the browser to the frontend with local
     JWTs embedded in the URL fragment.
 
-Each route delegates all business logic to :mod:`daisy.logic.services.openid_service`.
+Each route delegates all business logic to :mod:`lost.logic.services.openid_service`.
 """
 
 import logging
@@ -23,7 +23,7 @@ from flask import make_response, redirect, request
 from flask_restx import Resource
 
 from lost.api.api import api
-from lost.logic.services import openid_service
+from api.auth.service import openid_service
 
 logger = logging.getLogger(__name__)
 

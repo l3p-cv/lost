@@ -73,7 +73,7 @@ class FrontendLogs(Resource):
             logger.error(
                 data["error"],
                 extra={
-                    "type": "daisy-frontend",
+                    "type": "lost-frontend",
                     "used_browser": data["usedBrowser"],
                     "user_id": data["userId"],
                     "location": data["location"],
