@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [unreleased] - 
 ### Added
 - Added OpenID authentication support
+### Changed
+- Updated Traefik to v3-6-13
 
 ## [3.1.0] - 2026-03-23
 ### Added

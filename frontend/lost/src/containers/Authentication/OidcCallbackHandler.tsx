@@ -64,9 +64,10 @@ const OidcCallbackHandler = ({ children }) => {
   }
 
   useEffect(() => {
+    const isCallbackPath = globalThis.location.pathname === '/auth/callback'
     const authCode = new URL(globalThis.location.href).searchParams.get('code')
 
-    if (authCode === null) {
+    if (!isCallbackPath || authCode === null) {
       // No OIDC authorization code — render the normal app
       setOidcHandled(false)
       return
