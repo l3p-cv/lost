@@ -1,5 +1,6 @@
 import { CAlert, CSpinner } from '@coreui/react'
 import axios from 'axios'
+import { jwtDecode } from 'jwt-decode'
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { exchangeOidcCode } from '../../actions/auth/auth_api'
@@ -49,10 +50,14 @@ const OidcCallbackHandler = ({ children }) => {
       return
     }
 
+    const decodedToken = jwtDecode(token)
+    const username = decodedToken.username
+
     // Strip the code from the URL so it doesn't remain in browser history
     globalThis.history.replaceState(null, '', globalThis.location.pathname)
 
     // Store tokens exactly the same way as the password login flow
+    localStorage.setItem('username', username)
     localStorage.setItem('token', token)
     localStorage.setItem('refreshToken', refreshToken)
     axios.defaults.headers.common.Authorization = `Bearer ${token}`
