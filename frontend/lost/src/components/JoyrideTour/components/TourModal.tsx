@@ -18,11 +18,11 @@ const TourModal = ({ isVisible, onClose, onStartTour }: TourModalProps) => {
     <BaseModal
       title="Welcome to the Tour"
       isOpen={isVisible}
-      onClosed={onClose}
+      onClosed={handleCancel}
       backdropOption="static"
       size="lg"
       isShowCancelButton
-      toggle={onClose}
+      toggle={handleCancel}
     >
       <p className="mb-4 text-center">
         This is a guided tour of the available features. Select an option below to learn

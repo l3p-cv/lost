@@ -52,7 +52,6 @@ export const RunningPipelines = () => {
   useEffect(() => {
     if (data && page === lastRequestedPage) {
       const pipes = data.pipelines.pipes
-      console.log('Updating pipelineData:', pipes)
       setPageCount(data.pages)
       setPipelineData(pipes)
 

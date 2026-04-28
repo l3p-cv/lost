@@ -1,3 +1,4 @@
+import { CTooltip, CBadge, CRow, CCol } from '@coreui/react'
 import { useLocation } from 'react-router-dom'
 import { CContainer } from '@coreui/react'
 import { faPlay } from '@fortawesome/free-solid-svg-icons'
@@ -14,6 +15,17 @@ const TourStartTable = ({ onStartTour }) => {
   const { data, isLoading, isError } = useTemplates('all')
   const [pipelines, setPipelines] = useState([])
   const location = useLocation()
+  const TOUR_PRIORITY = {
+    '/instructions': ['instructionTour'],
+    '/labels': ['labelTour'],
+    '/pipeline-templates': ['mainPipeline', 'miaPipeline'],
+    '/pipelines': ['mainPipeline', 'miaPipeline'],
+    '/annotation': ['mainPipeline', 'miaPipeline'],
+    '/sia': ['mainPipeline'],
+    '/mia': ['miaPipeline'],
+  }
+  const preferredTours =
+    location.pathname in TOUR_PRIORITY ? TOUR_PRIORITY[location.pathname] : []
 
   useEffect(() => {
     if (data?.templates) {
@@ -21,51 +33,35 @@ const TourStartTable = ({ onStartTour }) => {
       const foundMia = data.templates.find((t) => t.name === 'found.mia')
       let newPipelines = []
 
-      if (location.pathname === '/dashboard') {
-        if (foundSia) {
-          localStorage.setItem('siaPipelineId', foundSia.id)
-          newPipelines.push({ ...foundSia, tourType: 'mainPipeline', label: 'SIA' })
-        }
-        if (foundMia) {
-          localStorage.setItem('miaPipelineId', foundMia.id)
-          newPipelines.push({ ...foundMia, tourType: 'miaPipeline', label: 'MIA' })
-        }
-        newPipelines.push({
-          id: 'instructionTour',
-          label: 'Instructions',
-          description: 'Learn how to create, view, and edit instructions.',
-          tourType: 'instructionTour',
-        })
-        newPipelines.push({
-          id: 'labelTour',
-          label: 'Labels',
-          description: 'Learn how to label data in a pipeline.',
-          tourType: 'labelTour',
-        })
-      } else if (location.pathname === '/pipeline-templates') {
-        if (foundSia) {
-          localStorage.setItem('siaPipelineId', foundSia.id)
-          newPipelines.push({ ...foundSia, tourType: 'mainPipeline', label: 'SIA' })
-        }
-        if (foundMia) {
-          localStorage.setItem('miaPipelineId', foundMia.id)
-          newPipelines.push({ ...foundMia, tourType: 'miaPipeline', label: 'MIA' })
-        }
-      } else if (location.pathname === '/labels') {
-        newPipelines.push({
-          id: 'labelTour',
-          label: 'Labels',
-          description: 'Learn how to label data in a pipeline.',
-          tourType: 'labelTour',
-        })
-      } else if (location.pathname === '/instructions') {
-        newPipelines.push({
-          id: 'instructionTour',
-          label: 'Instructions',
-          description: 'Learn how to create, view, and edit instructions.',
-          tourType: 'instructionTour',
-        })
+      if (foundSia) {
+        localStorage.setItem('siaPipelineId', foundSia.id)
+        newPipelines.push({ ...foundSia, tourType: 'mainPipeline', label: 'SIA' })
       }
+      if (foundMia) {
+        localStorage.setItem('miaPipelineId', foundMia.id)
+        newPipelines.push({ ...foundMia, tourType: 'miaPipeline', label: 'MIA' })
+      }
+      newPipelines.push({
+        id: 'instructionTour',
+        label: 'Instructions',
+        description: 'Learn how to create, view, and edit instructions.',
+        tourType: 'instructionTour',
+      })
+      newPipelines.push({
+        id: 'labelTour',
+        label: 'Labels',
+        description: 'Learn how to label data in a pipeline.',
+        tourType: 'labelTour',
+      })
+
+      newPipelines.sort((a, b) => {
+        let includesA = preferredTours.includes(a.tourType)
+        let includesB = preferredTours.includes(b.tourType)
+        if (includesA && includesB) return 0
+        if (includesA) return -1
+        if (includesB) return 1
+        return 0 // keep original order for the rest
+      })
 
       setPipelines(newPipelines)
     }
@@ -96,11 +92,22 @@ const TourStartTable = ({ onStartTour }) => {
       header: 'Name / Project',
       cell: (props) => {
         return (
-          <InfoText
-            text={props.row.original.label}
-            subText={props.row.original.tourType}
-            toolTip={props.row.original.description}
-          />
+          <CRow className="justify-content-center align-items-center">
+            <CCol xs="1"></CCol>
+            <CCol xs="4">
+              <InfoText
+                text={props.row.original.label}
+                toolTip={props.row.original.description}
+              />
+            </CCol>
+            <CCol xs="1" className="justify-content-end">
+              {preferredTours.includes(props.row.original.tourType) && (
+                <CTooltip content={`Recommended for this page`}>
+                  <CBadge color="success">★</CBadge>
+                </CTooltip>
+              )}
+            </CCol>
+          </CRow>
         )
       },
     }),
@@ -124,8 +131,11 @@ const TourStartTable = ({ onStartTour }) => {
       <CoreDataTable
         columns={columns}
         tableData={pipelines}
-        pageSize={3}
+        pageSize={5}
         style={{ marginTop: '15px' }}
+        // getRowClassName={(row) =>
+        //   preferredTours.includes(row.tourType) ? 'table-success' : ''
+        // }
       />
     </BaseContainer>
   )

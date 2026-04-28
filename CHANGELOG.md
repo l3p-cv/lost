@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [unreleased] - 
 ### Added
 - Nr. of images visible in DatasetTable (now count images in backend when requesting dataset pages)
+- Reactivated warnings for failed annotations and other actions
+### Changed
+- Made all tours of tourguide available everywhere
+- Overhaul of Tourguide Table (ordering and marking of relevant tours)
 ### Fixed
 - Handled bug, where pressing enter directly after finishing a polygon removed points (visually) and did not safe the given label.
 
