@@ -18,7 +18,6 @@ services:
       - --providers.docker=true
       - --providers.docker.exposedbydefault=false
       - --entrypoints.web.address=:80
-      - --entrypoints.websecure.address=:8443
       - --log.level=INFO
       - --log.format=common
       # - --accesslog=true
