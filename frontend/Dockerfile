@@ -16,4 +16,4 @@ ADD lost /code/lost
 RUN bun run build
 
 EXPOSE 80
-CMD ["/bin/sh", "-c", "printf 'window.__APP_CONFIG__ = { \"LOST_OPENID_NAME\": \"%s\" };\\n' \"${LOST_OPENID_NAME:-}\" > /code/lost/dist/config.js && nginx -g 'daemon off;'"]
+CMD ["/bin/sh", "-c", "printf 'globalThis.__APP_CONFIG__ = { \"LOST_OPENID_NAME\": \"%s\" };\\n' \"${LOST_OPENID_NAME:-}\" > /code/lost/dist/config.js && nginx -g 'daemon off;'"]

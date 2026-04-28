@@ -7,8 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [unreleased] - 
 ### Added
 - Added OpenID authentication support
+  - disabled by default, configurable using env (see docs for details)
 ### Changed
-- Updated Traefik to v3-6-13
+- Updated Traefik to v3.6.13
+- added user_name to JWT - required param in create_jwt()
+### Fixed
+- Fixed `create_jwt` being called twice in `UserTokenRefresh` and `UserLongLivedToken` (double-call bug).
+- Fixed log output for traefik container
 
 ## [3.1.0] - 2026-03-23
 ### Added

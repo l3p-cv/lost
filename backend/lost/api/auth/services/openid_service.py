@@ -354,6 +354,7 @@ def get_user_roles_from_claims(claims: dict) -> list:
 
     # check if user belongs to groups specified in config
     admin_group_name = admin_group_name.lower()
+    designer_group_name = designer_group_name.lower()
     annotator_group_name = annotator_group_name.lower()
     user_has_annotator_group: bool = annotator_group_name in map(str.lower, groups)
     user_has_designer_group: bool = designer_group_name in map(str.lower, groups)

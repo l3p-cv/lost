@@ -10,7 +10,6 @@ import {
   CInputGroupText,
   CFormInput,
   CContainer,
-  CSpinner,
 } from '@coreui/react'
 import { useEffect, useState } from 'react'
 import { FaLock, FaUser } from 'react-icons/fa'
@@ -23,7 +22,10 @@ import { faFingerprint } from '@fortawesome/free-solid-svg-icons'
 import { API_URL } from '../../lost_settings'
 
 // show OpenID button only when an IDP name is configured using VITE_DAISY_OPENID_NAME.
-const _oidcName = import.meta.env.VITE_LOST_OPENID_NAME
+
+// show OpenID button only when an IDP name is configured.
+// Value is injected at container startup via /config.js → window.__APP_CONFIG__.DAISY_OPENID_NAME
+const _oidcName = window.__APP_CONFIG__?.LOST_OPENID_NAME
 
 const Login = () => {
   const navigate = useNavigate()
