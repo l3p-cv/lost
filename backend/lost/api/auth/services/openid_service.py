@@ -337,11 +337,16 @@ def get_user_roles_from_claims(claims: dict) -> list:
     groups: list[str] = claims.get("groups") or []
 
     annotator_group_name: str = _CONFIG.openid_annotator_group_name
+    designer_group_name: str = _CONFIG.openid_designer_group_name
     admin_group_name: str = _CONFIG.openid_admin_group_name
 
     if annotator_group_name is None or len(annotator_group_name) == 0:
         logger.warning("OpenID annotator group not set - no annotator group assignment possible")
         raise MisconfiguredException("OpenID annotator group not set - no annotator group assignment possible")
+
+    if designer_group_name is None or len(designer_group_name) == 0:
+        logger.warning("OpenID designer group not set - no designer group assignment possible")
+        raise MisconfiguredException("OpenID designer group not set - no designer group assignment possible")
 
     if admin_group_name is None or len(admin_group_name) == 0:
         logger.warning("OpenID admin group not set - no admin group assignment possible")
@@ -351,12 +356,15 @@ def get_user_roles_from_claims(claims: dict) -> list:
     admin_group_name = admin_group_name.lower()
     annotator_group_name = annotator_group_name.lower()
     user_has_annotator_group: bool = annotator_group_name in map(str.lower, groups)
+    user_has_designer_group: bool = designer_group_name in map(str.lower, groups)
     user_has_admin_group: bool = admin_group_name in map(str.lower, groups)
 
     # map groups from provider to user roles in db
     user_roles = []
     if user_has_annotator_group:
         user_roles.append(roles.ANNOTATOR)
+    if user_has_designer_group:
+        user_roles.append(roles.DESIGNER)
     if user_has_admin_group:
         user_roles.append(roles.ADMINISTRATOR)
 

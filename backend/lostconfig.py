@@ -161,6 +161,7 @@ class LOSTConfig(object):
             "LOST_OPENID_REDIRECT_URI", "http://localhost:8000/api/auth/callback"
         )
         self.openid_annotator_group_name = ge("LOST_OPENID_ANNOTATOR_GROUP_NAME", "")
+        self.openid_designer_group_name = ge("LOST_OPENID_DESIGNER_GROUP_NAME", "")
         self.openid_admin_group_name = ge("LOST_OPENID_ADMIN_GROUP_NAME", "")
         self.oidc_jwt_algorithm = ge("LOST_JWT_ALGORITHM", "RS256")
         self.oidc_jwt_issuer = ge(

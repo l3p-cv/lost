@@ -109,6 +109,7 @@ LOST_OPENID_REDIRECT_URI=https://<your-lost-domain>/api/auth/openid/callback
 
 # IDP group names that map to LOST roles (case-insensitive)
 LOST_OPENID_ANNOTATOR_GROUP_NAME=lost-annotators
+LOST_OPENID_DESIGNER_GROUP_NAME=lost-designers
 LOST_OPENID_ADMIN_GROUP_NAME=lost-admins
 
 # JWT verification settings
@@ -139,6 +140,7 @@ VITE_LOST_OPENID_NAME=My IDP
 | `LOST_OPENID_CLIENT_SECRET` | Yes | OAuth2 client secret |
 | `LOST_OPENID_REDIRECT_URI` | Yes | Callback URL; must match the Redirect URI registered at the IDP |
 | `LOST_OPENID_ANNOTATOR_GROUP_NAME` | Yes | IDP group name whose members receive the **Annotator** role in LOST (case-insensitive) |
+| `LOST_OPENID_DESIGNER_GROUP_NAME` | Yes | IDP group name whose members receive the **Designer** role in LOST (case-insensitive) |
 | `LOST_OPENID_ADMIN_GROUP_NAME` | Yes | IDP group name whose members receive the **Administrator** role in LOST (case-insensitive) |
 | `LOST_JWT_ALGORITHM` | No | Algorithm for `id_token` signature verification. Default: `RS256` |
 | `LOST_JWT_ISSUER` | No | Expected `iss` claim in the `id_token`. Default: `http://localhost:9000/application/o/cm/` |
@@ -147,7 +149,7 @@ VITE_LOST_OPENID_NAME=My IDP
 
 ## User Management
 
-- Users logging in via OIDC for the **first time** are automatically created. Their role (**Annotator** and/or **Administrator**) is determined by their IDP group membership, configured via `LOST_OPENID_ANNOTATOR_GROUP_NAME` and `LOST_OPENID_ADMIN_GROUP_NAME`.
+- Users logging in via OIDC for the **first time** are automatically created. Their role (**Annotator** and/or **Administrator**) is determined by their IDP group membership, configured via `LOST_OPENID_ANNOTATOR_GROUP_NAME`, `LOST_OPENID_DESIGNER_GROUP_NAME` and `LOST_OPENID_ADMIN_GROUP_NAME`.
 - On every subsequent login, LOST **re-syncs** the user's roles with the current IDP group membership. Roles are added or removed automatically.
 - Users who belong to **neither** configured group are denied access (`403 Forbidden`).
 - LOST matches accounts by `preferred_username`. If a local account with the same username already exists, the OIDC login will use that existing account and sync its roles.
