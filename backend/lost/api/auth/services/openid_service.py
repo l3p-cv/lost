@@ -362,12 +362,16 @@ def get_user_roles_from_claims(claims: dict) -> list:
 
     # map groups from provider to user roles in db
     user_roles = []
-    if user_has_annotator_group:
-        user_roles.append(roles.ANNOTATOR)
-    if user_has_designer_group:
-        user_roles.append(roles.DESIGNER)
     if user_has_admin_group:
+        # special case: administrator gets assigned all roles
         user_roles.append(roles.ADMINISTRATOR)
+        user_roles.append(roles.DESIGNER)
+        user_roles.append(roles.ANNOTATOR)
+    else:
+        if user_has_annotator_group:
+            user_roles.append(roles.ANNOTATOR)
+        if user_has_designer_group:
+            user_roles.append(roles.DESIGNER)
 
     # no role = no access
     if len(user_roles) < 1:
