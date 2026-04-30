@@ -495,6 +495,7 @@ class Logs(Resource):
             resp.headers["Content-Type"] = "text/csv"
             return resp
 
+
 @namespace.route("/element/<int:anno_task_id>/review")
 @api.doc(security="apikey")
 class Review(Resource):

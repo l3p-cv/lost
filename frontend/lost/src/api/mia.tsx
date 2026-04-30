@@ -1,5 +1,3 @@
-// TODO: change everything to mia stuff!!!!!
-
 import axios, { AxiosError } from 'axios'
 import { useMutation, UseMutationResult, useQuery, UseQueryResult } from 'react-query'
 import { API_URL } from '../lost_settings'
@@ -210,7 +208,6 @@ export const useGoToFirstMIA = () => {
       const { data } = await axios.get(`${API_URL}/mia/first`, {
         headers: { 'Content-Type': 'application/json' },
       })
-      console.log('FIRST RESPOND: ', data)
       return data
     },
     onSuccess: (data, maxAmount) => {
@@ -227,7 +224,6 @@ export const useGoToLatestMIA = () => {
       const { data } = await axios.get(`${API_URL}/mia/latest`, {
         headers: { 'Content-Type': 'application/json' },
       })
-      console.log('Latest RESPOND: ', data)
       return data
     },
     onSuccess: (data, maxAmount) => {

@@ -88,7 +88,7 @@ const MultiImageAnnotation = () => {
           />
           <Cluster
             images={annoData.images}
-            imgaesLoading={annoIsLoading}
+            imagesLoading={annoIsLoading}
             zoom={zoom}
             workingOnAnnoTask={currentAnnotask}
             imageActiveStates={imageActiveStates}

@@ -10,7 +10,7 @@ type ClusterProps = {
   images: [{ id: number; type: string }]
   zoom: number
   workingOnAnnoTask: any
-  imgaesLoading: boolean
+  imagesLoading: boolean
   imageActiveStates: {
     value: Record<number, boolean>
     set: (id: number, active: boolean) => void
@@ -20,7 +20,7 @@ type ClusterProps = {
 const Cluster = ({
   images,
   zoom,
-  imgaesLoading,
+  imagesLoading,
   workingOnAnnoTask,
   imageActiveStates,
 }: ClusterProps) => {
@@ -60,7 +60,7 @@ const Cluster = ({
         )
       }
     }
-    if (!imgaesLoading) {
+    if (!imagesLoading) {
       return (
         <CRow className="justify-content-center" style={{ marginTop: '40px' }}>
           <CCol xs="5" className="d-flex">
@@ -81,8 +81,7 @@ const Cluster = ({
     )
   }
 
-  console.log(images)
-  if (images.length > 0 && !imgaesLoading) {
+  if (images.length > 0 && !imagesLoading) {
     return (
       <div className="mia-images">
         {images.map((imageData) => {

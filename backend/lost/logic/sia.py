@@ -313,7 +313,6 @@ def review_update(db_man, data, user_id, at_id):
     :type db_man: lost.db.access.DBMan
     """
     at = db_man.get_anno_task(at_id)
-    print("IMG DATA: ", data)
     sia_update = SiaUpdate(db_man, data, user_id, at, sia_type="review")
     return sia_update.update()
 
@@ -576,7 +575,7 @@ class SiaUpdate:
         self.timestamp = datetime.now()
         self.db_man = db_man
         self.user_id = user_id
-        self.img_data = data['img']
+        self.img_data = data["img"]
         self.at = anno_task  # type: lost.db.model.AnnoTask
         # self.sia_history_file = FileMan(self.db_man.lostconfig).get_sia_history_path(self.at)
         self.iteration = db_man.get_pipe_element(pipe_e_id=self.at.pipe_element_id).iteration

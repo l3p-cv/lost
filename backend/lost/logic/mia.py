@@ -7,7 +7,7 @@ from lost.logic.file_man import FileMan
 
 __author__ = "Gereon Reus"
 
-# TODO: give the annos their update_ids
+
 def get_next(db_man, default_user_id, max_amount):
     """Get next ImageAnnos
     :type db_man: lost.db.access.DBMan
@@ -21,7 +21,7 @@ def get_next(db_man, default_user_id, max_amount):
             return __get_next_image_anno(db_man, default_user_id, at, max_amount)
     images = dict()
     images["images"] = list()
-    images["chunk"] = {"hasPrev": True, "id": -1} # TODO: not always true!!!
+    images["chunk"] = {"hasPrev": False, "id": -1}
     images["updateIds"] = []
     return images
 
@@ -50,7 +50,6 @@ def get_prev(db_man, default_user_id, chunk_id, update_ids):
 
 
 def get_first(db_man, default_user_id):
-
     at = __get_mia_anno_task(db_man, default_user_id)
     if at and at.pipe_element.pipe.state != state.Pipe.PAUSED:
         config = json.loads(at.configuration)
@@ -67,7 +66,6 @@ def get_first(db_man, default_user_id):
 
 
 def get_latest(db_man, default_user_id):
-
     at = __get_mia_anno_task(db_man, default_user_id)
     if at and at.pipe_element.pipe.state != state.Pipe.PAUSED:
         config = json.loads(at.configuration)
@@ -86,7 +84,14 @@ def get_latest(db_man, default_user_id):
 
 
 class ImageSerialize:
-    def __init__(self, db_man, annos, user_id, has_prev=False, proposedLabel=True,):
+    def __init__(
+        self,
+        db_man,
+        annos,
+        user_id,
+        has_prev=False,
+        proposedLabel=True,
+    ):
         self.mia_json = dict()
         self.db_man = db_man
         self.annos = annos
@@ -213,7 +218,8 @@ def __get_new_update_id(db_man, user_id, at, model_anno):
         return 1
     else:
         return latest_update_id + 1
-    
+
+
 def __get_new_chunk_id(db_man, user_id, at, model_anno):
     latest_chunk_id = db_man.get_latest_chunk_id(user_id, at.idx, model_anno=model_anno)
     if latest_chunk_id == -1 or latest_chunk_id == None:
@@ -234,7 +240,7 @@ def __check_annos_have_prev(db_man, at, annos, model_anno, user_id):
     chunk_id = annos[0].chunk_id
     if chunk_id > 1:
         return True
-    
+
     chunk_update_ids = db_man.get_chunk_update_ids(user_id, at.idx, model_anno, chunk_id)
     current_update_ids = set([anno.update_id for anno in annos])
     if len(chunk_update_ids) > len(current_update_ids):
@@ -246,8 +252,9 @@ def __check_annos_have_prev(db_man, at, annos, model_anno, user_id):
 def __get_next_two_d_anno(db_man, user_id, at, max_amount):
     model_anno = model.TwoDAnno
     #################### get locked priority ########################
-    annos = __get_filtered_image_annotations_by_state(db_man, at, state.Anno.LOCKED_PRIORITY, 
-                                                      user_id, max_amount, model_anno)
+    annos = __get_filtered_image_annotations_by_state(
+        db_man, at, state.Anno.LOCKED_PRIORITY, user_id, max_amount, model_anno
+    )
     if len(annos) > 0:
         for anno in annos:
             anno.timestamp_lock = datetime.now()
@@ -267,8 +274,7 @@ def __get_next_two_d_anno(db_man, user_id, at, max_amount):
 
         if len(annos) < max_amount:
             sim_class = annos[0].sim_class
-            tempannos = __get_filtered_sim_class_annos(db_man, at, sim_class, 
-                                                       (max_amount - len(annos)), model_anno)
+            tempannos = __get_filtered_sim_class_annos(db_man, at, sim_class, (max_amount - len(annos)), model_anno)
             for tanno in tempannos:
                 tanno.state = state.Anno.LOCKED
                 tanno.timestamp_lock = datetime.now()
@@ -313,12 +319,12 @@ def __get_next_two_d_anno(db_man, user_id, at, max_amount):
 
 
 def __get_next_image_anno(db_man, user_id, at, max_amount):
-
     ## image annotations
     model_anno = model.ImageAnno
     #################### get locked priority ########################
-    annos = __get_filtered_image_annotations_by_state(db_man, at, state.Anno.LOCKED_PRIORITY, 
-                                                      user_id, max_amount, model_anno)
+    annos = __get_filtered_image_annotations_by_state(
+        db_man, at, state.Anno.LOCKED_PRIORITY, user_id, max_amount, model_anno
+    )
     if len(annos) > 0:
         for anno in annos:
             anno.timestamp_lock = datetime.now()
@@ -328,8 +334,7 @@ def __get_next_image_anno(db_man, user_id, at, max_amount):
         image_serialize.serialize()
         return image_serialize.mia_json
         #################### get view locked ########################
-    annos = __get_filtered_image_annotations_by_state(db_man, at, state.Anno.LOCKED, 
-                                                      user_id, 0, model_anno)
+    annos = __get_filtered_image_annotations_by_state(db_man, at, state.Anno.LOCKED, user_id, 0, model_anno)
     if len(annos) > 0:
         while len(annos) > max_amount:
             annos[len(annos) - 1].state = state.Anno.UNLOCKED
@@ -338,8 +343,7 @@ def __get_next_image_anno(db_man, user_id, at, max_amount):
 
         if len(annos) < max_amount:
             sim_class = annos[0].sim_class
-            tempannos = __get_filtered_sim_class_annos(db_man, at, sim_class, 
-                                                       (max_amount - len(annos)), model_anno)
+            tempannos = __get_filtered_sim_class_annos(db_man, at, sim_class, (max_amount - len(annos)), model_anno)
             for tanno in tempannos:
                 tanno.state = state.Anno.LOCKED
                 tanno.timestamp_lock = datetime.now()
@@ -383,10 +387,9 @@ def __get_next_image_anno(db_man, user_id, at, max_amount):
         image_serialize = ImageSerialize(db_man, annos, user_id, has_prev)
         image_serialize.serialize()
         return image_serialize.mia_json
-    
+
 
 def __get_filtered_sim_class_annos(db_man, at, sim_class, max_amount, model_anno):
-
     if model_anno == model.ImageAnno:
         annos = db_man.get_image_annotation_by_sim_class(at.idx, sim_class, max_amount)
     elif model_anno == model.TwoDAnno:
@@ -396,7 +399,6 @@ def __get_filtered_sim_class_annos(db_man, at, sim_class, max_amount, model_anno
 
 
 def __get_filtered_image_annotations_by_state(db_man, at, state, user_id, amount, model_anno):
-
     if model_anno == model.ImageAnno:
         annos = db_man.get_image_annotations_by_state(at.idx, state, user_id, amount)
     elif model_anno == model.TwoDAnno:
@@ -415,22 +417,21 @@ def __filter_annos_by_first_chunk(annos):
 
 
 def __get_prev_annos(db_man, user_id, at, model_anno, chunk_id, update_ids):
-
     # Helper function for rows
     def to_int(val):
         # If it's a SQLAlchemy Row or tuple, take the first element
-        if hasattr(val, '_mapping') or isinstance(val, (tuple, list)):
+        if hasattr(val, "_mapping") or isinstance(val, (tuple, list)):
             return int(val[0])
         # Otherwise try to convert the value directly
         return int(val)
 
-    clean_update_ids = [to_int(x) for x in update_ids]    
+    clean_update_ids = [to_int(x) for x in update_ids]
     raw_chunk_update_ids = db_man.get_chunk_update_ids(user_id, at.idx, model_anno, chunk_id)
     chunk_update_ids = [to_int(x) for x in raw_chunk_update_ids]
     update_set = set(clean_update_ids)
     not_included_updates = [x for x in chunk_update_ids if x not in update_set]
     if len(not_included_updates):
-        prev_chunk=chunk_id
+        prev_chunk = chunk_id
         # Append max update_id not already included
         update_set = set(update_ids)
         # update_ids.append(max((x for x in chunk_update_ids if x not in update_set), default=None))
@@ -447,19 +448,16 @@ def __get_prev_annos(db_man, user_id, at, model_anno, chunk_id, update_ids):
         has_prev = True if len(prev_update_ids) > 1 or (prev_chunk > 1) else False
 
     annos = db_man.get_mia_update_chunk(
-        model_anno=model_anno,
-        anno_task_id=at.idx,
-        user_id=user_id,
-        chunk_id=prev_chunk,
-        update_ids=update_ids
-        )
-    
+        model_anno=model_anno, anno_task_id=at.idx, user_id=user_id, chunk_id=prev_chunk, update_ids=update_ids
+    )
+
     return __serialize_annos(db_man, annos, user_id, has_prev)
+
 
 def __serialize_annos(db_man, annos, user_id, has_prev):
     if not annos:
         return {"images": []}
-    
+
     annos = sorted(annos, key=lambda a: a.idx)
     image_serialize = ImageSerialize(db_man, annos, user_id, has_prev)
     image_serialize.serialize()
@@ -504,7 +502,7 @@ def __update_image_annotation(db_man, user_id, data, update_id):
         db_man.commit()
 
 
-def __update_two_d_annotation(db_man, user_id, data, update_id): # TODO: update_id as part of data???
+def __update_two_d_annotation(db_man, user_id, data, update_id):  # TODO: update_id as part of data???
     anno_time = None
     anno_count = len(list(filter(lambda x: x["is_active"] is True, data["images"])))
     for img in data["images"]:

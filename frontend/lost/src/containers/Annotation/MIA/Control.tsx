@@ -156,7 +156,7 @@ const Control = ({
   const handleUndo = () => {
     goBackMia({
       currentChunkId: currentChunk.id,
-      currentUpdateIds: currentUpdateIds, // TODO: undefined even if miaAnnos there
+      currentUpdateIds: currentUpdateIds,
       maxAmount: maxAmountState.value,
     })
   }
