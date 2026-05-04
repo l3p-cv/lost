@@ -7,7 +7,7 @@ const useInactive = () => {
   const [inactiveSeconds, setInactiveSeconds] = useState<number>(0)
   useEffect(() => {
     const countInactiveSecondsInterval = setInterval(
-      () => setInactiveSeconds(inactiveSeconds + 1),
+      () => setInactiveSeconds((prev) => prev + 1),
       1000,
     )
     const resetInactiveSeconds = () => {
@@ -24,7 +24,7 @@ const useInactive = () => {
       for (const event of events)
         globalThis.removeEventListener(event, resetInactiveSeconds)
     }
-  })
+  }, [])
   return inactiveSeconds
 }
 

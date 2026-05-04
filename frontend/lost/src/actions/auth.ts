@@ -19,17 +19,14 @@ const refreshToken = async () => {
     globalThis.location.replace('/logout#timeout')
   }
 
-  // replace with refresh token
-  axios.defaults.headers.Authorization = `Bearer ${jwt}`
-
   try {
-    const response = await axios.post(`${API_URL}/user/refresh`)
+    const response = await axios.post(`${API_URL}/user/refresh`, undefined, {
+      headers: { Authorization: `Bearer ${jwt}` },
+    })
 
     localStorage.setItem('token', response.data.token)
     localStorage.setItem('refreshToken', response.data.refresh_token)
-    axios.defaults.headers.common.Authorization = `Bearer ${localStorage.getItem(
-      'token',
-    )}`
+    axios.defaults.headers.common.Authorization = `Bearer ${response.data.token}`
   } catch (e) {
     console.error(e)
     globalThis.location.replace('/logout#timeout')

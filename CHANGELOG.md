@@ -11,8 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Made all tours of tourguide available everywhere
 - Overhaul of Tourguide Table (ordering and marking of relevant tours)
+- Inactivity in useInactive hook corrected (minimal performance boost + readability)
 ### Fixed
 - Handled bug, where pressing enter directly after finishing a polygon removed points (visually) and did not safe the given label.
+- Refreshtoken no longer triggers errors during annotation
 
 ## [3.1.0] - 2026-03-23
 ### Added
