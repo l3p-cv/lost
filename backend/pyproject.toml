@@ -36,7 +36,7 @@ dependencies = [
     "pandas>=2.2.3",
     "pydantic>=2.11.7",
     "pygelf>=0.4.2",
-    "pytest>=8.3.5",
+    "pytest>=9.0.3",
     "requests>=2.32.3",
     "scikit-image>=0.25.2",
     "sqlalchemy>=2.0.41",
@@ -52,7 +52,7 @@ Documentation = "https://lost.readthedocs.io/en/latest/"
 
 [dependency-groups]
 dev = [
-    "pytest>=7.2.0",
+    "pytest>=9.0.3",
     "pre-commit>=2.20.0",
     "tox-uv>=1.11.3",
     "deptry>=0.23.0",
