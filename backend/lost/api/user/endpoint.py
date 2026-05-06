@@ -337,14 +337,13 @@ class UserTokenRefresh(Resource):
             dask_session.ds_man.refresh_user_session(user)
 
         lm = LoginManager(dbm, user.user_name, "")
-        lm.create_jwt(user.idx, user.roles)
 
-        access_token, refresh_token = lm.create_jwt(user.idx, user.roles)
+        access_token, refresh_token = lm.create_jwt(user.idx, user.user_name, user.roles)
+        dbm.close_session()
 
         if access_token and refresh_token:
             return {"token": access_token, "refresh_token": refresh_token}, 200
 
-        dbm.close_session()
         return api.abort(401, "Invalid user")
 
 
@@ -377,13 +376,12 @@ class UserLongLivedToken(Resource):
             dask_session.ds_man.refresh_user_session(user)
 
         lm = LoginManager(dbm, user.user_name, "")
-        lm.create_jwt(user.idx, user.roles)
 
         expires = datetime.timedelta(days=3650)
-        access_token, _ = lm.create_jwt(user.idx, user.roles, expires)
+        access_token, _ = lm.create_jwt(user.idx, user.user_name, user.roles, expires)
+        dbm.close_session()
 
         if access_token:
             return {"token": access_token}, 200
 
-        dbm.close_session()
         return api.abort(401, "Invalid user")

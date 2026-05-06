@@ -18,7 +18,11 @@ services:
       - --providers.docker=true
       - --providers.docker.exposedbydefault=false
       - --entrypoints.web.address=:80
-    image: traefik:v3.4.0
+      - --log.level=INFO
+      - --log.format=common
+      # - --accesslog=true
+      # - --accesslog.format=common
+    image: traefik:v3.6.13
     ports:
       - 80:80
       - 8090:8080

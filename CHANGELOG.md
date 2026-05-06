@@ -12,9 +12,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Made all tours of tourguide available everywhere
 - Overhaul of Tourguide Table (ordering and marking of relevant tours)
 - Inactivity in useInactive hook corrected (minimal performance boost + readability)
+- Updated Traefik to v3.6.13
+- added user_name to JWT - required param in create_jwt()
 ### Fixed
 - Handled bug, where pressing enter directly after finishing a polygon removed points (visually) and did not safe the given label.
 - Refreshtoken no longer triggers errors during annotation
+- Added OpenID authentication support
+  - disabled by default, configurable using env (see docs for details)
+- Fixed `create_jwt` being called twice in `UserTokenRefresh` and `UserLongLivedToken` (double-call bug).
+- Fixed log output for traefik container
 
 ## [3.1.0] - 2026-03-23
 ### Added

@@ -11,7 +11,14 @@ const config: Config = {
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {
-    v4: true, // Improve compatibility with the upcoming Docusaurus v4
+    v4: {
+      removeLegacyPostBuildHeadAttribute: true,
+      useCssCascadeLayers: true,
+      siteStorageNamespacing: true,
+      fasterByDefault: false,
+      mdx1CompatDisabledByDefault: true,
+    },
+    faster: false,
   },
 
   // Set the production url of your site here
@@ -27,7 +34,14 @@ const config: Config = {
 
   trailingSlash: false,
   onBrokenLinks: "throw",
-  onBrokenMarkdownLinks: "warn",
+
+  markdown: {
+    format: "detect",
+    hooks: {
+      onBrokenMarkdownLinks: "warn",
+    },
+    mermaid: true,
+  },
 
   // Even if you don't use internationalization, you can use this field to set
   // useful metadata like html lang. For example, if your site is Chinese, you
@@ -70,9 +84,13 @@ const config: Config = {
     ],
   ],
 
+  themes: ["@docusaurus/theme-mermaid"],
   themeConfig: {
     // Replace with your project's social card
     image: "img/docusaurus-social-card.jpg",
+    mermaid: {
+      theme: { light: "neutral", dark: "forest" },
+    },
     navbar: {
       style: "primary",
       title: "Documentation",

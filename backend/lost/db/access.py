@@ -1,3 +1,4 @@
+import datetime
 from typing import Optional
 
 import sqlalchemy
@@ -997,6 +998,59 @@ class DBMan:
 
     def get_role_by_name(self, role_name):
         return self.session.query(model.Role).filter(model.Role.name == role_name).first()
+
+    def get_and_delete_oidc_temp_code(self, code: str) -> Optional[model.OidcTempCode]:
+        """Atomically fetch and delete a one-time OIDC temp-code row.
+
+        Looks up the row by ``code``, checks that it has not expired, deletes
+        it (so it cannot be reused), and returns it.  If the code does not
+        exist or has already expired, the method deletes any stale row and
+        returns ``None``.
+
+        Args:
+            code: The opaque temp code received from the frontend.
+
+        Returns:
+            The :class:`~lost.db.model.OidcTempCode` row, or ``None`` if the
+            code is unknown or expired.
+        """
+        entry = (
+            self.session.query(model.OidcTempCode)
+            .filter(model.OidcTempCode.code == code)
+            .first()
+        )
+        if entry is None:
+            return None
+        # Always delete — whether valid or expired — to keep the table clean.
+        self.session.delete(entry)
+        self.session.commit()
+        now = datetime.datetime.now(datetime.UTC)
+        # expires_at is stored as a naive UTC datetime; normalise for comparison.
+        expires_at = entry.expires_at
+        if expires_at.tzinfo is None:
+            expires_at = expires_at.replace(tzinfo=datetime.timezone.utc)
+        if expires_at < now:
+            return None
+        return entry
+
+    def delete_expired_oidc_temp_codes(self) -> int:
+        """Bulk-delete all OidcTempCode rows whose expires_at is in the past.
+
+        Intended to be called periodically by a cron job to prevent the table
+        from growing indefinitely due to codes that were never exchanged (e.g.
+        the user closed the browser before completing the OIDC flow).
+
+        Returns:
+            The number of rows deleted.
+        """
+        now = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
+        count = (
+            self.session.query(model.OidcTempCode)
+            .filter(model.OidcTempCode.expires_at < now)
+            .delete(synchronize_session=False)
+        )
+        self.session.commit()
+        return count
 
     def get_users(self):
         return self.session.query(model.User).all()

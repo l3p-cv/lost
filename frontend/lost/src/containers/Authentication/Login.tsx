@@ -17,6 +17,13 @@ import CenteredSpinner from '../../components/CenteredSpinner'
 import { useLogin } from '../../actions/auth/auth_api'
 import { useNavigate } from 'react-router-dom'
 import { showError } from '../../components/Notification'
+import CoreIconButton from '../../components/CoreIconButton'
+import { faFingerprint } from '@fortawesome/free-solid-svg-icons'
+import { API_URL } from '../../lost_settings'
+
+// show OpenID button only when an IDP name is configured.
+// Value is injected at container startup via /config.js → window.__APP_CONFIG__.LOST_OPENID_NAME
+const _oidcName = window.__APP_CONFIG__?.LOST_OPENID_NAME
 
 const Login = () => {
   const navigate = useNavigate()
@@ -29,6 +36,8 @@ const Login = () => {
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+
+  const [canShowOpenIdLoading, setCanShowOpenIdLoading] = useState<boolean>(false)
 
   const submit = (e) => {
     e.preventDefault()
@@ -63,6 +72,26 @@ const Login = () => {
     // go to main page
     navigate('/')
   }, [loginResponse, loginStatus])
+
+  const renderOpenIdLogin = () => {
+    return (
+      <CRow className="mt-3">
+        <CCol className="d-flex">
+          <CoreIconButton
+            isOutline={false}
+            isLoading={canShowOpenIdLoading}
+            icon={faFingerprint}
+            color={'primary'}
+            text={`Login using ${_oidcName}`}
+            onClick={() => {
+              setCanShowOpenIdLoading(true)
+              globalThis.location.href = `${API_URL}/auth/openid/login`
+            }}
+          />
+        </CCol>
+      </CRow>
+    )
+  }
 
   return (
     <div className="app flex-row align-items-center">
@@ -117,6 +146,7 @@ const Login = () => {
                       </CCol>
                     </CRow>
                   </CForm>
+                  {_oidcName && renderOpenIdLogin()}
                 </CCardBody>
               </CCard>
             </CCardGroup>

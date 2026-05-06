@@ -80,6 +80,19 @@ def remove_empty_annos_loop(log_name):
     run_loop(remove_empty_annos, lostconfig.session_timeout * 60, log_name=log_name)
 
 
+def purge_oidc_temp_codes(log_name):
+    lostconfig = config.LOSTConfig()
+    dbm = DBMan(lostconfig)
+    logger = logging.getLogger(log_name)
+    count = dbm.delete_expired_oidc_temp_codes()
+    logger.info(f"Purged {count} expired OIDC temp code(s)")
+    dbm.close_session()
+
+
+def purge_oidc_temp_codes_loop(log_name):
+    run_loop(purge_oidc_temp_codes, 600, log_name=log_name)  # every 10 minutes
+
+
 def main():
     parser = argparse.ArgumentParser(description="Run LOST cronjobs")
     parser.add_argument("--debug", action="store_true", help="start cronjobs just once for debugging")
@@ -95,7 +108,7 @@ def main():
         client = Client(f"{lostconfig.scheduler_ip}:{lostconfig.scheduler_port}")
         process_pipes(log_name, client)
     else:
-        jobs = [process_pipes_loop, worker_lifesign_loop, release_annos_loop, remove_empty_annos_loop]
+        jobs = [process_pipes_loop, worker_lifesign_loop, release_annos_loop, remove_empty_annos_loop, purge_oidc_temp_codes_loop]
         if lostconfig.worker_management == "dynamic":
             jobs.append(dask_session.release_client_by_timeout_loop)
         jobs += lostconfig.extra_cron_jobs

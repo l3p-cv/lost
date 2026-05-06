@@ -16,6 +16,7 @@ from lost.api.config.endpoint import namespace as config_namespace
 from lost.api.data.endpoint import namespace as data_namespace
 
 # from lost.api.annotasks.endpoint import namespace as annotasks_namespace
+from lost.api.auth.OpenidEndpoint import namespace as openid_namespace
 from lost.api.dataset.endpoint import namespace as dataset_namespace
 from lost.api.filebrowser.endpoint import namespace as filebrowser_namespace
 from lost.api.group.endpoint import namespace as group_namespace
@@ -81,6 +82,7 @@ blueprint = Blueprint("api", __name__, url_prefix="/api")
 api.init_app(blueprint)
 # register endpoints here
 api.add_namespace(user_namespace)
+api.add_namespace(openid_namespace)
 api.add_namespace(group_namespace)
 api.add_namespace(sia_namespace)
 api.add_namespace(mia_namespace)

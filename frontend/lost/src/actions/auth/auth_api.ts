@@ -37,3 +37,6 @@ export const useLogout = () => {
       })
   })
 }
+
+export const exchangeOidcCode = (code: string) =>
+  axios.post(`${API_URL}/auth/openid/token`, { code }).then((res) => res.data)

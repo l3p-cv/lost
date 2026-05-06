@@ -36,7 +36,7 @@ class DBPatcher:
             all_patches_on_init (bool): Indicates wether all patches should be
                 applied on first db init
         """
-        print("------------------------ RUN daisy-backend DBPatcher check_and_update ------------------------")
+        print("------------------------ RUN DBPatcher check_and_update ------------------------")
 
         try:
             print("Create / update database")

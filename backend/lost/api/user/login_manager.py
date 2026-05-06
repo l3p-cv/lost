@@ -29,7 +29,7 @@ class LoginManager:
             return {"token": access_token, "refresh_token": refresh_token}, 200
         return {"message": "Invalid credentials"}, 401
 
-    def create_jwt(self, user_id: int, roles: list[Role], expires=None):
+    def create_jwt(self, user_id: int, user_name: str, roles: list[Role], expires=None):
         if not expires:
             expires = datetime.timedelta(minutes=LOST_CONFIG.session_timeout)
         expires_refresh = datetime.timedelta(minutes=LOST_CONFIG.session_timeout + 5)
@@ -40,7 +40,7 @@ class LoginManager:
             user_role_names.append(user_role.role.name)
 
         # add roles of user to the jwt token
-        additional_claims = {"roles": user_role_names}
+        additional_claims = {"roles": user_role_names, "username": user_name}
 
         access_token = create_access_token(
             identity=str(user_id), fresh=True, expires_delta=expires, additional_claims=additional_claims
@@ -53,7 +53,7 @@ class LoginManager:
         if self.user_name:
             user = self.dbm.find_user_by_user_name(self.user_name)
         if user and user.check_password(self.password):
-            return self.create_jwt(user.idx, user.roles)
+            return self.create_jwt(user.idx, user.user_name, user.roles)
         return None, None
 
     # def __authenticate_ldap(self):
