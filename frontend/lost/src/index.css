@@ -30,3 +30,8 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
+
+/* ensure sweetalert2 dialogs appear above the lost-sia fullscreen canvas (z-index: 6000) */
+.swal-above-fullscreen {
+  z-index: 7000 !important;
+}

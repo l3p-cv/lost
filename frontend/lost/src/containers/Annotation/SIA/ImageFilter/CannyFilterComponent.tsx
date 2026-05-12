@@ -41,6 +41,7 @@ const CannyFilterComponent = ({
             max={255}
             step={1}
             value={cannyThreshholds}
+            disabled={!isActive}
             onChange={onThreshholdChange}
           />
         </CCol>

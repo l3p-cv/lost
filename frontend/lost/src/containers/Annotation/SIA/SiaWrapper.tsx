@@ -211,12 +211,14 @@ const SiaWrapper = ({
   useEffect(() => {
     // react query throws a state update with undefined right before the actual data is set when the query cache is disabled
     if (annoData?.image === undefined || annoData?.annotations === undefined) return
+    // backend returns "nothing available" on last image — annotations can contain null items
+    if (annoData.annotations === null) return
 
     // @TODO use the old api style (annos separated by type) for now, but convert it here to the new style
     const annotationsByType: LegacyAnnotationResponse = annoData.annotations
     const collectedAnnoData = Object.entries(annotationsByType).flatMap(
       ([type, items]: [string, LegacyAnnotation[]]) =>
-        items.map((annotation) => legacyHelper.convertAnnoToNewFormat(annotation, type)),
+        items?.map((annotation) => legacyHelper.convertAnnoToNewFormat(annotation, type)) ?? [],
     )
 
     setInitialAnnotations(collectedAnnoData)
@@ -724,6 +726,9 @@ const SiaWrapper = ({
       option1: {
         text: 'YES',
         callback: () => {
+          // commit the last image by requesting next before finishing
+          // this triggers set_labeled_state_for_last_image on the backend
+          onSetAnnotationRequestData({ direction: 'next', imageId: imageId })
           sindFinishAnnotask()
         },
       },
@@ -1056,6 +1061,7 @@ const SiaWrapper = ({
               tooltip={'Open Filter Options'}
               onFiltersChanged={setAppliedImageFilters}
               imageIsLoading={imageIsLoading}
+              imageId={imageId}
             />
             <CoreIconButton
               toolTip="Open image search"

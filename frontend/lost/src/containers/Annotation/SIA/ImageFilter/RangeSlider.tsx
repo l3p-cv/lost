@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-const RangeSlider = ({ min, max, value, step, onChange }) => {
+const RangeSlider = ({ min, max, value, step, onChange, disabled = false }) => {
   const [minValue, setMinValue] = useState(value?.min)
   const [maxValue, setMaxValue] = useState(value?.max)
 
@@ -64,21 +64,22 @@ const RangeSlider = ({ min, max, value, step, onChange }) => {
   const sliderRangeStyle = {
     position: 'absolute',
     height: '100%',
-    background: 'var(--cui-primary, #0d6efd)',
+    background: disabled ? 'var(--cui-secondary, #adb5bd)' : 'var(--cui-primary, #092f38)',
     left: `${minPos}%`,
     right: `${100 - maxPos}%`,
+    opacity: disabled ? 0.4 : 1,
   }
 
   const thumbStyle = {
     WebkitAppearance: 'none',
     appearance: 'none',
-    pointerEvents: 'all',
+    pointerEvents: disabled ? 'none' : 'all',
     width: `${thumbSize}px`,
     height: `${thumbSize}px`,
-    background: 'var(--cui-primary, #0d6efd)',
+    background: disabled ? 'var(--cui-secondary, #adb5bd)' : 'var(--cui-primary, #092f38)',
     border: 'none',
     borderRadius: '50%',
-    cursor: 'pointer',
+    cursor: disabled ? 'not-allowed' : 'pointer',
     position: 'relative',
     zIndex: 3,
     marginTop: `${(trackHeight - thumbSize) / 2}px`,
@@ -87,7 +88,7 @@ const RangeSlider = ({ min, max, value, step, onChange }) => {
   const minInputStyle = { ...inputStyle, zIndex: minValue > maxValue - step ? 5 : 4 }
 
   return (
-    <div style={wrapperStyle}>
+    <div className="range-slider" style={wrapperStyle}>
       <div style={sliderTrackStyle}>
         <div style={sliderRangeStyle} />
       </div>
@@ -97,6 +98,7 @@ const RangeSlider = ({ min, max, value, step, onChange }) => {
         min={min}
         max={max}
         step={step}
+        disabled={disabled}
         onChange={handleMinChange}
         style={minInputStyle}
       />
@@ -106,11 +108,12 @@ const RangeSlider = ({ min, max, value, step, onChange }) => {
         min={min}
         max={max}
         step={step}
+        disabled={disabled}
         onChange={handleMaxChange}
         style={{ ...inputStyle, zIndex: 4 }}
       />
       <style>{`
-                input[type='range']::-webkit-slider-thumb {
+                .range-slider input[type='range']::-webkit-slider-thumb {
                     ${Object.entries(thumbStyle)
                       .map(
                         ([key, value]) =>
@@ -118,7 +121,7 @@ const RangeSlider = ({ min, max, value, step, onChange }) => {
                       )
                       .join('\n')}
                 }
-                input[type='range']::-moz-range-thumb {
+                .range-slider input[type='range']::-moz-range-thumb {
                     ${Object.entries(thumbStyle)
                       .map(
                         ([key, value]) =>
