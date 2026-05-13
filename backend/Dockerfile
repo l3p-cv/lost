@@ -11,4 +11,6 @@ RUN uv pip install --system -r requirements.txt
 
 COPY . .
 ENV PYTHONPATH=/code
+ARG LOST_VERSION
+RUN echo "__version__='${LOST_VERSION:-development}'" > /code/lost/__init__.py
 CMD ["bash", "/code/entrypoint.sh"]
