@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Notification.js to always render above the lost-sia fullscreen canvas (z-index: 6000) added styles for the same in index.css
 - Fixed Image Filter closing issue in ImageFilterButton.tsx and in ImageFilterUi.tsx
+- BBOX from polygon calculation fixed
 ### Changed
 - RangeSlider.tsx to show disabled and enabled styles.
 - SiaWrapper.tsx enable next for last image for fixing Task Progress.
