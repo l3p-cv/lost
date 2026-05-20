@@ -47,7 +47,6 @@ const ImageFilterButton = ({
 
   const customPopoverStyle = {
     '--cui-popover-max-width': '300px',
-    zIndex: 7000,
   }
 
   return (

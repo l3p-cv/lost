@@ -1146,6 +1146,7 @@ const SiaWrapper = ({
           onChooseImage={getSpecificImage}
           possibleAnnotaskLabels={possibleLabels!}
           onSearchResult={setFilteredImageIds}
+          currentImageId={imageId}
         />
       )}
       <div
