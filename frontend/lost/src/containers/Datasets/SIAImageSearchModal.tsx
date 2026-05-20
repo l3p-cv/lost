@@ -30,6 +30,7 @@ type SIAImageSearchModalProps = {
   setIsVisible: (isVisible: boolean) => void
   onChooseImage: (imageId: number) => void
   onSearchResult: (imageIdList: ImageSearchResult[]) => void
+  currentImageId?: number
 }
 
 const SIAImageSearchModal = ({
@@ -40,6 +41,7 @@ const SIAImageSearchModal = ({
   setIsVisible,
   onChooseImage,
   onSearchResult = () => {},
+  currentImageId,
 }: SIAImageSearchModalProps) => {
   const { data: possibleDatasetLabels, refetch: reloadPossibleDatasetLabels } =
     datasetReviewApi.useGetDatasetPossibleLabels(id)
@@ -142,19 +144,37 @@ const SIAImageSearchModal = ({
     columnHelper.display({
       id: 'chooseImage',
       header: () => 'Choose Image',
-      cell: (props) => (
-        <CoreIconButton
-          icon={faArrowRight}
-          color="primary"
+      cell: (props) => {
+        const isCurrentImage = props.row.original.imageId === currentImageId
+        if (isCurrentImage) {
+          return (
+            <span
+              title="You are already on this image"
+              style={{ cursor: 'not-allowed', display: 'inline-block' }}
+            >
+              <CoreIconButton
+                icon={faArrowRight}
+                color="primary"
+                onClick={() => {}}
+                disabled={true}
+                style={{ pointerEvents: 'none' }}
+              />
+            </span>
+          )
+        }
+        return (
+          <CoreIconButton
+            icon={faArrowRight}
+            color="primary"
           // isOutline={false}
-          onClick={() => {
-            setIsVisible(false)
-            const rowData = props.row.original
-            onChooseImage(rowData.imageId)
-          }}
-          disabled={false}
-        />
-      ),
+            onClick={() => {
+              setIsVisible(false)
+              onChooseImage(props.row.original.imageId)
+            }}
+            disabled={false}
+          />
+        )
+      },
     }),
   ]
 

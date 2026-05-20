@@ -6,14 +6,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 ### Added
+- Added currentImageId prop to SIAImageSearchModal (To know the current image ID to disable the row the user is already on.)
+- Added implementation to wrap the disabled button in a <span> that captures the mouse events to show current image tooltip for disabled button.
+- Pass imageId from SiaWrapper.tsx where SIAImageSearchModal is rendered.
 ### Fixed
 - Notification.js to always render above the lost-sia fullscreen canvas (z-index: 6000) added styles for the same in index.css
 - Fixed Image Filter closing issue in ImageFilterButton.tsx and in ImageFilterUi.tsx
 - BBOX from polygon calculation fixed
+- Fixed Search Annotation appearing in background when in fullscreen during Annotation Review by removing customPopoverStyle zIndex: 7000 in ImageFilterButton.tsx and reducing zIndex for fullscreenStyle in Sia.tsx(lost-sia) to 1040.
 ### Changed
 - RangeSlider.tsx to show disabled and enabled styles.
 - SiaWrapper.tsx enable next for last image for fixing Task Progress.
 - CannyFilterComponent.tsx, ImageFilterComponent.tsx, BilateralFilterComponent.tsx added disabled silder on toggle off and div styles for the same.
+
+## [3.2.2] - 2026-05-13
+### Fixed
+- fixed version number shown in UI
 
 ## [3.2.1] - 2026-05-11
 ### Changed
