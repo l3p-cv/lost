@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SiaWrapper.tsx enable next for last image for fixing Task Progress.
 - CannyFilterComponent.tsx, ImageFilterComponent.tsx, BilateralFilterComponent.tsx added disabled silder on toggle off and div styles for the same.
 
+## [3.2.2] - 2026-05-13
+### Fixed
+- fixed version number shown in UI
+
 ## [3.2.1] - 2026-05-11
 ### Changed
 - Updated lost-sia package to 3.1.2
