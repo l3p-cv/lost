@@ -9,7 +9,7 @@ import { faFolderOpen } from '@fortawesome/free-solid-svg-icons'
 
 import * as fbAPI from '../../api/fb'
 import * as Notification from '../../components/Notification'
-import { useOwnUser } from '../../actions/user/user_api'
+import { useOwnUser } from '../../api/user'
 
 import ImageBrowserModal from '../../components/FileBrowser/ImageBrowserModal'
 import { getImageMarkdown } from '../../containers/InstructionMedia/media_api'

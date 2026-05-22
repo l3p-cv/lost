@@ -1,6 +1,6 @@
 import { createColumnHelper } from '@tanstack/react-table'
 import { useGroups } from '../../../../../../api/group'
-import { useAnnoTaskUser } from '../../../../../../actions/user/user_api'
+import { useAnnoTaskUser } from '../../../../../../api/user'
 import CoreDataTable from '../../../../../../components/CoreDataTable'
 import { alertSuccess } from '../../../../globalComponents/Sweetalert'
 import InfoText from '../../../../../../components/InfoText'

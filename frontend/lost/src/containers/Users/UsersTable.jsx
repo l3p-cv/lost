@@ -6,7 +6,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { useEffect, useState } from 'react'
 import { useCopyToClipboard } from 'react-use'
-import { useDeleteUser, useUsers } from '../../actions/user/user_api'
+import { useDeleteUser, useUsers } from '../../api/user'
 import * as Notification from '../../components/Notification'
 import EditUserModal from './EditUserModal'
 import { createColumnHelper } from '@tanstack/react-table'
