@@ -274,7 +274,6 @@ def export_ds(pe_id, user_id, export_id, export_name, splits, export_type, inclu
                     df = lds.pack_ds(
                         ds.df, root_path, filesystem=src_fs, zip_file=zip_file, progress_callback=progress_callback
                     )
-                    df["img_path"] = df["img_path"].apply(lambda x: os.path.join(*x.split("/")[-2:]))
                 else:
                     df = ds.df
                 out_base = os.path.basename(root_path)

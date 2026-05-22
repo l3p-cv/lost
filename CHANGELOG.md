@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed Image Filter closing issue in ImageFilterButton.tsx and in ImageFilterUi.tsx
 - BBOX from polygon calculation fixed
 - Fixed Search Annotation appearing in background when in fullscreen during Annotation Review by removing customPopoverStyle zIndex: 7000 in ImageFilterButton.tsx and reducing zIndex for fullscreenStyle in Sia.tsx(lost-sia) to 1040.
+- Fixed stale user data in EditUserModal when reopening the modal for a different user immediately after saving (added useEffect to sync internal state with props.user)
+- Removed redundant img_path post-processing in export_ds (jobs.py) that was stripping paths back to 2 components after pack_ds, conflicting with the collision-safe remapping
 ### Changed
 - RangeSlider.tsx to show disabled and enabled styles.
 - SiaWrapper.tsx enable next for last image for fixing Task Progress.
