@@ -20,16 +20,6 @@ export const useGetPossibleFsTypes = () => {
   return useMutation(() => axios.get(API_URL + '/fb/fstypes').then((res) => res.data))
 }
 
-// export async function ls(fs, path) {
-//     const res = await axios.post(API_URL + '/fb/ls', { fs: fs, path: path })
-//     return res.data
-// }
-
-// export async function lsTest(fs, path) {
-//     const res = await axios.post(API_URL + '/fb/lsTest', { fs: fs, path: path })
-//     return res.data
-// }
-
 export async function ls(fs, path) {
   const res = await axios.post(API_URL + '/fb/ls', { fs: fs, path: path })
   return res.data
