@@ -8,7 +8,7 @@ import {
   useCreateInferenceModel,
   useTritonModels,
   useUpdateInferenceModel,
-} from '../../actions/inference-model/model-api'
+} from '../../api/inference_model'
 import {
   CButton,
   CForm,

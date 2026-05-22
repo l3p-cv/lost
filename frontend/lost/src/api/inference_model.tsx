@@ -1,7 +1,7 @@
 import { AxiosError } from 'axios'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
-import { showError, showSuccess } from '../../components/Notification'
-import { httpClient } from '../http-client'
+import { showError, showSuccess } from '../components/Notification'
+import { httpClient } from '../actions/http-client'
 
 export const INFERENCE_MODEL_TASK_TYPE = {
   DETECTION: 0,
