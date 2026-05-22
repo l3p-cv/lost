@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import * as statistics_api from '../../actions/statistics/statistics_api'
+import * as statistics_api from '../../api/statistics_api'
 
 import { CCol, CContainer, CRow, CWidgetStatsD } from '@coreui/react'
 
