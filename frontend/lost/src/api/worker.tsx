@@ -1,5 +1,5 @@
 import { useQuery } from 'react-query'
-import { httpClient } from '../http-client'
+import { httpClient } from '../actions/http-client'
 
 export const useWorkers = () => {
   return useQuery({
