@@ -1,6 +1,6 @@
 import { createContext, useState } from 'react'
 import { useQuery } from 'react-query'
-import { httpClient } from '../actions/http-client'
+import { httpClient } from '../api/http_client'
 
 interface Settings {
   autoLogoutWarnTime: number

@@ -1,8 +1,8 @@
 import axios from 'axios'
 import { jwtDecode } from 'jwt-decode'
 import { isEmpty } from 'lodash'
-import { API_URL } from '../lost_settings'
-import { DecodedToken } from '../types/auth_types'
+import { API_URL } from '../../lost_settings'
+import { DecodedToken } from '../../types/auth_types'
 
 const refreshToken = async () => {
   const jwt: string | null = localStorage.getItem('refreshToken')

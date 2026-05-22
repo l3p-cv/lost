@@ -2,7 +2,7 @@ import { AxiosError } from 'axios'
 import { saveAs } from 'file-saver'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { showError, showSuccess } from '../components/Notification'
-import { httpClient } from '../actions/http-client'
+import { httpClient } from './http_client'
 import { LabelTreesResponse } from '../types/label-trees-response'
 
 export const useUpdateLabel = () => {

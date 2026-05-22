@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { showError, showSuccess } from '../components/Notification'
-import { httpClient } from '../actions/http-client'
+import { httpClient } from './http_client'
 
 export const useAnnoTaskUser = (select) => {
   return useQuery({
