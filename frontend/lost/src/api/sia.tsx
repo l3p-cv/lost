@@ -1,13 +1,13 @@
 import axios, { AxiosError } from 'axios'
 import { useMutation, UseMutationResult, useQuery, UseQueryResult } from 'react-query'
-import { API_URL } from '../../lost_settings'
-import { showError } from '../../components/Notification'
+import { API_URL } from '../lost_settings'
+import { showError } from '../components/Notification'
 import { Label } from 'lost-sia'
-import { SiaImageRequest } from '../../types/SiaTypes'
+import { SiaImageRequest } from '../types/SiaTypes'
 import {
   LegacyAnnotation,
   LegacyAnnotationResponse,
-} from '../../containers/Annotation/SIA/legacyHelper'
+} from '../containers/Annotation/SIA/legacyHelper'
 
 export type SiaApi = {
   useGetPossibleLabels: (annoTaskId: number) => UseQueryResult

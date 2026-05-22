@@ -7,7 +7,7 @@ import {
   EditAnnotationResponse,
   ImageData,
   ImageLabelData,
-} from '../actions/sia/sia_api'
+} from './sia'
 import { LegacyAnnotationResponse } from '../containers/Annotation/SIA/legacyHelper'
 import { Label } from 'lost-sia'
 

@@ -6,13 +6,9 @@ import type {
   ImageSwitchData,
   SiaResponse,
   ImageEditData,
-} from '../../../actions/sia/sia_api'
-import {
-  useGetSiaImage,
-  useFinishAnnotask,
-  useImageJunk,
-} from '../../../actions/sia/sia_api'
-import polygonOperationApi from '../../../actions/sia/polygonOperationApi'
+} from '../../../api/sia'
+import { useGetSiaImage, useFinishAnnotask, useImageJunk } from '../../../api/sia'
+import polygonOperationApi from '../../../api/polygon_operation'
 
 import type {
   ExternalAnnotation,
@@ -218,7 +214,9 @@ const SiaWrapper = ({
     const annotationsByType: LegacyAnnotationResponse = annoData.annotations
     const collectedAnnoData = Object.entries(annotationsByType).flatMap(
       ([type, items]: [string, LegacyAnnotation[]]) =>
-        items?.map((annotation) => legacyHelper.convertAnnoToNewFormat(annotation, type)) ?? [],
+        items?.map((annotation) =>
+          legacyHelper.convertAnnoToNewFormat(annotation, type),
+        ) ?? [],
     )
 
     setInitialAnnotations(collectedAnnoData)

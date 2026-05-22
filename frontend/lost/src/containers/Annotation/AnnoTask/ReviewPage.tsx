@@ -4,7 +4,7 @@ import SiaWrapper from '../SIA/SiaWrapper'
 import { CSSProperties, useState } from 'react'
 import siaApi, { ReviewData, useReview } from '../../../api/dataset_review'
 import { useAnnotask } from '../../../api/anno_task'
-import { ImageSwitchData } from '../../../actions/sia/sia_api'
+import { ImageSwitchData } from '../../../api/sia'
 import AnnotationTop from './AnnotationTop'
 
 const AnnotaskReviewComponent = () => {
