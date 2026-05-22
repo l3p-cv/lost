@@ -1,7 +1,7 @@
 import { faSave, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { useEffect, useState } from 'react'
 import validator from 'validator'
-import { useGroups } from '../../actions/group/group-api'
+import { useGroups } from '../../api/group'
 import { useCreateUser, useUpdateUser } from '../../actions/user/user_api'
 import { useLostConfig } from '../../hooks/useLostConfig'
 import { CBadge, CCol, CFormInput, CRow } from '@coreui/react'

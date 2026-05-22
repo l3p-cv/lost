@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from 'react-query'
-import { showError, showSuccess } from '../../components/Notification'
-import { httpClient } from '../http-client'
+import { showError, showSuccess } from '../components/Notification'
+import { httpClient } from '../actions/http-client'
 
 export const useGroups = (select?) => {
   return useQuery({
