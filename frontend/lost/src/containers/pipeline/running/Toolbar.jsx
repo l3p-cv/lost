@@ -13,7 +13,7 @@ import {
   useDeletePipeline,
   usePausePipeline,
   usePlayPipeline,
-} from '../../../actions/pipeline/pipeline_api'
+} from '../../../actions/pipeline/pipeline'
 import GrayLine from '../globalComponents/GrayLine'
 import { alertDeletePipeline } from '../globalComponents/Sweetalert'
 import { PipelineLogModal } from './PipelineLogModal'

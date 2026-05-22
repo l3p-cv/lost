@@ -1,6 +1,6 @@
 import { faCloudUploadAlt } from '@fortawesome/free-solid-svg-icons'
 import { useState } from 'react'
-import { useUpdatePipelineArguments } from '../../../../../actions/pipeline/pipeline_api'
+import { useUpdatePipelineArguments } from '../../../../../actions/pipeline/pipeline'
 import CollapseCard from '../../../globalComponents/modals/CollapseCard'
 import ArgumentsTable from '../../../globalComponents/modals/ScriptArgumentsTable'
 import { CCol, CProgress, CRow } from '@coreui/react'

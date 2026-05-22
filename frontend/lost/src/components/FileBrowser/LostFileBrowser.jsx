@@ -13,7 +13,7 @@ import { ChonkyIconFA } from 'chonky-icon-fontawesome'
 import { useEffect, useMemo, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import * as Notification from '../Notification'
-import * as fbaccess from '../../access/fb'
+import * as fbaccess from '../../api/fb_access'
 import * as fb_api from '../../api/fb'
 import CoreIconButton from '../CoreIconButton'
 

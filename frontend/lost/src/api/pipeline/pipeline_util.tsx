@@ -4,12 +4,12 @@ import {
   DatasourceNodeData,
   ScriptNodeData,
 } from '../../containers/pipeline/start/nodes'
-import { Element } from './model/pipeline-request'
-import { PipelineResponseElement } from './model/pipeline-response'
+import { Element } from '../../types/pipelines/pipeline-request'
+import { PipelineResponseElement } from '../../types/pipelines/pipeline-response'
 import {
   PipelineTemplateElement,
   PipelineTemplateResponse,
-} from './model/pipeline-template-response'
+} from '../../types/pipelines/pipeline-template-response'
 
 const getReactFlowEdges = (
   elements: PipelineResponseElement[] | PipelineTemplateElement[],

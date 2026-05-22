@@ -2,7 +2,7 @@ import {
   AvailableGroup,
   AvailableLabelTree,
   PipelineTemplateElement,
-} from '../../../../actions/pipeline/model/pipeline-template-response'
+} from '../../../../types/pipelines/pipeline-template-response'
 import { AnnoTaskModal } from './anno-task-modal/AnnoTaskModal'
 import { DatasourceModal } from './DatasourceModal'
 import { LoopModal } from './LoopModal'

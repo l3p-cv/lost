@@ -7,7 +7,7 @@ import {
   usePausePipeline,
   usePlayPipeline,
   useDeletePipeline,
-} from '../../../actions/pipeline/pipeline_api'
+} from '../../../actions/pipeline/pipeline'
 import BaseContainer from '../../../components/BaseContainer'
 import { CenteredSpinner } from '../../../components/CenteredSpinner'
 import { getColor } from '../../Annotation/AnnoTask/utils'

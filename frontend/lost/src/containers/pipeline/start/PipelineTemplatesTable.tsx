@@ -1,7 +1,7 @@
 import { CContainer, CTooltip } from '@coreui/react'
 import { faPlay } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
-import { useTemplates } from '../../../actions/pipeline/pipeline_api'
+import { useTemplates } from '../../../actions/pipeline/pipeline'
 import BaseContainer from '../../../components/BaseContainer'
 import { CenteredSpinner } from '../../../components/CenteredSpinner'
 import { useEffect, useState } from 'react'

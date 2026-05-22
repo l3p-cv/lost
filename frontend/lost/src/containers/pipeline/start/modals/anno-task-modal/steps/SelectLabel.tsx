@@ -3,7 +3,7 @@ import { Edge, Node, ReactFlowProvider, useNodesData, useReactFlow } from '@xyfl
 import { isEmpty } from 'lodash'
 import { useEffect, useState } from 'react'
 import { FaInfoCircle } from 'react-icons/fa'
-import { AvailableLabelTree } from '../../../../../../actions/pipeline/model/pipeline-template-response'
+import { AvailableLabelTree } from '../../../../../../types/pipelines/pipeline-template-response'
 import { AnnoTaskNodeData } from '../../../nodes'
 import { LabelTreeFlow } from './label-selection-graph/LabelTreeFlow'
 import { convertLabelTreeToReactFlow } from './label-selection-graph/label-tree-util'

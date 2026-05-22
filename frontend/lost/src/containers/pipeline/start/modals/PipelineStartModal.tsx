@@ -15,9 +15,9 @@ import { faPlay } from '@fortawesome/free-solid-svg-icons'
 import { Node, useNodes } from '@xyflow/react'
 import { useState } from 'react'
 import { FaExclamationTriangle } from 'react-icons/fa'
-import { PipelineTemplateResponse } from '../../../../actions/pipeline/model/pipeline-template-response'
-import { getFormattedPipelineRequestElements } from '../../../../actions/pipeline/pipeline-util'
-import { useCreateAndStartPipeline } from '../../../../actions/pipeline/pipeline_api'
+import { PipelineTemplateResponse } from '../../../../types/pipelines/pipeline-template-response'
+import { getFormattedPipelineRequestElements } from '../../../../api/pipeline/pipeline_util'
+import { useCreateAndStartPipeline } from '../../../../api/pipeline/pipeline'
 import CoreIconButton from '../../../../components/CoreIconButton'
 
 interface SubmitPipelineModalProps {

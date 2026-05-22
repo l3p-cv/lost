@@ -8,7 +8,7 @@ import { useTourClickHandler } from './handlers/tourClickHandler'
 import { handleNavigationAndActions } from './handlers/tourNavigationHandler'
 import { getTooltipStyles, getOverlayStyles } from './config/tourStyles'
 import { useJoyrideSteps } from '../../hooks/useJoyrideSteps'
-import { useConditionalPipelinesPaged } from '../../actions/pipeline/pipeline_api'
+import { useConditionalPipelinesPaged } from '../../actions/pipeline/pipeline'
 
 const JoyrideTour = () => {
   const [run, setRun] = useState(false)

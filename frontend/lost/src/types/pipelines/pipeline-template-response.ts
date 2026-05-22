@@ -1,4 +1,4 @@
-import { Model } from '../../../api/inference_model'
+import { Model } from '../../api/inference_model'
 
 export interface PipelineTemplateResponse {
   id: number
