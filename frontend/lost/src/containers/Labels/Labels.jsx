@@ -1,4 +1,4 @@
-import { useGetLabelTrees } from '../../actions/label/label-api'
+import { useGetLabelTrees } from '../../api/label'
 import BaseContainer from '../../components/BaseContainer'
 import { CenteredSpinner } from '../../components/CenteredSpinner'
 import LabelTreeTable from './LabelTreeTable'

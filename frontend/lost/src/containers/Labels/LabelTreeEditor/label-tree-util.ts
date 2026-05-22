@@ -1,5 +1,5 @@
 import { Edge, Node } from '@xyflow/react'
-import { LabelTreesResponse } from '../../../actions/label/label-trees-response'
+import { LabelTreesResponse } from '../../../types/label-trees-response'
 import { getContrastColor } from '../../../utils/color-util'
 
 export const convertLabelTreeToReactFlow = (tree: LabelTreesResponse) => {

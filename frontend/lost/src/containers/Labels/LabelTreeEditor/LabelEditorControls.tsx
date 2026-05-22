@@ -1,7 +1,7 @@
 import { faCheck, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { useNodesData, useReactFlow } from '@xyflow/react'
 import { isEmpty } from 'lodash'
-import { useDeleteLabel, useUpdateLabel } from '../../../actions/label/label-api'
+import { useDeleteLabel, useUpdateLabel } from '../../../api/label'
 import { getContrastColor } from '../../../utils/color-util'
 import { LabelEditorNodeData } from './LabelEditorNode'
 import { CFormInput, CInputGroup } from '@coreui/react'
