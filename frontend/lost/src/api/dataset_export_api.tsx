@@ -1,7 +1,7 @@
 import { saveAs } from 'file-saver'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
-import { showError, showSuccess } from '../../components/Notification'
-import { httpClient } from '../http-client'
+import { showError, showSuccess } from '../components/Notification'
+import { httpClient } from '../actions/http-client'
 import { AvailableDatasetExportsResponse } from './model'
 
 export const useExportDataset = () => {

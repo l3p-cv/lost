@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { useMutation, useQuery } from 'react-query'
-import { API_URL } from '../../lost_settings'
+import { API_URL } from '../lost_settings'
 
 export type Dataset = {
   id?: number

@@ -3,7 +3,7 @@ import {
   useAvailableDatasetExports,
   useDeleteDatasetExport,
   useDownloadDatasetExport,
-} from '../../actions/dataset/dataset-export-api'
+} from '../../api/dataset_export_api'
 import * as Notification from '../../components/Notification'
 import { CProgress } from '@coreui/react'
 import { createColumnHelper } from '@tanstack/react-table'
