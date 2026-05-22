@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import * as statistics_api from '../../api/statistics_api'
+import * as statistics_api from '../../api/statistics'
 
 import { CCol, CContainer, CRow, CWidgetStatsD } from '@coreui/react'
 
@@ -8,18 +8,14 @@ import AnnosPerHour from './AnnosPerHour'
 import CenteredSpinner from '../../components/CenteredSpinner'
 
 const DesignerStatistics = () => {
-  const { mutate: getDesignerStatistics, data: designerStatistics } =
-    statistics_api.useDesignerStatistics()
-  useEffect(() => {
-    getDesignerStatistics()
-  }, [])
+  const { data: designerStatistics, isLoading } = statistics_api.useDesignerStatistics()
 
   const [labels, setLabels] = useState({ keys: [], values: [] })
   const [types, setTypes] = useState({ keys: [], values: [] })
 
   useEffect(() => {
     /// only when data from request is available
-    if (designerStatistics === undefined) return
+    if (isLoading || designerStatistics === undefined) return
 
     // update data for annotation labels chart
     const _labels = {

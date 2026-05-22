@@ -1,8 +1,8 @@
 import { saveAs } from 'file-saver'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
-import { showError, showSuccess } from '../components/Notification'
-import { httpClient } from './http_client'
-import { AvailableDatasetExportsResponse } from '../types/model'
+import { showError, showSuccess } from '../../components/Notification'
+import { httpClient } from '../http_client'
+import { AvailableDatasetExportsResponse } from '../../types/model'
 
 export const useExportDataset = () => {
   const queryClient = useQueryClient()

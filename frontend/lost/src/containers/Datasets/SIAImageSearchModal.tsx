@@ -11,7 +11,7 @@ import { useEffect, useState } from 'react'
 import { faArrowRight, faSearch } from '@fortawesome/free-solid-svg-icons'
 
 import { faSquare, faSquareCheck } from '@fortawesome/free-regular-svg-icons'
-import * as datasetReviewApi from '../../api/dataset_review'
+import * as datasetReviewApi from '../../api/dataset/dataset_review'
 import { Label, TagLabel } from 'lost-sia'
 import CoreIconButton from '../../components/CoreIconButton'
 import BaseContainer from '../../components/BaseContainer'
@@ -166,7 +166,7 @@ const SIAImageSearchModal = ({
           <CoreIconButton
             icon={faArrowRight}
             color="primary"
-          // isOutline={false}
+            // isOutline={false}
             onClick={() => {
               setIsVisible(false)
               onChooseImage(props.row.original.imageId)

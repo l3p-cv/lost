@@ -1,7 +1,14 @@
 import { useState, useCallback, useRef } from 'react'
 import axios from 'axios'
-import { API_URL } from '../../lost_settings'
+import { API_URL } from '../lost_settings'
 import { useMutation } from 'react-query'
+
+type uploadProgress = {
+  idle: boolean
+  progress: number | null
+  isSuccess: boolean
+  error: any
+}
 
 export const useGetFSList = () => {
   return useMutation((visLevel) =>
@@ -43,7 +50,7 @@ export const useGetFullFs = () => {
 
 export const useUploadFiles = () => {
   const isUploadBreaked = useRef(false)
-  const [state, setState] = useState({
+  const [state, setState] = useState<uploadProgress>({
     idle: true,
     progress: null,
     isSuccess: false,

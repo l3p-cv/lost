@@ -1,14 +1,14 @@
 import axios from 'axios'
 import { useMutation, useQuery } from 'react-query'
-import { API_URL } from '../lost_settings'
-import { showError } from '../components/Notification'
+import { API_URL } from '../../lost_settings'
+import { showError } from '../../components/Notification'
 import {
   EditAnnotationData,
   EditAnnotationResponse,
   ImageData,
   ImageLabelData,
-} from './sia'
-import { LegacyAnnotationResponse } from '../containers/Annotation/SIA/legacyHelper'
+} from '../sia'
+import { LegacyAnnotationResponse } from '../../containers/Annotation/SIA/legacyHelper'
 import { Label } from 'lost-sia'
 
 export type SiaDatasetResponse = {
