@@ -82,4 +82,3 @@ export const checkExpireDate = (secondsOfInactivity: number) => {
     globalThis.location.href = `${globalThis.location.origin}/logout#timeout`
   }
 }
-// TODO: hau user raus - error notification if anno not saved

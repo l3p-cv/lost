@@ -30,6 +30,16 @@ export const useGetPossibleFsTypes = () => {
 //     return res.data
 // }
 
+export async function ls(fs, path) {
+  const res = await axios.post(API_URL + '/fb/ls', { fs: fs, path: path })
+  return res.data
+}
+
+export async function lsTest(fs, path) {
+  const res = await axios.post(API_URL + '/fb/lsTest', { fs: fs, path: path })
+  return res.data
+}
+
 export const useDeleteFs = () => {
   return useMutation((fs) =>
     axios.post(API_URL + '/fb/delete', { fs: fs }).then((res) => res.data),

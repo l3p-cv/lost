@@ -20,7 +20,7 @@ const Datasets = () => {
   } = datasetApi.useFlatDatasets()
 
   const { data: datastores } = datasetApi.useDatastoreKeys()
-  const { data: annotaskResponse, mutate: loadAnnotask } = annotaskApi.useAnnotaskOld()
+  const { data: annotaskResponse, isLoading: loadAnnotask } = annotaskApi.useAnnotask()
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isExportModalOpen, setIsExportModalOpen] = useState(false)

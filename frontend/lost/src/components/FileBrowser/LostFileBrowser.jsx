@@ -13,8 +13,7 @@ import { ChonkyIconFA } from 'chonky-icon-fontawesome'
 import { useEffect, useMemo, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import * as Notification from '../Notification'
-import * as fbaccess from '../../api/fb_access'
-import * as fb_api from '../../api/fb'
+import * as fb_api from '../../api/file_browser'
 import CoreIconButton from '../CoreIconButton'
 
 const LostFileBrowser = ({ fs, onPathSelected, mode = undefined, initPath }) => {
@@ -76,12 +75,12 @@ const LostFileBrowser = ({ fs, onPathSelected, mode = undefined, initPath }) => 
     let res_data
     if (mode) {
       if (mode === 'lsTest') {
-        res_data = await fbaccess.lsTest(fs, path)
+        res_data = await fb_api.lsTest(fs, path)
       } else {
-        res_data = await fbaccess.ls(fs, path)
+        res_data = await fb_api.ls(fs, path)
       }
     } else {
-      res_data = await fbaccess.ls(fs, path)
+      res_data = await fb_api.ls(fs, path)
     }
     setFiles(res_data['files'])
     setFolderChain(res_data['folderChain'])

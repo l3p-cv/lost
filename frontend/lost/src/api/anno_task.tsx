@@ -124,13 +124,6 @@ export const useAnnotask = (annotaskId) => {
   )
 }
 
-// TODO: rework with use query
-export const useAnnotaskOld = () => {
-  return useMutation((annoTaskId) =>
-    axios.get(`${API_URL}/annotasks/${annoTaskId}?config=true`).then((res) => res.data),
-  )
-}
-
 export const useChooseAnnotask = () => {
   return useMutation((annoTaskId) =>
     axios.post(`${API_URL}/annotasks`, { id: annoTaskId }).then((res) => res.data),
@@ -148,14 +141,6 @@ export const useGetAnnoTaskStatistic = (annoTaskId: number) => {
     },
   )
 }
-
-// export const useAnnotaskListFiltered = () => {
-//     return useMutation((datatableInfo) =>
-//         axios
-//             .post(`${API_URL}/annotask/annotask_list_filter`, datatableInfo)
-//             .then((res) => res.data),getAnnoTaskStatistic
-//     )
-// }
 
 export const useAnnotaskListFiltered = () => {
   return useMutation((datatableInfo) =>
@@ -179,6 +164,7 @@ export const useFilterLabels = () => {
   )
 }
 
+// TODO: rewrite those two functions!!!
 export const forceAnnotationRelease = async (id: number, callBack: () => void) => {
   try {
     await axios.post(API_URL + `/annotasks/${id}/force_release`)
