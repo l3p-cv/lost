@@ -1769,6 +1769,23 @@ class DBMan:
         );"
         return self.session.execute(text(sql))
 
+    def get_images_without_annotations(self, annotask_ids: list[int], search_str: str = ""):
+        """Returns images that have no labels (neither image-level nor shape-level) and match the search string."""
+        anno_task_list = ",".join([str(x) for x in annotask_ids])
+        sql = f"""SELECT i.idx, i.anno_task_id, i.img_path, a.name
+            FROM image_anno i
+            JOIN anno_task a ON a.idx = i.anno_task_id
+            WHERE i.anno_task_id IN ({anno_task_list})
+            AND i.img_path LIKE '%{search_str}%'
+            AND i.idx NOT IN (
+                SELECT DISTINCT img_anno_id FROM label WHERE img_anno_id IS NOT NULL
+                UNION
+                SELECT DISTINCT t.img_anno_id FROM two_d_anno t
+                INNER JOIN label l ON l.two_d_anno_id = t.idx
+                WHERE t.img_anno_id IS NOT NULL
+            );"""
+        return self.session.execute(text(sql))
+
     def get_all_images_with_labels(self, image_ids: list[int], label_ids: list[int]):
         """returns all images of a given image id list that have at least one of the given labels"""
         image_id_list = ",".join([str(x) for x in image_ids])

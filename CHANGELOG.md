@@ -15,10 +15,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed Search Annotation appearing in background when in fullscreen during Annotation Review by removing customPopoverStyle zIndex: 7000 in ImageFilterButton.tsx and reducing zIndex for fullscreenStyle in Sia.tsx(lost-sia) to 1040.
 - Fixed stale user data in EditUserModal when reopening the modal for a different user immediately after saving (added useEffect to sync internal state with props.user)
 - Removed redundant img_path post-processing in export_ds (jobs.py) that was stripping paths back to 2 components after pack_ds, conflicting with the collision-safe remapping
+- `annotasks/endpoint.py`: Fix crash on empty labels param and return unannotated images instead of empty list when no labels are selected
+- `dataset/endpoint.py`: Guard against None filter param and return unannotated images instead of all images when no labels are selected
 ### Changed
 - RangeSlider.tsx to show disabled and enabled styles.
 - SiaWrapper.tsx enable next for last image for fixing Task Progress.
 - CannyFilterComponent.tsx, ImageFilterComponent.tsx, BilateralFilterComponent.tsx added disabled silder on toggle off and div styles for the same.
+- access.py : Added `get_images_without_annotations` method to query images with no labels matching an optional filename filter.
 
 ## [3.2.2] - 2026-05-13
 ### Fixed

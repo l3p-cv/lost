@@ -670,6 +670,8 @@ class DatasetReviewImageSearch(Resource):
         # data = request.json
         # search_str = data['filter']
         search_str = request.args.get("filter")
+        if search_str is None:
+            search_str = ""
         labels = request.args.get("labels")
 
         anno_task_ids = get_all_annotask_ids_for_ds(dbm, dataset_id)
@@ -695,11 +697,20 @@ class DatasetReviewImageSearch(Resource):
             if labels == "":
                 search_labels = []
             else:
-                search_labels = list(map(int, labels.split(",")))  # TODO: error here if empty
+                search_labels = list(map(int, labels.split(",")))
 
-            # no labels -> all images in task
+            # no labels selected -> return images with no annotations (respecting image name filter)
             if len(search_labels) == 0:
-                pass
+                db_result = dbm.get_images_without_annotations(anno_task_ids, search_str)
+                found_images = [
+                    {
+                        "imageId": entry.idx,
+                        "imageName": entry.img_path,
+                        "annotationId": entry.anno_task_id,
+                        "annotationName": entry.name,
+                    }
+                    for entry in db_result
+                ]
             else:
                 # found_image_ids = [entry.idx for entry in db_result]
                 img_with_label_db_result = dbm.get_all_images_with_labels(found_image_ids, search_labels)
