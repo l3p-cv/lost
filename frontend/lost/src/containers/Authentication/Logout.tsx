@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useLogout } from '../../actions/auth/auth_api'
+import { useLogout } from '../../api/auth_api'
 import { CButton, CCard, CCardBody, CCardGroup, CContainer, CRow } from '@coreui/react'
 
 const Logout = () => {

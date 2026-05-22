@@ -1,7 +1,7 @@
 import { useMutation } from 'react-query'
-import { AuthRequest, AuthResponse } from './auth_types'
+import { AuthRequest, AuthResponse } from '../types/auth_types'
 import axios, { AxiosError, AxiosResponse } from 'axios'
-import { API_URL } from '../../lost_settings'
+import { API_URL } from '../lost_settings'
 
 export const useLogin = () => {
   return useMutation<AuthResponse, AxiosError, AuthRequest>((credentials) => {

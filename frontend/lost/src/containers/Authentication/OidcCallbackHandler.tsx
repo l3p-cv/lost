@@ -3,7 +3,7 @@ import axios from 'axios'
 import { jwtDecode } from 'jwt-decode'
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { exchangeOidcCode } from '../../actions/auth/auth_api'
+import { exchangeOidcCode } from '../../api/auth_api'
 
 /**
  * OidcCallbackHandler
