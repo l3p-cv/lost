@@ -7,7 +7,7 @@ import 'react-markdown-editor-lite/lib/index.css'
 import { CFormInput } from '@coreui/react'
 import { faFolderOpen } from '@fortawesome/free-solid-svg-icons'
 
-import * as fbAPI from '../../actions/fb/fb_api'
+import * as fbAPI from '../../api/fb'
 import * as Notification from '../../components/Notification'
 import { useOwnUser } from '../../actions/user/user_api'
 

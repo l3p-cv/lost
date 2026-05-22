@@ -14,7 +14,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import * as Notification from '../Notification'
 import * as fbaccess from '../../access/fb'
-import * as fb_api from '../../actions/fb/fb_api'
+import * as fb_api from '../../api/fb'
 import CoreIconButton from '../CoreIconButton'
 
 const LostFileBrowser = ({ fs, onPathSelected, mode = undefined, initPath }) => {

@@ -12,7 +12,7 @@ import {
 import { faAws, faMicrosoft } from '@fortawesome/free-brands-svg-icons'
 import { faFile, faNetworkWired, faSave } from '@fortawesome/free-solid-svg-icons'
 import { useEffect, useState } from 'react'
-import * as fbAPI from '../../actions/fb/fb_api'
+import * as fbAPI from '../../api/fb'
 import { useOwnUser } from '../../actions/user/user_api'
 import BaseModal from '../../components/BaseModal'
 import LostFileBrowser from '../../components/FileBrowser/LostFileBrowser'
