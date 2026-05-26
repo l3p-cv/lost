@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CannyFilterComponent.tsx, ImageFilterComponent.tsx, BilateralFilterComponent.tsx added disabled silder on toggle off and div styles for the same.
 - access.py : Added `get_images_without_annotations` method to query images with no labels matching an optional filename filter.
 - Cluster.tsx, NewMIAImage.tsx: Refactored MIA modal into a dedicated MIAGalleryModal.tsx component.
+- Updated label.py: added improved deterministic fallback color assignment with better perceptual separation
 
 ## [3.2.2] - 2026-05-13
 ### Fixed
