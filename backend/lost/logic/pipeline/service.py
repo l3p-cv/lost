@@ -699,6 +699,7 @@ class PipeGodfather:
         self.required_label_leaves = list()
         self.choosen_anno_tasks = list()
         self.anno_tasks = list()
+        self.anno_task_exports = list()
         self.pipe = self.db_man.get_pipe(pipe_id=pipe_id)
         self.pipe_elements = self.db_man.get_pipe_elements(pipe_id=pipe_id)
         self.file_man = file_man.FileMan(db_man.lostconfig)
@@ -724,6 +725,8 @@ class PipeGodfather:
             if datasource:
                 self.datasources.append(datasource)
         for anno_task in self.anno_tasks:
+            for export in self.db_man.get_anno_task_export(anno_task_id=anno_task.idx):
+                self.anno_task_exports.append(export)
             for ch_anno_task in self.db_man.get_choosen_annotask(anno_task_id=anno_task.idx):
                 self.choosen_anno_tasks.append(ch_anno_task)
 
@@ -774,9 +777,14 @@ class PipeGodfather:
         for choosen_anno_task in self.choosen_anno_tasks:
             self.db_man.delete(choosen_anno_task)
             self.db_man.commit()
+        for anno_task_export in self.anno_task_exports:
+            self.db_man.delete(anno_task_export)
+            self.db_man.commit()
         for anno_task in self.anno_tasks:
             if anno_task.dtype == dtype.AnnoTask.MIA:
-                self.file_man.rm_mia_crop_path(anno_task.idx)
+                # TODO: rm_mia_crop_path is not implemented in FileMan yet
+                # self.file_man.rm_mia_crop_path(anno_task.idx)
+                pass
             else:
                 self.file_man.rm_sia_history_path(anno_task)
             self.db_man.delete(anno_task)

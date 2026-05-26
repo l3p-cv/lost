@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed redundant img_path post-processing in export_ds (jobs.py) that was stripping paths back to 2 components after pack_ds, conflicting with the collision-safe remapping
 - `annotasks/endpoint.py`: Fix crash on empty labels param and return unannotated images instead of empty list when no labels are selected
 - `dataset/endpoint.py`: Guard against None filter param and return unannotated images instead of all images when no labels are selected
+- Fixed IntegrityError when deleting pipelines that had annotation exports: PipeGodfather now collects and deletes AnnoTaskExport records before deleting AnnoTask rows, respecting the MySQL foreign key constraint (anno_task_export.anno_task_id → anno_task.idx).
+- Fixed AttributeError: 'FileMan' object has no attribute 'rm_mia_crop_path' when deleting pipelines with MIA annotation tasks: replaced the call to the non-existent method with a no-op and a TODO comment until MIA crop path cleanup is implemented.
 ### Changed
 - RangeSlider.tsx to show disabled and enabled styles.
 - SiaWrapper.tsx enable next for last image for fixing Task Progress.
