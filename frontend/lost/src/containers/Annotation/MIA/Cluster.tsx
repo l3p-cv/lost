@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import MIAImage from './NewMIAImage'
+import MIAGalleryModal from './MIAGalleryModal'
 import { useFinishMia } from '../../../api/mia'
 import { CAlert, CButton, CCol, CRow } from '@coreui/react'
 import './Cluster.scss'
@@ -26,10 +27,17 @@ const Cluster = ({
 }: ClusterProps) => {
   const navigate = useNavigate()
   const { mutate: finishMia } = useFinishMia()
+  const [openModalIndex, setOpenModalIndex] = useState<number | null>(null)
+
+  const handleNavigate = (direction: 'prev' | 'next') => {
+    if (openModalIndex === null) return
+    if (direction === 'prev' && openModalIndex > 0) setOpenModalIndex(openModalIndex - 1)
+    if (direction === 'next' && openModalIndex < images.length - 1) setOpenModalIndex(openModalIndex + 1)
+  }
+
   const handleFinish = () => {
     finishMia(undefined, {
       onSuccess: () => {
-        // queryClient.invalidateQueries(['workingAnnoTask'])
         navigate('/dashboard')
       },
     })
@@ -83,22 +91,33 @@ const Cluster = ({
 
   if (images.length > 0 && !imagesLoading) {
     return (
-      <div className="mia-images">
-        {images.map((imageData) => {
-          const imageActiveState = {
-            value: imageActiveStates.value[imageData.id],
-            set: imageActiveStates.set,
-          }
-          return (
-            <MIAImage
-              key={imageData.id}
-              imageBase={imageData}
-              height={zoom}
-              imageActiveState={imageActiveState}
-            ></MIAImage>
-          )
-        })}
-      </div>
+      <>
+        <MIAGalleryModal
+          images={images}
+          openIndex={openModalIndex}
+          totalCount={images.length}
+          imageActiveStates={imageActiveStates}
+          onNavigate={handleNavigate}
+          onClose={() => setOpenModalIndex(null)}
+        />
+        <div className="mia-images">
+          {images.map((imageData, index) => {
+            const imageActiveState = {
+              value: imageActiveStates.value[imageData.id],
+              set: imageActiveStates.set,
+            }
+            return (
+              <MIAImage
+                key={imageData.id}
+                imageBase={imageData}
+                height={zoom}
+                imageActiveState={imageActiveState}
+                onOpenModal={() => setOpenModalIndex(index)}
+              />
+            )
+          })}
+        </div>
+      </>
     )
   } else {
     return <React.Fragment>{renderFinishTask()}</React.Fragment>
