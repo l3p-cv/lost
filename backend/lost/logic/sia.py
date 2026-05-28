@@ -455,6 +455,8 @@ class SiaUpdateOneThing:
             # except KeyError:
             #     print('SIA bug backend fix! Do not try to delete annotations that are not in db!')
             two_d = self.db_man.get_two_d_anno(annotation["id"])  # type: lost.db.model.TwoDAnno
+            # capture idx before delete; also handles two_d being None (anno never saved to DB)
+            db_id = two_d.idx if two_d is not None else None
             # Do not try to delete an annotation if it has already been
             # deleted in database <- This could be the case for auto save commands
             if two_d is not None:
@@ -462,7 +464,7 @@ class SiaUpdateOneThing:
                     self.db_man.delete(label)
                 self.db_man.delete(two_d)
                 self.db_man.commit()
-            return {"tempId": annotation["id"], "dbId": two_d.idx, "newStatus": "deleted"}
+            return {"tempId": annotation["id"], "dbId": db_id, "newStatus": "deleted"}
         elif annotation["status"] == "new":
             annotation_data = annotation["data"]
             # if 'id' in annotation:
