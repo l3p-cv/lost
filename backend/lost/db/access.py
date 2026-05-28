@@ -1776,7 +1776,7 @@ class DBMan:
             FROM image_anno i
             JOIN anno_task a ON a.idx = i.anno_task_id
             WHERE i.anno_task_id IN ({anno_task_list})
-            AND i.img_path LIKE '%{search_str}%'
+            AND i.img_path LIKE :search_pattern
             AND i.idx NOT IN (
                 SELECT DISTINCT img_anno_id FROM label WHERE img_anno_id IS NOT NULL
                 UNION
@@ -1784,7 +1784,7 @@ class DBMan:
                 INNER JOIN label l ON l.two_d_anno_id = t.idx
                 WHERE t.img_anno_id IS NOT NULL
             );"""
-        return self.session.execute(text(sql))
+        return self.session.execute(text(sql), {"search_pattern": f"%{search_str}%"})
 
     def get_all_images_with_labels(self, image_ids: list[int], label_ids: list[int]):
         """returns all images of a given image id list that have at least one of the given labels"""

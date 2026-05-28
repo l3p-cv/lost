@@ -79,7 +79,7 @@ const MIAGalleryModal = ({
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [isOpen, openIndex])
+  }, [isOpen, openIndex, onNavigate, onClose])
 
   const renderFooter = () => {
     if (!currentImage) return null

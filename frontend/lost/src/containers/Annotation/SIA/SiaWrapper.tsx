@@ -150,6 +150,11 @@ const SiaWrapper = ({
   // Keyed by SIA internalId. Flushed once the createAnnotation response arrives and the mapping is populated.
   const pendingEditsRef = useRef<Record<number, EditAnnotationData>>({})
 
+  // Set to true when the user submits the annotask. The finish call is deferred
+  // until annoData updates, ensuring the last image's labeled state is committed
+  // before the finish request is sent.
+  const pendingFinishRef = useRef<boolean>(false)
+
   // Label to apply to the polygon created by a polygon operation (merge/intersect/difference).
   // Set in calculatePolygonOperation, cleared in handlePolygonOperationResponse.
   // undefined means no polygon operation is pending (normal annotation creation).
@@ -216,8 +221,17 @@ const SiaWrapper = ({
   useEffect(() => {
     // react query throws a state update with undefined right before the actual data is set when the query cache is disabled
     if (annoData?.image === undefined || annoData?.annotations === undefined) return
+
     // backend returns "nothing available" on last image — annotations can contain null items
-    if (annoData.annotations === null) return
+    // Still need to check pendingFinishRef here: this is the terminal response when the
+    // user submits from the last image, so we must fire sindFinishAnnotask before returning.
+    if (annoData.annotations === null) {
+      if (pendingFinishRef.current) {
+        pendingFinishRef.current = false
+        sindFinishAnnotask()
+      }
+      return
+    }
 
     // @TODO use the old api style (annos separated by type) for now, but convert it here to the new style
     const annotationsByType: LegacyAnnotationResponse = annoData.annotations
@@ -234,6 +248,13 @@ const SiaWrapper = ({
     // update the image id
     // the request will automatically refetch
     setImageId(imageId)
+
+    // If submitAnnotask triggered a "next" request to commit the last image's labeled
+    // state, fire the finish call now that the backend has processed that request.
+    if (pendingFinishRef.current) {
+      pendingFinishRef.current = false
+      sindFinishAnnotask()
+    }
   }, [annoData])
 
   useEffect(() => {
@@ -744,8 +765,10 @@ const SiaWrapper = ({
         callback: () => {
           // commit the last image by requesting next before finishing
           // this triggers set_labeled_state_for_last_image on the backend
+          // pendingFinishRef ensures sindFinishAnnotask is called only after
+          // the next-image request completes (see annoData useEffect above)
+          pendingFinishRef.current = true
           onSetAnnotationRequestData({ direction: 'next', imageId: imageId })
-          sindFinishAnnotask()
         },
       },
       option2: {

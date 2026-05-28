@@ -21,6 +21,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed IntegrityError when deleting pipelines that had annotation exports: PipeGodfather now collects and deletes AnnoTaskExport records before deleting AnnoTask rows, respecting the MySQL foreign key constraint (anno_task_export.anno_task_id → anno_task.idx).
 - Fixed AttributeError: 'FileMan' object has no attribute 'rm_mia_crop_path' when deleting pipelines with MIA annotation tasks: replaced the call to the non-existent method with a no-op and a TODO comment until MIA crop path cleanup is implemented.
 - Fixed SiaWrapper.tsx: Polygon operations now preserve the label on the result when both inputs share the same label.
+- Fixed SQL injection in `access.py` `get_images_without_annotations`: `search_str` is now passed as a bound parameter instead of being interpolated directly into the SQL string.
+- Fixed race condition in `SiaWrapper.tsx` `submitAnnotask`: `sindFinishAnnotask` is now deferred via `pendingFinishRef` and called only after the backend has processed the last image's "next" request, including when submitting from the last image (where `annotations === null`).
+- Fixed `label.py` color state accumulation: `_reset_import_color_state` is now called at the start of each `import_df` to prevent color assignments from bleeding across multiple imports on the same `LabelTree` instance. Removed unused `_color_cursor` attribute.
+- Fixed `label.py` `invalid_colors`: removed unreachable `"None"` entry (check lowercases before comparing, so only `"none"` is needed).
+- Removed debug `print(found_images)` statement from `annotasks/endpoint.py` that logged full image lists to stdout on every label-filtered search.
+- Fixed `MIAGalleryModal.tsx`: added `onNavigate` and `onClose` to `useEffect` dependency array to prevent stale closure bugs during keyboard navigation.
 ### Changed
 - RangeSlider.tsx to show disabled and enabled styles.
 - SiaWrapper.tsx enable next for last image for fixing Task Progress.

@@ -613,7 +613,6 @@ class DatasetReviewImageSearch(Resource):
                 img_ids_with_label = [entry.img_anno_id for entry in img_with_label_db_result]
 
                 # filter original response list: only select images that have one of the searched labels
-                print(found_images)
                 found_img_with_label = [img for img in found_images if img["image_id"] in img_ids_with_label]
 
                 # replace list with label filtered list

@@ -34,7 +34,6 @@ class LabelTree:
         self.root = None  # type: lost.db.model.LabelLeaf
         self.group_id = group_id
         self.tree = {}
-        self._color_cursor = 0 
         if logger is None:
             import logging
 
@@ -134,16 +133,18 @@ class LabelTree:
         return leaf
 
 
+    def _reset_import_color_state(self):
+        """Reset per-import color assignment state. Call at the start of each import."""
+        self._colors = {}
+        self._used = []
+        self._default_rgb = [
+            np.array([int(c[i:i+2], 16) / 255 for i in (1, 3, 5)])
+            for c in DEFAULT_LABEL_COLORS
+        ]
+
     def assign_import_color(self, name):
         if not hasattr(self, "_colors"):
-            self._colors = {}
-            self._used = []
-
-            # cache default colors in RGB so we can avoid them
-            self._default_rgb = [
-                np.array([int(c[i:i+2], 16) / 255 for i in (1, 3, 5)])
-                for c in DEFAULT_LABEL_COLORS
-            ]
+            self._reset_import_color_state()
 
         if name in self._colors:
             return self._colors[name]
@@ -291,7 +292,7 @@ class LabelTree:
         try:
             raw_color = row.get("color", None)
 
-            invalid_colors = ["", "None", "none", "#ffffff", "#46aed7"]
+            invalid_colors = ["", "none", "#ffffff", "#46aed7"]
 
             if pd.isna(raw_color) or str(raw_color).strip().lower() in invalid_colors:
                 name = row.get("name", None)
@@ -336,6 +337,8 @@ class LabelTree:
                 The created root leaf or None if a root leaf with same
                 name is already present in database.
         """
+        # Reset color assignment state so each import starts with a clean palette
+        self._reset_import_color_state()
         df = df.where((pd.notnull(df)), None)
         root = df[df["parent_leaf_id"].isnull()]
         no_root = df[~df["parent_leaf_id"].isnull()]
