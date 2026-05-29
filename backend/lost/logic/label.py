@@ -142,15 +142,15 @@ class LabelTree:
             for c in DEFAULT_LABEL_COLORS
         ]
 
-    def assign_import_color(self, name):
+    def assign_import_color(self, label_id):
         if not hasattr(self, "_colors"):
             self._reset_import_color_state()
 
-        if name in self._colors:
-            return self._colors[name]
+        if label_id in self._colors:
+            return self._colors[label_id]
 
-        # deterministic seed per name
-        h = hashlib.md5(name.encode()).digest()
+        # deterministic seed per label ID
+        h = hashlib.md5(str(label_id).encode()).digest()
         seed = int.from_bytes(h[:4], "big")
         rng = np.random.default_rng(seed)
 
@@ -185,7 +185,7 @@ class LabelTree:
         self._used.append(best_rgb)
 
         hex_color = '#%02x%02x%02x' % tuple((best_rgb * 255).astype(int))
-        self._colors[name] = hex_color
+        self._colors[label_id] = hex_color
 
         return hex_color
 
@@ -297,7 +297,7 @@ class LabelTree:
             if pd.isna(raw_color) or str(raw_color).strip().lower() in invalid_colors:
                 name = row.get("name", None)
                 if name:
-                    leaf.color = self.assign_import_color(str(name))
+                    leaf.color = self.assign_import_color(leaf.idx)
                 else:
                     leaf.color = DEFAULT_LABEL_COLORS[0]
             else:
