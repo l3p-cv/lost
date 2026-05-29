@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed `label.py` `invalid_colors`: removed unreachable `"None"` entry (check lowercases before comparing, so only `"none"` is needed).
 - Removed debug `print(found_images)` statement from `annotasks/endpoint.py` that logged full image lists to stdout on every label-filtered search.
 - Fixed `MIAGalleryModal.tsx`: added `onNavigate` and `onClose` to `useEffect` dependency array to prevent stale closure bugs during keyboard navigation.
+- Fixed `label.py` `assign_import_color`: color assignment is now keyed by label ID instead of label name, so labels with the same name in different trees get distinct colors.
 ### Changed
 - RangeSlider.tsx to show disabled and enabled styles.
 - SiaWrapper.tsx enable next for last image for fixing Task Progress.
