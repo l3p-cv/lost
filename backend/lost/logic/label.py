@@ -1,9 +1,21 @@
 import pandas as pd
 
 from lost.db import model
+import numpy as np
+import hashlib
+from skimage import color as skcolor
 
 __author__ = "Jonas Jaeger"
 
+DEFAULT_LABEL_COLORS = [
+    "#FF6B6B",
+    "#4ECDC4",
+    "#FFA94D",
+    "#845EF7",
+    "#69DB7C",
+    "#F06595",
+    "#FFD43B",
+]
 
 class LabelTree:
     """A class that represants a LabelTree.
@@ -120,6 +132,63 @@ class LabelTree:
         self.logger.info(f"Created child leaf: {name}")
         return leaf
 
+
+    def _reset_import_color_state(self):
+        """Reset per-import color assignment state. Call at the start of each import."""
+        self._colors = {}
+        self._used = []
+        self._default_rgb = [
+            np.array([int(c[i:i+2], 16) / 255 for i in (1, 3, 5)])
+            for c in DEFAULT_LABEL_COLORS
+        ]
+
+    def assign_import_color(self, name):
+        if not hasattr(self, "_colors"):
+            self._reset_import_color_state()
+
+        if name in self._colors:
+            return self._colors[name]
+
+        # deterministic seed per name
+        h = hashlib.md5(name.encode()).digest()
+        seed = int.from_bytes(h[:4], "big")
+        rng = np.random.default_rng(seed)
+
+        best_rgb = None
+        best_score = -1
+
+        # combine already used + default palette (avoid both)
+        ref_colors = self._used + self._default_rgb
+
+        for _ in range(40):
+            # sample in Lab space (better perceptual control)
+            lab = np.array([
+                rng.uniform(55, 85),     # lightness (avoid extremes)
+                rng.uniform(-60, 60),    # a axis
+                rng.uniform(-60, 60)     # b axis
+            ])
+
+            rgb = skcolor.lab2rgb(lab.reshape(1, 1, 3))[0][0]
+            rgb = np.clip(rgb, 0, 1)
+
+            # perceptual separation score (simple but effective)
+            if ref_colors:
+                min_dist = min(np.linalg.norm(rgb - c) for c in ref_colors)
+            else:
+                min_dist = 999
+
+            # maximize distance from ALL existing + default colors
+            if min_dist > best_score:
+                best_score = min_dist
+                best_rgb = rgb
+
+        self._used.append(best_rgb)
+
+        hex_color = '#%02x%02x%02x' % tuple((best_rgb * 255).astype(int))
+        self._colors[name] = hex_color
+
+        return hex_color
+
     def get_child_vec(self, parent_id, columns="idx"):
         """Get a vector of child labels.
 
@@ -221,7 +290,19 @@ class LabelTree:
             self.logger.info("\tNo is_deleted provided.")
 
         try:
-            leaf.color = row["color"] if pd.notna(row["color"]) else "#ffffff"  # Default white color
+            raw_color = row.get("color", None)
+
+            invalid_colors = ["", "none", "#ffffff", "#46aed7"]
+
+            if pd.isna(raw_color) or str(raw_color).strip().lower() in invalid_colors:
+                name = row.get("name", None)
+                if name:
+                    leaf.color = self.assign_import_color(str(name))
+                else:
+                    leaf.color = DEFAULT_LABEL_COLORS[0]
+            else:
+                leaf.color = raw_color
+
             self.logger.info(f"\tcolor: {leaf.color}")
         except KeyError:
             self.logger.info("\tNo color provided.")
@@ -256,6 +337,8 @@ class LabelTree:
                 The created root leaf or None if a root leaf with same
                 name is already present in database.
         """
+        # Reset color assignment state so each import starts with a clean palette
+        self._reset_import_color_state()
         df = df.where((pd.notnull(df)), None)
         root = df[df["parent_leaf_id"].isnull()]
         no_root = df[~df["parent_leaf_id"].isnull()]
