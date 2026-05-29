@@ -17,9 +17,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed stale user data in EditUserModal when reopening the modal for a different user immediately after saving (added useEffect to sync internal state with props.user)
 - Removed redundant img_path post-processing in export_ds (jobs.py) that was stripping paths back to 2 components after pack_ds, conflicting with the collision-safe remapping
 ### Changed
+- Refactored PersonalStatistics.jsx (due to api rewrite)
+- Moved old api from "actions" to new "api" directory
 - RangeSlider.tsx to show disabled and enabled styles.
 - SiaWrapper.tsx enable next for last image for fixing Task Progress.
 - CannyFilterComponent.tsx, ImageFilterComponent.tsx, BilateralFilterComponent.tsx added disabled silder on toggle off and div styles for the same.
+### Removed
+- Removed unused api in frontend
 
 ## [3.2.2] - 2026-05-13
 ### Fixed
