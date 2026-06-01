@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [unreleased]
+## [3.3.0] - 2026-06-01
 ### Added
 - Added currentImageId prop to SIAImageSearchModal (To know the current image ID to disable the row the user is already on.)
 - Added implementation to wrap the disabled button in a <span> that captures the mouse events to show current image tooltip for disabled button.
@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed `label.py` `assign_import_color`: color assignment is now keyed by label ID instead of label name, so labels with the same name in different trees get distinct colors.
 - Fixed mia backend calls for eventual future usage (TwoDSerialize, non existing get_two_d_anno_by_state replaced with the correct function)
 ### Changed
+- Updated lost-sia package to 3.1.3
 - Refactored PersonalStatistics.jsx (due to api rewrite)
 - Moved old api from "actions" to new "api" directory
 - RangeSlider.tsx to show disabled and enabled styles.
