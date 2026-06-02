@@ -1,8 +1,8 @@
 import axios from 'axios'
-import { API_URL } from '../../lost_settings'
+import { API_URL } from '../lost_settings'
 import { useMutation } from 'react-query'
 import { Point } from 'lost-sia'
-import { LegacyAnnotation } from '../../containers/Annotation/SIA/legacyHelper'
+import { LegacyAnnotation } from '../containers/Annotation/SIA/legacyHelper'
 
 type PolygonData = {
   firstPolygon: LegacyAnnotation

@@ -1,7 +1,7 @@
 import { faDotCircle } from '@fortawesome/free-regular-svg-icons'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useOwnUser, useUpdateOwnUser } from '../../actions/user/user_api'
+import { useOwnUser, useUpdateOwnUser } from '../../api/user'
 import BaseContainer from '../../components/BaseContainer'
 import { CenteredSpinner } from '../../components/CenteredSpinner'
 import * as Notification from '../../components/Notification'

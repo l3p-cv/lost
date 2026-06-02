@@ -1,4 +1,4 @@
-import { usePipelineLogs } from '../../../actions/pipeline/pipeline_api'
+import { usePipelineLogs } from '../../../api/pipeline/pipeline'
 import { CFormTextarea } from '@coreui/react'
 import BaseModal from '../../../components/BaseModal'
 

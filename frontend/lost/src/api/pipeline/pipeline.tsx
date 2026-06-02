@@ -1,14 +1,14 @@
 import { useMutation, useQuery } from 'react-query'
 import { useNavigate } from 'react-router-dom'
 import { showError, showSuccess } from '../../components/Notification'
-import { httpClient } from '../http-client'
-import { StartPipeRequest } from './model/pipeline-request'
-import { PipelineResponse } from './model/pipeline-response'
-import { PipelineTemplateResponse } from './model/pipeline-template-response'
+import { httpClient } from '../http_client'
+import { StartPipeRequest } from '../../types/pipelines/pipeline-request'
+import { PipelineResponse } from '../../types/pipelines/pipeline-response'
+import { PipelineTemplateResponse } from '../../types/pipelines/pipeline-template-response'
 import {
   parseLiveElementsToReactFlow,
   parseTemplateElementsToReactFlow,
-} from './pipeline-util'
+} from './pipeline_util'
 
 export const useCreateAndStartPipeline = () => {
   const navigate = useNavigate()

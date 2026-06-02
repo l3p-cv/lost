@@ -40,15 +40,24 @@ const ImageFilterComponent = ({
       <CRow>
         <CCol xs={1}></CCol>
         <CCol>
+        <div
+          style={{
+            position: 'relative',
+            opacity: isActive ? 1 : 0.4,
+            pointerEvents: isActive ? 'auto' : 'none',
+          }}
+        >
           <input
             className="classic-range-slider"
             type="range"
             min={1}
             max={40}
             value={filterValue}
+            disabled={!isActive}
             onChange={(e) => onFilterValueChange(parseInt(e.target.value))}
             // onMouseUp={(e) => onFilterValueUpdated(e.target.value)}
           />
+          </div>
         </CCol>
       </CRow>
     </>

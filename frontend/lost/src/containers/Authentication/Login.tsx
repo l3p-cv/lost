@@ -14,7 +14,7 @@ import {
 import { useEffect, useState } from 'react'
 import { FaLock, FaUser } from 'react-icons/fa'
 import CenteredSpinner from '../../components/CenteredSpinner'
-import { useLogin } from '../../actions/auth/auth_api'
+import { useLogin } from '../../api/auth/auth'
 import { useNavigate } from 'react-router-dom'
 import { showError } from '../../components/Notification'
 import CoreIconButton from '../../components/CoreIconButton'

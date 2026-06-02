@@ -46,12 +46,20 @@ const BilateralFilterComponent = ({
       <CRow>
         <CCol xs={1}></CCol>
         <CCol>
+        <div
+          style={{
+            position: 'relative',
+            opacity: isActive ? 1 : 0.4,
+            pointerEvents: isActive ? 'auto' : 'none',
+          }}
+        >
           <input
             className="classic-range-slider"
             type="range"
             min={1}
             max={40}
             value={filterConfig.diameter}
+            disabled={!isActive}
             onChange={(e) => {
               const newConfig: BilateralFilterConfig = {
                 ...filterConfig,
@@ -62,6 +70,7 @@ const BilateralFilterComponent = ({
             }}
             // onMouseUp={(e) => onFilterValueUpdated(e.target.value)}
           />
+        </div>
         </CCol>
       </CRow>
 
@@ -72,12 +81,20 @@ const BilateralFilterComponent = ({
       <CRow>
         <CCol xs={1}></CCol>
         <CCol>
+        <div
+          style={{
+            position: 'relative',
+            opacity: isActive ? 1 : 0.4,
+            pointerEvents: isActive ? 'auto' : 'none',
+          }}
+        >
           <input
             className="classic-range-slider"
             type="range"
             min={1}
             max={40}
             value={filterConfig.sigmaColor}
+            disabled={!isActive}
             onChange={(e) => {
               const newConfig: BilateralFilterConfig = {
                 ...filterConfig,
@@ -88,6 +105,7 @@ const BilateralFilterComponent = ({
             }}
             // onMouseUp={(e) => onFilterValueUpdated(e.target.value)}
           />
+          </div>
         </CCol>
       </CRow>
 
@@ -98,12 +116,20 @@ const BilateralFilterComponent = ({
       <CRow>
         <CCol xs={1}></CCol>
         <CCol>
+        <div
+          style={{
+            position: 'relative',
+            opacity: isActive ? 1 : 0.4,
+            pointerEvents: isActive ? 'auto' : 'none',
+          }}
+        >
           <input
             className="classic-range-slider"
             type="range"
             min={1}
             max={40}
             value={filterConfig.sigmaSpace}
+            disabled={!isActive}
             onChange={(e) => {
               const newConfig: BilateralFilterConfig = {
                 ...filterConfig,
@@ -114,6 +140,7 @@ const BilateralFilterComponent = ({
             }}
             // onMouseUp={(e) => onFilterValueUpdated(e.target.value)}
           />
+          </div>
         </CCol>
       </CRow>
     </>

@@ -32,6 +32,7 @@ class Update(Resource):
             dbm.close_session()
             return re
 
+
 @namespace.route("/next/<int:max_amount>")
 @api.doc(security="apikey")
 class Next(Resource):
@@ -76,7 +77,7 @@ class Label(Resource):
 class Finish(Resource):
     @api.doc(security="apikey", description="Finish MIA Task")
     @jwt_required()
-    def get(self):
+    def post(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
@@ -116,8 +117,8 @@ class Prev(Resource):
     @jwt_required()
     @namespace.expect()
     def get(self):
-        chunk_id = int(request.args.get('currentChunkId'))
-        update_ids = request.args.getlist('currentUpdateIds')
+        chunk_id = int(request.args.get("currentChunkId"))
+        update_ids = request.args.getlist("currentUpdateIds")
         update_ids = [int(x) for x in update_ids]
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -125,11 +126,11 @@ class Prev(Resource):
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
             return api.abort(403, f"You need to be {roles.ANNOTATOR} in order to perform this request.")
-        else:        
+        else:
             if chunk_id != -1:
                 re = mia.get_prev(dbm, identity, chunk_id, update_ids)
             else:
-                re = mia.get_latest(dbm, identity) # go to latest, when about to finish task
+                re = mia.get_latest(dbm, identity)  # go to latest, when about to finish task
             dbm.close_session()
             return re
 
@@ -147,7 +148,7 @@ class First(Resource):
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
             return api.abort(403, f"You need to be {roles.ANNOTATOR} in order to perform this request.")
-        else:        
+        else:
             re = mia.get_first(dbm, identity)
             dbm.close_session()
             return re
@@ -166,7 +167,7 @@ class Latest(Resource):
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
             return api.abort(403, f"You need to be {roles.ANNOTATOR} in order to perform this request.")
-        else:        
+        else:
             re = mia.get_latest(dbm, identity)
             dbm.close_session()
             return re

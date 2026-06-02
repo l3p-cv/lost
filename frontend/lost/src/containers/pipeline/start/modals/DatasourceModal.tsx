@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import LostFileBrowser from '../../../../components/FileBrowser/LostFileBrowser'
 
 import { useNodesData, useReactFlow } from '@xyflow/react'
-import { Datasource } from '../../../../actions/pipeline/model/pipeline-template-response'
+import { Datasource } from '../../../../types/pipelines/pipeline-template-response'
 import { DatasourceNodeData } from '../nodes'
 import { faDatabase, faFolderOpen } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'

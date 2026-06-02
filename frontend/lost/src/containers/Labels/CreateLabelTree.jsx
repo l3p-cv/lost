@@ -1,7 +1,7 @@
 import { CCol, CFormInput, CInputGroup, CRow } from '@coreui/react'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { useRef, useState } from 'react'
-import { useCreateLabel } from '../../actions/label/label-api'
+import { useCreateLabel } from '../../api/label'
 import CoreIconButton from '../../components/CoreIconButton'
 
 const CreateLabelTree = ({ visLevel }) => {

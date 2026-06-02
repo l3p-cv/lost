@@ -1,7 +1,14 @@
 import { useState, useCallback, useRef } from 'react'
 import axios from 'axios'
-import { API_URL } from '../../lost_settings'
+import { API_URL } from '../lost_settings'
 import { useMutation } from 'react-query'
+
+type uploadProgress = {
+  idle: boolean
+  progress: number | null
+  isSuccess: boolean
+  error: any
+}
 
 export const useGetFSList = () => {
   return useMutation((visLevel) =>
@@ -13,15 +20,15 @@ export const useGetPossibleFsTypes = () => {
   return useMutation(() => axios.get(API_URL + '/fb/fstypes').then((res) => res.data))
 }
 
-// export async function ls(fs, path) {
-//     const res = await axios.post(API_URL + '/fb/ls', { fs: fs, path: path })
-//     return res.data
-// }
+export async function ls(fs, path) {
+  const res = await axios.post(API_URL + '/fb/ls', { fs: fs, path: path })
+  return res.data
+}
 
-// export async function lsTest(fs, path) {
-//     const res = await axios.post(API_URL + '/fb/lsTest', { fs: fs, path: path })
-//     return res.data
-// }
+export async function lsTest(fs, path) {
+  const res = await axios.post(API_URL + '/fb/lsTest', { fs: fs, path: path })
+  return res.data
+}
 
 export const useDeleteFs = () => {
   return useMutation((fs) =>
@@ -43,7 +50,7 @@ export const useGetFullFs = () => {
 
 export const useUploadFiles = () => {
   const isUploadBreaked = useRef(false)
-  const [state, setState] = useState({
+  const [state, setState] = useState<uploadProgress>({
     idle: true,
     progress: null,
     isSuccess: false,

@@ -1,8 +1,8 @@
 import { faSave, faTimes } from '@fortawesome/free-solid-svg-icons'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import validator from 'validator'
-import { useGroups } from '../../actions/group/group-api'
-import { useCreateUser, useUpdateUser } from '../../actions/user/user_api'
+import { useGroups } from '../../api/group'
+import { useCreateUser, useUpdateUser } from '../../api/user'
 import { useLostConfig } from '../../hooks/useLostConfig'
 import { CBadge, CCol, CFormInput, CRow } from '@coreui/react'
 import CoreIconButton from '../../components/CoreIconButton'
@@ -17,6 +17,11 @@ const EditUserModal = (props) => {
   const userRaw = props.user[0]
 
   const [user, setUser] = useState(userRaw)
+
+  useEffect(() => {
+    setUser(props.user[0])
+  }, [props.user])
+
   const [emailError, setEmailError] = useState(false)
   const [passwordError, setPasswordError] = useState(false)
   const [passwordConfirmError, setPasswordConfirmError] = useState(false)

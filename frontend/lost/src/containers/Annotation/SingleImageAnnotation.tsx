@@ -5,7 +5,7 @@ import * as annotaskApi from '../../api/anno_task'
 import siaApi, {
   SiaAnnotationChangeRequest,
   useGetSiaAnnos, // no image switcher???
-} from '../../actions/sia/sia_api'
+} from '../../api/sia'
 import AnnotationTop from './AnnoTask/AnnotationTop'
 
 const SingleImageAnnotation = () => {

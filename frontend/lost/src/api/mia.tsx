@@ -160,7 +160,7 @@ export const useGetMiaLabel = () => {
 export const useFinishMia = () => {
   return useMutation({
     mutationFn: async () => {
-      return axios.get(`${API_URL}/mia/finish`)
+      return axios.post(`${API_URL}/mia/finish`)
     },
   })
 }

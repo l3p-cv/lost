@@ -3,7 +3,7 @@ import { faFolderPlus } from '@fortawesome/free-solid-svg-icons'
 import { useEffect, useState } from 'react'
 import { useToggle } from 'react-use'
 import * as annotaskApi from '../../api/anno_task'
-import * as datasetApi from '../../actions/dataset/dataset_api'
+import * as datasetApi from '../../api/dataset/dataset'
 import DatasetEditModal from './DatasetEditModal'
 import DatasetExportModal from './DatasetExportModal'
 import DatasetTable from './DatasetTable'
@@ -20,7 +20,7 @@ const Datasets = () => {
   } = datasetApi.useFlatDatasets()
 
   const { data: datastores } = datasetApi.useDatastoreKeys()
-  const { data: annotaskResponse, mutate: loadAnnotask } = annotaskApi.useAnnotaskOld()
+  const { data: annotaskResponse, isLoading: loadAnnotask } = annotaskApi.useAnnotask()
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isExportModalOpen, setIsExportModalOpen] = useState(false)

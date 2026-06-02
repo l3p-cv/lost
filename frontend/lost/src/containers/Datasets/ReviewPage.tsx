@@ -1,8 +1,8 @@
 import { useParams } from 'react-router-dom'
 import SiaWrapper from '../Annotation/SIA/SiaWrapper'
 import { CSSProperties, useEffect, useState } from 'react'
-import siaApi, { ReviewData, useReview } from '../../api/dataset_review'
-import { ImageSwitchData } from '../../actions/sia/sia_api'
+import siaApi, { ReviewData, useReview } from '../../api/dataset/dataset_review'
+import { ImageSwitchData } from '../../api/sia'
 import { useAnnotask } from '../../api/anno_task'
 import AnnotationTop from '../Annotation/AnnoTask/AnnotationTop'
 

@@ -72,6 +72,8 @@ export const showDecision = ({
     showCancelButton: true,
     confirmButtonText: option1.text,
     cancelButtonText: option2.text,
+    // always render above the lost-sia fullscreen canvas (z-index: 6000)
+    customClass: { container: 'swal-above-fullscreen' },
   }).then((result) => {
     if (result.isConfirmed) {
       option1.callback()

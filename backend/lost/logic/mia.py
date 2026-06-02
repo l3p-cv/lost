@@ -402,7 +402,7 @@ def __get_filtered_image_annotations_by_state(db_man, at, state, user_id, amount
     if model_anno == model.ImageAnno:
         annos = db_man.get_image_annotations_by_state(at.idx, state, user_id, amount)
     elif model_anno == model.TwoDAnno:
-        annos = db_man.get_two_d_anno_by_state(at.idx, state, user_id, amount)
+        annos = db_man.get_two_d_annotations_by_state(at.idx, state, user_id, amount)
 
     return __filter_annos_by_first_chunk(annos)
 
@@ -601,7 +601,7 @@ def __get_special_two_d_annos(db_man, user_id, at, mia_ids):
                     db_man.delete(label)
             db_man.save_obj(anno)
             db_man.commit()
-        image_serialize = TwoDSerialize(db_man, annos, user_id, at.idx, proposedLabel=False)
+        image_serialize = TwoDSerialize(db_man, annos, user_id, at.idx, has_prev=False, proposedLabel=False)
         image_serialize.serialize()
         return image_serialize.mia_json
 

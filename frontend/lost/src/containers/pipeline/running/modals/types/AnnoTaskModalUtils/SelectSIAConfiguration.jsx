@@ -1,10 +1,7 @@
 import { CCol, CFormInput, CFormSwitch, CRow } from '@coreui/react'
 import { useEffect, useState } from 'react'
 import Select from 'react-select'
-import {
-  INFERENCE_MODEL_TYPE,
-  useModels,
-} from '../../../../../../actions/inference-model/model-api'
+import { INFERENCE_MODEL_TYPE, useModels } from '../../../../../../api/inference_model'
 import { CenteredSpinner } from '../../../../../../components/CenteredSpinner'
 import InfoText from '../../../../../../components/InfoText'
 

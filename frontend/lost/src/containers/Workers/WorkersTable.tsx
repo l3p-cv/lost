@@ -1,4 +1,4 @@
-import { useWorkers } from '../../actions/worker/worker-api'
+import { useWorkers } from '../../api/worker'
 import { CenteredSpinner } from '../../components/CenteredSpinner'
 import { createColumnHelper } from '@tanstack/react-table'
 import BaseContainer from '../../components/BaseContainer'

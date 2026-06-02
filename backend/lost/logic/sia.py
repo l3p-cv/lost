@@ -1387,15 +1387,13 @@ def compute_bboxes_from_points(data):
         h = ymax - ymin
         xc = xmin + w / 2
         yc = ymin + h / 2
-        size = max(w, h)
-        half = size / 2
 
-        xc = min(max(xc, half), 1 - half)
-        yc = min(max(yc, half), 1 - half)
+        xc = min(max(xc, w / 2), 1 - w / 2)
+        yc = min(max(yc, h / 2), 1 - h / 2)
 
         bbox = {
-            "h": round(float(size), 8),
-            "w": round(float(size), 8),
+            "h": round(float(h), 8),
+            "w": round(float(w), 8),
             "x": round(float(xc), 8),
             "y": round(float(yc), 8),
         }

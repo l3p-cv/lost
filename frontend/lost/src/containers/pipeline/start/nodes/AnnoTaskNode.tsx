@@ -4,7 +4,7 @@ import {
   AvailableGroup,
   AvailableLabelTree,
   Configuration,
-} from '../../../../actions/pipeline/model/pipeline-template-response'
+} from '../../../../types/pipelines/pipeline-template-response'
 import NodeBody from '../../globalComponents/node-structure/NodeBody'
 import NodeFooter from '../../globalComponents/node-structure/NodeFooter'
 import NodeHeader from '../../globalComponents/node-structure/NodeHeader'

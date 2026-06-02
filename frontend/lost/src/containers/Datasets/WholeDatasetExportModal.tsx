@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useExportDataset } from '../../actions/dataset/dataset-export-api'
+import { useExportDataset } from '../../api/dataset/dataset_export_api'
 import { DatasetExportsTable } from './DatasetExportsTable'
 import {
   CButton,

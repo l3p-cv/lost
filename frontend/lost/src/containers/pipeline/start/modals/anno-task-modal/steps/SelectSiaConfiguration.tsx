@@ -5,7 +5,7 @@ import {
   INFERENCE_MODEL_TYPE,
   Model,
   useModels,
-} from '../../../../../../actions/inference-model/model-api'
+} from '../../../../../../api/inference_model'
 import { CenteredSpinner } from '../../../../../../components/CenteredSpinner'
 import { AnnoTaskNodeData } from '../../../nodes'
 import InfoText from '../../../../../../components/InfoText'

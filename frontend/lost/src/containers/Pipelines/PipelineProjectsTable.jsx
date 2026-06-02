@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import * as Notification from '../../components/Notification'
 import { API_URL } from '../../lost_settings'
 
-import * as pipelineProjectsApi from '../../actions/pipeline/pipeline_projects_api'
+import * as pipelineProjectsApi from '../../api/pipeline/pipeline_projects'
 import AddPipelineProject from './AddPipelineProject'
 import { createColumnHelper } from '@tanstack/react-table'
 import CoreDataTable from '../../components/CoreDataTable'

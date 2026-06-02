@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 import { faL, faPlus } from '@fortawesome/free-solid-svg-icons'
-import { useCreateGroup, useDeleteGroup, useGroups } from '../../actions/group/group-api'
+import { useCreateGroup, useDeleteGroup, useGroups } from '../../api/group'
 import * as Notification from '../../components/Notification'
 import { createColumnHelper } from '@tanstack/react-table'
 import CoreDataTable from '../../components/CoreDataTable'

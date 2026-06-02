@@ -4,7 +4,7 @@ import { useCallback } from 'react'
 import {
   AvailableGroup,
   AvailableLabelTree,
-} from '../../../../../actions/pipeline/model/pipeline-template-response'
+} from '../../../../../types/pipelines/pipeline-template-response'
 import { AnnoTaskNodeData } from '../../nodes'
 import { AnnoTaskStepper } from './AnnoTaskStepper'
 import { CModal, CModalBody, CModalHeader } from '@coreui/react'

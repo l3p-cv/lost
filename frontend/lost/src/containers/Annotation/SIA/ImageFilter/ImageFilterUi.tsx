@@ -13,12 +13,14 @@ type ImageFilterUiProps = {
   appliedFilters?: ImageFilter[]
   onFiltersChanged?: (filters: ImageFilter[]) => void
   imageIsLoading?: boolean
+  onSave?: () => void
 }
 
 const ImageFilterUi = ({
   appliedFilters = [],
   onFiltersChanged = (_) => {},
   imageIsLoading = false,
+  onSave = () => {},
 }: ImageFilterUiProps) => {
   const [isHistogramActive, setIsHistogramActive] = useState<boolean>(false)
   const [isCannyActive, setIsCannyActive] = useState<boolean>(false)
@@ -83,6 +85,7 @@ const ImageFilterUi = ({
       })
 
     onFiltersChanged(newFilterData)
+    onSave()
   }
 
   return (
@@ -95,7 +98,7 @@ const ImageFilterUi = ({
           filterValue={claheClipLimit}
           onFilterValueChange={setClaheClipLimit}
           isActive={isHistogramActive}
-          onActiveChanged={setIsHistogramActive}
+                    onActiveChanged={setIsHistogramActive}
         />
       </CRow>
 

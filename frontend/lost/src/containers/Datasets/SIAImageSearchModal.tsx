@@ -11,7 +11,7 @@ import { useEffect, useState } from 'react'
 import { faArrowRight, faSearch } from '@fortawesome/free-solid-svg-icons'
 
 import { faSquare, faSquareCheck } from '@fortawesome/free-regular-svg-icons'
-import * as datasetReviewApi from '../../api/dataset_review'
+import * as datasetReviewApi from '../../api/dataset/dataset_review'
 import { Label, TagLabel } from 'lost-sia'
 import CoreIconButton from '../../components/CoreIconButton'
 import BaseContainer from '../../components/BaseContainer'
@@ -30,6 +30,7 @@ type SIAImageSearchModalProps = {
   setIsVisible: (isVisible: boolean) => void
   onChooseImage: (imageId: number) => void
   onSearchResult: (imageIdList: ImageSearchResult[]) => void
+  currentImageId?: number
 }
 
 const SIAImageSearchModal = ({
@@ -40,6 +41,7 @@ const SIAImageSearchModal = ({
   setIsVisible,
   onChooseImage,
   onSearchResult = () => {},
+  currentImageId,
 }: SIAImageSearchModalProps) => {
   const { data: possibleDatasetLabels, refetch: reloadPossibleDatasetLabels } =
     datasetReviewApi.useGetDatasetPossibleLabels(id)
@@ -142,19 +144,37 @@ const SIAImageSearchModal = ({
     columnHelper.display({
       id: 'chooseImage',
       header: () => 'Choose Image',
-      cell: (props) => (
-        <CoreIconButton
-          icon={faArrowRight}
-          color="primary"
-          // isOutline={false}
-          onClick={() => {
-            setIsVisible(false)
-            const rowData = props.row.original
-            onChooseImage(rowData.imageId)
-          }}
-          disabled={false}
-        />
-      ),
+      cell: (props) => {
+        const isCurrentImage = props.row.original.imageId === currentImageId
+        if (isCurrentImage) {
+          return (
+            <span
+              title="You are already on this image"
+              style={{ cursor: 'not-allowed', display: 'inline-block' }}
+            >
+              <CoreIconButton
+                icon={faArrowRight}
+                color="primary"
+                onClick={() => {}}
+                disabled={true}
+                style={{ pointerEvents: 'none' }}
+              />
+            </span>
+          )
+        }
+        return (
+          <CoreIconButton
+            icon={faArrowRight}
+            color="primary"
+            // isOutline={false}
+            onClick={() => {
+              setIsVisible(false)
+              onChooseImage(props.row.original.imageId)
+            }}
+            disabled={false}
+          />
+        )
+      },
     }),
   ]
 

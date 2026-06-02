@@ -591,22 +591,32 @@ class DatasetReviewImageSearch(Resource):
 
         # filter for images annotated with specific labels if labels are in the request
         if labels is not None:
-            search_labels = list(map(int, labels.split(",")))
+            if labels == "":
+                search_labels = []
+            else:
+                search_labels = list(map(int, labels.split(",")))
 
-            # no labels -> no images
+            # no labels selected -> return images with no annotations (respecting image name filter)
             if len(search_labels) == 0:
-                return []
+                db_result = dbm.get_images_without_annotations([annotask_id], search_str)
+                found_images = [
+                    {
+                        "image_id": entry.idx,
+                        "image_path": entry.img_path,
+                        "annotation_id": entry.anno_task_id,
+                        "annotation_name": entry.name,
+                    }
+                    for entry in db_result
+                ]
+            else:
+                img_with_label_db_result = dbm.get_all_images_with_labels(found_image_ids, search_labels)
+                img_ids_with_label = [entry.img_anno_id for entry in img_with_label_db_result]
 
-            # found_image_ids = [entry.idx for entry in db_result]
-            img_with_label_db_result = dbm.get_all_images_with_labels(found_image_ids, search_labels)
-            img_ids_with_label = [entry.img_anno_id for entry in img_with_label_db_result]
+                # filter original response list: only select images that have one of the searched labels
+                found_img_with_label = [img for img in found_images if img["image_id"] in img_ids_with_label]
 
-            # filter original response list: only select images that have one of the searched labels
-            print(found_images)
-            found_img_with_label = [img for img in found_images if img["image_id"] in img_ids_with_label]
-
-            # replace list with label filtered list
-            found_images = found_img_with_label
+                # replace list with label filtered list
+                found_images = found_img_with_label
 
         return {"images": found_images}
 

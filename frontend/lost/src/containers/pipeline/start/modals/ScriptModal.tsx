@@ -1,6 +1,6 @@
 import { useNodesData, useReactFlow } from '@xyflow/react'
 import { useCallback } from 'react'
-import { Script } from '../../../../actions/pipeline/model/pipeline-template-response'
+import { Script } from '../../../../types/pipelines/pipeline-template-response'
 import CollapseCard from '../../globalComponents/modals/CollapseCard'
 import ArgumentsTable from '../../globalComponents/modals/ScriptArgumentsTable'
 import { ScriptNodeData } from '../nodes'

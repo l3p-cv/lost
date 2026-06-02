@@ -2,7 +2,7 @@ import { CCol, CFormInput, CModal, CModalBody, CModalHeader, CRow } from '@coreu
 import { faSave, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { useEffect, useState } from 'react'
 import Swal from 'sweetalert2'
-import * as datasetApi from '../../actions/dataset/dataset_api'
+import * as datasetApi from '../../api/dataset/dataset'
 import { showError, showSuccess } from '../../components/Notification'
 import FilterableDropdown, { FilterItem } from '../../components/FilterableDropdown'
 import CoreIconButton from '../../components/CoreIconButton'

@@ -378,7 +378,7 @@ def test_compute_bboxes_from_points_valid():
         ]
     }
 
-    expected_bbox = {"x": 0.2182642, "y": 0.69907902, "w": 0.26780221, "h": 0.26780221}
+    expected_bbox = {"x": 0.2182642, "y": 0.69907902, "w": 0.26780221, "h": 0.21543278}
 
     result = sia.compute_bboxes_from_points(payload)
 

@@ -4,9 +4,45 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [unreleased]
+## unreleased
 ### Added
+- Added currentImageId prop to SIAImageSearchModal (To know the current image ID to disable the row the user is already on.)
+- Added implementation to wrap the disabled button in a <span> that captures the mouse events to show current image tooltip for disabled button.
+- Pass imageId from SiaWrapper.tsx where SIAImageSearchModal is rendered.
+- Added MIAGalleryModal.tsx: Image gallery modal for MIA with arrow navigation, keyboard left/right support, consistent image dimensions, and a close icon button.
 ### Fixed
+- Notification.js to always render above the lost-sia fullscreen canvas (z-index: 6000) added styles for the same in index.css
+- Fixed Image Filter closing issue in ImageFilterButton.tsx and in ImageFilterUi.tsx
+- BBOX from polygon calculation fixed
+- Fixed Search Annotation appearing in background when in fullscreen during Annotation Review by removing customPopoverStyle zIndex: 7000 in ImageFilterButton.tsx and reducing zIndex for fullscreenStyle in Sia.tsx(lost-sia) to 1040.
+- Fixed stale user data in EditUserModal when reopening the modal for a different user immediately after saving (added useEffect to sync internal state with props.user)
+- Removed redundant img_path post-processing in export_ds (jobs.py) that was stripping paths back to 2 components after pack_ds, conflicting with the collision-safe remapping
+- `annotasks/endpoint.py`: Fix crash on empty labels param and return unannotated images instead of empty list when no labels are selected
+- `dataset/endpoint.py`: Guard against None filter param and return unannotated images instead of all images when no labels are selected
+- Fixed IntegrityError when deleting pipelines that had annotation exports: PipeGodfather now collects and deletes AnnoTaskExport records before deleting AnnoTask rows, respecting the MySQL foreign key constraint (anno_task_export.anno_task_id → anno_task.idx).
+- Fixed AttributeError: 'FileMan' object has no attribute 'rm_mia_crop_path' when deleting pipelines with MIA annotation tasks: replaced the call to the non-existent method with a no-op and a TODO comment until MIA crop path cleanup is implemented.
+- Fixed SiaWrapper.tsx: Polygon operations now preserve the label on the result when both inputs share the same label.
+- Fixed SQL injection in `access.py` `get_images_without_annotations`: `search_str` is now passed as a bound parameter instead of being interpolated directly into the SQL string.
+- Fixed race condition in `SiaWrapper.tsx` `submitAnnotask`: `sindFinishAnnotask` is now deferred via `pendingFinishRef` and called only after the backend has processed the last image's "next" request, including when submitting from the last image (where `annotations === null`).
+- Fixed `label.py` color state accumulation: `_reset_import_color_state` is now called at the start of each `import_df` to prevent color assignments from bleeding across multiple imports on the same `LabelTree` instance. Removed unused `_color_cursor` attribute.
+- Fixed `label.py` `invalid_colors`: removed unreachable `"None"` entry (check lowercases before comparing, so only `"none"` is needed).
+- Removed debug `print(found_images)` statement from `annotasks/endpoint.py` that logged full image lists to stdout on every label-filtered search.
+- Fixed `MIAGalleryModal.tsx`: added `onNavigate` and `onClose` to `useEffect` dependency array to prevent stale closure bugs during keyboard navigation.
+- Fixed `label.py` `assign_import_color`: color assignment is now keyed by label ID instead of label name, so labels with the same name in different trees get distinct colors.
+- Fixed mia backend calls for eventual future usage (TwoDSerialize, non existing get_two_d_anno_by_state replaced with the correct function)
+### Changed
+- Updated lost-sia package to 3.1.3
+- Refactored PersonalStatistics.jsx (due to api rewrite)
+- Moved old api from "actions" to new "api" directory
+- RangeSlider.tsx to show disabled and enabled styles.
+- SiaWrapper.tsx enable next for last image for fixing Task Progress.
+- CannyFilterComponent.tsx, ImageFilterComponent.tsx, BilateralFilterComponent.tsx added disabled silder on toggle off and div styles for the same.
+- Adapted automatic test for bbox creation
+### Removed
+- Removed unused api in frontend
+- access.py : Added `get_images_without_annotations` method to query images with no labels matching an optional filename filter.
+- Cluster.tsx, NewMIAImage.tsx: Refactored MIA modal into a dedicated MIAGalleryModal.tsx component.
+- Updated label.py: added improved deterministic fallback color assignment with better perceptual separation
 
 ## [3.2.2] - 2026-05-13
 ### Fixed

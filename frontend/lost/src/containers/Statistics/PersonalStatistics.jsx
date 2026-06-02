@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import * as statistics_api from '../../actions/statistics/statistics_api'
+import * as statistics_api from '../../api/statistics'
 
 import { CCol, CContainer, CRow, CWidgetStatsD } from '@coreui/react'
 import { CChart } from '@coreui/react-chartjs'
@@ -7,48 +7,10 @@ import LineChartWidget from '../../components/LineChartWidget'
 import CenteredSpinner from '../../components/CenteredSpinner'
 
 const PersonalStatistics = () => {
-  const { mutate: getPersonalStatistics, data: personalStatistics } =
-    statistics_api.usePersonalStatistics()
-  useEffect(() => {
-    getPersonalStatistics()
-  }, [])
+  const { data: personalStatistics, isLoading } = statistics_api.usePersonalStatistics()
 
   const [labels, setLabels] = useState({ keys: [], values: [] })
   const [types, setTypes] = useState({ keys: [], values: [] })
-
-  useEffect(() => {
-    /// only when data from request is available
-    if (personalStatistics === undefined) return
-
-    // update data for annotation labels chart
-    const _labels = {
-      keys: [],
-      values: [],
-      colors: [],
-    }
-
-    for (var k in personalStatistics.labels) {
-      _labels.keys.push(k)
-      _labels.values.push(personalStatistics.labels[k]['value'])
-      const _lblColor = personalStatistics.labels[k]['color']
-      _labels.colors.push(_lblColor ? _lblColor : 'rgb(16, 81, 95,0.8)')
-    }
-
-    setLabels(_labels)
-
-    // update data for annotation types chart
-    const _types = {
-      keys: [],
-      values: [],
-    }
-
-    for (var k in personalStatistics.types) {
-      _types.keys.push(k)
-      _types.values.push(personalStatistics.types[k])
-    }
-
-    setTypes(_types)
-  }, [personalStatistics])
 
   /// do not render component if required data is not available
   if (personalStatistics === undefined)
@@ -113,48 +75,6 @@ const PersonalStatistics = () => {
 
   const chartOptions = {
     maintainAspectRatio: true,
-  }
-
-  const lineChartOptions = {
-    plugins: {
-      legend: {
-        display: false,
-      },
-    },
-    maintainAspectRatio: false,
-    scales: {
-      x: {
-        grid: {
-          display: false,
-          drawBorder: false,
-        },
-        ticks: {
-          display: false,
-        },
-      },
-      y: {
-        min: 30,
-        max: 89,
-        display: false,
-        grid: {
-          display: false,
-        },
-        ticks: {
-          display: false,
-        },
-      },
-    },
-    elements: {
-      line: {
-        borderWidth: 1,
-        tension: 0.4,
-      },
-      point: {
-        radius: 4,
-        hitRadius: 10,
-        hoverRadius: 4,
-      },
-    },
   }
 
   return (

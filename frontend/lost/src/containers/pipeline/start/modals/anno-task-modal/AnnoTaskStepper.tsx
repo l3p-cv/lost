@@ -3,7 +3,7 @@ import { isEmpty } from 'lodash'
 import {
   AvailableGroup,
   AvailableLabelTree,
-} from '../../../../../actions/pipeline/model/pipeline-template-response'
+} from '../../../../../types/pipelines/pipeline-template-response'
 import { useStep } from '../../../../../hooks/useStep'
 import { AnnoTaskNodeData } from '../../nodes'
 import {

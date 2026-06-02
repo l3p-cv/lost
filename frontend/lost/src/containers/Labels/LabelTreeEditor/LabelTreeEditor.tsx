@@ -11,7 +11,7 @@ import {
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import { useCallback, useEffect, useState } from 'react'
-import { CreateLabelResponse, useCreateLabel } from '../../../actions/label/label-api'
+import { CreateLabelResponse, useCreateLabel } from '../../../api/label'
 import { LayoutOptions, useAutoLayout } from '../../pipeline/useAutoLayout'
 import LabelEditorControls from './LabelEditorControls'
 import { LabelEditorNode, LabelEditorNodeData } from './LabelEditorNode'

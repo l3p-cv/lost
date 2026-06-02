@@ -8,7 +8,7 @@ import {
 import BaseModal from '../../components/BaseModal'
 import { useDropzone } from 'react-dropzone'
 import { CRow, CCol, CForm, CFormInput } from '@coreui/react'
-import * as pipelinedProjectsApi from '../../actions/pipeline/pipeline_projects_api'
+import * as pipelinedProjectsApi from '../../api/pipeline/pipeline_projects'
 import * as Notification from '../../components/Notification'
 import CollapseCard from '../../containers/pipeline/globalComponents/modals/CollapseCard'
 import CoreIconButton from '../../components/CoreIconButton'

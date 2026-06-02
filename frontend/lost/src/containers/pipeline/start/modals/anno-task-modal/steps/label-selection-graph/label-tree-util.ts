@@ -1,5 +1,5 @@
 import { Edge, Node } from '@xyflow/react'
-import { AvailableLabelTree } from '../../../../../../../actions/pipeline/model/pipeline-template-response'
+import { AvailableLabelTree } from '../../../../../../../types/pipelines/pipeline-template-response'
 import { getContrastColor } from '../../../../../../../utils/color-util'
 
 export const convertLabelTreeToReactFlow = (

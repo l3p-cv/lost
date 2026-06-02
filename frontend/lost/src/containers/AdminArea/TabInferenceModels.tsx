@@ -7,7 +7,7 @@ import {
   UpdateInferenceModelRequest,
   useDeleteInferenceModel,
   useModels,
-} from '../../actions/inference-model/model-api'
+} from '../../api/inference_model'
 import * as Notification from '../../components/Notification'
 import { InferenceModalConfigModal } from './InferenceModelConfigModal'
 import { CBadge, CTooltip } from '@coreui/react'
