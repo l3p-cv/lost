@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 ### Added
+### Fixed
+- Fixed Logout.tsx to clear localStorage immediately and use mutateAsync with local state to correctly handle isLoading under React 19 Strict Mode double-mount
 
 ## [3.4.0] - 2026-06-25
 ### Changed
