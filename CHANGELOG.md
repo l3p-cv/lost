@@ -6,7 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 ### Added
-
+### Fixed
+- Fixed Logout.tsx to clear localStorage immediately and use mutateAsync with local state to correctly handle isLoading under React 19 Strict Mode double-mount
 ## [3.2.2] - 2026-05-13
 ### Added
 - Added currentImageId prop to SIAImageSearchModal (To know the current image ID to disable the row the user is already on.)
