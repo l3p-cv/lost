@@ -51,6 +51,13 @@ def get_current(db_man, user_id, img_id, media_url):
         iteration = db_man.get_pipe_element(pipe_e_id=at.pipe_element_id).iteration
         image_anno = db_man.get_image_anno(img_id)
 
+        # Verify the image belongs to this annotask
+        if image_anno is None or image_anno.anno_task_id != at.idx:
+            return "nothing available"
+
+        if image_anno.user_id != user_id:
+            return "nothing available"
+
         is_first_image = True
         first_image_anno = db_man.get_first_sia_anno(at.idx, iteration, user_id)
         if first_image_anno is not None and first_image_anno.idx != image_anno.idx:

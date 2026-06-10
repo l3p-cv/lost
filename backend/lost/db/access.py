@@ -1206,41 +1206,44 @@ class DBMan:
         )
 
     def get_sia_review_first(self, anno_task_id, iteration=None):
-        """Get first sia annotation of an anno_task"""
+        """Get first annotated sia annotation of an anno_task"""
+        annotated_states = [state.Anno.LABELED, state.Anno.JUNK]
         if iteration is not None:
             return (
                 self.session.query(model.ImageAnno)
-                .filter(model.ImageAnno.anno_task_id == anno_task_id, model.ImageAnno.iteration == iteration)
+                .filter(model.ImageAnno.anno_task_id == anno_task_id, model.ImageAnno.iteration == iteration, model.ImageAnno.state.in_(annotated_states))
                 .order_by(model.ImageAnno.idx.asc())
                 .first()
             )
         else:
             return (
                 self.session.query(model.ImageAnno)
-                .filter(model.ImageAnno.anno_task_id == anno_task_id)
+                .filter(model.ImageAnno.anno_task_id == anno_task_id, model.ImageAnno.state.in_(annotated_states))
                 .order_by(model.ImageAnno.idx.asc())
                 .first()
             )
 
     def get_sia_review_last(self, anno_task_id, iteration=None):
-        """Get last sia annotation of an anno_task"""
+        """Get last annotated sia annotation of an anno_task"""
+        annotated_states = [state.Anno.LABELED, state.Anno.JUNK]
         if iteration is not None:
             return (
                 self.session.query(model.ImageAnno)
-                .filter(model.ImageAnno.anno_task_id == anno_task_id, model.ImageAnno.iteration == iteration)
+                .filter(model.ImageAnno.anno_task_id == anno_task_id, model.ImageAnno.iteration == iteration, model.ImageAnno.state.in_(annotated_states))
                 .order_by(model.ImageAnno.idx.desc())
                 .first()
             )
         else:
             return (
                 self.session.query(model.ImageAnno)
-                .filter(model.ImageAnno.anno_task_id == anno_task_id)
+                .filter(model.ImageAnno.anno_task_id == anno_task_id, model.ImageAnno.state.in_(annotated_states))
                 .order_by(model.ImageAnno.idx.desc())
                 .first()
             )
 
     def get_sia_review_next(self, anno_task_id, img_anno_id, iteration=None):
-        """Get next sia annotation of an anno_task"""
+        """Get next annotated sia annotation of an anno_task"""
+        annotated_states = [state.Anno.LABELED, state.Anno.JUNK]
         if iteration is not None:
             return (
                 self.session.query(model.ImageAnno)
@@ -1248,25 +1251,26 @@ class DBMan:
                     model.ImageAnno.anno_task_id == anno_task_id,
                     model.ImageAnno.idx > img_anno_id,
                     model.ImageAnno.iteration == iteration,
+                    model.ImageAnno.state.in_(annotated_states),
                 )
                 .first()
             )
         else:
             return (
                 self.session.query(model.ImageAnno)
-                .filter(model.ImageAnno.anno_task_id == anno_task_id, model.ImageAnno.idx > img_anno_id)
+                .filter(model.ImageAnno.anno_task_id == anno_task_id, model.ImageAnno.idx > img_anno_id, model.ImageAnno.state.in_(annotated_states))
                 .first()
             )
 
     def get_sia_review_prev(self, anno_task_id, img_anno_id, iteration=None):
-        """Get a previous image annotation by current annotation id"""
+        """Get a previous annotated image annotation by current annotation id"""
         if iteration is not None:
             sql = (
-                "SELECT * FROM image_anno WHERE anno_task_id=%d AND iteration=%d AND idx<%d ORDER BY idx DESC LIMIT 1"
+                "SELECT * FROM image_anno WHERE anno_task_id=%d AND iteration=%d AND idx<%d AND state IN (4,6) ORDER BY idx DESC LIMIT 1"
                 % (iteration, anno_task_id, img_anno_id)
             )
         else:
-            sql = "SELECT * FROM image_anno WHERE anno_task_id=%d AND idx<%d ORDER BY idx DESC LIMIT 1" % (
+            sql = "SELECT * FROM image_anno WHERE anno_task_id=%d AND idx<%d AND state IN (4,6) ORDER BY idx DESC LIMIT 1" % (
                 anno_task_id,
                 img_anno_id,
             )
@@ -1277,7 +1281,8 @@ class DBMan:
             return None
 
     def get_sia_review_id(self, anno_task_id, image_anno_id, iteration=None):
-        """Get a sia annotation of an anno_task specified by its id"""
+        """Get an annotated sia annotation of an anno_task specified by its id"""
+        annotated_states = [state.Anno.LABELED, state.Anno.JUNK]
         if iteration is not None:
             return (
                 self.session.query(model.ImageAnno)
@@ -1285,6 +1290,7 @@ class DBMan:
                     model.ImageAnno.anno_task_id == anno_task_id,
                     model.ImageAnno.iteration == iteration,
                     model.ImageAnno.idx == image_anno_id,
+                    model.ImageAnno.state.in_(annotated_states),
                 )
                 .order_by(model.ImageAnno.idx.desc())
                 .first()
@@ -1292,7 +1298,7 @@ class DBMan:
         else:
             return (
                 self.session.query(model.ImageAnno)
-                .filter(model.ImageAnno.anno_task_id == anno_task_id, model.ImageAnno.idx == image_anno_id)
+                .filter(model.ImageAnno.anno_task_id == anno_task_id, model.ImageAnno.idx == image_anno_id, model.ImageAnno.state.in_(annotated_states))
                 .order_by(model.ImageAnno.idx.desc())
                 .first()
             )
@@ -1703,11 +1709,13 @@ class DBMan:
             AND i.img_path LIKE '%{search_str}%';"
         return self.session.execute(text(sql))
 
-    def get_search_images_in_annotask(self, annotask_idx, search_str=""):
+    def get_search_images_in_annotask(self, annotask_idx, search_str="", annotated_only=False):
+        state_filter = "AND i.state IN (4, 6)" if annotated_only else ""
         sql = f"SELECT i.idx, i.anno_task_id, i.img_path, a.name FROM anno_task a, image_anno i \
             WHERE a.idx = {annotask_idx} \
             AND a.idx = i.anno_task_id \
-            AND i.img_path LIKE '%{search_str}%';"
+            AND i.img_path LIKE '%{search_str}%' \
+            {state_filter};"
         return self.session.execute(text(sql))
 
     def get_child_datasets_by_parent_ds_id(self, dataset_id):

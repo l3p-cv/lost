@@ -1,6 +1,7 @@
 import base64
 import json
 import traceback
+from venv import logger
 
 import cv2
 import flask
@@ -23,7 +24,7 @@ from lost.api.sia.api_definition import (
     sia_polygon_operations_response,
     sia_polygon_union,
 )
-from lost.db import access, roles
+from lost.db import access, roles, state
 from lost.logic import sia
 from lost.logic.file_man import FileMan
 from lost.logic.permissions import UserPermissions
@@ -34,7 +35,7 @@ namespace = api.namespace("sia", description="SIA Annotation API.")
 
 @namespace.route("")
 @api.doc(security="apikey")
-@api.param("direction", 'One of "next","prev" "current" or "first"')
+@api.param("direction", 'One of "next","prev" "current" or "first", or "specificImage" to jump to a specific image')
 @api.param("lastImgId", "ID of the last image")
 class First(Resource):
     @api.doc(security="apikey", description="Get SIA information")
@@ -65,6 +66,10 @@ class First(Resource):
                 return re
             elif direction == "current":
                 re = sia.get_current(dbm, identity, last_img_id, DATA_URL)
+                return re
+            elif direction == "specificImage":
+                re = sia.get_current(dbm, identity, last_img_id, DATA_URL)
+                dbm.close_session()
                 return re
 
             dbm.close_session()
@@ -221,6 +226,97 @@ class ImageFilters(Resource):
             return {"error": str(ve)}, 400
         except Exception as e:
             flask.current_app.logger.error(f"Error applying filters: {e!s}")
+            dbm.close_session()
+            return {"error": str(e)}, 500
+
+# Used to populate the sidebar with all images ids and numbers of the annotask and their numbers for the annotator to quickly jump to an image
+@namespace.route("/images")
+@api.doc(security="apikey")
+class SiaImageList(Resource):
+    @api.doc(security="apikey", description="Get all image IDs and numbers for the current annotator's active annotask")
+    @jwt_required()
+    def get(self):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = int(get_jwt_identity())
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.ANNOTATOR):
+            dbm.close_session()
+            return api.abort(403, f"You need to be {roles.ANNOTATOR} in order to perform this request.")
+        at = sia.get_sia_anno_task(dbm, identity)
+        if at is None:
+            dbm.close_session()
+            return {"images": []}
+        current_img_id = request.args.get("currentImgId", type=int)
+        all_annos = dbm.get_all_image_annos(at.idx)
+        visited_states = {state.Anno.LABELED, state.Anno.LABELED_LOCKED, state.Anno.JUNK}
+
+        # LOCKED images pre-assigned by __is_last_image__ (lookaheads) always have
+        # timestamp_lock=NULL because the user never actually opened them.
+        # LOCKED images the user genuinely visited have timestamp_lock set by
+        # get_next/get_first/get_previous. This is the definitive signal — no need
+        # to track lookahead_id or compare indices.
+        user_annos = [
+            a for a in all_annos
+            if a.user_id == identity
+            and (
+                a.state in visited_states                                              # submitted or revisiting
+                or a.idx == current_img_id                                             # always show current
+                or (a.state == state.Anno.LOCKED and a.timestamp_lock is not None)    # genuinely visited
+            )
+        ]
+        total = len(user_annos)
+        images = [{"imageId": a.idx, "number": i + 1, "total": total}
+                  for i, a in enumerate(user_annos)]
+        dbm.close_session()
+        return {"images": images}
+
+# Used to return a scaled-down image for the side bar
+@namespace.route("/image/<int:image_id>/thumbnail")
+@api.doc(security="apikey")
+class SiaThumbnail(Resource):
+    @api.doc(security="apikey", description="Get a small thumbnail for the given image annotation ID")
+    @jwt_required()
+    def get(self, image_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = int(get_jwt_identity())
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.ANNOTATOR):
+            dbm.close_session()
+            return api.abort(403, f"You need to be {roles.ANNOTATOR} in order to perform this request.")
+        try:
+            img = dbm.get_image_anno(image_id)
+            if img is None:
+                dbm.close_session()
+                return {"error": "Not found"}, 404
+
+            at = dbm.get_anno_task(img.anno_task_id)
+            at_group = dbm.get_group_by_id(at.group_id)
+
+            if at_group is None:
+                dbm.close_session()
+                return {"error": "Group not found"}, 404
+
+            is_anno_group = (at_group.is_user_default == 0)
+
+            print(f"GROUPPPP is anno group: {is_anno_group}")
+            print(f"img.user_id: {img.user_id}, identity: {identity}")
+
+            is_owner = img.user_id == identity
+
+            if not (is_owner or is_anno_group):
+                dbm.close_session()
+                return {"error": "Forbidden"}, 403
+            fs = FileMan(fs_db=img.fs)
+            img_data = fs.load_img(img.img_path, color_type="color")
+            h, w = img_data.shape[:2]
+            scale = 120 / max(h, w)
+            thumb = cv2.resize(img_data, (int(w * scale), int(h * scale)))
+            _, encoded = cv2.imencode(".jpg", thumb, [cv2.IMWRITE_JPEG_QUALITY, 70])
+            data64 = base64.b64encode(encoded.tobytes())
+            dbm.close_session()
+            return "data:img/jpg;base64," + data64.decode("utf-8")
+        except Exception as e:
+            flask.current_app.logger.error(f"Error generating thumbnail: {e!s}")
             dbm.close_session()
             return {"error": str(e)}, 500
 

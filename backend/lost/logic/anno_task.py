@@ -148,6 +148,7 @@ def get_at_info(dbm, annotask, user_id, amount_per_label=False):
     at["last_annotator"] = "N/A"
     if annotask.last_annotator:
         at["last_annotator"] = annotask.last_annotator.user_name
+    at["locked_img_count"] = len(dbm.get_locked_img_annos(annotask.idx))
     at["type"] = None
     at["finished"] = None
     at["size"] = None

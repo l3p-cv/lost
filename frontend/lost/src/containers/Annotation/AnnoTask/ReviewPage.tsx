@@ -2,14 +2,19 @@ import { useParams } from 'react-router-dom'
 import SiaWrapper from '../SIA/SiaWrapper'
 
 import { CSSProperties, useState } from 'react'
-import siaApi, { ReviewData, useReview } from '../../../api/dataset/dataset_review'
+import siaApi, { ReviewData, useReview, useGetReviewImageList } from '../../../api/dataset/dataset_review'
 import { useAnnotask } from '../../../api/anno_task'
 import { ImageSwitchData } from '../../../api/sia'
 import AnnotationTop from './AnnotationTop'
+import SiaPreviewSidebar from '../SIA/SiaPreviewSidebar'
+import CoreIconButton from '../../../components/CoreIconButton'
+import { faFilm } from '@fortawesome/free-solid-svg-icons'
 
 const AnnotaskReviewComponent = () => {
   const { annotaskId } = useParams()
   const { data: currentAnnotask } = useAnnotask(annotaskId)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+
 
   // image nr in annotask
   const [annotationRequestData, setAnnotationRequestData] = useState<ReviewData>({
@@ -23,13 +28,13 @@ const AnnotaskReviewComponent = () => {
   })
 
   const { data: annoData } = useReview(annotationRequestData)
+  const nAnnotaskId = parseInt(`${annotaskId}`)
+  const { data: imageList } = useGetReviewImageList(nAnnotaskId)
 
-  if (annotaskId === undefined || isNaN(parseInt(annotaskId)))
+  if (annotaskId === undefined || isNaN(nAnnotaskId))
     return <h2>Incorrect Annotask Id</h2>
 
-  const nAnnotaskId: number = parseInt(annotaskId)
-
-  /**
+ /**
    * do not use a CContainer here
    * CContainers remove the ability to get the available height of the page using flexbox
    * Instead, get the current flexbox, let the current child grow to its maximum available with and height
@@ -45,30 +50,71 @@ const AnnotaskReviewComponent = () => {
     flexDirection: 'column',
   }
 
+  const rowFlex: CSSProperties = {
+    flex: '1 1 auto',
+    minHeight: 0,
+    overflow: 'hidden',
+    display: 'flex',
+    flexDirection: 'row',
+  }
+
+  const handleImageSwitch = (imageSwitchData: ImageSwitchData) => {
+    setAnnotationRequestData({
+      isAnnotaskReview: true,
+      taskId: nAnnotaskId,
+      data: {
+        direction: imageSwitchData.direction,
+        imageAnnoId: imageSwitchData.imageId,
+        iteration: imageSwitchData.iteration,
+      },
+    })
+  }
+
   return (
     <div style={forwardFlex}>
       <AnnotationTop annoTask={currentAnnotask} annoData={annoData} isReview={true} />
-      <div style={forwardFlex}>
-        <SiaWrapper
-          annoData={annoData}
-          annoTaskId={nAnnotaskId}
-          isDatasetMode={false}
-          isImageSearchEnabled={true}
-          siaApi={siaApi}
-          isReview={true}
-          onSetAnnotationRequestData={(imageSwitchData: ImageSwitchData) => {
-            const newReviewData: ReviewData = {
-              isAnnotaskReview: true,
-              taskId: parseInt(`${annotaskId}`),
-              data: {
-                direction: imageSwitchData.direction,
-                imageAnnoId: imageSwitchData.imageId,
-                iteration: imageSwitchData.iteration,
-              },
-            }
-            setAnnotationRequestData(newReviewData)
-          }}
-        />
+      <div style={{ ...rowFlex, position: 'relative' }}>
+        {/* SiaWrapper always takes full row width — canvas size never changes */}
+        <div style={forwardFlex}>
+          <SiaWrapper
+            annoData={annoData}
+            annoTaskId={nAnnotaskId}
+            isDatasetMode={false}
+            isImageSearchEnabled={true}
+            siaApi={siaApi}
+            isReview={true}
+            onSetAnnotationRequestData={handleImageSwitch}
+          />
+        </div>
+        {/* Sidebar column — absolutely positioned, never affects layout or canvas size */}
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          bottom: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          zIndex: 10,
+          background: isSidebarOpen ? 'rgba(var(--cui-primary-rgb, 13,110,253), 0.15)' : 'transparent',
+        }}>
+          <div style={{ paddingTop: 6, paddingLeft: 4, flexShrink: 0 }}>
+            <CoreIconButton
+              icon={faFilm}
+              toolTip={isSidebarOpen ? 'Close image strip' : 'Open image strip'}
+              onClick={() => setIsSidebarOpen((o) => !o)}
+              isActive={isSidebarOpen}
+            />
+          </div>
+          {isSidebarOpen && (
+            <SiaPreviewSidebar
+              imageList={imageList ?? []}
+              currentImageId={annoData?.image?.id ?? -1}
+              onSelect={(id) =>
+                handleImageSwitch({ direction: 'specificImage', imageId: id })
+              }
+            />
+          )}
+        </div>
       </div>
     </div>
   )

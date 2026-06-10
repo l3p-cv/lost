@@ -552,6 +552,13 @@ class DatasetReview(Resource):
         first_annotask_key = annotask_keys[0]
         first_annotask = dbm.get_sia_review_first(first_annotask_key, iteration)
 
+        # No annotated images exist yet in the first annotask
+        if not first_annotask:
+            return "no annotation found", 400
+
+        last_annotask_key = annotask_keys[-1]
+        last_annotask_image = dbm.get_sia_review_last(last_annotask_key, iteration)
+
         current_idx = data.get("imageAnnoId", None)
 
         # read the current anno task by checking the current image
@@ -622,15 +629,11 @@ class DatasetReview(Resource):
             current_image_number = current_image_number + annotask_lengths[prev_annotask_idx]
             prev_annotask_idx = self.__prev_annotask_index(annotask_keys, prev_annotask_idx)
 
-        # check if user moved to the first of all images
-        is_first_image = False
-        if first_annotask.idx == image_anno.idx:
-            is_first_image = True
+        # check if user moved to the first annotated image
+        is_first_image = first_annotask.idx == image_anno.idx
 
-        # check if user moved to the last of all images
-        is_last_image = False
-        if current_image_number == total_image_amount:
-            is_last_image = True
+        # check if user moved to the last annotated image
+        is_last_image = last_annotask_image is not None and last_annotask_image.idx == image_anno.idx
 
         # return image_anno, is_first_image, is_last_image, current_image_number
         sia_serialize = SiaSerialize(

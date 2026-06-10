@@ -51,6 +51,39 @@ export const useReview = (annotationRequestData: ReviewData) => {
   )
 }
 
+export type ReviewImageListItem = {
+  imageId: number
+  number: number
+  total: number
+}
+
+export const useGetReviewImageList = (annotaskId: number | undefined) => {
+  return useQuery<ReviewImageListItem[]>(
+    ['reviewimagelist', annotaskId],
+    () =>
+      axios
+        .get(`${API_URL}/annotasks/${annotaskId}/review/images`, {
+          params: { annotated_only: true },
+        })
+        .then((res) => {
+          // console.log('review/images response:', res.data)
+          const images: { imageId: number }[] = res.data.images ?? []
+          const total = images.length
+
+          return images.map((img, i) => ({
+            imageId: img.imageId,
+            number: i + 1,
+            total,
+          }))
+        }),
+    {
+      enabled: annotaskId !== undefined && annotaskId > 0,
+      refetchOnWindowFocus: true,
+      staleTime: 0,
+    },
+  )
+}
+
 export const useReviewOptions = () => {
   return useMutation((annotaskId) => {
     return axios

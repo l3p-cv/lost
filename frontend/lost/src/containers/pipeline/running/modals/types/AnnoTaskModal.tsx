@@ -11,7 +11,7 @@ import { changeUser, forceAnnotationRelease } from '../../../../../api/anno_task
 
 type AnnoTaskModalProps = {
   modalOpened: boolean
-  annoTask: { name: string; id: number | string; type: string }
+  annoTask: { name: string; id: number | string; type: string; annotatedImgCount?: number; lockedImgCount?: number }
   id: number | string
   state: string
   onClose: () => void
@@ -74,6 +74,10 @@ const AnnoTaskModal = ({
             key: 'Status',
             value: state,
           },
+          {
+            key: 'Locked but not Labelled',
+            value: annoTask.lockedImgCount ?? 0,
+          },
         ]}
         columns={columns}
         usePagination={false}
@@ -94,6 +98,10 @@ const AnnoTaskModal = ({
             icon={faEye}
             color="primary"
             style={{ marginLeft: 10, marginTop: 20, marginBottom: '1rem' }}
+            disabled={!annoTask.annotatedImgCount || annoTask.annotatedImgCount === 0}
+            toolTip={!annoTask.annotatedImgCount || annoTask.annotatedImgCount === 0
+              ? 'No annotated images yet'
+              : 'Review Annotations'}
             onClick={() => {
               navigate(`/annotasks/${annoTask.id}/review`)
             }}
@@ -103,6 +111,10 @@ const AnnoTaskModal = ({
             icon={faCircle}
             color="danger"
             style={{ marginLeft: 10, marginTop: 20, marginBottom: '1rem' }}
+            disabled={!annoTask.lockedImgCount || annoTask.lockedImgCount === 0}
+            toolTip={!annoTask.lockedImgCount || annoTask.lockedImgCount === 0
+              ? 'No locked images to release'
+              : 'Force Annotation Release'}
             onClick={() => handleForceAnnotationRelease()}
             text="Force Annotation Release"
           />

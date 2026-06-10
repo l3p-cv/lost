@@ -50,7 +50,7 @@ export type ImageSwitchData = {
 }
 
 export type SiaAnnotationChangeRequest = {
-  direction: 'next' | 'prev' | 'current'
+  direction: 'next' | 'prev' | 'current' | 'specificImage'
   imageId: number
 }
 
@@ -246,6 +246,35 @@ export const useFinishAnnotask = () => {
   return useMutation(() => axios.post(API_URL + `/sia/finish`).then((res) => res.data), {
     onError: () => showError('Failed to finish annotation task.'),
   })
+}
+
+export type SiaImageListItem = {
+  imageId: number
+  number: number
+  total: number
+}
+
+export const useGetSiaImageList = (enabled: boolean, currentImgId?: number) => {
+  return useQuery<SiaImageListItem[]>(
+    ['siaimagelist', currentImgId],
+    () =>
+      axios
+        .get(API_URL + `/sia/images`, {
+          params: currentImgId !== undefined && currentImgId > 0
+            ? { currentImgId }
+            : {},
+        })
+        .then((res) => res.data.images),
+    { enabled, refetchOnWindowFocus: false, staleTime: 0 },
+  )
+}
+
+export const useGetSiaThumbnail = (imageId: number, enabled: boolean) => {
+  return useQuery<string>(
+    ['siathumbnail', imageId],
+    () => axios.get(API_URL + `/sia/image/${imageId}/thumbnail`).then((res) => res.data),
+    { enabled, refetchOnWindowFocus: false, staleTime: 0 },
+  )
 }
 
 // default export that is compliant with the various SIA types (annotation, annotask review, dataset review)

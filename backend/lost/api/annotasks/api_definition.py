@@ -129,6 +129,9 @@ anno_task = api.model(
         "annotatedImgCount": fields.Integer(
             description="The count of annotated images of the anno task", attribute="annotated_img_count"
         ),
+        "lockedImgCount": fields.Integer(
+            description="The count of locked but not labelled images", attribute="locked_img_count"
+        ),
         "labelLeaves": fields.Nested(
             label_leaf, description="The Root Label Leafs of the anno task", attribute="label_leaves"
         ),

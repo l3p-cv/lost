@@ -105,24 +105,26 @@ const CoreIconButton = ({
   if (toolTip != '') {
     return (
       <CTooltip content={toolTip} placement={tTipPlacement}>
-        <CButton
-          id={id}
-          size={size}
-          type={type}
-          className={className}
-          style={style}
-          variant={buttonVariant}
-          disabled={disabled || isLoading}
-          onClick={onClick}
-          color={!overrideDisabledColor && (disabled || isLoading) ? 'secondary' : color}
-          shape={shape}
-        >
-          {renderContent()}
+        <span style={(disabled || isLoading) ? { display: 'inline-block', cursor: 'not-allowed' } : {}}>
+          <CButton
+            id={id}
+            size={size}
+            type={type}
+            className={className}
+            style={{ ...style, ...((disabled || isLoading) ? { pointerEvents: 'none' } : {}) }}
+            variant={buttonVariant}
+            disabled={disabled || isLoading}
+            onClick={onClick}
+            color={!overrideDisabledColor && (disabled || isLoading) ? 'secondary' : color}
+            shape={shape}
+          >
+            {renderContent()}
           {/* { props.text && (
                 <span style={{marginLeft: 5}}>{props.text}</span>
             )
             } */}
-        </CButton>
+          </CButton>
+        </span>
       </CTooltip>
     )
   }

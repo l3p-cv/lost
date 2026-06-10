@@ -570,10 +570,11 @@ class DatasetReviewImageSearch(Resource):
 
         search_str = request.args.get("filter")
         labels = request.args.get("labels")
+        annotated_only = request.args.get("annotated_only", "false").lower() == "true"
         if search_str == None:
             search_str = ""
 
-        db_result = dbm.get_search_images_in_annotask(annotask_id, search_str)
+        db_result = dbm.get_search_images_in_annotask(annotask_id, search_str, annotated_only=annotated_only)
 
         found_image_ids: list[int] = []
         found_images: list[dict[str, any]] = []
@@ -718,7 +719,13 @@ class AnnotaskReview(Resource):
         current_idx = data["imageAnnoId"]
         iteration = data.get("iteration", None)
 
+        # Only navigate among annotated images (LABELED=4, JUNK=6)
         first_annotation = dbm.get_sia_review_first(annotask.idx, iteration)
+        last_annotation = dbm.get_sia_review_last(annotask.idx, iteration)
+
+        # No annotated images exist yet
+        if not first_annotation:
+            return "no annotation found"
 
         # get annotask selected by user or the first one if he didn't select one
         current_annotask_idx = data["annotaskIdx"] if "annotaskIdx" in data else annotask.idx
@@ -727,10 +734,8 @@ class AnnotaskReview(Resource):
         if direction == "first":
             image_anno = first_annotation
         elif direction == "next":
-            # get the next image of the same annotation task
             image_anno = dbm.get_sia_review_next(annotask.idx, current_idx, iteration)
         elif direction == "prev":
-            # get the previous image of the same annotation task
             image_anno = dbm.get_sia_review_prev(current_annotask.idx, current_idx, iteration)
         elif direction == "specificImage" or direction == "current":
             image_anno = dbm.get_sia_review_id(annotask_id, current_idx, iteration)
@@ -742,15 +747,9 @@ class AnnotaskReview(Resource):
             dbm, annotask, image_anno.idx, iteration
         )
 
-        # check if user moved to the first of all images
-        is_first_image = False
-        if first_annotation.idx == image_anno.idx:
-            is_first_image = True
-
-        # check if user moved to the last of all images
-        is_last_image = False
-        if anno_current_image_number == anno_total_image_amount:
-            is_last_image = True
+        # isFirst/isLast based on annotated-only first/last images
+        is_first_image = first_annotation.idx == image_anno.idx
+        is_last_image = last_annotation is not None and last_annotation.idx == image_anno.idx
 
         sia_serialize = SiaSerialize(
             image_anno,

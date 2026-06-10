@@ -32,6 +32,7 @@ export interface LiveAnnoTask {
   progress: number
   imgCount: number
   annotatedImgCount: number
+  lockedImgCount: number
   instructionId: number
   configuration: Configuration
   labelLeaves: LiveLabelLeaf[]

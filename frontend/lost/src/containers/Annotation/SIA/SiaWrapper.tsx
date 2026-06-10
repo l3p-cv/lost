@@ -20,7 +20,7 @@ import type {
 } from 'lost-sia'
 import { Sia } from 'lost-sia'
 import { useNavigate } from 'react-router-dom'
-import { CButtonGroup, CCol, CSpinner } from '@coreui/react'
+import { CAlert, CButtonGroup, CCol, CSpinner } from '@coreui/react'
 // import {
 //     INFERENCE_MODEL_TYPE,
 //     useTritonInference,
@@ -66,6 +66,7 @@ type SiaWrapperProps = {
   siaApi: SiaApi
   isReview: boolean
   onSetAnnotationRequestData: (changeRequest: ImageSwitchData) => void
+  lockedImgCount?: number
 }
 
 // type SamBBox = {
@@ -96,6 +97,7 @@ const SiaWrapper = ({
   siaApi,
   isReview = false,
   onSetAnnotationRequestData,
+  lockedImgCount = 0,
 }: SiaWrapperProps) => {
   const navigate = useNavigate()
 
@@ -103,6 +105,7 @@ const SiaWrapper = ({
   // const [samBBox, setSamBBox] = useState<SamBBox | undefined>()
 
   const [isSiaLoading, setIsSiaLoading] = useState<boolean>(true)
+  const [noImageAvailable, setNoImageAvailable] = useState<boolean>(false)
   const [polygonEditMode, setPolygonEditMode] = useState<PolygonEditMode>(
     PolygonEditMode.NONE,
   )
@@ -221,13 +224,22 @@ const SiaWrapper = ({
     // backend returns "nothing available" on last image — annotations can contain null items
     // Still need to check pendingFinishRef here: this is the terminal response when the
     // user submits from the last image, so we must fire sindFinishAnnotask before returning.
-    if (annoData.annotations === null) {
+    if (!annoData.image?.id) {
+      setNoImageAvailable(true)
+      setImageBlob(undefined)
       if (pendingFinishRef.current) {
         pendingFinishRef.current = false
         sindFinishAnnotask()
       }
       return
     }
+
+    setNoImageAvailable(false)
+
+    // Clear the image blob immediately so lost-sia sees image===undefined
+    // before initialAnnotations changes — this is required by lost-sia's internal
+    // guard that only loads annotations when image is undefined.
+    setImageBlob(undefined)
 
     // @TODO use the old api style (annos separated by type) for now, but convert it here to the new style
     const annotationsByType: LegacyAnnotationResponse = annoData.annotations
@@ -713,7 +725,11 @@ const SiaWrapper = ({
   const handleNewImage = (isForward: boolean) => {
     // abort when going out of available image scope
     const { isFirst, isLast } = checkNavigationConstraints()
-    if ((isForward && isLast) || (!isForward && isFirst)) return
+    if (isForward && isLast) {
+      if (isReview) showInfo('End of annotated images.')
+      return
+    }
+    if (!isForward && isFirst) return
 
     resetWrapper()
 
@@ -1095,7 +1111,7 @@ const SiaWrapper = ({
         <CCol xs="2">
           <CButtonGroup>
             <ImageFilterButton
-              isDisabled={isSiaLoading}
+              isDisabled={isSiaLoading || noImagesLeft}
               appliedFilters={appliedImageFilters}
               tooltip={'Open Filter Options'}
               onFiltersChanged={setAppliedImageFilters}
@@ -1131,9 +1147,10 @@ const SiaWrapper = ({
         </CCol>
         <CCol xs="2">
           <NavigationButtons
-            isFirstImage={isFirst}
-            isLastImage={isLast}
+            isFirstImage={isFirst || noImagesLeft}
+            isLastImage={isLast || noImagesLeft}
             isImageSearchActive={isImageSearchActive}
+            isReview={isReview}
             onNextImagePressed={getNextImage}
             onPreviousImagePressed={getPreviousImage}
             onSubmitAnnotask={submitAnnotask}
@@ -1174,8 +1191,23 @@ const SiaWrapper = ({
     flexDirection: 'column',
   }
 
+  const noImagesLeft = annoData !== undefined && !annoData?.image?.id
+
   return (
     <>
+      {noImagesLeft && (
+        <CAlert color="warning" className="m-3" style={{ fontSize: '1.1rem' }}>
+          {lockedImgCount > 0 ? (
+            <>
+              <strong>No images available to annotate.</strong>
+              <br />
+              Images waiting to be released by Admin: <strong>{lockedImgCount}</strong>
+            </>
+          ) : (
+            <strong>No images left to annotate.</strong>
+          )}
+        </CAlert>
+      )}
       {isImageSearchEnabled && (
         <SIAImageSearchModal
           isAnnotaskReview={!isDatasetMode}
@@ -1188,53 +1220,56 @@ const SiaWrapper = ({
           currentImageId={imageId}
         />
       )}
-      <div
-        style={{ ...wrapperStyle, position: 'relative' }}
-        onKeyDown={(e) => {
-          if (!e.repeat) handleWrapperKeydown(e.key)
-        }}
-        tabIndex={0}
-      >
-        <Sia
-          defaultLabelId={defaultLabelId}
-          image={imageBlob}
-          initialAnnotations={initialAnnotations}
-          initialImageLabelIds={annoData?.image.labelIds}
-          initialIsImageJunk={annoData?.image?.isJunk}
-          isLoading={isSiaLoading}
-          isPolygonSelectionMode={polygonEditMode !== PolygonEditMode.NONE}
-          possibleLabels={possibleLabels!}
-          polygonOperationResult={polygonOperationResult}
-          additionalButtons={renderAdditionalButtons()}
-          onAnnoChanged={editAnnotation}
-          onAnnoCreated={(annotation) => {
-            // do nothing when initially creating an annotation
-            // @TODO adapt backend to support partly-finished annotations
+      {!noImagesLeft && (
+        <div
+          style={{ ...wrapperStyle, position: 'relative' }}
+          onKeyDown={(e) => {
+            if (!e.repeat) handleWrapperKeydown(e.key)
           }}
-          onAnnoCreationFinished={createAnnotation}
-          onAnnoDeleted={deleteAnnotation}
-          onImageLabelsChanged={handleImageLabelsChanged}
-          onIsImageJunk={junkImage}
-          onNotification={handleNotification}
-          onSelectAnnotation={handleSelectAnnotation}
-          onTimeTravel={handleTimeTravel}
-        />
-        {!imageBlob && !isSiaLoading && (
-          <div
-            style={{
-              position: 'absolute',
-              width: '100%',
-              height: '100%',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              zIndex: 10,
+          tabIndex={0}
+        >
+          <Sia
+            defaultLabelId={defaultLabelId}
+            image={imageBlob}
+            uiConfig={{ imageCentered: true }}
+            initialAnnotations={initialAnnotations}
+            initialImageLabelIds={annoData?.image?.labelIds}
+            initialIsImageJunk={annoData?.image?.isJunk}
+            isLoading={isSiaLoading}
+            isPolygonSelectionMode={polygonEditMode !== PolygonEditMode.NONE}
+            possibleLabels={possibleLabels!}
+            polygonOperationResult={polygonOperationResult}
+            additionalButtons={renderAdditionalButtons()}
+            onAnnoChanged={editAnnotation}
+            onAnnoCreated={(annotation) => {
+              // do nothing when initially creating an annotation
+              // @TODO adapt backend to support partly-finished annotations
             }}
-          >
-            <CSpinner />
-          </div>
-        )}
-      </div>
+            onAnnoCreationFinished={createAnnotation}
+            onAnnoDeleted={deleteAnnotation}
+            onImageLabelsChanged={handleImageLabelsChanged}
+            onIsImageJunk={junkImage}
+            onNotification={handleNotification}
+            onSelectAnnotation={handleSelectAnnotation}
+            onTimeTravel={handleTimeTravel}
+          />
+          {!imageBlob && !isSiaLoading && (
+            <div
+              style={{
+                position: 'absolute',
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                zIndex: 10,
+              }}
+            >
+              <CSpinner />
+            </div>
+          )}
+        </div>
+      )}
     </>
   )
 }

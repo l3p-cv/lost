@@ -6,6 +6,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 ### Added
+- SIA annotation image strip sidebar with thumbnail preview and hover popover (`SiaPreviewSidebar.tsx`, `SiaHoverPreview.tsx`)
+- `GET /sia/images` endpoint to list all visited image IDs and numbers for the active annotask sidebar
+- `GET /sia/image/<id>/thumbnail` endpoint returning a scaled-down JPEG thumbnail for the sidebar
+- `lockedImgCount` field exposed on annotask API responses (`/annotasks/working`, `/annotasks/<id>`, pipeline element data) — counts images currently locked but not yet labelled
+- `Locked but not Labelled` row added to `AnnoTaskModal` in running pipeline view showing releasable image count
+- `CAlert` shown in SIA when no images are available to annotate, with two context-aware messages: one when admin can still release locked images (showing count), one when truly no images remain
+- Auto-poll every 5 seconds in `SingleImageAnnotation` when no images are available, so the UI refreshes automatically after admin performs a force release
+- `specificImage` direction support added to `GET /sia` endpoint
+- Image strip toggle button spans full width (120px) matching the sidebar width, with "Images"/"Hide" label
+### Fixed
+- `get_sia_review_first/last/next/prev/id` queries now filter to only `LABELED`/`JUNK` states so unannotated or locked images are never returned in review navigation
+- `get_search_images_in_annotask` now accepts `annotated_only` flag to restrict search results to annotated images in review context
+- `get_current` in `sia.py` now validates that the requested image belongs to the active annotask and the requesting user before serving it
+- SIA canvas and all toolbar buttons are hidden (not just disabled) when no images are available, preventing a broken UI state with null/null image counter
+- `faFilm` image strip button is hidden when no images are available
+- `Force Annotation Release` button in `AnnoTaskModal` is disabled with tooltip when `lockedImgCount` is 0
+- `Review Annotations` button in `AnnoTaskModal` is disabled with tooltip when no annotated images exist
+- Disabled `CoreIconButton` with a `toolTip` now correctly shows the tooltip on hover by wrapping the button in a `<span>` that captures pointer events
 
 ## [3.2.2] - 2026-05-13
 ### Added

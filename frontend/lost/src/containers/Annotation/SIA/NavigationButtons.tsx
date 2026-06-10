@@ -10,6 +10,7 @@ type NavigationButtonsProps = {
   isFirstImage?: boolean
   isLastImage?: boolean
   isImageSearchActive?: boolean
+  isReview?: boolean
   onNextImagePressed: () => void
   onPreviousImagePressed: () => void
   onSubmitAnnotask: () => void
@@ -19,6 +20,7 @@ const NavigationButtons = ({
   isFirstImage = false,
   isLastImage = false,
   isImageSearchActive = false,
+  isReview = false,
   onNextImagePressed,
   onPreviousImagePressed,
   onSubmitAnnotask,
@@ -41,18 +43,18 @@ const NavigationButtons = ({
         toolTip="Switch to previous image"
       />
 
-      {(!isLastImage || isImageSearchActive) && (
+      {(!isLastImage || isImageSearchActive || isReview) && (
         <CoreIconButton
           color="primary"
           disabled={isLastImage}
           icon={faArrowRight}
           isOutline={true}
           onClick={onNextImagePressed}
-          toolTip="Switch to next image"
+          toolTip={isLastImage && isReview ? 'End of annotated images' : 'Switch to next image'}
         />
       )}
 
-      {isLastImage && !isImageSearchActive && (
+      {isLastImage && !isImageSearchActive && !isReview && (
         <CoreIconButton
           color="primary"
           icon={faPaperPlane}

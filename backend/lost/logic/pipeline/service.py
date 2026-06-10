@@ -441,7 +441,8 @@ def serialize_elements(db_man, pipe_serialize, pipe_id):
             if anno_task.group_id:
                 anno_task_user_name = anno_task.group.name
             leaves = db_man.get_all_required_label_leaves(anno_task.idx)
-            pipe_serialize.add_anno_task(pe, anno_task, anno_task_user_name, leaves, img_count, annotated_img_count)
+            locked_img_count = len(db_man.get_locked_img_annos(anno_task.idx))
+            pipe_serialize.add_anno_task(pe, anno_task, anno_task_user_name, leaves, img_count, annotated_img_count, locked_img_count)
 
         ########## DATA EXPORT #############
         elif pe.dtype == dtype.PipeElement.DATA_EXPORT:
@@ -585,7 +586,7 @@ class PipeSerialize:
         pe_json["script"] = script_json
         self.append_pe_json(pe_json)
 
-    def add_anno_task(self, pe, anno_task, anno_task_user_name, req_leaves, img_count, annotated_img_count):
+    def add_anno_task(self, pe, anno_task, anno_task_user_name, req_leaves, img_count, annotated_img_count, locked_img_count=0):
 
         # create pipe element json
         pe_json = dict()
@@ -603,6 +604,7 @@ class PipeSerialize:
         anno_task_json["progress"] = anno_task.progress
         anno_task_json["imgCount"] = img_count
         anno_task_json["annotatedImgCount"] = annotated_img_count
+        anno_task_json["lockedImgCount"] = locked_img_count
         anno_task_json["instructionId"] = anno_task.instruction_id
         if anno_task.configuration:
             anno_task_json["configuration"] = json.loads(anno_task.configuration)
