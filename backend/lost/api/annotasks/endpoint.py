@@ -597,9 +597,9 @@ class DatasetReviewImageSearch(Resource):
             else:
                 search_labels = list(map(int, labels.split(",")))
 
-            # no labels selected -> return images with no annotations (respecting image name filter)
+            # no labels selected -> return images with no annotations (respecting image name filter) [only images that are annotated but don't have any labels, fixed for users not ebing able to future unlabeled images]
             if len(search_labels) == 0:
-                db_result = dbm.get_images_without_annotations([annotask_id], search_str)
+                db_result = dbm.get_images_without_annotations([annotask_id], search_str, annotated_only=annotated_only)
                 found_images = [
                     {
                         "image_id": entry.idx,

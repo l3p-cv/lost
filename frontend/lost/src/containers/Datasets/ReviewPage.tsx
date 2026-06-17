@@ -27,13 +27,24 @@ const DatasetsReviewComponent = () => {
     },
   })
 
-  const { data: annoData } = useReview(annotationRequestData)
-  const { data: imageList } = useGetReviewImageList(currentAnnotaskId > 0 ? currentAnnotaskId : undefined)
+  const { data: annoData, refetch: refetchReview } = useReview(annotationRequestData)
+  const { data: imageList, refetch: refetchImageList } = useGetReviewImageList(currentAnnotaskId > 0 ? currentAnnotaskId : undefined)
+
+  const handleRefresh = async () => {
+    await Promise.all([refetchReview(), refetchImageList()])
+  }
 
   useEffect(() => {
     if (annoData === undefined) return
     setCurrentAnnotaskId(annoData.current_annotask_idx)
   }, [annoData])
+
+  useEffect(() => {
+    if (!imageList || imageList.length === 0) return
+    if (annoData?.image?.isLast) {
+      refetchReview()
+    }
+  }, [imageList?.length])
 
   if (datasetId === undefined || isNaN(parseInt(datasetId)))
     return <h2>Incorrect Dataset Id</h2>
@@ -96,6 +107,7 @@ const DatasetsReviewComponent = () => {
             siaApi={siaApi}
             isReview={true}
             onSetAnnotationRequestData={handleImageSwitch}
+            onRefresh={handleRefresh}
           />
         </div>
         {/* Sidebar column — absolutely positioned, never affects layout or canvas size */}
@@ -109,14 +121,16 @@ const DatasetsReviewComponent = () => {
           zIndex: 10,
           background: isSidebarOpen ? 'rgba(var(--cui-primary-rgb, 13,110,253), 0.15)' : 'transparent',
         }}>
-          <div style={{ paddingTop: 6, paddingLeft: 4, flexShrink: 0 }}>
-            <CoreIconButton
-              icon={faFilm}
-              toolTip={isSidebarOpen ? 'Close image strip' : 'Open image strip'}
-              onClick={() => setIsSidebarOpen((o) => !o)}
-              isActive={isSidebarOpen}
-            />
-          </div>
+          {(imageList?.length ?? 0) > 0 && (
+            <div style={{ paddingTop: 6, paddingLeft: 4, flexShrink: 0 }}>
+              <CoreIconButton
+                icon={faFilm}
+                toolTip={isSidebarOpen ? 'Close image strip' : 'Open image strip'}
+                onClick={() => setIsSidebarOpen((o) => !o)}
+                isActive={isSidebarOpen}
+              />
+            </div>
+          )}
           {isSidebarOpen && (
             <SiaPreviewSidebar
               imageList={imageList ?? []}

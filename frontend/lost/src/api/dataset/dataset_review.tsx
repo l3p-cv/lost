@@ -179,7 +179,7 @@ export const useImageSearch = (isAnnotaskReview) => {
 
     return axios
       .get(
-        `${API_URL}/${reviewType}/${id}/review/images?filter=${query}&labels=${selectedFilterLabels}`,
+        `${API_URL}/${reviewType}/${id}/review/images?filter=${query}&labels=${selectedFilterLabels}&annotated_only=true`,
       )
       .then((res) => {
         if (res.status !== 200 || res.data === undefined) return []

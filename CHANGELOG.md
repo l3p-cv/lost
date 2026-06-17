@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Auto-poll every 5 seconds in `SingleImageAnnotation` when no images are available, so the UI refreshes automatically after admin performs a force release
 - `specificImage` direction support added to `GET /sia` endpoint
 - Image strip toggle button spans full width (120px) matching the sidebar width, with "Images"/"Hide" label
+- Added `SiaWrapper.tsx`, `Datasets/ReviewPage.tsx`, `AnnoTask/ReviewPage.tsx`: Manual refresh button (`faRotateRight`) shown inline in the "no annotated images" warning with spinner feedback while re-fetching — clicking simultaneously refetches both review navigation and image list
 ### Fixed
 - `get_sia_review_first/last/next/prev/id` queries now filter to only `LABELED`/`JUNK` states so unannotated or locked images are never returned in review navigation
 - `get_search_images_in_annotask` now accepts `annotated_only` flag to restrict search results to annotated images in review context
@@ -24,6 +25,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Force Annotation Release` button in `AnnoTaskModal` is disabled with tooltip when `lockedImgCount` is 0
 - `Review Annotations` button in `AnnoTaskModal` is disabled with tooltip when no annotated images exist
 - Disabled `CoreIconButton` with a `toolTip` now correctly shows the tooltip on hover by wrapping the button in a `<span>` that captures pointer events
+- Fixed `sia/endpoint.py`: Designer role can now load thumbnails for any annotated image; ownership/group check skipped for Designers, retained only for Annotators
+- Fixed `SiaWrapper.tsx`: "No images left to annotate." replaced with "No annotated images found. Annotations have not been submitted for this task yet." in review mode
+- Fixed `Datasets/ReviewPage.tsx`, `AnnoTask/ReviewPage.tsx`: Film strip sidebar toggle button hidden when no annotated images exist in review mode
+- Fixed `Datasets/ReviewPage.tsx`, `AnnoTask/ReviewPage.tsx`: Prev/next navigation range auto-expands when new annotations arrive while Designer is on the last image by re-fetching review data when `imageList` length grows
+- Fixed `annotasks/endpoint.py`, `dataset/endpoint.py`, `access.py`: Review image search now returns only annotated images (`state IN (4,6)`) — `get_search_images_in_annotask`, `get_search_images_in_annotask_list` and `get_images_without_annotations` extended with `annotated_only` flag
+- Fixed `dataset_review.tsx`: `useImageSearch` now passes `annotated_only=true` to both annotask and dataset review image search endpoints
 
 ## [3.2.2] - 2026-05-13
 ### Added

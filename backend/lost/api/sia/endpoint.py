@@ -280,32 +280,29 @@ class SiaThumbnail(Resource):
         dbm = access.DBMan(LOST_CONFIG)
         identity = int(get_jwt_identity())
         user = dbm.get_user_by_id(identity)
-        if not user.has_role(roles.ANNOTATOR):
+        if not user.has_role(roles.ANNOTATOR) and not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return api.abort(403, f"You need to be {roles.ANNOTATOR} in order to perform this request.")
+            return api.abort(403, f"You need to be {roles.ANNOTATOR} or {roles.DESIGNER} in order to perform this request.")
         try:
             img = dbm.get_image_anno(image_id)
             if img is None:
                 dbm.close_session()
                 return {"error": "Not found"}, 404
 
-            at = dbm.get_anno_task(img.anno_task_id)
-            at_group = dbm.get_group_by_id(at.group_id)
+            if not user.has_role(roles.DESIGNER):
+                at = dbm.get_anno_task(img.anno_task_id)
+                at_group = dbm.get_group_by_id(at.group_id)
 
-            if at_group is None:
-                dbm.close_session()
-                return {"error": "Group not found"}, 404
+                if at_group is None:
+                    dbm.close_session()
+                    return {"error": "Group not found"}, 404
 
-            is_anno_group = (at_group.is_user_default == 0)
+                is_anno_group = (at_group.is_user_default == 0)
+                is_owner = img.user_id == identity
 
-            print(f"GROUPPPP is anno group: {is_anno_group}")
-            print(f"img.user_id: {img.user_id}, identity: {identity}")
-
-            is_owner = img.user_id == identity
-
-            if not (is_owner or is_anno_group):
-                dbm.close_session()
-                return {"error": "Forbidden"}, 403
+                if not (is_owner or is_anno_group):
+                    dbm.close_session()
+                    return {"error": "Forbidden"}, 403
             fs = FileMan(fs_db=img.fs)
             img_data = fs.load_img(img.img_path, color_type="color")
             h, w = img_data.shape[:2]

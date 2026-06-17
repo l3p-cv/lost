@@ -1701,12 +1701,14 @@ class DBMan:
         """Returns all datasources what can be used to store data"""
         return self.session.query(model.Datasource).filter(model.Datasource.is_datastore == True).all()
 
-    def get_search_images_in_annotask_list(self, anno_task_ids, search_str=""):
+    def get_search_images_in_annotask_list(self, anno_task_ids, search_str="", annotated_only=False):
         anno_task_list = ",".join([str(x) for x in anno_task_ids])
+        state_filter = "AND i.state IN (4, 6)" if annotated_only else ""
         sql = f"SELECT i.idx, i.anno_task_id, i.img_path, a.name FROM anno_task a\
             JOIN image_anno i ON a.idx=i.anno_task_id\
             WHERE a.idx in ({anno_task_list}) \
-            AND i.img_path LIKE '%{search_str}%';"
+            AND i.img_path LIKE '%{search_str}%' \
+            {state_filter};"
         return self.session.execute(text(sql))
 
     def get_search_images_in_annotask(self, annotask_idx, search_str="", annotated_only=False):
@@ -1777,14 +1779,16 @@ class DBMan:
         );"
         return self.session.execute(text(sql))
 
-    def get_images_without_annotations(self, annotask_ids: list[int], search_str: str = ""):
+    def get_images_without_annotations(self, annotask_ids: list[int], search_str: str = "", annotated_only=False):
         """Returns images that have no labels (neither image-level nor shape-level) and match the search string."""
         anno_task_list = ",".join([str(x) for x in annotask_ids])
+        state_filter = "AND i.state IN (4, 6)" if annotated_only else ""
         sql = f"""SELECT i.idx, i.anno_task_id, i.img_path, a.name
             FROM image_anno i
             JOIN anno_task a ON a.idx = i.anno_task_id
             WHERE i.anno_task_id IN ({anno_task_list})
-            AND i.img_path LIKE :search_pattern
+            AND i.img_path LIKE :search_pattern 
+            {state_filter}
             AND i.idx NOT IN (
                 SELECT DISTINCT img_anno_id FROM label WHERE img_anno_id IS NOT NULL
                 UNION

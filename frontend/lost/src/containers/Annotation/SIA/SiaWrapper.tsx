@@ -52,7 +52,7 @@ import PolygonEditMode from '../../../models/PolygonEditMode'
 import SIAImageSearchModal, {
   ImageSearchResult,
 } from '../../Datasets/SIAImageSearchModal'
-import { faMagnifyingGlassMinus, faSearch } from '@fortawesome/free-solid-svg-icons'
+import { faMagnifyingGlassMinus, faRotateRight, faSearch } from '@fortawesome/free-solid-svg-icons'
 import { TimeUtils } from 'lost-sia/utils'
 import imageSearch, { FirstLastResult } from './imageSearch'
 import CoreIconButton from '../../../components/CoreIconButton'
@@ -67,6 +67,7 @@ type SiaWrapperProps = {
   isReview: boolean
   onSetAnnotationRequestData: (changeRequest: ImageSwitchData) => void
   lockedImgCount?: number
+  onRefresh?: () => Promise<void>
 }
 
 // type SamBBox = {
@@ -98,6 +99,7 @@ const SiaWrapper = ({
   isReview = false,
   onSetAnnotationRequestData,
   lockedImgCount = 0,
+  onRefresh,
 }: SiaWrapperProps) => {
   const navigate = useNavigate()
 
@@ -106,6 +108,7 @@ const SiaWrapper = ({
 
   const [isSiaLoading, setIsSiaLoading] = useState<boolean>(true)
   const [noImageAvailable, setNoImageAvailable] = useState<boolean>(false)
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false)
   const [polygonEditMode, setPolygonEditMode] = useState<PolygonEditMode>(
     PolygonEditMode.NONE,
   )
@@ -1203,6 +1206,22 @@ const SiaWrapper = ({
               <br />
               Images waiting to be released by Admin: <strong>{lockedImgCount}</strong>
             </>
+          ) : isReview ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <strong>No annotated images found. Annotations have not been submitted for this task yet.</strong>
+              {onRefresh && (
+                <CoreIconButton
+                  icon={faRotateRight}
+                  toolTip={isRefreshing ? 'Checking...' : 'Check for new annotations'}
+                  isLoading={isRefreshing}
+                  onClick={async () => {
+                    setIsRefreshing(true)
+                    await onRefresh()
+                    setIsRefreshing(false)
+                  }}
+                />
+              )}
+            </div>
           ) : (
             <strong>No images left to annotate.</strong>
           )}
