@@ -86,7 +86,7 @@ const AnnotaskReviewComponent = () => {
       <AnnotationTop annoTask={currentAnnotask} annoData={annoData} isReview={true} />
       <div style={{ ...rowFlex, position: 'relative' }}>
         {/* SiaWrapper always takes full row width — canvas size never changes */}
-        <div style={forwardFlex}>
+        <div style={{ ...forwardFlex, paddingLeft: 120 }}>
           <SiaWrapper
             annoData={annoData}
             annoTaskId={nAnnotaskId}
@@ -110,12 +110,14 @@ const AnnotaskReviewComponent = () => {
           background: isSidebarOpen ? 'rgba(var(--cui-primary-rgb, 13,110,253), 0.15)' : 'transparent',
         }}>
           {(imageList?.length ?? 0) > 0 && (
-            <div style={{ paddingTop: 6, paddingLeft: 4, flexShrink: 0 }}>
+            <div style={{ width: 120, flexShrink: 0, paddingTop: 8, paddingBottom: 8 }}>
               <CoreIconButton
                 icon={faFilm}
                 toolTip={isSidebarOpen ? 'Close image strip' : 'Open image strip'}
                 onClick={() => setIsSidebarOpen((o) => !o)}
                 isActive={isSidebarOpen}
+                className="w-100"
+                text={isSidebarOpen ? 'Hide' : 'Images'}
               />
             </div>
           )}

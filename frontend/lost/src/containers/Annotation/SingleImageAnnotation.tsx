@@ -74,7 +74,7 @@ const SingleImageAnnotation = () => {
       <AnnotationTop annoTask={currentAnnotask} annoData={annoData} />
       <div style={{ ...rowFlex, position: 'relative' }}>
         {/* SiaWrapper always takes full row width — canvas size never changes */}
-        <div style={forwardFlex}>
+        <div style={{ ...forwardFlex, paddingLeft: 120 }}>
           <SiaWrapper
             annoTaskId={currentAnnotask.id}
             isDatasetMode={false}
@@ -98,7 +98,7 @@ const SingleImageAnnotation = () => {
           background: isSidebarOpen ? 'rgba(var(--cui-primary-rgb, 13,110,253), 0.15)' : 'transparent',
         }}>
           {!(annoData !== undefined && !annoData?.image?.id) && (
-            <div style={{ width: 120, flexShrink: 0, paddingTop: 6, paddingBottom: 6 }}>
+            <div style={{ width: 120, flexShrink: 0, paddingTop: 8, paddingBottom: 8 }}>
               <CoreIconButton
                 icon={faFilm}
                 toolTip={isSidebarOpen ? 'Close image strip' : 'Open image strip'}

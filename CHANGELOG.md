@@ -15,7 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Auto-poll every 5 seconds in `SingleImageAnnotation` when no images are available, so the UI refreshes automatically after admin performs a force release
 - `specificImage` direction support added to `GET /sia` endpoint
 - Image strip toggle button spans full width (120px) matching the sidebar width, with "Images"/"Hide" label
-- Added `SiaWrapper.tsx`, `Datasets/ReviewPage.tsx`, `AnnoTask/ReviewPage.tsx`: Manual refresh button (`faRotateRight`) shown inline in the "no annotated images" warning with spinner feedback while re-fetching — clicking simultaneously refetches both review navigation and image list
+- Added `SiaWrapper.tsx`, `Datasets/ReviewPage.tsx`, `AnnoTask/ReviewPage.tsx`: Manual refresh button (`faRotateRight`) shown inline in the "no annotated images" warning with spinner feedback while re-fetching — clicking simultaneously refetches both review navigation and image list.
+- Added left padding to to `SingleImageAnnotation.tsx` , `Datasets/ReviewPage.tsx`, `AnnoTask/ReviewPage.tsx` so that it doesn't overlap with the `Image Toolbar items` like the `Image Label Input box`.
 ### Fixed
 - `get_sia_review_first/last/next/prev/id` queries now filter to only `LABELED`/`JUNK` states so unannotated or locked images are never returned in review navigation
 - `get_search_images_in_annotask` now accepts `annotated_only` flag to restrict search results to annotated images in review context
