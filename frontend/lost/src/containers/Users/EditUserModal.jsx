@@ -39,7 +39,7 @@ const EditUserModal = (props) => {
           autoFocus={focusedField === 0}
           placeholder="Username"
           disabled={!props.isNewUser}
-          defaultValue={user.user_name}
+          value={user.user_name ?? ''}
           onChange={(e) => {
             setFocusedFieled(0)
             setUser({
@@ -133,7 +133,7 @@ const EditUserModal = (props) => {
             <CFormInput
               autoFocus={focusedField === 1}
               placeholder="example@example.com"
-              defaultValue={user.email}
+              value={user.email ?? ''}
               disabled={user.is_external}
               onChange={(e) => {
                 setFocusedFieled(1)
@@ -155,7 +155,7 @@ const EditUserModal = (props) => {
               autoFocus={focusedField === 2}
               placeholder="*******"
               type="password"
-              defaultValue={user.password}
+              value={user.password ?? ''}
               disabled={user.is_external}
               onChange={(e) => {
                 setFocusedFieled(2)
@@ -177,7 +177,7 @@ const EditUserModal = (props) => {
               autoFocus={focusedField === 3}
               placeholder="*******"
               type="password"
-              defaultValue={user.confirmPassword}
+              value={user.confirmPassword ?? ''}
               disabled={user.is_external}
               onChange={(e) => {
                 setFocusedFieled(3)
