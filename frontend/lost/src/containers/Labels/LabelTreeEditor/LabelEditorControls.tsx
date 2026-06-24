@@ -11,12 +11,16 @@ export interface LabelEditorControlsProps {
   nodeId: string
   visLevel: string
   onClearSelectedLabel: () => void
+  onMarkDirty?: (nodeId: string) => void
+  onMarkClean?: (nodeId: string) => void
 }
 
 const LabelEditorControls = ({
   nodeId,
   visLevel,
   onClearSelectedLabel,
+  onMarkDirty,
+  onMarkClean,
 }: LabelEditorControlsProps) => {
   const { mutate: updateLabel } = useUpdateLabel()
   const { mutate: deleteLabel } = useDeleteLabel()
@@ -26,17 +30,22 @@ const LabelEditorControls = ({
   const { updateNodeData, getEdges, deleteElements, getNode } = useReactFlow()
 
   const handleSave = () =>
-    updateLabel({
-      data: {
-        id: nodeId,
-        name: labelData.name,
-        description: labelData.description,
-        abbreviation: labelData.abbreviation,
-        external_id: labelData.externalId,
-        color: labelData.color,
+    updateLabel(
+      {
+        data: {
+          id: nodeId,
+          name: labelData.name,
+          description: labelData.description,
+          abbreviation: labelData.abbreviation,
+          external_id: labelData.externalId,
+          color: labelData.color,
+        },
+        visLevel,
       },
-      visLevel,
-    })
+      {
+        onSuccess: () => onMarkClean?.(nodeId),
+      },
+    )
 
   const handleDelete = () => {
     deleteLabel(nodeId, {
@@ -62,6 +71,7 @@ const LabelEditorControls = ({
           value={labelData.name}
           onChange={(e) => {
             updateNodeData(nodeId, { name: e.target.value })
+            onMarkDirty?.(nodeId)
           }}
         />
         <CFormInput
@@ -72,6 +82,7 @@ const LabelEditorControls = ({
           value={labelData.description || ''}
           onChange={(e) => {
             updateNodeData(nodeId, { description: e.target.value })
+            onMarkDirty?.(nodeId)
           }}
         />
         <CFormInput
@@ -81,6 +92,7 @@ const LabelEditorControls = ({
           value={labelData.abbreviation || ''}
           onChange={(e) => {
             updateNodeData(nodeId, { abbreviation: e.target.value })
+            onMarkDirty?.(nodeId)
           }}
         />
         <CFormInput
@@ -90,6 +102,7 @@ const LabelEditorControls = ({
           value={labelData.externalId || ''}
           onChange={(e) => {
             updateNodeData(nodeId, { externalId: e.target.value })
+            onMarkDirty?.(nodeId)
           }}
         />
         <CFormInput type="text" value={`ID: ${nodeId}`} disabled />
@@ -102,6 +115,7 @@ const LabelEditorControls = ({
               color: e.target.value || '#fff',
               textColor: getContrastColor(e.target.value || '#fff'),
             })
+            onMarkDirty?.(nodeId)
           }}
         />
         <CoreIconButton

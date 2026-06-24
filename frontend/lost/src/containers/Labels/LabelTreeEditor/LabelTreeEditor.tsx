@@ -31,6 +31,7 @@ interface LabelTreeFlowProps {
   initialEdges: Edge[]
   visLevel: string
   readonly?: boolean
+  onDirtyChange?: (hasDirty: boolean) => void
 }
 
 export const LabelTreeEditor: React.FC<LabelTreeFlowProps> = ({
@@ -38,12 +39,14 @@ export const LabelTreeEditor: React.FC<LabelTreeFlowProps> = ({
   initialEdges,
   visLevel,
   readonly = false,
+  onDirtyChange,
 }) => {
-  const { fitView } = useReactFlow()
+  const { fitView, updateNodeData } = useReactFlow()
 
   const [selectedNodeId, setSelectedNodeId] = useState<string>('')
   const [nodes, setNodes, onNodesChange] = useNodesState([] as Node[])
   const [edges, setEdges, onEdgesChange] = useEdgesState([] as Edge[])
+  const [dirtyNodeIds, setDirtyNodeIds] = useState<Set<string>>(new Set())
   const { mutate: createLabel } = useCreateLabel()
 
   useEffect(() => {
@@ -159,6 +162,23 @@ export const LabelTreeEditor: React.FC<LabelTreeFlowProps> = ({
           nodeId={selectedNodeId}
           onClearSelectedLabel={() => setSelectedNodeId('')}
           visLevel={visLevel}
+          onMarkDirty={(nodeId) => {
+            updateNodeData(nodeId, { isDirty: true })
+            setDirtyNodeIds((prev) => {
+              const next = new Set(prev).add(nodeId)
+              onDirtyChange?.(next.size > 0)
+              return next
+            })
+          }}
+          onMarkClean={(nodeId) => {
+            updateNodeData(nodeId, { isDirty: false })
+            setDirtyNodeIds((prev) => {
+              const next = new Set(prev)
+              next.delete(nodeId)
+              onDirtyChange?.(next.size > 0)
+              return next
+            })
+          }}
         />
       )}
       <div style={{ height: '75vh', width: '100%' }}>

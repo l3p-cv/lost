@@ -1,5 +1,5 @@
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
-import { CModal, CModalBody, CModalFooter, CModalHeader } from '@coreui/react'
+import { CCloseButton, CModal, CModalBody, CModalFooter, CModalHeader } from '@coreui/react'
 import CoreIconButton from './CoreIconButton'
 
 type BaseModalProps = {
@@ -19,6 +19,8 @@ type BaseModalProps = {
   asForm?: boolean
   onSubmit?: (e: React.FormEvent<HTMLFormElement>) => void
   onShow?: () => void
+  onClosePrevented?: () => void
+  showCloseButton?: boolean
 }
 
 const BaseModal: React.FC<BaseModalProps> = ({
@@ -38,12 +40,15 @@ const BaseModal: React.FC<BaseModalProps> = ({
   asForm = false,
   onSubmit = () => {},
   onShow = () => {},
+  onClosePrevented = () => {},
+  showCloseButton = true,
 }) => {
   const Wrapper = asForm ? 'form' : 'div'
   const renderTitle = () => {
     if (title) {
       return (
         <CModalHeader
+          closeButton={showCloseButton}
           onClick={() => {
             if (isOpen) {
               toggle()
@@ -52,6 +57,9 @@ const BaseModal: React.FC<BaseModalProps> = ({
           }}
         >
           <p style={{ fontSize: 18 }}>{title}</p>
+          {!showCloseButton && (
+            <CCloseButton onClick={() => { toggle(); onClosed() }} />
+          )}
         </CModalHeader>
       )
     }
@@ -91,6 +99,7 @@ const BaseModal: React.FC<BaseModalProps> = ({
       visible={isOpen}
       backdrop={backdropOption}
       fullscreen={fullscreen}
+      onClosePrevented={onClosePrevented}
       onClose={() => {
         if (isOpen) {
           toggle()
