@@ -1,7 +1,9 @@
 import { faCheck, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { useNodesData, useReactFlow } from '@xyflow/react'
 import { isEmpty } from 'lodash'
+import { RefObject } from 'react'
 import { useDeleteLabel, useUpdateLabel } from '../../../api/label'
+import { showError } from '../../../components/Notification'
 import { getContrastColor } from '../../../utils/color-util'
 import { LabelEditorNodeData } from './LabelEditorNode'
 import { CFormInput, CInputGroup } from '@coreui/react'
@@ -13,6 +15,7 @@ export interface LabelEditorControlsProps {
   onClearSelectedLabel: () => void
   onMarkDirty?: (nodeId: string) => void
   onMarkClean?: (nodeId: string) => void
+  originalNodeDataRef: RefObject<Map<string, LabelEditorNodeData>>
 }
 
 const LabelEditorControls = ({
@@ -21,15 +24,37 @@ const LabelEditorControls = ({
   onClearSelectedLabel,
   onMarkDirty,
   onMarkClean,
+  originalNodeDataRef,
 }: LabelEditorControlsProps) => {
   const { mutate: updateLabel } = useUpdateLabel()
   const { mutate: deleteLabel } = useDeleteLabel()
 
   const nodeData = useNodesData(nodeId)
   const labelData = nodeData?.data as LabelEditorNodeData
-  const { updateNodeData, getEdges, deleteElements, getNode } = useReactFlow()
+  const { updateNodeData, getEdges, getNodes, deleteElements, getNode } = useReactFlow()
 
-  const handleSave = () =>
+  const checkDirty = (updatedFields: Partial<LabelEditorNodeData>) => {
+    const original = originalNodeDataRef.current?.get(nodeId)
+    if (!original) return
+    const current = { ...labelData, ...updatedFields }
+    const isDirty =
+      (current.name || '') !== (original.name || '') ||
+      (current.description || '') !== (original.description || '') ||
+      (current.abbreviation || '') !== (original.abbreviation || '') ||
+      (current.externalId || '') !== (original.externalId || '') ||
+      (current.color || '') !== (original.color || '')
+    isDirty ? onMarkDirty?.(nodeId) : onMarkClean?.(nodeId)
+  }
+
+  const handleSave = () => {
+    const allNodes = getNodes()
+    const duplicate = allNodes.some(
+      (n) => n.id !== nodeId && (n.data as LabelEditorNodeData).name.trim() === labelData.name.trim(),
+    )
+    if (duplicate) {
+      showError('A label with this name already exists in this tree')
+      return
+    }
     updateLabel(
       {
         data: {
@@ -43,9 +68,13 @@ const LabelEditorControls = ({
         visLevel,
       },
       {
-        onSuccess: () => onMarkClean?.(nodeId),
+        onSuccess: () => {
+          originalNodeDataRef.current?.set(nodeId, { ...labelData })
+          onMarkClean?.(nodeId)
+        },
       },
     )
+  }
 
   const handleDelete = () => {
     deleteLabel(nodeId, {
@@ -71,7 +100,7 @@ const LabelEditorControls = ({
           value={labelData.name}
           onChange={(e) => {
             updateNodeData(nodeId, { name: e.target.value })
-            onMarkDirty?.(nodeId)
+            checkDirty({ name: e.target.value })
           }}
         />
         <CFormInput
@@ -82,7 +111,7 @@ const LabelEditorControls = ({
           value={labelData.description || ''}
           onChange={(e) => {
             updateNodeData(nodeId, { description: e.target.value })
-            onMarkDirty?.(nodeId)
+            checkDirty({ description: e.target.value })
           }}
         />
         <CFormInput
@@ -92,7 +121,7 @@ const LabelEditorControls = ({
           value={labelData.abbreviation || ''}
           onChange={(e) => {
             updateNodeData(nodeId, { abbreviation: e.target.value })
-            onMarkDirty?.(nodeId)
+            checkDirty({ abbreviation: e.target.value })
           }}
         />
         <CFormInput
@@ -102,7 +131,7 @@ const LabelEditorControls = ({
           value={labelData.externalId || ''}
           onChange={(e) => {
             updateNodeData(nodeId, { externalId: e.target.value })
-            onMarkDirty?.(nodeId)
+            checkDirty({ externalId: e.target.value })
           }}
         />
         <CFormInput type="text" value={`ID: ${nodeId}`} disabled />
@@ -115,7 +144,7 @@ const LabelEditorControls = ({
               color: e.target.value || '#fff',
               textColor: getContrastColor(e.target.value || '#fff'),
             })
-            onMarkDirty?.(nodeId)
+            checkDirty({ color: e.target.value || '#fff' })
           }}
         />
         <CoreIconButton

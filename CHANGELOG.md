@@ -9,9 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `LabelEditorNode.tsx`: Unsaved changes indicator (orange dot) shown on dirty label nodes and in `LabelEditorControls.tsx` onMarkDirty and onMarkClean callback props to track per-node edit state.
 - Added `LabelTreeEditor.tsx`: `onDirtyChange` prop to notify parent when any node has unsaved changes.
 - Added `BaseModal.tsx`: `onClosePrevented` and `showCloseButton` props and in `LabelTreeTable.jsx` Confirmation dialog when closing the edit modal with unsaved label changes.
+- `color-util.ts`: New `generateRandomColor(existingColors)` function that picks a random vivid color while avoiding colors already used by other nodes in the tree.
+- `LabelEditorControls.tsx`: Dirty marker (orange dot) now disappears when you revert edits back to the original values. Also blocks saving a label if another label in the same tree already has that name.
+- `LabelTreeEditor.tsx`: New labels created by right-clicking a node are now named `New Label` → `New Label (1)` → `New Label (2)` and get a unique random color instead of white.
 ### Fixed
 - Fixed `EditUserModal.jsx`: Stale form data when reopening "Add User" immediately after saving.
 - `UsersTable.jsx`: Removed stale `EMPTY_USER` constant, createNewUser now creates a fresh inline object to guarantee useEffect reset in modal
+- `parsers.py`: Label color is now correctly saved to the database when creating or updating a label.
 
 ## [3.4.1] - 2026-06-25
 ### Added
