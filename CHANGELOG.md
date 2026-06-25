@@ -14,9 +14,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - OpenId: Fixed error accessing roles on edge cases 
 
 ## [3.3.0] - 2026-06-02
-
-
-## [3.2.2] - 2026-05-13
 ### Added
 - Added currentImageId prop to SIAImageSearchModal (To know the current image ID to disable the row the user is already on.)
 - Added implementation to wrap the disabled button in a <span> that captures the mouse events to show current image tooltip for disabled button.
