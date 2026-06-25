@@ -19,8 +19,8 @@ const MIAImage = ({ height, imageBase, imageActiveState, onOpenModal }: MIAImage
   const [classes, setClasses] = useState('')
   const iconStyle = {
     position: 'absolute',
-    top: '4',
-    left: '4',
+    top: '4px',
+    left: '4px',
     fontSize: '1.5rem',
   }
   const imgRequestData = {

@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fixed Logout.tsx to clear localStorage immediately and use mutateAsync with local state to correctly handle isLoading under React 19 Strict Mode double-mount
 - sia.py: fixed AttributeError crash when deleting an annotation that was never saved to DB (two_d is None)
+- Fixed Mia icons moved issue , NewMIAImage.tsx : `iconStyle` added px units to the values
 
 ## [3.4.0] - 2026-06-25
 ### Changed
