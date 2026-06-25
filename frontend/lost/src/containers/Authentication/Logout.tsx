@@ -13,10 +13,23 @@ const Logout = () => {
   // Use local state instead of useMutation's isLoading/isError
   const [isLoading, setIsLoading] = useState(false)
   const [isError, setIsError] = useState(false)
+  const [canRetry, setCanRetry] = useState(false)
 
   let logoutText = 'You have been successfully logged out.'
-  if (isInactivity) logoutText = 'Your session has expired due to inactivity'
-  if (isError) logoutText = 'An error occurred while logging out.'
+  if (isInactivity) logoutText = 'Your session has expired due to inactivity.'
+  else if (isError) logoutText = 'An error occurred while logging out.'
+
+  const runLogout = () => {
+    setIsLoading(true)
+    setIsError(false)
+    setCanRetry(false)
+    logout()
+      .catch(() => {
+        setIsError(true)
+        setCanRetry(true)
+      })
+      .finally(() => setIsLoading(false))
+  }
 
   useEffect(() => {
     // don't try to log out if we are already
@@ -26,8 +39,7 @@ const Logout = () => {
     )
       return
 
-    // Clear localStorage immediately
-    // Clear auth token
+    // Clear before API call — prevents Strict Mode double-mount re-trigger
     localStorage.removeItem('token')
     localStorage.removeItem('refreshToken')
 
@@ -37,10 +49,9 @@ const Logout = () => {
     localStorage.removeItem('latestPipelineId')
     localStorage.removeItem('hasCompletedTour')
 
-    setIsLoading(true)
-    logout()
-      .catch(() => setIsError(true))
-      .finally(() => setIsLoading(false))
+    runLogout()
+    // stable ref — empty deps intentional to prevent Strict Mode double-fire
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
@@ -69,6 +80,16 @@ const Logout = () => {
                   >
                     Back to login page!
                   </CButton>
+                  {canRetry && (
+                    <CButton
+                      disabled={isLoading}
+                      style={{ marginTop: '5%', marginLeft: '10px' }}
+                      color="secondary"
+                      onClick={runLogout}
+                    >
+                      Retry
+                    </CButton>
+                  )}
                 </div>
               </CCardBody>
             </CCard>

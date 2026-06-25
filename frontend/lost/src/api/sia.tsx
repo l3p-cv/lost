@@ -87,7 +87,7 @@ export type EditAnnotationData = {
 
 export type EditAnnotationResponse = {
   tempId: string
-  dbId: number
+  dbId: number | null
   newStatus: string
 }
 
