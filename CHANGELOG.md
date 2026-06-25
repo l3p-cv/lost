@@ -4,14 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## unreleased
+## [3.4.1] - 2026-06-25
+### Changed
+- sia.tsx: updated EditAnnotationResponse.dbId type to number | null to match backend
 ### Added
+- Logout.tsx: added Retry button when logout API fails; isInactivity message no longer overwritten by isError
 ### Fixed
 - Fixed Logout.tsx to clear localStorage immediately and use mutateAsync with local state to correctly handle isLoading under React 19 Strict Mode double-mount
 - sia.py: fixed AttributeError crash when deleting an annotation that was never saved to DB (two_d is None)
 - Fixed Mia icons moved issue , NewMIAImage.tsx : `iconStyle` added px units to the values
-- Logout.tsx: added Retry button when logout API fails; isInactivity message no longer overwritten by isError
-- sia.tsx: updated EditAnnotationResponse.dbId type to number | null to match backend
 
 ## [3.4.0] - 2026-06-25
 ### Changed
