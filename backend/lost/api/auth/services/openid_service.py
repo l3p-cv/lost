@@ -221,6 +221,35 @@ def verify_id_token(id_token: str, nonce: str) -> dict:
 # ---------------------------------------------------------------------------
 
 
+def _extract_name_from_claims(claims: dict) -> tuple[str, str]:
+    """Extract ``(first_name, last_name)`` from OIDC claims.
+
+    Prefers the ``given_name`` and ``family_name`` claims.  When both are
+    absent, falls back to the ``name`` claim: if it contains exactly two
+    words they are split into first and last name; otherwise the whole value
+    is placed in ``first_name``.
+
+    Args:
+        claims: The verified JWT claims dict.
+
+    Returns:
+        tuple[str, str]: ``(first_name, last_name)`` – either or both may be
+        empty strings if the IDP did not supply name information.
+    """
+    first_name = claims.get("given_name") or ""
+    last_name = claims.get("family_name") or ""
+
+    if not first_name and not last_name:
+        full_name = claims.get("name", "").strip()
+        name_parts = full_name.split()
+        if len(name_parts) == 2:
+            first_name, last_name = name_parts
+        else:
+            first_name = full_name
+
+    return first_name, last_name
+
+
 def get_or_create_user(claims: dict, roles: list[str]) -> DBUser:
     """Return the local :class:`~lost.db.model.User` that corresponds to the
     verified OIDC claims, creating one if this is the first login.
@@ -261,32 +290,39 @@ def get_or_create_user(claims: dict, roles: list[str]) -> DBUser:
 
         if user is not None:
             logger.debug("Found existing local user id=%s for username=%s", user.idx, preferred_username)
+
+            # update first/last name if they differ from the IDP
+            first_name, last_name = _extract_name_from_claims(claims)
+            if user.first_name != first_name or user.last_name != last_name:
+                logger.info(
+                    "Updating name for user id=%s: ('%s %s') -> ('%s %s')",
+                    user.idx,
+                    user.first_name,
+                    user.last_name,
+                    first_name,
+                    last_name,
+                )
+                user.first_name = first_name
+                user.last_name = last_name
+                dbm.commit()
+
+            user_id = user.idx
             dbm.close_session()
 
             # user roles could have changed on the IDP
             # check and update local rules
-            update_user_roles(user, roles)
+            update_user_roles(user_id, roles)
             # query user again since roles could have changed
             dbm = DBMan(_CONFIG)
             user = dbm.find_user_by_user_name(preferred_username)
+            # eagerly load user.roles while the session is still open so the
+            # returned object is not detached when the caller accesses user.roles
+            _ = user.roles
             dbm.close_session()
             return user
 
         # ---- Create a new local user ----------------------------------------
-        first_name = claims.get("given_name") or ""
-        last_name = claims.get("family_name") or ""
-
-        # Authentik stores the full name in the "name" claim when given_name/family_name
-        # are not populated separately. If both are still empty and "name" contains
-        # exactly two words, split them into first and last name.
-        # otherwise just fill everything in the first_name attribute
-        if not first_name and not last_name:
-            full_name = claims.get("name", "").strip()
-            name_parts = full_name.split()
-            if len(name_parts) == 2:
-                first_name, last_name = name_parts
-            else:
-                first_name = full_name
+        first_name, last_name = _extract_name_from_claims(claims)
 
         logger.info(
             "Creating new local user username=%s email=%s from OIDC login",
@@ -309,17 +345,18 @@ def get_or_create_user(claims: dict, roles: list[str]) -> DBUser:
         dbm.save_obj(personal_group)
         dbm.save_obj(UserGroups(group_id=personal_group.idx, user_id=new_user.idx))
 
-        # Refresh to load relationships (roles, groups) before closing session
-        dbm.session.refresh(new_user)
-
+        new_user_id = new_user.idx
         dbm.close_session()
 
         # Assign roles according to what the IDP grants (same path as existing users)
-        update_user_roles(new_user, roles)
+        update_user_roles(new_user_id, roles)
 
         # query user again since roles could have changed
         dbm = DBMan(_CONFIG)
         user = dbm.find_user_by_user_name(preferred_username)
+        # eagerly load user.roles while the session is still open so the
+        # returned object is not detached when the caller accesses user.roles
+        _ = user.roles
         dbm.close_session()
 
         return user
@@ -380,34 +417,39 @@ def get_user_roles_from_claims(claims: dict) -> list:
     return user_roles
 
 
-def update_user_roles(user: DBUser, new_roles: list[str]) -> None:
-    """Sync the DB roles of *user* so they match exactly what the IDP mandates.
+def update_user_roles(user_id: int, new_roles: list[str]) -> None:
+    """Sync the DB roles of the user with ``user_id`` so they match exactly what
+    the IDP mandates.
 
-    Roles present in the DB but not in ``needed_roles_by_openid`` are removed.
+    Roles present in the DB but not in ``new_roles`` are removed.
     Roles required by the IDP but not yet in the DB are added.
 
+    All work is performed within a single fresh session so it never relies on
+    a detached ``User`` object's lazy-loaded ``roles`` relationship.
+
     Args:
-        user: The local DB user whose roles should be synchronised.
+        user_id: The idx of the local DB user whose roles should be synchronised.
         new_roles: The roles the user should have according to IDP
     """
     needed_role_names: set[str] = set(new_roles)
-    current_user_roles: list = user.roles  # list[UserRoles]
-    current_role_names: set[str] = {ur.role.name for ur in current_user_roles}
-
-    roles_to_remove = [ur for ur in current_user_roles if ur.role.name not in needed_role_names]
-    roles_to_add = needed_role_names - current_role_names
-
-    if not roles_to_remove and not roles_to_add:
-        logger.debug("Roles already in sync for user id=%s", user.idx)
-        return
 
     dbm = DBMan(_CONFIG)
     try:
+        current_user_roles: list = dbm.get_user_roles(user_id)  # list[UserRoles]
+        current_role_names: set[str] = {ur.role.name for ur in current_user_roles}
+
+        roles_to_remove = [ur for ur in current_user_roles if ur.role.name not in needed_role_names]
+        roles_to_add = needed_role_names - current_role_names
+
+        if not roles_to_remove and not roles_to_add:
+            logger.debug("Roles already in sync for user id=%s", user_id)
+            return
+
         for ur in roles_to_remove:
             logger.info(
                 "Removing role '%s' from user id=%s (not granted by IDP)",
                 ur.role.name,
-                user.idx,
+                user_id,
             )
             dbm.delete(ur)
 
@@ -419,9 +461,9 @@ def update_user_roles(user: DBUser, new_roles: list[str]) -> None:
             logger.info(
                 "Adding role '%s' to user id=%s (granted by IDP)",
                 role_name,
-                user.idx,
+                user_id,
             )
-            dbm.save_obj(UserRoles(user_id=user.idx, role_id=role.idx))
+            dbm.save_obj(UserRoles(user_id=user_id, role_id=role.idx))
 
         dbm.commit()
     except Exception:

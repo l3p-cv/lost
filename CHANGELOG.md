@@ -6,34 +6,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 ### Added
-- SIA annotation image strip sidebar with thumbnail preview and hover popover (`SiaPreviewSidebar.tsx`, `SiaHoverPreview.tsx`)
-- `GET /sia/images` endpoint to list all visited image IDs and numbers for the active annotask sidebar
-- `GET /sia/image/<id>/thumbnail` endpoint returning a scaled-down JPEG thumbnail for the sidebar
-- `lockedImgCount` field exposed on annotask API responses (`/annotasks/working`, `/annotasks/<id>`, pipeline element data) — counts images currently locked but not yet labelled
-- `Locked but not Labelled` row added to `AnnoTaskModal` in running pipeline view showing releasable image count
-- `CAlert` shown in SIA when no images are available to annotate, with two context-aware messages: one when admin can still release locked images (showing count), one when truly no images remain
-- Auto-poll every 5 seconds in `SingleImageAnnotation` when no images are available, so the UI refreshes automatically after admin performs a force release
-- `specificImage` direction support added to `GET /sia` endpoint
-- Image strip toggle button spans full width (120px) matching the sidebar width, with "Images"/"Hide" label
-- Added `SiaWrapper.tsx`, `Datasets/ReviewPage.tsx`, `AnnoTask/ReviewPage.tsx`: Manual refresh button (`faRotateRight`) shown inline in the "no annotated images" warning with spinner feedback while re-fetching — clicking simultaneously refetches both review navigation and image list.
-- Added left padding to to `SingleImageAnnotation.tsx` , `Datasets/ReviewPage.tsx`, `AnnoTask/ReviewPage.tsx` so that it doesn't overlap with the `Image Toolbar items` like the `Image Label Input box`.
-### Fixed
-- `get_sia_review_first/last/next/prev/id` queries now filter to only `LABELED`/`JUNK` states so unannotated or locked images are never returned in review navigation
-- `get_search_images_in_annotask` now accepts `annotated_only` flag to restrict search results to annotated images in review context
-- `get_current` in `sia.py` now validates that the requested image belongs to the active annotask and the requesting user before serving it
-- SIA canvas and all toolbar buttons are hidden (not just disabled) when no images are available, preventing a broken UI state with null/null image counter
-- `faFilm` image strip button is hidden when no images are available
-- `Force Annotation Release` button in `AnnoTaskModal` is disabled with tooltip when `lockedImgCount` is 0
-- `Review Annotations` button in `AnnoTaskModal` is disabled with tooltip when no annotated images exist
-- Disabled `CoreIconButton` with a `toolTip` now correctly shows the tooltip on hover by wrapping the button in a `<span>` that captures pointer events
-- Fixed `sia/endpoint.py`: Designer role can now load thumbnails for any annotated image; ownership/group check skipped for Designers, retained only for Annotators
-- Fixed `SiaWrapper.tsx`: "No images left to annotate." replaced with "No annotated images found. Annotations have not been submitted for this task yet." in review mode
-- Fixed `Datasets/ReviewPage.tsx`, `AnnoTask/ReviewPage.tsx`: Film strip sidebar toggle button hidden when no annotated images exist in review mode
-- Fixed `Datasets/ReviewPage.tsx`, `AnnoTask/ReviewPage.tsx`: Prev/next navigation range auto-expands when new annotations arrive while Designer is on the last image by re-fetching review data when `imageList` length grows
-- Fixed `annotasks/endpoint.py`, `dataset/endpoint.py`, `access.py`: Review image search now returns only annotated images (`state IN (4,6)`) — `get_search_images_in_annotask`, `get_search_images_in_annotask_list` and `get_images_without_annotations` extended with `annotated_only` flag
-- Fixed `dataset_review.tsx`: `useImageSearch` now passes `annotated_only=true` to both annotask and dataset review image search endpoints
 
-## [3.2.2] - 2026-05-13
+## [3.4.1] - 2026-06-25
+### Added
+- Logout.tsx: added Retry button when logout API fails; isInactivity message no longer overwritten by isError
+### Changed
+- sia.tsx: updated EditAnnotationResponse.dbId type to number | null to match backend
+### Fixed
+- Fixed Logout.tsx to clear localStorage immediately and use mutateAsync with local state to correctly handle isLoading under React 19 Strict Mode double-mount
+- sia.py: fixed AttributeError crash when deleting an annotation that was never saved to DB (two_d is None)
+- Fixed Mia icons moved issue , NewMIAImage.tsx : `iconStyle` added px units to the values
+
+## [3.4.0] - 2026-06-25
+### Changed
+- OpenId: Update first and last name after login if changed
+### Fixed
+- OpenId: Fixed error accessing roles on edge cases 
+
+## [3.3.0] - 2026-06-02
 ### Added
 - Added currentImageId prop to SIAImageSearchModal (To know the current image ID to disable the row the user is already on.)
 - Added implementation to wrap the disabled button in a <span> that captures the mouse events to show current image tooltip for disabled button.
