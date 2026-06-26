@@ -16,7 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed `EditUserModal.jsx`: Stale form data when reopening "Add User" immediately after saving.
 - `UsersTable.jsx`: Removed stale `EMPTY_USER` constant, createNewUser now creates a fresh inline object to guarantee useEffect reset in modal
 - `parsers.py`: Label color is now correctly saved to the database when creating or updating a label.
-
+- `CreateLabelTree.tsx` : Fixed the label fields clear out when new label is added successfully.
+### Changed
+- README.md with new docusaurus link for documentation
 ## [3.4.1] - 2026-06-25
 ### Added
 - Logout.tsx: added Retry button when logout API fails; isInactivity message no longer overwritten by isError
