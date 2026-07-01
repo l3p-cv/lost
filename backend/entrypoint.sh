@@ -25,11 +25,11 @@ python3 /code/lost/logic/init/initlost.py
 python3 /code/lost/logic/init/initworker.py
 
 # start scheduler.
-daskscheduler="dask-scheduler"
+daskscheduler="dask scheduler"
 eval $daskscheduler &
 
 #start a worker.
-worker="dask-worker localhost:8786 --name $LOST_WORKER_NAME"
+worker="dask worker localhost:8786 --name $LOST_WORKER_NAME"
 eval $worker &
 
 # start cronjobs
