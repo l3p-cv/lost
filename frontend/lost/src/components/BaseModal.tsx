@@ -58,7 +58,7 @@ const BaseModal: React.FC<BaseModalProps> = ({
         >
           <p style={{ fontSize: 18 }}>{title}</p>
           {!showCloseButton && (
-            <CCloseButton onClick={() => { toggle(); onClosed() }} />
+            <CCloseButton onClick={(e) => { e.stopPropagation(); toggle(); onClosed() }} />
           )}
         </CModalHeader>
       )

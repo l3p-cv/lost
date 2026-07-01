@@ -19,6 +19,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `CreateLabelTree.tsx` : Fixed the label fields clear out when new label is added successfully.
 ### Changed
 - README.md with new docusaurus link for documentation
+- sia/endpoint.py: corrected MIME type in thumbnail endpoint to image/jpeg and added missing dbm.close_session() for direction="current"
+- db/access.py: corrected anno_task_id/iteration argument order in get_sia_review_prev
+- SiaWrapper.tsx: removed unused noImageAvailable state
+- ReviewPage.tsx: added missing annoData and refetchReview to useEffect deps
+- BaseModal.tsx: added stopPropagation to CCloseButton to prevent double toggle
 ## [3.4.1] - 2026-06-25
 ### Added
 - Logout.tsx: added Retry button when logout API fails; isInactivity message no longer overwritten by isError

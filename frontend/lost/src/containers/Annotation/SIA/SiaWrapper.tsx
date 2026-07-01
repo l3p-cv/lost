@@ -107,7 +107,7 @@ const SiaWrapper = ({
   // const [samBBox, setSamBBox] = useState<SamBBox | undefined>()
 
   const [isSiaLoading, setIsSiaLoading] = useState<boolean>(true)
-  const [noImageAvailable, setNoImageAvailable] = useState<boolean>(false)
+
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false)
   const [polygonEditMode, setPolygonEditMode] = useState<PolygonEditMode>(
     PolygonEditMode.NONE,
@@ -228,7 +228,6 @@ const SiaWrapper = ({
     // Still need to check pendingFinishRef here: this is the terminal response when the
     // user submits from the last image, so we must fire sindFinishAnnotask before returning.
     if (!annoData.image?.id) {
-      setNoImageAvailable(true)
       setImageBlob(undefined)
       if (pendingFinishRef.current) {
         pendingFinishRef.current = false
@@ -236,8 +235,6 @@ const SiaWrapper = ({
       }
       return
     }
-
-    setNoImageAvailable(false)
 
     // @TODO use the old api style (annos separated by type) for now, but convert it here to the new style
     const annotationsByType: LegacyAnnotationResponse = annoData.annotations

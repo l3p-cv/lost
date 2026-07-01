@@ -44,7 +44,7 @@ const DatasetsReviewComponent = () => {
     if (annoData?.image?.isLast) {
       refetchReview()
     }
-  }, [imageList?.length])
+  }, [imageList?.length, annoData, refetchReview])
 
   if (datasetId === undefined || isNaN(parseInt(datasetId)))
     return <h2>Incorrect Dataset Id</h2>

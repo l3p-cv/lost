@@ -1,7 +1,6 @@
 import base64
 import json
 import traceback
-from venv import logger
 
 import cv2
 import flask
@@ -66,6 +65,7 @@ class First(Resource):
                 return re
             elif direction == "current":
                 re = sia.get_current(dbm, identity, last_img_id, DATA_URL)
+                dbm.close_session()
                 return re
             elif direction == "specificImage":
                 re = sia.get_current(dbm, identity, last_img_id, DATA_URL)
@@ -179,7 +179,7 @@ class Filter(Resource):
             _, data = cv2.imencode(".jpg", img)
             data64 = base64.b64encode(data.tobytes())
             dbm.close_session()
-            return "data:img/jpg;base64," + data64.decode("utf-8")
+            return "data:image/jpeg;base64," + data64.decode("utf-8")
 
 
 @namespace.route("/image/<int:image_id>/filters")
@@ -188,7 +188,7 @@ class ImageFilters(Resource):
     @api.doc(security="apikey", description="Get an Image with applied filters")
     @api.expect(image_filters)
     @api.response(
-        200, 'Successfully returns base64-encoded JPEG data URI (e.g., "data:img/jpg;base64,<base64_string>").'
+        200, 'Successfully returns base64-encoded JPEG data URI (e.g., "data:image/jpeg;base64,<base64_string>").'
     )
     @api.response(403, "Forbidden", error_model)
     @api.response(400, "Bad Request", error_model)
@@ -219,7 +219,7 @@ class ImageFilters(Resource):
             _, data = cv2.imencode(".jpg", img_data)
             data64 = base64.b64encode(data.tobytes())
             dbm.close_session()
-            return "data:img/jpg;base64," + data64.decode("utf-8")
+            return "data:image/jpeg;base64," + data64.decode("utf-8")
         except ValueError as ve:
             flask.current_app.logger.warning(f"ValueError applying filters: {ve!s}")
             dbm.close_session()
@@ -311,7 +311,7 @@ class SiaThumbnail(Resource):
             _, encoded = cv2.imencode(".jpg", thumb, [cv2.IMWRITE_JPEG_QUALITY, 70])
             data64 = base64.b64encode(encoded.tobytes())
             dbm.close_session()
-            return "data:img/jpg;base64," + data64.decode("utf-8")
+            return "data:image/jpeg;base64," + data64.decode("utf-8")
         except Exception as e:
             flask.current_app.logger.error(f"Error generating thumbnail: {e!s}")
             dbm.close_session()
