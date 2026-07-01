@@ -9,7 +9,7 @@ update_label_parser.add_argument("description", type=str, required=True, help="L
 update_label_parser.add_argument("abbreviation", type=str, required=True, help="Label Leaf Abbreviaiton.")
 
 update_label_parser.add_argument("external_id", type=str, help="External Label Leaf ID.")
-update_label_parser.add_argument("color", type=str, help="Color of Label Leaf.")
+update_label_parser.add_argument("color", type=str, help="Color of Label Leaf.", location="json")
 
 create_label_parser = reqparse.RequestParser()
 create_label_parser.add_argument(
@@ -23,4 +23,4 @@ create_label_parser.add_argument("description", type=str, required=True, help="L
 create_label_parser.add_argument("abbreviation", type=str, required=True, help="Label Leaf Abbreviaiton.")
 
 create_label_parser.add_argument("external_id", type=str, help="External Label Leaf ID.")
-create_label_parser.add_argument("color", type=str, help="Color of Label Leaf.")
+create_label_parser.add_argument("color", type=str, help="Color of Label Leaf.", location="json")

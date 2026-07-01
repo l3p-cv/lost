@@ -24,16 +24,6 @@ const RenderBadge = ({ key, text, color }) => (
   </div>
 )
 
-const EMPTY_USER = [
-  {
-    email: '',
-    groups: [],
-    password: '',
-    roles: [],
-    userName: '',
-  },
-]
-
 export const UsersTable = () => {
   const [copiedObj, copyToClipboard] = useCopyToClipboard()
   const [isNewUser, setIsNewUser] = useState(false)
@@ -62,7 +52,7 @@ export const UsersTable = () => {
 
   const createNewUser = () => {
     setIsNewUser(true)
-    setSelectedUser(EMPTY_USER)
+    setSelectedUser([{ email: '', groups: [], password: '', roles: [], user_name: '' }])
     openUserModal()
   }
 

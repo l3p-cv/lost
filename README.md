@@ -1,7 +1,7 @@
 # LOST - Label Objects and Save Time
 
 [![pipeline status](https://gitlab.com/l3p-cv/lost/badges/master/pipeline.svg)](https://gitlab.com/l3p-cv/lost/pipelines)
-[![Documentation Status](https://readthedocs.org/projects/lost/badge/?version=latest)](https://lost.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/lost/badge/?version=latest)](https://docs.lost.training/docs)
 
 ## Description
 
@@ -60,7 +60,7 @@ proposals that are presented to an annotator inside the annotation tool.
 A lot of new features have been added and improvements have been made compared to version 1 (see [Changelog](./CHANGELOG.md)).
 The adaptation of the documentation is currently still in progress.
 
-If you feel LOST, please find our full documentation here: [https://lost.readthedocs.io](https://lost.readthedocs.io).
+If you feel LOST, please find our full documentation here: [https://docs.lost.training/docs](https://docs.lost.training/docs).
 
 ### LOST 3.x QuickSetup
 
