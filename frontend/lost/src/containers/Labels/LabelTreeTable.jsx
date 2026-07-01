@@ -5,6 +5,7 @@ import { CAlert, CBadge, CCard, CCardBody, CTooltip } from '@coreui/react'
 import { ReactFlowProvider } from '@xyflow/react'
 import { FaInfoCircle } from 'react-icons/fa'
 import { useExportLabelTree } from '../../api/label'
+import { showDecision } from '../../components/Notification'
 import BaseModal from '../../components/BaseModal'
 import { LabelTreeEditor } from './LabelTreeEditor/LabelTreeEditor'
 import { convertLabelTreeToReactFlow } from './LabelTreeEditor/label-tree-util'
@@ -25,6 +26,28 @@ const LabelTreeTable = ({ labelTrees, visLevel, isLoading = false }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [selectedTree, setSelectedTree] = useState({ nodes: [], edges: [] })
   const [readonly, setReadonly] = useState(false)
+  const [hasDirtyNodes, setHasDirtyNodes] = useState(false)
+
+  const handleModalClose = () => {
+    if (hasDirtyNodes) {
+      showDecision({
+        title: 'Unsaved Changes',
+        icon: 'warning',
+        html: 'Some labels have unsaved changes that will be lost. Close anyway?',
+        option1: {
+          text: 'Close anyway',
+          callback: () => {
+            setHasDirtyNodes(false)
+            setIsEditModalOpen(false)
+          },
+        },
+        option2: { text: 'Go back' },
+      })
+    } else {
+      setHasDirtyNodes(false)
+      setIsEditModalOpen(false)
+    }
+  }
   const [highlightLatestRow, setHighlightLatestRow] = useState(false)
   const { mutate: createLabelTreeFromFile } = useImportLabelTree()
 
@@ -187,10 +210,13 @@ const LabelTreeTable = ({ labelTrees, visLevel, isLoading = false }) => {
       <BaseModal
         isOpen={isEditModalOpen}
         title={readonly ? 'View Label Tree' : 'Edit Label Tree'}
-        toggle={() => setIsEditModalOpen(false)}
+        toggle={handleModalClose}
         onClosed={() => {}}
         size="xl"
         fullscreen
+        backdropOption="static"
+        onClosePrevented={handleModalClose}
+        showCloseButton={false}
         isShowCancelButton={false}
       >
         <ReactFlowProvider>
@@ -213,6 +239,7 @@ const LabelTreeTable = ({ labelTrees, visLevel, isLoading = false }) => {
                 initialEdges={selectedTree.edges}
                 visLevel={visLevel}
                 readonly={readonly}
+                onDirtyChange={setHasDirtyNodes}
               />
             </CCardBody>
           </CCard>

@@ -107,7 +107,7 @@ const SiaWrapper = ({
   // const [samBBox, setSamBBox] = useState<SamBBox | undefined>()
 
   const [isSiaLoading, setIsSiaLoading] = useState<boolean>(true)
-  const [noImageAvailable, setNoImageAvailable] = useState<boolean>(false)
+
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false)
   const [polygonEditMode, setPolygonEditMode] = useState<PolygonEditMode>(
     PolygonEditMode.NONE,
@@ -228,7 +228,6 @@ const SiaWrapper = ({
     // Still need to check pendingFinishRef here: this is the terminal response when the
     // user submits from the last image, so we must fire sindFinishAnnotask before returning.
     if (!annoData.image?.id) {
-      setNoImageAvailable(true)
       setImageBlob(undefined)
       if (pendingFinishRef.current) {
         pendingFinishRef.current = false
@@ -236,13 +235,6 @@ const SiaWrapper = ({
       }
       return
     }
-
-    setNoImageAvailable(false)
-
-    // Clear the image blob immediately so lost-sia sees image===undefined
-    // before initialAnnotations changes — this is required by lost-sia's internal
-    // guard that only loads annotations when image is undefined.
-    setImageBlob(undefined)
 
     // @TODO use the old api style (annos separated by type) for now, but convert it here to the new style
     const annotationsByType: LegacyAnnotationResponse = annoData.annotations
@@ -255,12 +247,13 @@ const SiaWrapper = ({
 
     setInitialAnnotations(collectedAnnoData)
 
-    // request the image from the backend
-    const imageId = annoData.image.id
+    const newImageId = annoData.image.id
 
-    // update the image id
-    // the request will automatically refetch
-    setImageId(imageId)
+    // Only clear and re-fetch when the image actually changed — same id means nothing to reload.
+    if (newImageId !== imageId) {
+      setImageBlob(undefined)
+      setImageId(newImageId)
+    }
 
     // If submitAnnotask triggered a "next" request to commit the last image's labeled
     // state, fire the finish call now that the backend has processed that request.

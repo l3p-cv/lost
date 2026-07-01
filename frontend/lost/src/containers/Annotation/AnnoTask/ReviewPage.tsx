@@ -40,7 +40,7 @@ const AnnotaskReviewComponent = () => {
     if (annoData?.image?.isLast) {
       refetchReview()
     }
-  }, [imageList?.length])
+  }, [imageList?.length, annoData, refetchReview])
 
   if (annotaskId === undefined || isNaN(nAnnotaskId))
     return <h2>Incorrect Annotask Id</h2>

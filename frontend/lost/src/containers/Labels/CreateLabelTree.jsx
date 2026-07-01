@@ -29,7 +29,12 @@ const CreateLabelTree = ({ visLevel }) => {
         external_id: '',
         parent_leaf_id: undefined,
       }
-      createLabelTree({ data: saveData, visLevel })
+      createLabelTree({ data: saveData, visLevel }, {
+        onSuccess: () => {
+          setCreateLabelName('')
+          setCreateLabelDescription('')
+        },
+      })
     }
   }
 

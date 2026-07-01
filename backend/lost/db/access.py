@@ -1267,7 +1267,7 @@ class DBMan:
         if iteration is not None:
             sql = (
                 "SELECT * FROM image_anno WHERE anno_task_id=%d AND iteration=%d AND idx<%d AND state IN (4,6) ORDER BY idx DESC LIMIT 1"
-                % (iteration, anno_task_id, img_anno_id)
+                % (anno_task_id, iteration, img_anno_id)
             )
         else:
             sql = "SELECT * FROM image_anno WHERE anno_task_id=%d AND idx<%d AND state IN (4,6) ORDER BY idx DESC LIMIT 1" % (

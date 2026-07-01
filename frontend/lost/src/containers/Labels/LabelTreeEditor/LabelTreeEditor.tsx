@@ -10,8 +10,9 @@ import {
   useReactFlow,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { CreateLabelResponse, useCreateLabel } from '../../../api/label'
+import { generateRandomColor } from '../../../utils/color-util'
 import { LayoutOptions, useAutoLayout } from '../../pipeline/useAutoLayout'
 import LabelEditorControls from './LabelEditorControls'
 import { LabelEditorNode, LabelEditorNodeData } from './LabelEditorNode'
@@ -31,6 +32,7 @@ interface LabelTreeFlowProps {
   initialEdges: Edge[]
   visLevel: string
   readonly?: boolean
+  onDirtyChange?: (hasDirty: boolean) => void
 }
 
 export const LabelTreeEditor: React.FC<LabelTreeFlowProps> = ({
@@ -38,13 +40,16 @@ export const LabelTreeEditor: React.FC<LabelTreeFlowProps> = ({
   initialEdges,
   visLevel,
   readonly = false,
+  onDirtyChange,
 }) => {
-  const { fitView } = useReactFlow()
+  const { fitView, updateNodeData } = useReactFlow()
 
   const [selectedNodeId, setSelectedNodeId] = useState<string>('')
   const [nodes, setNodes, onNodesChange] = useNodesState([] as Node[])
   const [edges, setEdges, onEdgesChange] = useEdgesState([] as Edge[])
+  const [dirtyNodeIds, setDirtyNodeIds] = useState<Set<string>>(new Set())
   const { mutate: createLabel } = useCreateLabel()
+  const originalNodeDataRef = useRef<Map<string, LabelEditorNodeData>>(new Map())
 
   useEffect(() => {
     const childIds = new Set(initialEdges.map((e) => e.target))
@@ -59,6 +64,11 @@ export const LabelTreeEditor: React.FC<LabelTreeFlowProps> = ({
 
     setNodes(processedNodes)
     setEdges(initialEdges)
+
+    // capture original server-side data per node for dirty tracking
+    processedNodes.forEach((node) => {
+      originalNodeDataRef.current?.set(node.id, { ...node.data } as LabelEditorNodeData)
+    })
   }, [initialNodes, initialEdges, setNodes, setEdges])
 
   useAutoLayout(defaultLayoutOptions)
@@ -77,14 +87,31 @@ export const LabelTreeEditor: React.FC<LabelTreeFlowProps> = ({
       if (readonly) return
 
       event.preventDefault()
+
+      const hasBase = nodes.some((n) => String(n.data.name).trim() === 'New Label')
+
+      const existingNumbers = nodes
+        .map((n) => {
+          const match = String(n.data.name).match(/^New Label \((\d+)\)$/)
+          return match ? parseInt(match[1], 10) : null
+        })
+        .filter((n): n is number => n !== null)
+
+      const newLabelName = !hasBase
+        ? 'New Label'
+        : `New Label (${existingNumbers.length > 0 ? Math.max(...existingNumbers) + 1 : 1})`
+
+      const existingColors = nodes.map((n) => String(n.data.color)).filter(Boolean)
+      const randomColor = generateRandomColor(existingColors)
+
       createLabel(
         {
           data: {
-            name: 'New Label',
+            name: newLabelName,
             description: '',
             abbreviation: '',
             extID: '',
-            color: '#ffffff',
+            color: randomColor,
             is_root: false,
             parent_leaf_id: node.id,
           },
@@ -115,21 +142,26 @@ export const LabelTreeEditor: React.FC<LabelTreeFlowProps> = ({
                   }
                 }
 
+                const childNodeData: LabelEditorNodeData = {
+                  name: newLabelName,
+                  description: '',
+                  abbreviation: '',
+                  externalId: '',
+                  color: randomColor,
+                  textColor: '#000000',
+                  is_root: false,
+                }
+
                 const childNode: Node = {
                   id: response.labelId.toString(),
                   type: 'labelEditorNode',
-                  data: {
-                    name: 'New Label',
-                    description: '',
-                    abbreviation: '',
-                    externalId: '',
-                    color: '#ffffff',
-                    textColor: '#000000',
-                    is_root: false,
-                  } as LabelEditorNodeData,
+                  data: childNodeData,
                   position: { x: 0, y: 0 }, // no need to pass a position as it is computed by the layout hook
                   className: childClass,
                 }
+
+                // register in original data map so dirty tracking works on newly created nodes
+                originalNodeDataRef.current?.set(childNode.id, { ...childNodeData })
                 // Add new node and edge to the graph
                 const newNodes = [...prevNodes, childNode]
                 // Add new edge to edges in outer setEdges call
@@ -149,7 +181,7 @@ export const LabelTreeEditor: React.FC<LabelTreeFlowProps> = ({
         },
       )
     },
-    [createLabel, readonly, setEdges, setNodes, visLevel],
+    [createLabel, nodes, readonly, setEdges, setNodes, visLevel],
   )
 
   return (
@@ -159,6 +191,24 @@ export const LabelTreeEditor: React.FC<LabelTreeFlowProps> = ({
           nodeId={selectedNodeId}
           onClearSelectedLabel={() => setSelectedNodeId('')}
           visLevel={visLevel}
+          originalNodeDataRef={originalNodeDataRef}
+          onMarkDirty={(nodeId) => {
+            updateNodeData(nodeId, { isDirty: true })
+            setDirtyNodeIds((prev) => {
+              const next = new Set(prev).add(nodeId)
+              onDirtyChange?.(next.size > 0)
+              return next
+            })
+          }}
+          onMarkClean={(nodeId) => {
+            updateNodeData(nodeId, { isDirty: false })
+            setDirtyNodeIds((prev) => {
+              const next = new Set(prev)
+              next.delete(nodeId)
+              onDirtyChange?.(next.size > 0)
+              return next
+            })
+          }}
         />
       )}
       <div style={{ height: '75vh', width: '100%' }}>
