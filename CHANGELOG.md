@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 ### Added
+
+## ## [3.5.0] - 2026-07-01
+### Added
 - Added `LabelEditorNode.tsx`: Unsaved changes indicator (orange dot) shown on dirty label nodes and in `LabelEditorControls.tsx` onMarkDirty and onMarkClean callback props to track per-node edit state.
 - Added `LabelTreeEditor.tsx`: `onDirtyChange` prop to notify parent when any node has unsaved changes.
 - Added `BaseModal.tsx`: `onClosePrevented` and `showCloseButton` props and in `LabelTreeTable.jsx` Confirmation dialog when closing the edit modal with unsaved label changes.
