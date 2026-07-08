@@ -120,6 +120,8 @@ export const useAnnotask = (annotaskId) => {
       // request will automatically refetch when value changes
       enabled: !!annotaskId,
       refetchOnWindowFocus: false,
+      staleTime: 0,
+      cacheTime: 0,
     },
   )
 }
