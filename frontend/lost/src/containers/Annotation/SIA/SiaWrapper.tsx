@@ -288,30 +288,18 @@ const SiaWrapper = ({
     // tempId is "new-${internalId}" — strip the prefix to get the SIA internalId
     const siaInternalAnnoId = parseInt(response.tempId.replace('new-', ''))
 
-    // console.log(`[SIA create raw] tempId="${response.tempId}" → parsed internalId:${siaInternalAnnoId} dbId:${response.dbId}`)
-
     // Guard: non-standard tempId means we can't correlate to pending ops.
-    if (isNaN(siaInternalAnnoId)) {
-      console.warn(`[SIA create] DROPPED — tempId="${response.tempId}" parsed to NaN, cannot update mapping`)
-      return
-    }
+    if (isNaN(siaInternalAnnoId)) return
+
+    // Guard: null dbId means the server failed to create the annotation. Don't flush pending ops, but do keep the mapping so future edits/deletes can still be correlated to this failed create.
+    if (response.dbId === null) return
 
     // Write to ref immediately — visible to handleTimeTravel before React re-renders.
     annotationIdMappingRef.current[siaInternalAnnoId] = response.dbId
 
-/*     console.log(
-      `[SIA create] internalId:${siaInternalAnnoId} → dbId:${response.dbId}`,
-      {
-        hasPendingDelete: !!pendingDeletesRef.current[siaInternalAnnoId],
-        hasPendingEdit: !!pendingEditsRef.current[siaInternalAnnoId],
-        fullMapping: { ...annotationIdMappingRef.current },
-      },
-    ) */
-
     // Pending delete supersedes pending edit — flush it with the now-known DB id.
     const pendingDelete = pendingDeletesRef.current[siaInternalAnnoId]
     if (pendingDelete !== undefined) {
-      // console.log(`[SIA create] flushing pending DELETE for internalId:${siaInternalAnnoId} → dbId:${response.dbId}`)
       sendDeleteAnnotation({
         ...pendingDelete,
         annotation: {
@@ -327,7 +315,6 @@ const SiaWrapper = ({
     // flush any edit that arrived before the server responded with the DB id
     const pendingEdit = pendingEditsRef.current[siaInternalAnnoId]
     if (pendingEdit !== undefined) {
-      // console.log(`[SIA create] flushing pending EDIT for internalId:${siaInternalAnnoId} → dbId:${response.dbId}`)
       sendEditAnnotation({
         ...pendingEdit,
         annotation: {
@@ -555,7 +542,6 @@ const SiaWrapper = ({
         annotation: annotationInOldFormat,
         imageEditData: imageData,
       }
-      // console.log(`[deleteAnnotation] internalId:${deletedAnnotation.internalId} → queued in pendingDeletesRef (no mapping yet)`)
       setCurrentlySelectedAnnotation(undefined)
       return
     }
@@ -566,9 +552,9 @@ const SiaWrapper = ({
       annotation: annotationInOldFormat,
       imageEditData: imageData,
     }
-    // console.log(`[deleteAnnotation] internalId:${deletedAnnotation.internalId} externalId:"${deletedAnnotation.externalId}" → id:"${annotationInOldFormat.id}"`, { mapping: annotationIdMappingRef.current[deletedAnnotation.internalId] })
     sendDeleteAnnotation(deleteAnnotationData)
-    delete annotationIdMappingRef.current[deletedAnnotation.internalId] 
+    // Only clear the mapping when its used
+    if (mappedId) delete annotationIdMappingRef.current[deletedAnnotation.internalId]
     setCurrentlySelectedAnnotation(undefined)
   }
 
@@ -655,7 +641,6 @@ const SiaWrapper = ({
       annotation: annotationInOldFormat,
       imageEditData: imageData,
     }
-    // console.log(`[editAnnotation] internalId:${newAnnotation.internalId} status:${newAnnotation.status} externalId:"${newAnnotation.externalId}" → id:"${annotationInOldFormat.id}"`, { mapping: annotationIdMappingRef.current[newAnnotation.internalId] })
     sendEditAnnotation(editAnnotationData)
   }
 
@@ -1039,10 +1024,13 @@ const SiaWrapper = ({
     }
 
     // SIA keeps externalId: '' on user-drawn annotations — resolve the real DB id from the ref or externalId.
+    // Mapping is checked first — it reflects the most recently assigned DB id after any delete+recreate cycles.
+    // externalId in history snapshots may be stale (pointing to a deleted DB row).
     const resolveDbId = (annotation: Annotation): string | null => {
-      if (annotation.externalId && annotation.externalId !== '') return annotation.externalId
       const mappedId = annotationIdMappingRef.current[annotation.internalId]
-      return mappedId ? `${mappedId}` : null
+      if (mappedId) return `${mappedId}`
+      if (annotation.externalId && annotation.externalId !== '') return annotation.externalId
+      return null
     }
 
     // handle added annotations (redo — re-create a previously deleted annotation)
@@ -1067,23 +1055,10 @@ const SiaWrapper = ({
     }
 
     // handle deleted annotations (undo — delete a previously created annotation)
-/*     console.log(
-      `[SIA undo] handleTimeTravel removedAnnotations:`,
-      timeTravelChanges.removedAnnotations.map((a) => ({
-        internalId: a.internalId,
-        externalId: a.externalId,
-        resolvedDbId: resolveDbId(a),
-      })),
-      { fullMapping: { ...annotationIdMappingRef.current } },
-    ) */
     for (const annotation of timeTravelChanges.removedAnnotations) {
       const dbId = resolveDbId(annotation)
 
       if (!dbId) {
-        console.warn(
-          `[SIA undo] SKIP — internalId:${annotation.internalId} has no DB id in mapping — queuing in pendingDeletesRef`,
-          { internalId: annotation.internalId, fullMapping: { ...annotationIdMappingRef.current } },
-        )
         // Create response not yet arrived — queue until DB id is known.
         const deletedAnnotation = {
           ...annotation,
@@ -1098,7 +1073,6 @@ const SiaWrapper = ({
         continue
       }
 
-      // console.log(`[SIA undo] DELETE internalId:${annotation.internalId} → dbId:${dbId}`)
       const deletedAnnotation = { ...annotation, status: AnnotationStatus.DELETED }
       const annotationInOldFormat = legacyHelper.convertAnnoToOldFormat(deletedAnnotation)
       const deleteAnnotationData: EditAnnotationData = {
