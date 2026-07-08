@@ -20,7 +20,10 @@ const Datasets = () => {
   } = datasetApi.useFlatDatasets()
 
   const { data: datastores } = datasetApi.useDatastoreKeys()
-  const { data: annotaskResponse, isLoading: loadAnnotask } = annotaskApi.useAnnotask()
+
+  const [selectedAnnotaskId, setSelectedAnnotaskId] = useState(undefined)
+  const [selectedAnnotaskDescription, setSelectedAnnotaskDescription] = useState(undefined)
+  const { data: annotaskResponse } = annotaskApi.useAnnotask(selectedAnnotaskId)
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isExportModalOpen, setIsExportModalOpen] = useState(false)
@@ -92,17 +95,13 @@ const Datasets = () => {
   //     console.log("Clicked on assign annotask")
   // }
 
-  const openExportModal = async (idx, isAnnotask, name, description) => {
-    // set content to selected dataset
-    // @TODO
-    // console.log('openExportModal', idx, isAnnotask, name, description)
-
+  const openExportModal = (idx, isAnnotask, name, description) => {
     if (isAnnotask) {
       // remove previous content (in case request fails)
       setAnnotask(undefined)
-
-      // loadAnnotaskData
-      await loadAnnotask(idx)
+      setSelectedAnnotaskDescription(description)
+      // setting the ID triggers useAnnotask to fetch automatically
+      setSelectedAnnotaskId(idx)
     } else {
       setDatasetId(parseInt(idx))
       setDatasetName(name)
@@ -110,7 +109,7 @@ const Datasets = () => {
     }
   }
 
-  // triggered after loadAnnotask response is available
+  // triggered after useAnnotask response is available
   useEffect(() => {
     // dont open modal at beginning
     if (annotaskResponse === undefined) return
@@ -118,9 +117,11 @@ const Datasets = () => {
     // console.log(annotaskResponse)
 
     setAnnotask(annotaskResponse)
+    // reset so clicking the same annotask again re-triggers a fetch
+    setSelectedAnnotaskId(undefined)
   }, [annotaskResponse])
 
-  // triggered if loadAnnotask response contained valid data
+  // triggered if annotask response contained valid data
   useEffect(() => {
     // dont open modal without data
     if (annotask === undefined) return
@@ -142,8 +143,8 @@ const Datasets = () => {
       <DatasetExportModal
         isVisible={isExportModalOpen}
         setIsVisible={setIsExportModalOpen}
-        datasetName="Test"
-        description="Test"
+        datasetName={annotask?.name}
+        description={selectedAnnotaskDescription}
         annoTask={annotask}
         // datastoreList={datastores}
         // datasetList={datasetList}
