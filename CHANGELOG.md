@@ -6,7 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 ### Added
-
+### Fixed
+- `Datasets.jsx`: Fixed "Export Dataset" button crashing for annotask rows by replacing the misaliased `isLoading` boolean with reactive `selectedAnnotaskId` state and also fixed modal showing hardcoded Test name/description.
 ## ## [3.5.0] - 2026-07-01
 ### Added
 - Added `LabelEditorNode.tsx`: Unsaved changes indicator (orange dot) shown on dirty label nodes and in `LabelEditorControls.tsx` onMarkDirty and onMarkClean callback props to track per-node edit state.
