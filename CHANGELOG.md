@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 ### Fixed
 - `Logout.tsx` : Fixed button disabled  `Back to Login` button issue by adding CSpinner to the button until it still is in loading state.realigned Retry button accordingly.
+
 ## [3.5.2] - 2026-07-09
 ### Added
 ### Fixed
