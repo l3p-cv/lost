@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `SiaWrapper.tsx`: Fixed SIA `undo/redo` using stale/deleted DB ids — annotation id mapping is now a synchronous ref, and delete/edit always prefer it over the stale externalId from history snapshots.
 - `sia.tsx`: Fixed silent drops of create responses during rapid annotation — moved `onSuccess` to hook level so every mutation is processed.
 - `dataset_review.tsx`: Same fix as sia.tsx for review/dataset mode.
+- `Logout.tsx` : Fixed button disabled  `Back to Login` button issue by adding CSpinner to the button until it still is in loading state.realigned Retry button accordingly.
 ## [3.5.1] - 2026-07-08
 ### Added
 - Added `staleTime: 0, cacheTime: 0` to useAnnotask in `anno_task.tsx` so it does a fresh fetch each time `selectedAnnotaskId` is set.
