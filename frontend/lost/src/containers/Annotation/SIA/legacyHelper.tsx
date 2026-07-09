@@ -125,8 +125,9 @@ const convertAnnoToOldFormat = (annotation: Annotation): LegacyAnnotation => {
     const oldFormat = {
       x: bboxCenter.x,
       y: bboxCenter.y,
-      w: width,
-      h: height,
+      // make the width and height positive,even if the user drew the box from bottom right to top left
+      w: Math.abs(width),
+      h: Math.abs(height),
     }
 
     annotationInOldFormat.data = oldFormat
