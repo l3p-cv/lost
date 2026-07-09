@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 ### Added
+
+## [3.5.2] - 2026-07-09
+### Added
 ### Fixed
 - `SiaWrapper.tsx`: Fixed SIA `undo/redo` using stale/deleted DB ids — annotation id mapping is now a synchronous ref, and delete/edit always prefer it over the stale externalId from history snapshots.
 - `sia.tsx`: Fixed silent drops of create responses during rapid annotation — moved `onSuccess` to hook level so every mutation is processed.
