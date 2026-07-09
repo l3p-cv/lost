@@ -9,9 +9,13 @@ import {
   LegacyAnnotationResponse,
 } from '../containers/Annotation/SIA/legacyHelper'
 
+export type CreateAnnotationOptions = {
+  onSuccess?: (response: EditAnnotationResponse) => void
+}
+
 export type SiaApi = {
   useGetPossibleLabels: (annoTaskId: number) => UseQueryResult
-  useCreateAnnotation: () => UseMutationResult<
+  useCreateAnnotation: (options?: CreateAnnotationOptions) => UseMutationResult<
     EditAnnotationResponse,
     AxiosError,
     EditAnnotationData
@@ -153,7 +157,7 @@ export const useGetSiaConfiguration = () => {
   )
 }
 
-export const useCreateAnnotation = () => {
+export const useCreateAnnotation = (options?: CreateAnnotationOptions) => {
   return useMutation(
     ({ annotation, imageEditData }: EditAnnotationData) => {
       const requestData = {
@@ -168,6 +172,10 @@ export const useCreateAnnotation = () => {
     },
     {
       onError: () => showError('Failed to save annotation.'),
+      // Hook-level onSuccess fires for every mutation regardless of how many are
+      // in-flight simultaneously. Call-site onSuccess (mutate second arg) only fires
+      // for the "last" active mutation in React Query v3 — unreliable for rapid creates.
+      onSuccess: options?.onSuccess,
     },
   )
 }

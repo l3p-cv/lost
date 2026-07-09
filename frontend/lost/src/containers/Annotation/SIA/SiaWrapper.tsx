@@ -145,12 +145,17 @@ const SiaWrapper = ({
   >()
 
   // Annotations that are just created in SIA have never been stored in the backend and therefore don't have an externalId yet.
-  // To identify them later on, we store a mapping between the external and SIAs internal id for freshly created annos
-  const [annotationIdMapping, setAnnotationIdMapping] = useState({})
+  // To identify them later on, we store a mapping between the external and SIAs internal id for freshly created annos.
+  // This MUST be a ref (not state) so that handleCreateAnnotationSuccess and handleTimeTravel always read/write the same mapping without being re-rendered.
+  const annotationIdMappingRef = useRef<Record<number, number>>({})
 
   // Edits that arrived before the server returned a DB id for a freshly created annotation.
   // Keyed by SIA internalId. Flushed once the createAnnotation response arrives and the mapping is populated.
   const pendingEditsRef = useRef<Record<number, EditAnnotationData>>({})
+
+  // Deletes that arrived before the server returned a DB id for a freshly created annotation.
+  // Keyed by SIA internalId. Flushed once the createAnnotation response arrives and the mapping is populated.
+  const pendingDeletesRef = useRef<Record<number, EditAnnotationData>>({})
 
   // Set to true when the user submits the annotask. The finish call is deferred
   // until annoData updates, ensuring the last image's labeled state is committed
@@ -197,9 +202,18 @@ const SiaWrapper = ({
     setIsSiaLoading(false)
   }, [imageBlobRequest, possibleLabels])
 
-  // @TODO check if request worked
-  const { data: createAnnotationResponse, mutate: sendCreateAnnotation } =
-    siaApi.useCreateAnnotation()
+  // Stable ref wrapper so the hook-level onSuccess always calls the latest version of
+  // handleCreateAnnotationSuccess without needing to recreate the hook on every render.
+  const handleCreateAnnotationSuccessRef = useRef<
+    (response: { tempId: string; dbId: number | null; newStatus: string }) => void
+  >(() => {})
+
+    // @TODO check if request worked
+  // Hook-level onSuccess fires for every mutation — call-site onSuccess only fires for the last in React Query v3.
+  const { mutate: sendCreateAnnotation } =
+    siaApi.useCreateAnnotation({
+      onSuccess: (response) => handleCreateAnnotationSuccessRef.current(response),
+    })
   const { data: editAnnotationResponse, mutate: sendEditAnnotation } =
     siaApi.useEditAnnotation()
 
@@ -263,36 +277,54 @@ const SiaWrapper = ({
     }
   }, [annoData])
 
-  useEffect(() => {
-    if (createAnnotationResponse === undefined || createAnnotationResponse === null)
+  // Fires for every completed create — hook-level onSuccess  unlike call-site onSuccess in React Query v3.
+  handleCreateAnnotationSuccessRef.current = (response: {
+    tempId: string
+    dbId: number | null
+    newStatus: string
+  }) => {
+    if (!response) return
+
+    // tempId is "new-${internalId}" — strip the prefix to get the SIA internalId
+    const siaInternalAnnoId = parseInt(response.tempId.replace('new-', ''))
+
+    // Guard: non-standard tempId means we can't correlate to pending ops.
+    if (isNaN(siaInternalAnnoId)) return
+
+    // Guard: null dbId means the server failed to create the annotation. Don't flush pending ops, but do keep the mapping so future edits/deletes can still be correlated to this failed create.
+    if (response.dbId === null) return
+
+    // Write to ref immediately — visible to handleTimeTravel before React re-renders.
+    annotationIdMappingRef.current[siaInternalAnnoId] = response.dbId
+
+    // Pending delete supersedes pending edit — flush it with the now-known DB id.
+    const pendingDelete = pendingDeletesRef.current[siaInternalAnnoId]
+    if (pendingDelete !== undefined) {
+      sendDeleteAnnotation({
+        ...pendingDelete,
+        annotation: {
+          ...pendingDelete.annotation,
+          id: `${response.dbId}`,
+        },
+      })
+      delete pendingDeletesRef.current[siaInternalAnnoId]
+      delete pendingEditsRef.current[siaInternalAnnoId]
       return
-
-    // remove the 'new-' prefix
-    const siaInternalAnnoId = parseInt(
-      createAnnotationResponse.tempId.replace('new-', ''),
-    )
-
-    // we got an external id assigned from the server
-    // update the mapping to include the new annotation
-    const newAnnotationIdMapping = { ...annotationIdMapping }
-    newAnnotationIdMapping[siaInternalAnnoId] = createAnnotationResponse.dbId
-
-    setAnnotationIdMapping(newAnnotationIdMapping)
+    }
 
     // flush any edit that arrived before the server responded with the DB id
     const pendingEdit = pendingEditsRef.current[siaInternalAnnoId]
     if (pendingEdit !== undefined) {
-      // patch in the now-known external id
       sendEditAnnotation({
         ...pendingEdit,
         annotation: {
           ...pendingEdit.annotation,
-          id: `${createAnnotationResponse.dbId}`,
+          id: `${response.dbId}`,
         },
       })
       delete pendingEditsRef.current[siaInternalAnnoId]
     }
-  }, [createAnnotationResponse])
+  }
 
   const handleResponse = useCallback((response: object | string): boolean => {
     if (response !== 'error') return true
@@ -311,13 +343,6 @@ const SiaWrapper = ({
 
     handleResponse(editAnnotationResponse)
   }, [editAnnotationResponse, handleResponse])
-
-  useEffect(() => {
-    if (createAnnotationResponse === undefined || createAnnotationResponse === null)
-      return
-
-    handleResponse(createAnnotationResponse)
-  }, [createAnnotationResponse, handleResponse])
 
   useEffect(() => {
     if (deleteAnnotationResponse === undefined || deleteAnnotationResponse === null)
@@ -504,11 +529,21 @@ const SiaWrapper = ({
       status: AnnotationStatus.DELETED,
     }
 
-    // search the mapping if annotation has no external id
-    // annotations that are deleted right after they were created
-    if (deletedAnnotation.externalId == '') {
-      const externalAnnoId = annotationIdMapping[deletedAnnotation.internalId]
-      if (externalAnnoId) deletedAnnotation.externalId = externalAnnoId
+    // Always prefer the mapping over externalId — mapping reflects the most recently
+    // assigned DB id after any delete+recreate cycles. externalId may be stale.
+    const mappedId = annotationIdMappingRef.current[deletedAnnotation.internalId]
+    if (mappedId) {
+      deletedAnnotation.externalId = `${mappedId}`
+    } else if (deletedAnnotation.externalId == '') {
+      // Create response not yet arrived — queue until DB id is known.
+      const annotationInOldFormat = legacyHelper.convertAnnoToOldFormat(deletedAnnotation)
+      pendingDeletesRef.current[deletedAnnotation.internalId] = {
+        annoTaskId,
+        annotation: annotationInOldFormat,
+        imageEditData: imageData,
+      }
+      setCurrentlySelectedAnnotation(undefined)
+      return
     }
 
     const annotationInOldFormat = legacyHelper.convertAnnoToOldFormat(deletedAnnotation)
@@ -518,6 +553,8 @@ const SiaWrapper = ({
       imageEditData: imageData,
     }
     sendDeleteAnnotation(deleteAnnotationData)
+    // Only clear the mapping when its used
+    if (mappedId) delete annotationIdMappingRef.current[deletedAnnotation.internalId]
     setCurrentlySelectedAnnotation(undefined)
   }
 
@@ -544,7 +581,7 @@ const SiaWrapper = ({
       newAnnotation.status = AnnotationStatus.CHANGED
 
       // search for an external anno id in the mapping
-      const externalAnnoId = annotationIdMapping[newAnnotation.internalId]
+      const externalAnnoId = annotationIdMappingRef.current[newAnnotation.internalId]
       if (externalAnnoId) {
         newAnnotation.externalId = externalAnnoId
       } else {
@@ -570,6 +607,12 @@ const SiaWrapper = ({
         return
       }
     }
+
+    // Always prefer the mapping over externalId — mapping reflects the most recently
+    // assigned DB id after any delete+recreate cycles. externalId in SIA's history
+    // snapshots may be stale (pointing to a deleted DB row).
+    const mappedId = annotationIdMappingRef.current[newAnnotation.internalId]
+    if (mappedId) newAnnotation.externalId = `${mappedId}`
 
     const annotationInOldFormat = legacyHelper.convertAnnoToOldFormat(newAnnotation)
 
@@ -676,7 +719,7 @@ const SiaWrapper = ({
 
   const resetWrapper = () => {
     window.removeEventListener('keydown', (e) => handleWrapperKeydown(e.key))
-    setAnnotationIdMapping([])
+    annotationIdMappingRef.current = {}
     setPolygonEditMode(PolygonEditMode.NONE)
     setImageBlob(undefined)
   }
@@ -980,53 +1023,87 @@ const SiaWrapper = ({
       annoTime: currentImageData.annoTime,
     }
 
-    // handle added annotations
+    // SIA keeps externalId: '' on user-drawn annotations — resolve the real DB id from the ref or externalId.
+    // Mapping is checked first — it reflects the most recently assigned DB id after any delete+recreate cycles.
+    // externalId in history snapshots may be stale (pointing to a deleted DB row).
+    const resolveDbId = (annotation: Annotation): string | null => {
+      const mappedId = annotationIdMappingRef.current[annotation.internalId]
+      if (mappedId) return `${mappedId}`
+      if (annotation.externalId && annotation.externalId !== '') return annotation.externalId
+      return null
+    }
+
+    // handle added annotations (redo — re-create a previously deleted annotation)
     for (const annotation of timeTravelChanges.addedAnnotations) {
       const newAnnotation: Annotation = {
         ...annotation,
-        status: AnnotationStatus.CREATING, // mark as new so the anno is created at the server
+        status: AnnotationStatus.CREATING,
       }
       const annotationInOldFormat: LegacyAnnotation =
         legacyHelper.convertAnnoToOldFormat(newAnnotation)
 
       const changes: EditAnnotationData = {
         annoTaskId,
-        annotation: annotationInOldFormat,
+        annotation: {
+          ...annotationInOldFormat,
+          // new-${internalId} lets the create response handler update annotationIdMappingRef with the fresh DB id.
+          id: `new-${newAnnotation.internalId}`,
+        },
         imageEditData,
       }
       sendCreateAnnotation(changes)
     }
 
-    // handle deleted annotations
+    // handle deleted annotations (undo — delete a previously created annotation)
     for (const annotation of timeTravelChanges.removedAnnotations) {
-      // search the mapping if annotation has no external id
-      // annotations that are deleted right after they were created
-      if (annotation.externalId == '') {
-        const externalAnnoId = annotationIdMapping[annotation.internalId]
-        if (externalAnnoId) annotation.externalId = externalAnnoId
+      const dbId = resolveDbId(annotation)
+
+      if (!dbId) {
+        // Create response not yet arrived — queue until DB id is known.
+        const deletedAnnotation = {
+          ...annotation,
+          status: AnnotationStatus.DELETED,
+        }
+        const annotationInOldFormat = legacyHelper.convertAnnoToOldFormat(deletedAnnotation)
+        pendingDeletesRef.current[annotation.internalId] = {
+          annoTaskId,
+          annotation: annotationInOldFormat,
+          imageEditData,
+        }
+        continue
       }
 
-      // set status to deleted (server ignores deletion reuquest otherwise)
-      const deletedAnnotation = {
-        ...annotation,
-        status: AnnotationStatus.DELETED,
-      }
-
+      const deletedAnnotation = { ...annotation, status: AnnotationStatus.DELETED }
       const annotationInOldFormat = legacyHelper.convertAnnoToOldFormat(deletedAnnotation)
       const deleteAnnotationData: EditAnnotationData = {
         annoTaskId,
-        annotation: annotationInOldFormat,
+        annotation: { ...annotationInOldFormat, id: dbId },
         imageEditData,
       }
       sendDeleteAnnotation(deleteAnnotationData)
     }
 
-    // handle changed annotations
+    // handle changed annotations (undo/redo of edits — label changes, moves, etc.)
     for (const annotation of timeTravelChanges.changedAnnotations) {
-      const annotationInOldFormat = legacyHelper.convertAnnoToOldFormat(annotation)
+      const dbId = resolveDbId(annotation)
+
+      // Force CHANGED — history snapshots may carry LOADED ("database") which the backend ignores for content updates.
+      const annotationToSend = { ...annotation, status: AnnotationStatus.CHANGED }
+
+      if (!dbId) {
+        // No DB id yet — queue as a pending edit to be flushed when create response arrives.
+        pendingEditsRef.current[annotation.internalId] = {
+          annoTaskId,
+          annotation: legacyHelper.convertAnnoToOldFormat(annotationToSend),
+          imageEditData,
+        }
+        continue
+      }
+
+      const annotationInOldFormat = legacyHelper.convertAnnoToOldFormat(annotationToSend)
       const editAnnotationData: EditAnnotationData = {
         annoTaskId,
-        annotation: annotationInOldFormat,
+        annotation: { ...annotationInOldFormat, id: dbId },
         imageEditData,
       }
       sendEditAnnotation(editAnnotationData)

@@ -107,7 +107,7 @@ export const useGetImage = () => {
   })
 }
 
-export const useCreateAnnotation = () => {
+export const useCreateAnnotation = (options?: { onSuccess?: (response: EditAnnotationResponse) => void }) => {
   return useMutation(
     ({ annoTaskId, annotation, imageEditData }: EditAnnotationData) => {
       const requestData = {
@@ -122,6 +122,10 @@ export const useCreateAnnotation = () => {
     },
     {
       onError: () => showError('Failed to save annotation.'),
+      // Hook-level onSuccess fires for every mutation regardless of how many are
+      // in-flight simultaneously. Call-site onSuccess (mutate second arg) only fires
+      // for the "last" active mutation in React Query v3 — unreliable for rapid creates.
+      onSuccess: options?.onSuccess,
     },
   )
 }
