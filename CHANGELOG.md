@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## unreleased
 ### Added
 ### Changed
-- `sia.py` : code reverted backend validation of twoDAnno being None ,to see delete error popup normally
+- `sia.py` : code reverted backend validation of twoDAnno being None ,to see delete error popup normally.
+### Fixed
+- `SiaWrapper.tsx` : added `inFlightCreatesRef` ref that tracks inflight create requests by internal id,to prevent delete request from using stale resolveDbId, cleared stale mappings for new image.
 
 ## [3.5.2] - 2026-07-09
 ### Added
