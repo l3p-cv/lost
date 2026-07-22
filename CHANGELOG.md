@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 ### Added
+### Changed
+- `sia.py` : code reverted backend validation of twoDAnno being None ,to see delete error popup normally
 
 ## [3.5.2] - 2026-07-09
 ### Added
