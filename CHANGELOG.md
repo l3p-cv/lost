@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 ### Added
+- `index.css`: Added shake animation for duplicate file rows with red highlight background
+### Changed
+- `LostFileBrowser.jsx`: Enhanced FileBrowser visibility (flex height collapse with AutoSizer) and uploading state retention (files now persist when adding more instead of being replaced) by replacing dropzone file summary with per-file table (name/size/type columns), added per-file remove buttons and "Clear All" button at top, implemented duplicate file detection with shake animation, auto-scroll to duplicate rows, and info toast notification on duplicate upload selection.
 
 ## [3.5.5] - 2026-08-04
 ### Fixed

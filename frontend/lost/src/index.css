@@ -35,3 +35,18 @@ code {
 .swal-above-fullscreen {
   z-index: 7000 !important;
 }
+
+/* shake animation for duplicate file rows used in Lost File Browser */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.shake-row {
+  animation: shake 0.5s ease-in-out;
+  background-color: rgba(204, 0, 0, 0.08) !important;
+}
+.shake-row td {
+  background-color: rgba(204, 0, 0, 0.08);
+}
