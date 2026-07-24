@@ -7,13 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## unreleased
 ### Added
 - `index.css`: Added shake animation for duplicate file rows with red highlight background
+- `EditInstruction.jsx` : Added multi-image selection and insertion with `handlePathsSelection` function, images now insert with one empty line between them for better readability.
+- `LostFileBrowser.jsx` : Added multiselect support for file browser with overlay "Insert" button, single-click selects files (multiselect mode), double-click inserts immediately, and fixed double insertion bug by restricting `OpenFiles` to directories only.
+- `ImageBrowserModal.tsx` : Added `onPathsSelected` prop and multiselect mode support, dynamic modal title changes based on selection mode.
 ### Fixed
 - `Logout.tsx` : Fixed button disabled  `Back to Login` button issue by adding CSpinner to the button until it still is in loading state.realigned Retry button accordingly.
 - `legacyHelper.tsx` : Fixed the -ve values saved for height and width on creation of BBox annotations by saving only their absolute values.
 - `SiaWrapper.tsx` : added `inFlightCreatesRef` ref that tracks inflight create requests by internal id,to prevent delete request from using stale resolveDbId, cleared stale mappings for new image.
+- `EditInstruction.jsx` : Fixed the instruction_media creation when it doesnt exist.
 ### Changed
 - `sia.py` : code reverted backend validation of twoDAnno being None ,to see delete error popup normally.
 - `LostFileBrowser.jsx`: Enhanced FileBrowser visibility (flex height collapse with AutoSizer) and uploading state retention (files now persist when adding more instead of being replaced) by replacing dropzone file summary with per-file table (name/size/type columns), added per-file remove buttons and "Clear All" button at top, implemented duplicate file detection with shake animation, auto-scroll to duplicate rows, and info toast notification on duplicate upload selection.
+- `LostFileBrowser.jsx`: - `LostFileBrowser.jsx`: Modified `OpenFiles` handler to navigate only directories with `restrictToPath` validation, updated `MouseClickFile` to differentiate single/double-click in multiselect mode, changed container to `position: relative` for overlay positioning, and added file filtering `selected` by `allowedExtensions`.
 
 ## [3.5.2] - 2026-07-09
 ### Added

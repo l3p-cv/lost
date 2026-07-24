@@ -17,7 +17,7 @@ import * as Notification from '../Notification'
 import * as fb_api from '../../api/file_browser'
 import CoreIconButton from '../CoreIconButton'
 
-const LostFileBrowser = ({ fs, onPathSelected, mode = undefined, initPath }) => {
+const LostFileBrowser = ({ fs, onPathSelected,  onPathsSelected, multiselect = false, mode = undefined, initPath, restrictToPath, allowedExtensions }) => {
   const [files, setFiles] = useState([])
   const [folderChain, setFolderChain] = useState([])
   const [size, setSize] = useState(0)
@@ -25,6 +25,7 @@ const LostFileBrowser = ({ fs, onPathSelected, mode = undefined, initPath }) => 
   const [selectedDir, setSelectedDir] = useState('/')
   const [copiedAccecptedFiles, setCopiedAcceptedFiles] = useState([])
   const [shakingFiles, setShakingFiles] = useState(new Set())
+  const [selectedFiles, setSelectedFiles] = useState([])
   const rowRefs = useRef({})
   const { acceptedFiles, getRootProps, getInputProps, isDragReject, isFocused } =
     useDropzone({})
@@ -144,7 +145,27 @@ const LostFileBrowser = ({ fs, onPathSelected, mode = undefined, initPath }) => 
     } else {
       res_data = await fb_api.ls(fs, path)
     }
-    setFiles(res_data['files'])
+    
+    let files = res_data['files']
+    
+    // Mark non-allowed files as unselectable when allowedExtensions is specified
+    if (allowedExtensions && files) {
+      files = files.map(file => {
+        // Folders are always selectable
+        if (file.isDir) return file
+        
+        // Check if file has allowed extension
+        const ext = file.name.split('.').pop()?.toLowerCase()
+        const isAllowed = allowedExtensions.includes(ext)
+        
+        return {
+          ...file,
+          selectable: isAllowed
+        }
+      })
+    }
+    
+    setFiles(files)
     setFolderChain(res_data['folderChain'])
   }
 
@@ -182,20 +203,45 @@ const LostFileBrowser = ({ fs, onPathSelected, mode = undefined, initPath }) => 
 
   const handleFileAction = (data) => {
     switch (data.id) {
+      case ChonkyActions.ChangeSelection.id:
+        if (multiselect && data.state && data.state.selectedFiles) {
+          setSelectedFiles(data.state.selectedFiles)
+        }
+        break
       case ChonkyActions.OpenFiles.id:
         if (data) {
-          ls(fs, data.payload.targetFile.id)
-          setSelectedPath(data.payload.targetFile.id)
-          setSelectedDir(data.payload.targetFile.id)
-          if (onPathSelected) {
-            onPathSelected(data.payload.targetFile.id)
+          const targetFile = data.payload.targetFile
+          const targetPath = targetFile.id
+          
+          // Check if navigation is allowed when restrictToPath is set
+          if (restrictToPath && !targetPath.startsWith(restrictToPath)) {
+            Notification.showError('Navigation outside instruction_media is not allowed.')
+            return
+          }
+          
+          // Only navigate if it's a directory
+          if (targetFile.isDir) {
+            ls(fs, targetPath)
+            setSelectedPath(targetPath)
+            setSelectedDir(targetPath)
+            if (onPathSelected) {
+              onPathSelected(targetPath)
+            }
           }
         }
         break
       case ChonkyActions.MouseClickFile.id:
         if (data) {
-          if (onPathSelected) {
-            onPathSelected(data.payload.file.id)
+          const { file, clickType } = data.payload
+          
+          if (multiselect) {
+            if (clickType === 'double' && onPathSelected) {
+              onPathSelected(file.id)
+            }
+          } else {
+            if (onPathSelected) {
+              onPathSelected(file.id)
+            }
           }
         }
         break
@@ -223,6 +269,40 @@ const LostFileBrowser = ({ fs, onPathSelected, mode = undefined, initPath }) => 
       default:
         break
     }
+  }
+
+  const renderConfirmButton = () => {
+    if (!multiselect) return null
+    
+    const count = selectedFiles.filter(f => !f.isDir).length
+    const hasValidSelection = count > 0
+    
+    return (
+      <CoreIconButton 
+        color={hasValidSelection ? 'primary' : 'secondary'}
+        disabled={!hasValidSelection}
+        isOutline={false}
+        toolTip={hasValidSelection ? `Insert ${count} image${count !== 1 ? 's' : ''}` : 'Select images to insert'}
+        tTipPlacement="left"
+        text={`Insert${count > 0 ? ` (${count})` : ''}`}
+        style={{
+          position: 'absolute',
+          top: 10,
+          right: 10,
+          zIndex: 1000,
+          boxShadow: '0 2px 8px rgba(0,0,0,0.25)',
+          borderRadius: '20px',
+        }}
+        onClick={() => {
+          const paths = selectedFiles
+            .filter(f => !f.isDir)
+            .map(f => f.id)
+          if (onPathsSelected) {
+            onPathsSelected(paths)
+          }
+        }}
+      />
+    )
   }
 
   const renderFileUpload = () => {
@@ -351,7 +431,8 @@ const LostFileBrowser = ({ fs, onPathSelected, mode = undefined, initPath }) => 
 
   return (
     <>
-      <div style={{ height: 400, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div style={{ height: 400, display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}>
+        {renderConfirmButton()}
         <FileBrowser
           defaultFileViewActionId={ChonkyActions.EnableListView.id}
           files={files}
