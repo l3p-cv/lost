@@ -18,6 +18,8 @@ import CoreIconButton from '../../components/CoreIconButton'
 
 const mdParser = new MarkdownIt()
 
+const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg']
+
 const EditInstruction = ({ instructionData, onSave, visLevel, onClose }) => {
   const [option, setOption] = useState('')
   const [description, setDescription] = useState('')
@@ -25,6 +27,7 @@ const EditInstruction = ({ instructionData, onSave, visLevel, onClose }) => {
   const [browseOpen, setBrowseOpen] = useState(false)
   const [selectedPath, setSelectedPath] = useState('')
   const [fs, setFs] = useState()
+  const [restrictToPath, setRestrictToPath] = useState('')
 
   const navigate = useNavigate()
   const { data: ownUser } = useOwnUser()
@@ -51,7 +54,7 @@ const EditInstruction = ({ instructionData, onSave, visLevel, onClose }) => {
       const fsVisLevel =
         !instructionData.group_id && visLevel === 'global' ? 'all' : visLevel
       const fsListResponse = await getFSListNew(fsVisLevel)
-      const fsGroupId = instructionData.group_id || ownUser?.idx
+      const fsGroupId = instructionData.group_id || ownUser?.default_group_id
 
       let fs = fsListResponse
         ?.filter((f) => f.groupId === fsGroupId)
@@ -75,6 +78,8 @@ const EditInstruction = ({ instructionData, onSave, visLevel, onClose }) => {
       const basePath = fs.rootPath
       const instructionMediaPath = `${basePath}/instruction_media`
       const groupPath = `${instructionMediaPath}/admin_media`
+
+      setRestrictToPath(instructionMediaPath)
 
       const ensureDir = async (fs, fullPath) => {
         const exists = await fbAPI.checkIfPathExists(fs, fullPath)
@@ -122,12 +127,25 @@ const EditInstruction = ({ instructionData, onSave, visLevel, onClose }) => {
 
   const handlePathSelection = async (newPath) => {
     setSelectedPath(newPath)
-    Notification.showInfo(`Selected path: ${newPath}`)
 
     const ext = newPath.split('.').pop().toLowerCase()
-    const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg']
 
-    if (imageExtensions.includes(ext)) {
+    const pathParts = newPath.split('/')
+    const lastPart = pathParts[pathParts.length - 1]
+    const hasFileExtension = lastPart.includes('.') && !lastPart.startsWith('.')
+
+    if (hasFileExtension) {
+      Notification.showInfo(`Selected path: ${newPath}`)
+
+      // If it's not an image file, show error
+      if (!IMAGE_EXTENSIONS.includes(ext)) {
+        Notification.showError('Selected file is not an image.')
+        return
+      }
+    }
+
+    // If it's an image file, process it
+    if (IMAGE_EXTENSIONS.includes(ext)) {
       try {
         // const groupId = instructionData.group_id || ownUser?.idx;
         // const relativePath = newPath.replace(`${fs.rootPath}/instruction_media/`, '');
@@ -152,9 +170,39 @@ const EditInstruction = ({ instructionData, onSave, visLevel, onClose }) => {
         console.error('Error selecting the file:', error)
         Notification.showError('Error inserting image. Please try again.')
       }
-    } else {
-      Notification.showError('Selected file is not an image.')
     }
+  }
+
+  const handlePathsSelection = async (paths) => {
+    let successCount = 0
+    let errorCount = 0
+    
+    for (const path of paths) {
+      const ext = path.split('.').pop().toLowerCase()
+      
+      if (IMAGE_EXTENSIONS.includes(ext)) {
+        try {
+          const encodedPath = encodeURIComponent(path)
+          const markdown = await getImageMarkdown(encodedPath)
+          setContent((prev) => `${prev}\n\n${markdown}`)
+          successCount++
+        } catch (err) {
+          console.error(`Could not insert image: ${path}`, err)
+          errorCount++
+        }
+      } else {
+        errorCount++
+      }
+    }
+    
+    if (successCount > 0) {
+      Notification.showSuccess(`Inserted ${successCount} image${successCount !== 1 ? 's' : ''}`)
+    }
+    if (errorCount > 0) {
+      Notification.showError(`Failed to insert ${errorCount} image${errorCount !== 1 ? 's' : ''}`)
+    }
+    
+    setBrowseOpen(false)
   }
 
   const handleSave = () => {
@@ -259,6 +307,9 @@ const EditInstruction = ({ instructionData, onSave, visLevel, onClose }) => {
         fullFs={visLevel === 'global' ? fs : fullFs}
         initPath={selectedPath}
         onPathSelected={handlePathSelection}
+        onPathsSelected={handlePathsSelection}
+        restrictToPath={restrictToPath}
+        allowedExtensions={IMAGE_EXTENSIONS}
       />
     </div>
   )

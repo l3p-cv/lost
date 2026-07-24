@@ -8,7 +8,10 @@ type ImageBrowserModalProps = {
   onClose: () => void
   fsLoading: boolean
   initPath: string
-  onPathSelected: () => void
+  onPathSelected?: (path: string) => void
+  onPathsSelected?: (paths: string[]) => void
+  restrictToPath?: string
+  allowedExtensions?: string[]
 }
 
 const ImageBrowserModal = ({
@@ -19,11 +22,16 @@ const ImageBrowserModal = ({
   fullFs,
   initPath,
   onPathSelected,
+  onPathsSelected,
+  restrictToPath,
+  allowedExtensions,
 }: ImageBrowserModalProps) => {
+  const hasMultiselect = !!onPathsSelected
+  
   return (
     <BaseModal
       isOpen={visible}
-      title="Select an Image"
+      title={hasMultiselect ? "Select Images" : "Select an Image"}
       onClosed={onClose}
       size="lg"
       isShowCancelButton
@@ -37,7 +45,11 @@ const ImageBrowserModal = ({
             <LostFileBrowser
               fs={fullFs}
               initPath={initPath}
+              multiselect={hasMultiselect}
               onPathSelected={onPathSelected}
+              onPathsSelected={onPathsSelected}
+              restrictToPath={restrictToPath}
+              allowedExtensions={allowedExtensions}
             />
           )
         )}
