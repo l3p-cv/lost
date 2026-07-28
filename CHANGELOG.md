@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `db_access.py`: Added DESIGNER role check to `get_alien()` and `may_access_pe()` - designers can now access pipe elements for dataset exports.
 - `file_access.py`: Added DESIGNER role check to `get_fs_db()` - designers can now access filesystems for annotask exports. 
 - `user/endpoint.py` - Fixed API tokens generation to use `str(user.idx)` to fix JWT validation error
+
 ## [3.5.2] - 2026-07-09
 ### Added
 ### Fixed
