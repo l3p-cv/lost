@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 ### Added
+### Fixed
+- `db_access.py`: Added DESIGNER role check to `get_alien()` and `may_access_pe()` - designers can now access pipe elements for dataset exports.
+- `file_access.py`: Added DESIGNER role check to `get_fs_db()` - designers can now access filesystems for annotask exports. 
+- `user/endpoint.py` - Fixed API tokens generation to use `str(user.idx)` to fix JWT validation error
 - `index.css`: Added shake animation for duplicate file rows with red highlight background
 - `EditInstruction.jsx` : Added multi-image selection and insertion with `handlePathsSelection` function, images now insert with one empty line between them for better readability.
 - `LostFileBrowser.jsx` : Added multiselect support for file browser with overlay "Insert" button, single-click selects files (multiselect mode), double-click inserts immediately, and fixed double insertion bug by restricting `OpenFiles` to directories only.

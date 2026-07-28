@@ -101,7 +101,7 @@ class UserList(Resource):
 
             if user.has_role(roles.DESIGNER) or user.has_role(roles.ADMINISTRATOR):
                 expires = datetime.timedelta(days=365000)
-                api_token = create_access_token(identity=user.idx, expires_delta=expires)
+                api_token = create_access_token(identity=str(user.idx), expires_delta=expires)
                 user.api_token = api_token
                 dbm.save_obj(user)
                 create_user_default_fs(dbm, user, g.idx)

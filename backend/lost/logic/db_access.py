@@ -23,7 +23,7 @@ class UserDbAccess:
     def get_alien(self, pe_id):
         pe = self.dbm.get_pipe_element(pe_id)
         user = self.user
-        if user.has_role(roles.ADMINISTRATOR):
+        if user.has_role(roles.ADMINISTRATOR) or user.has_role(roles.DESIGNER):
             return pe
         else:
             if self.uid != pe.pipe.manager_id:
@@ -34,7 +34,7 @@ class UserDbAccess:
     def may_access_pe(self, pe_id):
         """Check if user may access a specific pipeline element"""
         user = self.user
-        if user.has_role(roles.ADMINISTRATOR):
+        if user.has_role(roles.ADMINISTRATOR) or user.has_role(roles.DESIGNER):
             return True
         else:
             if isinstance(pe_id, model.PipeElement):
