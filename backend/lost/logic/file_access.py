@@ -162,6 +162,7 @@ class UserFileAccess:
         user = self.user
         if (
             user.has_role(roles.ADMINISTRATOR)
+            or user.has_role(roles.DESIGNER)
             or user.idx == fs_db.user_default_id
             or fs_db.group_id is None
             or fs_db.group_id in [g.group_id for g in user.groups]
