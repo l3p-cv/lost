@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## unreleased
 ### Added
 
+## [3.5.5] - 2026-08-04
+### Fixed
+- Additional fix for instruction rights, now really viewable by every user
+
 ## [3.5.4] - 2026-08-04
 ### Fixed
 - `SiaWrapper.tsx` : added `inFlightCreatesRef` ref that tracks inflight create requests by internal id,to prevent delete request from using stale resolveDbId, cleared stale mappings for new image.
