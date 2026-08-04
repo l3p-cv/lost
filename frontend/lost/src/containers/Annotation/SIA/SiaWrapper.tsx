@@ -157,6 +157,10 @@ const SiaWrapper = ({
   // Keyed by SIA internalId. Flushed once the createAnnotation response arrives and the mapping is populated.
   const pendingDeletesRef = useRef<Record<number, EditAnnotationData>>({})
 
+  // Tracks in-flight create requests by internalId.
+  // Prevents resolveDbId from returning stale DB IDs during rapid undo/redo cycles.
+  const inFlightCreatesRef = useRef<Set<number>>(new Set())
+
   // Set to true when the user submits the annotask. The finish call is deferred
   // until annoData updates, ensuring the last image's labeled state is committed
   // before the finish request is sent.
@@ -267,6 +271,11 @@ const SiaWrapper = ({
     if (newImageId !== imageId) {
       setImageBlob(undefined)
       setImageId(newImageId)
+      // Clear stale mappings and pending ops for new image
+      annotationIdMappingRef.current = {}
+      pendingEditsRef.current = {}
+      pendingDeletesRef.current = {}
+      inFlightCreatesRef.current = new Set()
     }
 
     // If submitAnnotask triggered a "next" request to commit the last image's labeled
@@ -292,10 +301,14 @@ const SiaWrapper = ({
     if (isNaN(siaInternalAnnoId)) return
 
     // Guard: null dbId means the server failed to create the annotation. Don't flush pending ops, but do keep the mapping so future edits/deletes can still be correlated to this failed create.
-    if (response.dbId === null) return
+    if (response.dbId === null) {
+      inFlightCreatesRef.current.delete(siaInternalAnnoId)
+      return
+    }
 
     // Write to ref immediately — visible to handleTimeTravel before React re-renders.
     annotationIdMappingRef.current[siaInternalAnnoId] = response.dbId
+    inFlightCreatesRef.current.delete(siaInternalAnnoId)
 
     // Pending delete supersedes pending edit — flush it with the now-known DB id.
     const pendingDelete = pendingDeletesRef.current[siaInternalAnnoId]
@@ -1026,7 +1039,11 @@ const SiaWrapper = ({
     // SIA keeps externalId: '' on user-drawn annotations — resolve the real DB id from the ref or externalId.
     // Mapping is checked first — it reflects the most recently assigned DB id after any delete+recreate cycles.
     // externalId in history snapshots may be stale (pointing to a deleted DB row).
+    // IMPORTANT: If a create is in-flight, don't use the mapping (stale DB ID from previous instance).
     const resolveDbId = (annotation: Annotation): string | null => {
+      if (inFlightCreatesRef.current.has(annotation.internalId)) {
+        return null
+      }
       const mappedId = annotationIdMappingRef.current[annotation.internalId]
       if (mappedId) return `${mappedId}`
       if (annotation.externalId && annotation.externalId !== '') return annotation.externalId
@@ -1051,6 +1068,8 @@ const SiaWrapper = ({
         },
         imageEditData,
       }
+      // Mark as in-flight before sending to prevent resolveDbId from returning stale DB ID
+      inFlightCreatesRef.current.add(newAnnotation.internalId)
       sendCreateAnnotation(changes)
     }
 
@@ -1081,6 +1100,8 @@ const SiaWrapper = ({
         imageEditData,
       }
       sendDeleteAnnotation(deleteAnnotationData)
+      // Clear stale mapping after delete to prevent reuse on recreate
+      delete annotationIdMappingRef.current[annotation.internalId]
     }
 
     // handle changed annotations (undo/redo of edits — label changes, moves, etc.)

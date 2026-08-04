@@ -7,6 +7,7 @@ import ViewInstruction from '../../Instruction/ViewInstruction' // Import ViewIn
 import CoreIconButton from '../../../components/CoreIconButton'
 import { CCol, CContainer, CProgress, CRow, CTooltip } from '@coreui/react'
 import { faCrown, faEye } from '@fortawesome/free-solid-svg-icons'
+import { showError } from '../../../components/Notification'
 
 const AnnotationTop = ({
   annoTask,
@@ -46,6 +47,9 @@ const AnnotationTop = ({
 
   const handleViewInstruction = () => {
     setViewingInstruction(selectedInstruction)
+    if (selectedInstruction === null) {
+      showError('No instructions available for this task')
+    }
   }
 
   if (!annoTask) {

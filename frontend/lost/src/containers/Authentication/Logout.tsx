@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLogout } from '../../api/auth/auth'
-import { CButton, CCard, CCardBody, CCardGroup, CContainer, CRow } from '@coreui/react'
+import { CButton, CCard, CCardBody, CCardGroup, CContainer, CRow, CSpinner } from '@coreui/react'
 
 const Logout = () => {
   const navigate = useNavigate()
@@ -70,25 +70,26 @@ const Logout = () => {
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
+                    marginTop: '5%',
                   }}
                 >
-                  <CButton
-                    disabled={isLoading}
-                    style={{ marginTop: '5%' }}
-                    color="primary"
-                    onClick={() => navigate('/login')}
-                  >
-                    Back to login page!
-                  </CButton>
-                  {canRetry && (
-                    <CButton
-                      disabled={isLoading}
-                      style={{ marginTop: '5%', marginLeft: '10px' }}
-                      color="secondary"
-                      onClick={runLogout}
-                    >
-                      Retry
-                    </CButton>
+                  {isLoading ? (
+                    <CSpinner color="primary" />
+                  ) : (
+                    <>
+                      <CButton color="primary" onClick={() => navigate('/login')}>
+                        Back to login page!
+                      </CButton>
+                      {canRetry && (
+                        <CButton
+                          style={{ marginLeft: '10px' }}
+                          color="secondary"
+                          onClick={runLogout}
+                        >
+                          Retry
+                        </CButton>
+                      )}
+                    </>
                   )}
                 </div>
               </CCardBody>
