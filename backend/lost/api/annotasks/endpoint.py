@@ -480,11 +480,6 @@ class UpdateAnnoTaskInstruction(Resource):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
-
-        if not user.has_role(roles.DESIGNER):
-            dbm.close_session()
-            return {"message": "You are not authorized."}, 401
-
         anno_task = dbm.get_anno_task(annotask_id)
 
         if not anno_task:
