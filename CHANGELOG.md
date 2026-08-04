@@ -7,8 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## unreleased
 ### Added
 ### Fixed
+- `SiaWrapper.tsx` : added `inFlightCreatesRef` ref that tracks inflight create requests by internal id,to prevent delete request from using stale resolveDbId, cleared stale mappings for new image.
 - `Logout.tsx` : Fixed button disabled  `Back to Login` button issue by adding CSpinner to the button until it still is in loading state.realigned Retry button accordingly.
 - `legacyHelper.tsx` : Fixed the -ve values saved for height and width on creation of BBox annotations by saving only their absolute values.
+- Notifications now viewable by Annotators (previously prevented by missing permissions)
+### Changed
+- `sia.py` : code reverted backend validation of twoDAnno being None ,to see delete error popup normally.
+
+## [3.5.3] - 2026-07-28
+### Fixed
+- `db_access.py`: Added DESIGNER role check to `get_alien()` and `may_access_pe()` - designers can now access pipe elements for dataset exports.
+- `file_access.py`: Added DESIGNER role check to `get_fs_db()` - designers can now access filesystems for annotask exports. 
+- `user/endpoint.py` - Fixed API tokens generation to use `str(user.idx)` to fix JWT validation error
 
 ## [3.5.2] - 2026-07-09
 ### Added
