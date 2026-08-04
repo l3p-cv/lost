@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 ### Added
+
+## [3.5.4] - 2026-08-04
 ### Fixed
 - `SiaWrapper.tsx` : added `inFlightCreatesRef` ref that tracks inflight create requests by internal id,to prevent delete request from using stale resolveDbId, cleared stale mappings for new image.
 - `Logout.tsx` : Fixed button disabled  `Back to Login` button issue by adding CSpinner to the button until it still is in loading state.realigned Retry button accordingly.
