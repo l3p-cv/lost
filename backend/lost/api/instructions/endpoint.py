@@ -23,26 +23,11 @@ class GetInstructions(Resource):
         default_group = dbm.get_group_by_name(user.user_name)
 
         if vis_level == VisLevel().USER:
-            if not user.has_role(roles.DESIGNER):
-                dbm.close_session()
-                return {"message": "Unauthorized"}, 401
-            else:
-                instructions = dbm.get_all_instructions(group_id=default_group.idx)
-
+            instructions = dbm.get_all_instructions(group_id=default_group.idx)
         elif vis_level == VisLevel().GLOBAL:
-            if not user.has_role(roles.ADMINISTRATOR):
-                dbm.close_session()
-                return {"message": "Unauthorized"}, 401
-            else:
-                instructions = dbm.get_all_instructions(global_only=True)
-
+            instructions = dbm.get_all_instructions(global_only=True)
         elif vis_level == VisLevel().ALL:
-            if not user.has_role(roles.DESIGNER):
-                dbm.close_session()
-                return {"message": "Unauthorized"}, 401
-            else:
-                instructions = dbm.get_all_instructions(group_id=default_group.idx, add_global=True)
-
+            instructions = dbm.get_all_instructions(group_id=default_group.idx, add_global=True)
         else:
             dbm.close_session()
             return {"message": "Invalid visibility level"}, 400
@@ -102,7 +87,6 @@ class AddInstruction(Resource):
 class EditInstruction(Resource):
     @jwt_required()
     def put(self):
-
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
@@ -142,7 +126,6 @@ class EditInstruction(Resource):
 class DeleteInstruction(Resource):
     @jwt_required()
     def delete(self, id):
-
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
