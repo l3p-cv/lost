@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 ### Added
+- AnnotationTop shows basename of image one views
 
 ## [3.5.5] - 2026-08-04
 ### Fixed

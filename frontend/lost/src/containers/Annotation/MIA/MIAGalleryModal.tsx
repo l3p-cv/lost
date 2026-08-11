@@ -1,11 +1,17 @@
 import { useEffect } from 'react'
 import { TransformWrapper, TransformComponent } from '@pronestor/react-zoom-pan-pinch'
 import { CCol, CFormSwitch, CRow } from '@coreui/react'
-import { faArrowLeft, faArrowRight, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons'
+import {
+  faArrowLeft,
+  faArrowRight,
+  faCheck,
+  faTimes,
+} from '@fortawesome/free-solid-svg-icons'
 import BaseModal from '../../../components/BaseModal'
 import CoreIconButton from '../../../components/CoreIconButton'
 import CenteredSpinner from '../../../components/CenteredSpinner'
 import { useGetMiaImage } from '../../../api/mia'
+import { useGetSiaImageName } from '../../../api/sia'
 
 type MIAGalleryModalProps = {
   images: { id: number; type: string }[]
@@ -46,9 +52,17 @@ const GalleryImage = ({ imageBase }: { imageBase: { id: number; type: string } }
 
   return (
     <TransformWrapper>
-      <TransformComponent wrapperStyle={{ width: '100%' }} contentStyle={{ width: '100%' }}>
+      <TransformComponent
+        wrapperStyle={{ width: '100%' }}
+        contentStyle={{ width: '100%' }}
+      >
         <img
-          style={{ width: '100%', height: '70vh', objectFit: 'contain', background: 'black' }}
+          style={{
+            width: '100%',
+            height: '70vh',
+            objectFit: 'contain',
+            background: 'black',
+          }}
           src={miaImage.data}
           alt=""
         />
@@ -69,6 +83,7 @@ const MIAGalleryModal = ({
   const currentImage = openIndex !== null ? images[openIndex] : null
   const hasPrev = openIndex !== null && openIndex > 0
   const hasNext = openIndex !== null && openIndex < totalCount - 1
+  const { data: imageName } = useGetSiaImageName(images[openIndex]?.id)
 
   useEffect(() => {
     if (!isOpen) return
@@ -87,7 +102,12 @@ const MIAGalleryModal = ({
     return (
       <CRow className="w-100 align-items-center">
         <CCol />
-        <CCol className="d-flex justify-content-center align-items-center">
+        <CCol className="d-flex justify-content-start align-items-center">
+          <span style={{ color: '#aaa', fontSize: '0.9rem' }}>
+            Image: {imageName?.img_name}
+          </span>
+        </CCol>
+        <CCol>
           <span style={{ color: '#aaa', fontSize: '0.9rem' }}>
             {openIndex + 1} / {totalCount}
           </span>
