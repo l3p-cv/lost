@@ -6,22 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 ### Added
-- `index.css`: Added shake animation for duplicate file rows with red highlight background
-- `EditInstruction.jsx` : Added multi-image selection and insertion with `handlePathsSelection` function, images now insert with one empty line between them for better readability.
-- `LostFileBrowser.jsx` : Added multiselect support for file browser, single-click selects files (multiselect mode), double-click inserts immediately, and fixed double insertion bug by restricting `OpenFiles` to directories only.
-- `ImageBrowserModal.tsx` : Added `onPathsSelected` prop and multiselect mode support, dynamic modal title changes based on selection mode, renders `Insert` button in modal footer beside `Close` button with live selection count.
-- `useJoyrideSteps.tsx` : Added joyride step for Insert button with multiselect instructions (Ctrl+Click / Shift+Click).
-### Fixed
-- `EditInstruction.jsx` : Fixed the instruction_media creation when it doesnt exist.
-- `LostFileBrowser.jsx` : Fixed `restrictToPath` boundary check, duplicate shake using composite `name-size` key, and double-click during tour now selects instead of inserting.
-- `EditInstruction.jsx` : Fixed joyride `save-step` dispatch on multiselect Insert and consistent `\n\n` image spacing.
-- `JoyrideTour.jsx` : Fixed tour not completing on last step by checking out-of-bounds `nextIndex`.
-- `RunningPipelines.jsx`, `PipelineView.tsx` : Fixed joyride dispatch events and step checks for correct tour advancement.
-- `tourStyles.js` : Removed step 5 from `hideNextInstruction` so Next button is visible during file selection.
-### Changed
-- `LostFileBrowser.jsx`: Enhanced FileBrowser visibility (flex height collapse with AutoSizer) and uploading state retention (files now persist when adding more instead of being replaced) by replacing dropzone file summary with per-file table (name/size/type columns), added per-file remove buttons and "Clear All" button at top, implemented duplicate file detection with shake animation, auto-scroll to duplicate rows, and info toast notification on duplicate upload selection.
-- `LostFileBrowser.jsx`: Modified `OpenFiles` handler to navigate only directories with `restrictToPath` validation, updated `MouseClickFile` to differentiate single/double-click in multiselect mode, non-matching files now hidden when `allowedExtensions` is set (folders still shown), and marked folder-chain entries as `isDir: true` to keep navbar breadcrumb navigation working.
-- Shifted all instruction tour step indices by +1 across `stepMaps.js`, `tourNavigationHandler.js`, `tourClickHandler.js`, `tourStyles.js`, `useTourStepManager.js`, `EditInstruction.jsx`, `Instruction.jsx` after inserting Insert button step at index 6.
+- AnnotationTop shows basename of image one views
 
 ## [3.5.5] - 2026-08-04
 ### Fixed

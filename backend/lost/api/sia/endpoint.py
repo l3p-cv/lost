@@ -1,6 +1,7 @@
 import base64
 import json
 import traceback
+import os
 
 import cv2
 import flask
@@ -182,6 +183,33 @@ class Filter(Resource):
             return "data:image/jpeg;base64," + data64.decode("utf-8")
 
 
+@namespace.route("/image/<int:image_id>/name")
+@api.doc(security="apikey")
+class SiaImagePath(Resource):
+    @api.doc(security="apikey", description="Get SIA Image name")
+    @api.response(200, "Successfully returns the image basename.")
+    @api.response(403, "Forbidden", error_model)
+    @api.response(404, "Not Found", error_model)
+    @jwt_required()
+    def get(self, image_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.ANNOTATOR):
+            dbm.close_session()
+            return api.abort(403, f"You need to be {roles.ANNOTATOR} in order to perform this request.")
+
+        else:
+            img = dbm.get_image_anno(image_id)
+            if img is None:
+                dbm.close_session()
+                return {"error": "Not found"}, 404
+            flask.current_app.logger.info(f"img.img_path: {img.img_path}")
+            flask.current_app.logger.info(f"img.fs.name: {img.fs.name}")
+            dbm.close_session()
+            return {"img_name": os.path.basename(img.img_path)}
+
+
 @namespace.route("/image/<int:image_id>/filters")
 @api.doc(security="apikey")
 class ImageFilters(Resource):
@@ -229,6 +257,7 @@ class ImageFilters(Resource):
             dbm.close_session()
             return {"error": str(e)}, 500
 
+
 # Used to populate the sidebar with all images ids and numbers of the annotask and their numbers for the annotator to quickly jump to an image
 @namespace.route("/images")
 @api.doc(security="apikey")
@@ -256,19 +285,20 @@ class SiaImageList(Resource):
         # get_next/get_first/get_previous. This is the definitive signal — no need
         # to track lookahead_id or compare indices.
         user_annos = [
-            a for a in all_annos
+            a
+            for a in all_annos
             if a.user_id == identity
             and (
-                a.state in visited_states                                              # submitted or revisiting
-                or a.idx == current_img_id                                             # always show current
-                or (a.state == state.Anno.LOCKED and a.timestamp_lock is not None)    # genuinely visited
+                a.state in visited_states  # submitted or revisiting
+                or a.idx == current_img_id  # always show current
+                or (a.state == state.Anno.LOCKED and a.timestamp_lock is not None)  # genuinely visited
             )
         ]
         total = len(user_annos)
-        images = [{"imageId": a.idx, "number": i + 1, "total": total}
-                  for i, a in enumerate(user_annos)]
+        images = [{"imageId": a.idx, "number": i + 1, "total": total} for i, a in enumerate(user_annos)]
         dbm.close_session()
         return {"images": images}
+
 
 # Used to return a scaled-down image for the side bar
 @namespace.route("/image/<int:image_id>/thumbnail")
@@ -282,7 +312,9 @@ class SiaThumbnail(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR) and not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return api.abort(403, f"You need to be {roles.ANNOTATOR} or {roles.DESIGNER} in order to perform this request.")
+            return api.abort(
+                403, f"You need to be {roles.ANNOTATOR} or {roles.DESIGNER} in order to perform this request."
+            )
         try:
             img = dbm.get_image_anno(image_id)
             if img is None:
@@ -297,7 +329,7 @@ class SiaThumbnail(Resource):
                     dbm.close_session()
                     return {"error": "Group not found"}, 404
 
-                is_anno_group = (at_group.is_user_default == 0)
+                is_anno_group = at_group.is_user_default == 0
                 is_owner = img.user_id == identity
 
                 if not (is_owner or is_anno_group):
