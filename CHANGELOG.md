@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `EditInstruction.jsx` : Fixed the instruction_media creation when it doesnt exist.
 ### Changed
 - `LostFileBrowser.jsx`: Enhanced FileBrowser visibility (flex height collapse with AutoSizer) and uploading state retention (files now persist when adding more instead of being replaced) by replacing dropzone file summary with per-file table (name/size/type columns), added per-file remove buttons and "Clear All" button at top, implemented duplicate file detection with shake animation, auto-scroll to duplicate rows, and info toast notification on duplicate upload selection.
-- `LostFileBrowser.jsx`: - `LostFileBrowser.jsx`: Modified `OpenFiles` handler to navigate only directories with `restrictToPath` validation, updated `MouseClickFile` to differentiate single/double-click in multiselect mode, changed container to `position: relative` for overlay positioning, and added file filtering `selected` by `allowedExtensions`.
+- `LostFileBrowser.jsx`: Modified `OpenFiles` handler to navigate only directories with `restrictToPath` validation, updated `MouseClickFile` to differentiate single/double-click in multiselect mode, changed container to `position: relative` for overlay positioning, added file filtering by `allowedExtensions`, and marked folder-chain entries as `isDir: true` to keep navbar breadcrumb navigation working.
 
 ## [3.5.5] - 2026-08-04
 ### Fixed
