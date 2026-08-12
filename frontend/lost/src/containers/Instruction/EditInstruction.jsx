@@ -153,7 +153,7 @@ const EditInstruction = ({ instructionData, onSave, visLevel, onClose }) => {
         const encodedPath = encodeURIComponent(`${newPath}`)
         try {
           const markdown = await getImageMarkdown(encodedPath)
-          setContent((prev) => `${prev}\n${markdown}`)
+          setContent((prev) => `${prev}\n\n${markdown}`)
           setBrowseOpen(false)
           const currentStep = localStorage.getItem('currentStep')
           if (currentStep !== '12') {
@@ -295,7 +295,7 @@ const EditInstruction = ({ instructionData, onSave, visLevel, onClose }) => {
           className="browse-files-button"
           icon={faFolderOpen}
           color="info"
-          text="Add Image"
+          text="Add Images"
           onClick={handleBrowseClick}
         />
       </div>

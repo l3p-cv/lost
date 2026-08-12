@@ -1,7 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { CSpinner } from '@coreui/react'
+import { faImages } from '@fortawesome/free-solid-svg-icons'
 import LostFileBrowser from './LostFileBrowser'
 import BaseModal from '../BaseModal'
+import CoreIconButton from '../CoreIconButton'
 
 type ImageBrowserModalProps = {
   visible: boolean
@@ -27,15 +29,45 @@ const ImageBrowserModal = ({
   allowedExtensions,
 }: ImageBrowserModalProps) => {
   const hasMultiselect = !!onPathsSelected
-  
+  const [selectedFiles, setSelectedFiles] = useState<any[]>([])
+
+  const handleSelectionChange = (files: any[]) => {
+    setSelectedFiles(files)
+  }
+
+  const imageCount = selectedFiles.filter(f => !f.isDir).length
+
+  const handleInsert = () => {
+    const paths = selectedFiles.filter(f => !f.isDir).map(f => f.id)
+    setSelectedFiles([])
+    onPathsSelected?.(paths)
+  }
+
+  const handleClose = () => {
+    setSelectedFiles([])
+    onClose()
+  }
+
+  const footer = hasMultiselect ? (
+    <CoreIconButton
+      icon={faImages}
+      color="info"
+      isOutline={true}
+      disabled={imageCount === 0}
+      text={`Insert${imageCount > 0 ? ` (${imageCount})` : ''}`}
+      onClick={handleInsert}
+    />
+  ) : null
+
   return (
     <BaseModal
       isOpen={visible}
       title={hasMultiselect ? "Select Images" : "Select an Image"}
-      onClosed={onClose}
+      onClosed={handleClose}
       size="lg"
       isShowCancelButton
-      toggle={onClose}
+      toggle={handleClose}
+      footer={footer}
     >
       <div className="file-browser-modal">
         {fsLoading ? (
@@ -48,6 +80,7 @@ const ImageBrowserModal = ({
               multiselect={hasMultiselect}
               onPathSelected={onPathSelected}
               onPathsSelected={onPathsSelected}
+              onSelectionChange={handleSelectionChange}
               restrictToPath={restrictToPath}
               allowedExtensions={allowedExtensions}
             />

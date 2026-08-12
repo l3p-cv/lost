@@ -8,13 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - `index.css`: Added shake animation for duplicate file rows with red highlight background
 - `EditInstruction.jsx` : Added multi-image selection and insertion with `handlePathsSelection` function, images now insert with one empty line between them for better readability.
-- `LostFileBrowser.jsx` : Added multiselect support for file browser with overlay "Insert" button, single-click selects files (multiselect mode), double-click inserts immediately, and fixed double insertion bug by restricting `OpenFiles` to directories only.
-- `ImageBrowserModal.tsx` : Added `onPathsSelected` prop and multiselect mode support, dynamic modal title changes based on selection mode.
+- `LostFileBrowser.jsx` : Added multiselect support for file browser, single-click selects files (multiselect mode), double-click inserts immediately, and fixed double insertion bug by restricting `OpenFiles` to directories only.
+- `ImageBrowserModal.tsx` : Added `onPathsSelected` prop and multiselect mode support, dynamic modal title changes based on selection mode, renders `Insert` button in modal footer beside `Close` button with live selection count.
 ### Fixed
 - `EditInstruction.jsx` : Fixed the instruction_media creation when it doesnt exist.
 ### Changed
 - `LostFileBrowser.jsx`: Enhanced FileBrowser visibility (flex height collapse with AutoSizer) and uploading state retention (files now persist when adding more instead of being replaced) by replacing dropzone file summary with per-file table (name/size/type columns), added per-file remove buttons and "Clear All" button at top, implemented duplicate file detection with shake animation, auto-scroll to duplicate rows, and info toast notification on duplicate upload selection.
-- `LostFileBrowser.jsx`: Modified `OpenFiles` handler to navigate only directories with `restrictToPath` validation, updated `MouseClickFile` to differentiate single/double-click in multiselect mode, changed container to `position: relative` for overlay positioning, added file filtering by `allowedExtensions`, and marked folder-chain entries as `isDir: true` to keep navbar breadcrumb navigation working.
+- `LostFileBrowser.jsx`: Modified `OpenFiles` handler to navigate only directories with `restrictToPath` validation, updated `MouseClickFile` to differentiate single/double-click in multiselect mode, non-matching files now hidden when `allowedExtensions` is set (folders still shown), and marked folder-chain entries as `isDir: true` to keep navbar breadcrumb navigation working.
 
 ## [3.5.5] - 2026-08-04
 ### Fixed
