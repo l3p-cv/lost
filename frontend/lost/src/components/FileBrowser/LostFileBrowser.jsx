@@ -166,7 +166,8 @@ const LostFileBrowser = ({ fs, onPathSelected,  onPathsSelected, multiselect = f
     }
     
     setFiles(files)
-    setFolderChain(res_data['folderChain'])
+    const normalizedChain = (res_data['folderChain'] || []).map(f => ({ ...f, isDir: true }))
+    setFolderChain(normalizedChain)
   }
 
   useEffect(() => {
