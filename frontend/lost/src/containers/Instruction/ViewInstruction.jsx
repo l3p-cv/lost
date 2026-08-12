@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import MarkdownIt from 'markdown-it'
 import { CModal, CModalBody, CModalHeader, CButton } from '@coreui/react'
+import { CRow, CCol } from '@coreui/react'
 import { FaExpand, FaCompress } from 'react-icons/fa'
+import InfoText from '../../components/InfoText'
 
 const mdParser = new MarkdownIt()
 
-const ViewInstruction = ({ instructionData, onClose, onEdit }) => {
+const ViewInstruction = ({ instructionData, onClose }) => {
   const [isFullScreen, setIsFullScreen] = useState(false)
 
   useEffect(() => {
@@ -29,29 +31,17 @@ const ViewInstruction = ({ instructionData, onClose, onEdit }) => {
     <div
       className="p-4"
       style={{
-        width: isFullScreen ? '100%' : '700px',
+        width: '100%',
         margin: isFullScreen ? '0' : '0 auto',
         textAlign: 'left',
       }}
     >
-      <div className="mb-4">
-        <strong className="text-primary">Annotation Option:</strong>
-        <p>{instructionData.option}</p>
-      </div>
-
-      <div className="mb-4">
-        <strong className="text-primary">Description:</strong>
-        <p>{instructionData.description}</p>
-      </div>
-
-      <div className="mb-4">
-        <strong className="text-primary">Instruction:</strong>
+      <div>
         <div
           className="p-4 border rounded-lg shadow-sm overflow-auto"
           style={{
             backgroundColor: '#f9f9f9',
-            maxHeight: isFullScreen ? 'calc(100vh - 150px)' : '400px',
-            borderRadius: '10px',
+            maxHeight: isFullScreen ? 'calc(100vh - 150px)' : 'calc(100vh - 210px)',
             boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
             fontFamily: 'Arial, sans-serif',
             overflow: 'auto',
@@ -68,7 +58,7 @@ const ViewInstruction = ({ instructionData, onClose, onEdit }) => {
 
   return (
     <CModal
-      size={isFullScreen ? 'xl' : 'lg'}
+      size="xl"
       visible={true}
       onClose={onClose}
       fullscreen={isFullScreen}
@@ -76,7 +66,17 @@ const ViewInstruction = ({ instructionData, onClose, onEdit }) => {
     >
       <CModalHeader closeButton>
         <div className="d-flex justify-content-between align-items-center w-100">
-          <h5 className="mb-0">Instruction Details</h5>
+          <h5 className="mb-0">
+            <CRow>
+              <CCol xs={'auto'}>Instruction:</CCol>
+              <CCol xs={'auto'}>
+                <InfoText
+                  text={instructionData.option}
+                  toolTip={instructionData.description}
+                />
+              </CCol>
+            </CRow>
+          </h5>
           <div>
             <CButton color="info" size="sm" onClick={toggleFullScreen} className="me-2">
               {isFullScreen ? <FaCompress /> : <FaExpand />}
