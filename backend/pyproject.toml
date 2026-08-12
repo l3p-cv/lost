@@ -41,6 +41,7 @@ dependencies = [
     "scikit-image>=0.25.2",
     "sqlalchemy>=2.0.41",
     "tritonclient[all]>=2.59.0",
+    "urllib3>=2.6.3",
     "uwsgi>=2.0.29",
     "werkzeug>=3.1.3",
 ]

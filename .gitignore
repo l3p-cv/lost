@@ -5,3 +5,4 @@ package-lock.json
 __pycache__
 frontend/lost/dist
 docker/lost/debug_entrypoint.sh
+.venv/
