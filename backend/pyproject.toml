@@ -5,7 +5,7 @@ description = "LOST (Label Object and Save Time) is a flexible web-based framewo
 authors = [{ name = "LOST Community" }]
 readme = "README.md"
 keywords = ['python']
-requires-python = ">=3.10,<4.0"
+requires-python = ">=3.11,<4.0"
 classifiers = [
     "Intended Audience :: Developers",
     "Programming Language :: Python",
@@ -18,7 +18,7 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [
-    "cryptography>=45.0.2",
+    "cryptography>=50.0.0",
     "dask[complete]>=2026.6.0",
     "flask>=3.1.1",
     "flask-cors>=6.0.0",
@@ -37,11 +37,11 @@ dependencies = [
     "pydantic>=2.11.7",
     "pygelf>=0.4.2",
     "pytest>=8.3.5",
-    "requests>=2.32.3",
-    "scikit-image>=0.25.2",
+    "requests>=2.34.2",
+    "scikit-image>=0.26.0",
     "sqlalchemy>=2.0.41",
-    "tritonclient[all]>=2.59.0",
-    "urllib3>=2.6.3",
+    "tritonclient[all]>=2.71.0",
+    "urllib3>=2.7.0",
     "uwsgi>=2.0.29",
     "werkzeug>=3.1.3",
 ]
