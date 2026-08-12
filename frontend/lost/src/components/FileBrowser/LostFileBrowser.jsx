@@ -1,5 +1,5 @@
 import { CCol, CRow, CTable, CTableHead, CTableBody, CTooltip } from '@coreui/react'
-import { faTimes, faUpload, faTrash} from '@fortawesome/free-solid-svg-icons'
+import { faTimes, faUpload, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   ChonkyActions,
@@ -17,7 +17,7 @@ import * as Notification from '../Notification'
 import * as fb_api from '../../api/file_browser'
 import CoreIconButton from '../CoreIconButton'
 
-const LostFileBrowser = ({ fs, onPathSelected,  onPathsSelected, multiselect = false, mode = undefined, initPath, restrictToPath, allowedExtensions }) => {
+const LostFileBrowser = ({ fs, onPathSelected, onPathsSelected, onSelectionChange, multiselect = false, mode = undefined, initPath, restrictToPath, allowedExtensions }) => {
   const [files, setFiles] = useState([])
   const [folderChain, setFolderChain] = useState([])
   const [size, setSize] = useState(0)
@@ -25,7 +25,6 @@ const LostFileBrowser = ({ fs, onPathSelected,  onPathsSelected, multiselect = f
   const [selectedDir, setSelectedDir] = useState('/')
   const [copiedAccecptedFiles, setCopiedAcceptedFiles] = useState([])
   const [shakingFiles, setShakingFiles] = useState(new Set())
-  const [selectedFiles, setSelectedFiles] = useState([])
   const rowRefs = useRef({})
   const { acceptedFiles, getRootProps, getInputProps, isDragReject, isFocused } =
     useDropzone({})
@@ -148,20 +147,12 @@ const LostFileBrowser = ({ fs, onPathSelected,  onPathsSelected, multiselect = f
     
     let files = res_data['files']
     
-    // Mark non-allowed files as unselectable when allowedExtensions is specified
+    // Hide non-allowed files when allowedExtensions is specified (folders always shown)
     if (allowedExtensions && files) {
-      files = files.map(file => {
-        // Folders are always selectable
-        if (file.isDir) return file
-        
-        // Check if file has allowed extension
+      files = files.filter(file => {
+        if (file.isDir) return true
         const ext = file.name.split('.').pop()?.toLowerCase()
-        const isAllowed = allowedExtensions.includes(ext)
-        
-        return {
-          ...file,
-          selectable: isAllowed
-        }
+        return allowedExtensions.includes(ext)
       })
     }
     
@@ -206,7 +197,7 @@ const LostFileBrowser = ({ fs, onPathSelected,  onPathsSelected, multiselect = f
     switch (data.id) {
       case ChonkyActions.ChangeSelection.id:
         if (multiselect && data.state && data.state.selectedFiles) {
-          setSelectedFiles(data.state.selectedFiles)
+          onSelectionChange?.(data.state.selectedFiles)
         }
         break
       case ChonkyActions.OpenFiles.id:
@@ -270,40 +261,6 @@ const LostFileBrowser = ({ fs, onPathSelected,  onPathsSelected, multiselect = f
       default:
         break
     }
-  }
-
-  const renderConfirmButton = () => {
-    if (!multiselect) return null
-    
-    const count = selectedFiles.filter(f => !f.isDir).length
-    const hasValidSelection = count > 0
-    
-    return (
-      <CoreIconButton 
-        color={hasValidSelection ? 'primary' : 'secondary'}
-        disabled={!hasValidSelection}
-        isOutline={false}
-        toolTip={hasValidSelection ? `Insert ${count} image${count !== 1 ? 's' : ''}` : 'Select images to insert'}
-        tTipPlacement="left"
-        text={`Insert${count > 0 ? ` (${count})` : ''}`}
-        style={{
-          position: 'absolute',
-          top: 10,
-          right: 10,
-          zIndex: 1000,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.25)',
-          borderRadius: '20px',
-        }}
-        onClick={() => {
-          const paths = selectedFiles
-            .filter(f => !f.isDir)
-            .map(f => f.id)
-          if (onPathsSelected) {
-            onPathsSelected(paths)
-          }
-        }}
-      />
-    )
   }
 
   const renderFileUpload = () => {
@@ -432,8 +389,7 @@ const LostFileBrowser = ({ fs, onPathSelected,  onPathsSelected, multiselect = f
 
   return (
     <>
-      <div style={{ height: 400, display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}>
-        {renderConfirmButton()}
+      <div style={{ height: 400, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         <FileBrowser
           defaultFileViewActionId={ChonkyActions.EnableListView.id}
           files={files}
