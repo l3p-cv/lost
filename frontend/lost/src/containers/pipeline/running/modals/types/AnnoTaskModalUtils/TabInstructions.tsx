@@ -215,7 +215,6 @@ const TabInstructions = ({ annotask, updateAnnotask }: TabInstructionsProps) => 
         <ViewInstruction
           instructionData={viewingInstruction}
           onClose={() => setViewingInstruction(null)}
-          onEdit={undefined}
         />
       )}
     </CRow>

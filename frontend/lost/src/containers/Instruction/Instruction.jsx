@@ -300,7 +300,6 @@ const Instruction = ({ visLevel }) => {
         <ViewInstruction
           instructionData={viewingInstruction}
           onClose={() => setViewingInstruction(null)}
-          onEdit={handleEditClick}
         />
       )}
 
