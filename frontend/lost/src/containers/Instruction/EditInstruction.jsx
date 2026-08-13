@@ -156,7 +156,7 @@ const EditInstruction = ({ instructionData, onSave, visLevel, onClose }) => {
           setContent((prev) => `${prev}\n\n${markdown}`)
           setBrowseOpen(false)
           const currentStep = localStorage.getItem('currentStep')
-          if (currentStep !== '12') {
+          if (currentStep !== '13') {
             window.dispatchEvent(
               new CustomEvent('joyride-next-step', {
                 detail: { step: 'save-step' },
@@ -201,8 +201,18 @@ const EditInstruction = ({ instructionData, onSave, visLevel, onClose }) => {
     if (errorCount > 0) {
       Notification.showError(`Failed to insert ${errorCount} image${errorCount !== 1 ? 's' : ''}`)
     }
-    
+
     setBrowseOpen(false)
+    if (successCount > 0) {
+      const currentStep = localStorage.getItem('currentStep')
+      if (currentStep !== '13') {
+        window.dispatchEvent(
+          new CustomEvent('joyride-next-step', {
+            detail: { step: 'save-step' },
+          }),
+        )
+      }
+    }
   }
 
   const handleSave = () => {
@@ -217,7 +227,7 @@ const EditInstruction = ({ instructionData, onSave, visLevel, onClose }) => {
       instruction: content,
     })
     const currentStep = localStorage.getItem('currentStep')
-    if (currentStep === '12') {
+    if (currentStep === '13') {
       console.log('Current Step to dispatch pipelines-nav:', currentStep)
       window.dispatchEvent(
         new CustomEvent('joyride-next-step', {
@@ -268,7 +278,7 @@ const EditInstruction = ({ instructionData, onSave, visLevel, onClose }) => {
             'Current Step on Editor Focus: didnt enter save-step2 as current step is not 10 it is ',
             currentStep,
           )
-          if (currentStep === '10') {
+          if (currentStep === '11') {
             console.log('Current Step on Editor Focus:save-step2', currentStep)
             window.dispatchEvent(
               new CustomEvent('joyride-next-step', { detail: { step: 'save-step2' } }),

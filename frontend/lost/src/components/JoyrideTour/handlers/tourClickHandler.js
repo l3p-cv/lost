@@ -10,11 +10,11 @@ export const useTourClickHandler = (
 ) => {
   const getClickStepsForTourType = () => {
     if (pipelineType === 'instructionTour' && latestPipelineId == undefined) {
-      return [8, 11, 15, 22, 23, 27, 29, 31, 33, 35, 38, 41, 44]
+      return [6, 9, 12, 16, 23, 24, 28, 30, 32, 34, 36, 39, 42, 44, 45]
     } else if (pipelineType === 'miaPipeline' || pipelineType === 'mainPipeline') {
       return [29, 30]
     } else if (pipelineType === 'instructionTour' && latestPipelineId) {
-      return [8, 11, 14, 16, 17]
+      return [6, 9, 12, 14, 15, 16, 17, 18]
     } else if (pipelineType === 'labelTour') {
       return [3, 5, 7, 10, 11, 12, 15, 16, 17, 20, 21]
     }

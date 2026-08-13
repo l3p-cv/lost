@@ -128,7 +128,7 @@ export const RunningPipelines = () => {
           'it will be made',
           currentStep + 1,
         )
-        if (isJoyrideRunning && (currentStep === 42 || currentStep === 14)) {
+        if (isJoyrideRunning && (currentStep === 43 || currentStep === 15)) {
           window.dispatchEvent(
             new CustomEvent('joyride-next-step', {
               detail: { step: 'view-created-pipeline' },

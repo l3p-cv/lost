@@ -27,12 +27,12 @@ export const getTooltipStyles = (
 
   if (pipelineType === 'instructionTour' && latestPipelineId == undefined) {
     const hideNextInstruction = [
-      0, 4, 5, 6, 7, 9, 11, 10, 22, 18, 19, 20, 27, 28, 29, 31, 33, 35, 37, 38, 41, 42,
-      43, 44,
+      0, 4, 6, 7, 8, 10, 11, 12, 19, 20, 21, 23, 28, 29, 30, 32, 34, 36, 38, 39, 42, 43,
+      44, 45,
     ]
     const hideBackInstruction = [
-      1, 2, 5, 6, 7, 8, 9, 10, 11, 12, 13, 22, 25, 16, 17, 18, 19, 20, 23, 28, 30, 32, 34,
-      36, 38, 39, 42, 43, 44, 45,
+      1, 2, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 17, 18, 19, 20, 21, 23, 24, 26, 29, 31, 33,
+      35, 37, 39, 40, 43, 44, 45, 46,
     ]
     return {
       ...baseStyles,
@@ -40,8 +40,8 @@ export const getTooltipStyles = (
       ...(hideBackInstruction.includes(stepIndex) && { buttonBack: { display: 'none' } }),
     }
   } else if (pipelineType === 'instructionTour' && latestPipelineId) {
-    const hideNextInstruction = [0, 4, 5, 6, 7, 9, 11, 10, 14, 15, 16]
-    const hideBackInstruction = [1, 2, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16, 14, 15, 16, 17]
+    const hideNextInstruction = [0, 4, 6, 7, 8, 10, 11, 12, 15, 16, 17]
+    const hideBackInstruction = [1, 2, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
     return {
       ...baseStyles,
       ...(hideNextInstruction.includes(stepIndex) && { buttonNext: { display: 'none' } }),
@@ -79,7 +79,7 @@ export const getTooltipStyles = (
 
 export const getOverlayStyles = (stepIndex, pipelineType, latestPipelineId) => {
   if (pipelineType === 'instructionTour' && latestPipelineId == undefined) {
-    const noOverlaySteps = [6, 11, 21, 26, 28, 30, 34, 35, 36, 37, 38, 44, 45]
+    const noOverlaySteps = [7, 12, 22, 27, 29, 31, 35, 36, 37, 38, 39, 45, 46]
     return {
       options: {
         overlayColor: noOverlaySteps.includes(stepIndex)
@@ -93,7 +93,7 @@ export const getOverlayStyles = (stepIndex, pipelineType, latestPipelineId) => {
       }),
     }
   } else if (pipelineType === 'instructionTour' && latestPipelineId) {
-    const noOverlaySteps = [6, 11, 16, 17]
+    const noOverlaySteps = [7, 12, 17, 18]
     return {
       options: {
         overlayColor: noOverlaySteps.includes(stepIndex)

@@ -58,29 +58,29 @@ const LostFileBrowser = ({ fs, onPathSelected, onPathsSelected, onSelectionChang
   useEffect(() => {
     if (acceptedFiles.length === 0) return
     
-    const duplicateNames = new Set(
+    const duplicateKeys = new Set(
       acceptedFiles
         .filter((newFile) =>
           copiedAccecptedFiles.some(
             (existingFile) => existingFile.name === newFile.name && existingFile.size === newFile.size
           )
         )
-        .map((f) => f.name)
+        .map((f) => `${f.name}-${f.size}`)
     )
     
-    if (duplicateNames.size > 0) {
-      setShakingFiles(duplicateNames)
+    if (duplicateKeys.size > 0) {
+      setShakingFiles(duplicateKeys)
       
       setTimeout(() => {
-        const firstDuplicateName = Array.from(duplicateNames)[0]
-        const rowElement = rowRefs.current[firstDuplicateName]
+        const firstDuplicateKey = Array.from(duplicateKeys)[0]
+        const rowElement = rowRefs.current[firstDuplicateKey]
         if (rowElement) {
           rowElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
         }
       }, 50)
       
       Notification.showInfo(
-        `${duplicateNames.size} file${duplicateNames.size > 1 ? 's' : ''} already selected to upload.`
+        `${duplicateKeys.size} file${duplicateKeys.size > 1 ? 's' : ''} already selected to upload.`
       )
       
       setTimeout(() => setShakingFiles(new Set()), 1000)
@@ -206,7 +206,7 @@ const LostFileBrowser = ({ fs, onPathSelected, onPathsSelected, onSelectionChang
           const targetPath = targetFile.id
           
           // Check if navigation is allowed when restrictToPath is set
-          if (restrictToPath && !targetPath.startsWith(restrictToPath)) {
+          if (restrictToPath && targetPath !== restrictToPath && !targetPath.startsWith(restrictToPath + '/')) {
             Notification.showError('Navigation outside instruction_media is not allowed.')
             return
           }
@@ -227,7 +227,9 @@ const LostFileBrowser = ({ fs, onPathSelected, onPathsSelected, onSelectionChang
           const { file, clickType } = data.payload
           
           if (multiselect) {
-            if (clickType === 'double' && onPathSelected) {
+            const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true'
+            const currentStep = parseInt(localStorage.getItem('currentStep') || '0')
+            if (clickType === 'double' && onPathSelected && !(joyrideRunning && currentStep === 5)) {
               onPathSelected(file.id)
             }
           } else {
@@ -321,9 +323,9 @@ const LostFileBrowser = ({ fs, onPathSelected, onPathsSelected, onSelectionChang
                       <CTableBody>
                         {copiedAccecptedFiles.map((file, idx) => (
                           <tr 
-                            ref={(el) => rowRefs.current[file.name] = el}
+                            ref={(el) => rowRefs.current[`${file.name}-${file.size}`] = el}
                             key={`${file.name}-${idx}`}
-                            className={shakingFiles.has(file.name) ? 'shake-row' : ''}
+                            className={shakingFiles.has(`${file.name}-${file.size}`) ? 'shake-row' : ''}
                           >
                             <td style={{ padding: '2px 4px', wordBreak: 'break-all' }}>{file.name}</td>
                             <td style={{ padding: '2px 4px', whiteSpace: 'nowrap' }}>{formatSize(file.size)}</td>
