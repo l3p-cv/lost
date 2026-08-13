@@ -650,7 +650,7 @@ export const useJoyrideSteps = (
         spotlightClicks: true,
       },
       {
-        // 8
+        // 9
         target: '.last-row-highlight',
         title: 'New Instruction Row',
         content: 'This is your new instruction row.',
@@ -658,7 +658,7 @@ export const useJoyrideSteps = (
         spotlightClicks: false,
       },
       {
-        // 9
+        // 10
         target: '.edit-instruction-button',
         title: 'Edit Instruction',
         content: 'Click to edit your new instruction.',
@@ -666,7 +666,7 @@ export const useJoyrideSteps = (
         spotlightClicks: true,
       },
       {
-        // 10
+        // 11
         target: '.edit-instructions-modal',
         content:
           'Here you can edit the instruction details. Make changes and save when done.',
@@ -675,7 +675,7 @@ export const useJoyrideSteps = (
         spotlightClicks: true,
       },
       {
-        // 11
+        // 12
         target: '.save-button',
         title: 'Save Instruction',
         content: 'Click to save your instruction.',
@@ -683,7 +683,7 @@ export const useJoyrideSteps = (
         spotlightClicks: true,
       },
       {
-        // 12
+        // 13
         target: '#nav-start-pipeline',
         title: 'Start Pipelines Tab',
         content:
@@ -693,7 +693,7 @@ export const useJoyrideSteps = (
         spotlightClicks: false,
       },
       {
-        // 13
+        // 14
         target: '.pipeline-start-1',
         title: 'Pipeline Templates',
         content: 'These are the available pipeline templates to start your SIA pipeline.',
@@ -701,7 +701,7 @@ export const useJoyrideSteps = (
         spotlightClicks: false,
       },
       {
-        // 14
+        // 15
         target: '.sia-start-button',
         title: 'Start SIA Pipeline',
         content: 'Click this button to open the SIA pipeline template.',
@@ -1078,7 +1078,7 @@ export const useJoyrideSteps = (
         spotlightClicks: true,
       },
       {
-        // 8
+        // 9
         target: '.last-row-highlight',
         title: 'New Instruction Row',
         content: 'This is your new instruction row.',
@@ -1086,7 +1086,7 @@ export const useJoyrideSteps = (
         spotlightClicks: false,
       },
       {
-        // 9
+        // 10
         target: '.edit-instruction-button',
         title: 'Edit Instruction',
         content: 'Click to edit your new instruction.',
@@ -1094,7 +1094,7 @@ export const useJoyrideSteps = (
         spotlightClicks: true,
       },
       {
-        // 10
+        // 11
         target: '.edit-instructions-modal',
         content:
           'Here you can edit the instruction details. Make changes and save when done.',
@@ -1103,7 +1103,7 @@ export const useJoyrideSteps = (
         spotlightClicks: true,
       },
       {
-        // 11
+        // 12
         target: '.save-button',
         title: 'Save Instruction',
         content: 'Click to save your instruction.',
@@ -1111,7 +1111,7 @@ export const useJoyrideSteps = (
         spotlightClicks: true,
       },
       {
-        // 12
+        // 13
         target: '#nav-pipelines',
         title: 'Pipelines Tab',
         content: 'Click here to navigate to the Pipelines page to start an SIA pipeline.',
@@ -1120,7 +1120,7 @@ export const useJoyrideSteps = (
         spotlightClicks: false,
       },
       {
-        // 13
+        // 14
         target: '.latest-pipeline-open-button',
         title: 'Open Latest Pipeline',
         content: 'Click this button to view the latest created pipeline.',
@@ -1129,7 +1129,7 @@ export const useJoyrideSteps = (
         disableBeacon: true,
       },
       {
-        // 14
+        // 15
         target: '.react-flow__node.react-flow__node-annoTaskNode',
         title: 'Edit Instructions',
         content: 'To edit instructions in your pipeline, click next.',
@@ -1138,7 +1138,7 @@ export const useJoyrideSteps = (
         spotlightClicks: true,
       },
       {
-        // 15
+        // 16
         target: '.inactive-tab-class',
         title: 'Switch Tab',
         content: 'Click this tab to switch to the final instruction step.',
@@ -1147,7 +1147,7 @@ export const useJoyrideSteps = (
         disableBeacon: true,
       },
       {
-        // 16
+        // 17
         target: '.instruction-tab',
         title: 'Instruction Options Tab',
         content:
