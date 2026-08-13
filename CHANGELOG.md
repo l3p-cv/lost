@@ -23,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `LostFileBrowser.jsx`: added restriction for `allowedExtensions` and rejected-file toast, red flash border.
 - `ImageBrowserModal.tsx`, `BaseModal.tsx`: Added box shadow to nested image browser modal for visual separation from parent modal.
 - `index.css`: styles for image browser modal box shadow.
+- `AnnoTaskTabs.tsx`, `DatasetExportModal.jsx`: Added `mergeExports` mode merging Generate Export and Available Exports into a single "Exports" tab for Annotask exports
+- `TabAvailableExports.jsx`: Added configurable `pageSize` prop so in merge view shows 4 rows per page.
 ### Changed
 - Reworked display of Instructions
 - Updated loads of packages
