@@ -1,5 +1,5 @@
 import { CCol, CRow, CTable, CTableHead, CTableBody, CTooltip } from '@coreui/react'
-import { faTimes, faUpload, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { faTimes, faUpload, faTrash, faCloudArrowUp } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   ChonkyActions,
@@ -26,7 +26,7 @@ const LostFileBrowser = ({ fs, onPathSelected, onPathsSelected, onSelectionChang
   const [copiedAccecptedFiles, setCopiedAcceptedFiles] = useState([])
   const [shakingFiles, setShakingFiles] = useState(new Set())
   const rowRefs = useRef({})
-  const { acceptedFiles, getRootProps, getInputProps, isDragReject, isFocused } =
+  const { acceptedFiles, getRootProps, getInputProps, isDragActive, isDragReject, isFocused } =
     useDropzone({})
   const [uploadFilesData, uploadFiles, breakUpload] = fb_api.useUploadFiles()
   const [isUploading, setIsUploading] = useState(false)
@@ -276,6 +276,7 @@ const LostFileBrowser = ({ fs, onPathSelected, onPathsSelected, onSelectionChang
           >
             <CCol sm="10">
               <section
+                {...getRootProps({ className: 'dropzone' })}
                 style={{
                   flex: 1,
                   display: 'flex',
@@ -285,24 +286,39 @@ const LostFileBrowser = ({ fs, onPathSelected, onPathsSelected, onSelectionChang
                   // marginTop: '10px',
                   borderWidth: '2px',
                   borderRadius: '2px',
-                  borderColor: '#cccccc',
+                  borderColor: isDragActive ? '#2196f3' : '#cccccc',
                   borderStyle: 'dashed',
-                  backgroundColor: '#fafafa',
+                  backgroundColor: isDragActive ? '#e3f2fd' : '#fafafa',
                   color: '#bdbdbd',
                   outline: 'none',
-                  transition: 'border 0.24s ease-in-out',
+                  transition: 'border 0.24s ease-in-out, background-color 0.24s ease-in-out',
                   minHeight: '100px',
                   maxHeight: '220px',
                   overflowY: 'auto',
+                  cursor: isDragActive ? 'copy' : 'pointer',
                 }}
               >
-                <div {...getRootProps({ className: 'dropzone' })}>
-                  <input {...getInputProps()} />
-                  <p>Upload files to this folder by drag 'n' drop or clicking.</p>
-                </div>
+                <input {...getInputProps()} />
+                <p style={{
+                  margin: 0,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: 10,
+                  color: isDragActive ? '#1976d2' : '#9e9e9e',
+                  cursor: isDragActive ? 'copy' : 'pointer',
+                  transition: 'color 0.2s ease',
+                }}>
+                  <FontAwesomeIcon icon={faCloudArrowUp} style={{ fontSize: 26 }} />
+                  <span style={{ fontSize: 14 }}>
+                    Drag files here or{' '}
+                    <span style={{ color: '#1976d2', textDecoration: 'underline' }}>browse</span>
+                    {' '}to upload.
+                  </span>
+                </p>
                 {copiedAccecptedFiles.length > 0 && (
-                  <aside style={{ width: '100%', marginTop: 8 }}>
-                    <CTable striped hover small style={{ fontSize: 12, marginBottom: 0, color: '#555' }}>
+                  <aside style={{ width: '100%', marginTop: 8, pointerEvents: 'none' }}>
+                    <CTable striped small style={{ fontSize: 12, marginBottom: 0, color: '#555' }}>
                       <CTableHead>
                         <tr style={{ color: '#888' }}>
                           <th style={{ textAlign: 'left', padding: '2px 4px' }}>Name</th>
@@ -312,8 +328,8 @@ const LostFileBrowser = ({ fs, onPathSelected, onPathsSelected, onSelectionChang
                             <CTooltip content="Clear all" placement="top">
                               <FontAwesomeIcon
                                 icon={faTrash}
-                                style={{ cursor: 'pointer', color: '#c00' }}
-                                onClick={clearAllFiles}
+                                style={{ cursor: 'pointer', color: '#c00', pointerEvents: 'auto' }}
+                                onClick={(e) => { e.stopPropagation(); clearAllFiles() }}
                                 title="Clear all"
                               />
                             </CTooltip>
@@ -334,8 +350,8 @@ const LostFileBrowser = ({ fs, onPathSelected, onPathsSelected, onSelectionChang
                               <CTooltip content="Remove file" placement="top">
                                 <FontAwesomeIcon
                                   icon={faTimes}
-                                  style={{ cursor: 'pointer', color: '#c00' }}
-                                  onClick={() => removeFile(file)}
+                                  style={{ cursor: 'pointer', color: '#c00', pointerEvents: 'auto' }}
+                                  onClick={(e) => { e.stopPropagation(); removeFile(file) }}
                                   title="Remove file"
                                 />
                               </CTooltip>
