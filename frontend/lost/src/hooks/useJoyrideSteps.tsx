@@ -608,12 +608,27 @@ export const useJoyrideSteps = (
         // 5
         target: '.file-browser-modal',
         title: 'Browse Files to Add Images',
-        content: 'Browse and select images to include in your instructions.',
+        content: (
+          <div>
+            Browse and select images to include in your instructions.
+            <br />
+            Use <b>Ctrl+Click</b> to select individual images in any order, or <b>Shift+Click</b> to select a range of images.
+          </div>
+        ),
         placement: 'top',
         spotlightClicks: true,
       },
       {
         // 6
+        target: '.insert-images-button',
+        title: 'Insert Selected Images',
+        content: 'Click here to insert the selected images into your instruction.',
+        placement: 'top',
+        spotlightClicks: true,
+        disableBeacon: true,
+      },
+      {
+        // 7
         target: '.save-button',
         title: 'Save Instruction',
         content: 'Click to save your instruction.',
@@ -621,7 +636,7 @@ export const useJoyrideSteps = (
         spotlightClicks: true,
       },
       {
-        // 7
+        // 8
         target: '.instruction-list',
         title: 'View Instructions',
         content: (
@@ -1021,12 +1036,27 @@ export const useJoyrideSteps = (
         // 5
         target: '.file-browser-modal',
         title: 'Browse Files to Add Images',
-        content: 'Browse and select images to include in your instructions.',
+        content: (
+          <div>
+            Browse and select images to include in your instructions.
+            <br />
+            Use <b>Ctrl+Click</b> to select individual images in any order, or <b>Shift+Click</b> to select a range of images.
+          </div>
+        ),
         placement: 'top',
         spotlightClicks: true,
       },
       {
         // 6
+        target: '.insert-images-button',
+        title: 'Insert Selected Images',
+        content: 'Click here to insert the selected images into your instruction.',
+        placement: 'top',
+        spotlightClicks: true,
+        disableBeacon: true,
+      },
+      {
+        // 7
         target: '.save-button',
         title: 'Save Instruction',
         content: 'Click to save your instruction.',
@@ -1034,7 +1064,7 @@ export const useJoyrideSteps = (
         spotlightClicks: true,
       },
       {
-        // 7
+        // 8
         target: '.instruction-list',
         title: 'View Instructions',
         content: (
