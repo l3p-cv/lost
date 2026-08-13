@@ -50,6 +50,7 @@ const ImageBrowserModal = ({
 
   const footer = hasMultiselect ? (
     <CoreIconButton
+      className="insert-images-button"
       icon={faImages}
       color="info"
       isOutline={true}

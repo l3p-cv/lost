@@ -119,6 +119,17 @@ const JoyrideTour = () => {
         localStorage.setItem('currentStep', String(nextIndex))
       }
 
+      if (nextIndex >= typedSteps.length) {
+        localStorage.setItem('hasCompletedTour', 'true')
+        setRun(false)
+        setIsModalVisible(false)
+        localStorage.removeItem('joyrideRunning')
+        localStorage.removeItem('currentStep')
+        localStorage.removeItem('latestPipelineId')
+        isProcessingPrev.current = false
+        return
+      }
+
       if (!isProcessingPrev.current) {
         const result = handleNavigationAndActions(
           index,

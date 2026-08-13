@@ -49,13 +49,13 @@ export const useTourStepManager = (pipelineType) => {
     const handleNextStep = (event) => {
       const latestPipelineId = localStorage.getItem('latestPipelineId')
       const currentStep = parseInt(localStorage.getItem('currentStep') || '0')
-      if (pipelineType === 'instructionTour' && currentStep >= 25 && latestPipelineId) {
+      if (pipelineType === 'instructionTour' && currentStep >= 26 && latestPipelineId) {
         localStorage.removeItem('latestPipelineId')
       }
       const mapToUse =
         pipelineType === 'instructionTour' && latestPipelineId == undefined
           ? instructionStepMap
-          : pipelineType === 'instructionTour' && latestPipelineId && currentStep >= 40
+          : pipelineType === 'instructionTour' && latestPipelineId && currentStep >= 41
             ? instructionStepMap
             : pipelineType === 'instructionTour' && latestPipelineId
               ? instructionStepMap2

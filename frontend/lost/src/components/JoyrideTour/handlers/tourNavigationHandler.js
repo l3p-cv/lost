@@ -39,8 +39,8 @@ const handleInstructionTourNavigation = (
       navigate('/instructions')
       break
 
-    case 12:
-      console.log('Current Step in case 12', index)
+    case 13:
+      console.log('Current Step in case 13', index)
       navigate('/pipeline-templates')
       window.dispatchEvent(
         new CustomEvent('joyride-next-step', {
@@ -48,22 +48,22 @@ const handleInstructionTourNavigation = (
         }),
       )
       break
-    case 15:
+    case 16:
       if (siaPipelineId) {
         navigate(`/pipeline-template/${siaPipelineId}`)
       }
       break
-    case 16: {
+    case 17: {
       const node = document.querySelector('.react-flow__node-datasourceNode[data-id="0"]')
       node?.dispatchEvent(new MouseEvent('click', { bubbles: true }))
       break
     }
-    case 24: {
+    case 25: {
       const taskNode = document.querySelector('.react-flow__node.anno-task-node')
       taskNode?.dispatchEvent(new MouseEvent('click', { bubbles: true }))
       break
     }
-    case 25: {
+    case 26: {
       const combo = document.querySelector('#instruction [role="combobox"]')
       combo?.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }))
       break
@@ -113,8 +113,8 @@ const handleInstructionTourWithPipelineNavigation = (
     case 0:
       navigate('/instructions')
       break
-    case 12:
-      console.log('Current Step in case 12', index)
+    case 13:
+      console.log('Current Step in case 13', index)
       navigate('/pipelines')
       window.dispatchEvent(
         new CustomEvent('joyride-next-step', {
