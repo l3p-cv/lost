@@ -50,3 +50,7 @@ code {
 .shake-row td {
   background-color: rgba(204, 0, 0, 0.08);
 }
+
+.image-browser-modal .modal-content {
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.35);
+}

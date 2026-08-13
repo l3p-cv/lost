@@ -20,6 +20,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `RunningPipelines.jsx`, `PipelineView.tsx` : Fixed joyride dispatch events and step checks for correct tour advancement.
 - `tourStyles.js` : Removed step 5 from `hideNextInstruction` so Next button is visible during file selection.
 - `LostFileBrowser.jsx` : Fixed dropzone to accept drag/drop and click across the entire dashed area.
+- `LostFileBrowser.jsx`: added restriction for `allowedExtensions` and rejected-file toast, red flash border.
+- `ImageBrowserModal.tsx`, `BaseModal.tsx`: Added box shadow to nested image browser modal for visual separation from parent modal.
+- `index.css`: styles for image browser modal box shadow.
 ### Changed
 - Reworked display of Instructions
 - Updated loads of packages

@@ -25,9 +25,13 @@ const LostFileBrowser = ({ fs, onPathSelected, onPathsSelected, onSelectionChang
   const [selectedDir, setSelectedDir] = useState('/')
   const [copiedAccecptedFiles, setCopiedAcceptedFiles] = useState([])
   const [shakingFiles, setShakingFiles] = useState(new Set())
+  const [rejectFlash, setRejectFlash] = useState(false)
   const rowRefs = useRef({})
-  const { acceptedFiles, getRootProps, getInputProps, isDragActive, isDragReject, isFocused } =
-    useDropzone({})
+  const accept = allowedExtensions && allowedExtensions.length > 0
+    ? Object.fromEntries(allowedExtensions.map(e => [`.${e}`, []]))
+    : undefined
+  const { acceptedFiles, fileRejections, getRootProps, getInputProps, isDragActive, isDragReject, isFocused } =
+    useDropzone({ accept })
   const [uploadFilesData, uploadFiles, breakUpload] = fb_api.useUploadFiles()
   const [isUploading, setIsUploading] = useState(false)
   const {
@@ -97,6 +101,16 @@ const LostFileBrowser = ({ fs, onPathSelected, onPathsSelected, onSelectionChang
       setCopiedAcceptedFiles([...copiedAccecptedFiles, ...newFiles])
     }
   }, [acceptedFiles])
+
+  useEffect(() => {
+    if (fileRejections && fileRejections.length > 0) {
+      setRejectFlash(true)
+      setTimeout(() => setRejectFlash(false), 1500)
+      Notification.showError(
+        `${fileRejections.length} file${fileRejections.length > 1 ? 's' : ''} rejected.<br>Accepted types: ${allowedExtensions.map(e => `.${e}`).join(', ')}`
+      )
+    }
+  }, [fileRejections])
 
   useEffect(() => {
     setSize(copiedAccecptedFiles.reduce((acc, f) => acc + f.size, 0))
@@ -286,9 +300,9 @@ const LostFileBrowser = ({ fs, onPathSelected, onPathsSelected, onSelectionChang
                   // marginTop: '10px',
                   borderWidth: '2px',
                   borderRadius: '2px',
-                  borderColor: isDragActive ? '#2196f3' : '#cccccc',
+                  borderColor: rejectFlash ? '#f44336' : (isDragActive ? '#2196f3' : '#cccccc'),
                   borderStyle: 'dashed',
-                  backgroundColor: isDragActive ? '#e3f2fd' : '#fafafa',
+                  backgroundColor: rejectFlash ? '#ffebee' : (isDragActive ? '#e3f2fd' : '#fafafa'),
                   color: '#bdbdbd',
                   outline: 'none',
                   transition: 'border 0.24s ease-in-out, background-color 0.24s ease-in-out',
@@ -315,6 +329,11 @@ const LostFileBrowser = ({ fs, onPathSelected, onPathsSelected, onSelectionChang
                     <span style={{ color: '#1976d2', textDecoration: 'underline' }}>browse</span>
                     {' '}to upload.
                   </span>
+                  {allowedExtensions && allowedExtensions.length > 0 && (
+                    <span style={{ fontSize: 11, color: isDragActive ? '#1976d2' : '#757575' }}>
+                      Accepted file types: {allowedExtensions.map(e => `.${e}`).join(', ')}
+                    </span>
+                  )}
                 </p>
                 {copiedAccecptedFiles.length > 0 && (
                   <aside style={{ width: '100%', marginTop: 8, pointerEvents: 'none' }}>

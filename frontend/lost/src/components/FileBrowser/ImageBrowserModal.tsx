@@ -69,6 +69,7 @@ const ImageBrowserModal = ({
       isShowCancelButton
       toggle={handleClose}
       footer={footer}
+      modalClassName="image-browser-modal"
     >
       <div className="file-browser-modal">
         {fsLoading ? (
