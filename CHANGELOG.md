@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - AnnotationTop shows basename of image one views
 ### Changed
 - Reworked display of Instructions
+- Updated loads of packages
 ### Removed
 - Unused arg onEdit from ViewInstruction
 
