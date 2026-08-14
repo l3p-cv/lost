@@ -88,7 +88,7 @@ export const useGenerateExport = () => {
 
 export const useGetDataexports = (annoTaskId) => {
   return useQuery(
-    ['annoDataExports'],
+    ['annoDataExports', annoTaskId],
     () =>
       axios
         .get(`${API_URL}/annotasks/${annoTaskId}/exports`)

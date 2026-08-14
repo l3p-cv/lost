@@ -25,6 +25,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `index.css`: styles for image browser modal box shadow.
 - `AnnoTaskTabs.tsx`, `DatasetExportModal.jsx`: Added `mergeExports` mode merging Generate Export and Available Exports into a single "Exports" tab for Annotask exports
 - `TabAvailableExports.jsx`: Added configurable `pageSize` prop so in merge view shows 4 rows per page.
+- `AnnoTaskModal.tsx`: Added `mergeExports` mode to pipeline view annotask modal so `Generate Export and Available Exports` merge into a single `"Exports"` tab, matching `DatasetExportModal`.
+- `anno_task.tsx`: Included `annoTaskId` in `useGetDataexports` query key to prevent stale cached exports from a previously opened annotask flashing when opening a new one.
+- `TabUser.tsx`: Fixed `"Selected"` badge not updating after changing user by tracking currentUser in local state.
 ### Changed
 - Reworked display of Instructions
 - Updated loads of packages
@@ -32,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `LostFileBrowser.jsx`: Modified `OpenFiles` handler to navigate only directories with `restrictToPath` validation, updated `MouseClickFile` to differentiate single/double-click in multiselect mode, non-matching files now hidden when `allowedExtensions` is set (folders still shown), and marked folder-chain entries as `isDir: true` to keep navbar breadcrumb navigation working.
 - Shifted all instruction tour step indices by +1 across `stepMaps.js`, `tourNavigationHandler.js`, `tourClickHandler.js`, `tourStyles.js`, `useTourStepManager.js`, `EditInstruction.jsx`, `Instruction.jsx` after inserting Insert button step at index 6.
 - `LostFileBrowser.jsx`: Redesigned upload dropzone "browse" inline link, and drag-state visual cues.
+- `TabUser.tsx` : Switched notification from `alertSuccess` to use `Notification.showSuccess`.
 ### Removed
 - Unused arg onEdit from ViewInstruction
 

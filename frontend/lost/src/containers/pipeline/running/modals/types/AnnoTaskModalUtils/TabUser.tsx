@@ -2,10 +2,10 @@ import { createColumnHelper } from '@tanstack/react-table'
 import { useGroups } from '../../../../../../api/group'
 import { useAnnoTaskUser } from '../../../../../../api/user'
 import CoreDataTable from '../../../../../../components/CoreDataTable'
-import { alertSuccess } from '../../../../globalComponents/Sweetalert'
+import * as Notification from '../../../../../../components/Notification'
 import InfoText from '../../../../../../components/InfoText'
 import CoreIconButton from '../../../../../../components/CoreIconButton'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 const selectUsers = (usersData) => {
   return usersData.users.map((user) => ({
@@ -33,12 +33,16 @@ const TabUser = ({ annotaskId, annotaskUser, changeUser }: TabUserProps) => {
   const { data: users, isLoading: isUsersLoading } = useAnnoTaskUser(selectUsers)
   const { data: groups, isLoading: isGroupsLoading } = useGroups(selectGroups)
 
-  function changeUserSuccessful() {
-    alertSuccess('Change user successful')
+  const [currentUser, setCurrentUser] = useState(annotaskUser)
+  useEffect(() => setCurrentUser(annotaskUser), [annotaskUser])
+
+  function changeUserSuccessful(rawName) {
+    Notification.showSuccess('Change user successful')
+    setCurrentUser(rawName)
   }
 
-  function handleChangeUser(groupId) {
-    changeUser(annotaskId, groupId, changeUserSuccessful)
+  function handleChangeUser(groupId, rawName) {
+    changeUser(annotaskId, groupId, () => changeUserSuccessful(rawName))
   }
 
   const columnHelper = createColumnHelper()
@@ -57,7 +61,7 @@ const TabUser = ({ annotaskId, annotaskUser, changeUser }: TabUserProps) => {
     columnHelper.accessor('change', {
       header: 'Change',
       cell: (props) => {
-        if (props.row.original.rawName === annotaskUser) {
+        if (props.row.original.rawName === currentUser) {
           return (
             <CoreIconButton
               color="success"
@@ -73,7 +77,7 @@ const TabUser = ({ annotaskId, annotaskUser, changeUser }: TabUserProps) => {
           <CoreIconButton
             color="primary"
             text="Change"
-            onClick={() => handleChangeUser(props.row.original.idx)}
+            onClick={() => handleChangeUser(props.row.original.idx, props.row.original.rawName)}
           />
         )
       },
