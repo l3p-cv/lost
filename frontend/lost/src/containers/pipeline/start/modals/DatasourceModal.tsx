@@ -1,12 +1,15 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import LostFileBrowser from '../../../../components/FileBrowser/LostFileBrowser'
 
 import { useNodesData, useReactFlow } from '@xyflow/react'
 import { Datasource } from '../../../../types/pipelines/pipeline-template-response'
+import { PipelineTemplateElement } from '../../../../types/pipelines/pipeline-template-response'
 import { DatasourceNodeData } from '../nodes'
 import { faDatabase, faFolderOpen } from '@fortawesome/free-solid-svg-icons'
+import { FaInfoCircle } from 'react-icons/fa'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
+  CAlert,
   CBadge,
   CDropdown,
   CDropdownItem,
@@ -19,14 +22,20 @@ import {
 } from '@coreui/react'
 import LDivider from '../../../../components/LDivider'
 import CoreIconButton from '../../../../components/CoreIconButton'
+import * as Notification from '../../../../components/Notification'
+import { validateDatasource } from '../../../../api/file_browser'
+import { detectDatasourceFamily } from './datasourceValidation'
 
 const DEFAULT_TEXT_PATH = 'No path selected!'
+
+type ValidationStatus = 'idle' | 'checking' | 'valid' | 'invalid'
 
 interface DatasourceModalProps {
   toggle: () => void
   isOpen: boolean
   datasource: Datasource
   nodeId: string
+  elements: PipelineTemplateElement[]
 }
 
 export const DatasourceModal = ({
@@ -34,6 +43,7 @@ export const DatasourceModal = ({
   nodeId,
   isOpen,
   toggle,
+  elements,
 }: DatasourceModalProps) => {
   const nodeData = useNodesData(nodeId)
   const datasourceNodeData = nodeData?.data as DatasourceNodeData
@@ -70,6 +80,25 @@ export const DatasourceModal = ({
     return undefined
   })
 
+  const [validationStatus, setValidationStatus] = useState<ValidationStatus>('idle')
+  const [validationMessage, setValidationMessage] = useState('')
+
+  const dsElement = useMemo(
+    () => elements.find((e) => e.peN === parseInt(nodeId)),
+    [elements, nodeId],
+  )
+  const scriptPeN = dsElement?.peOut?.[0]?.toString()
+  const scriptNodeData = useNodesData(scriptPeN ?? '')
+  const family = useMemo(
+    () =>
+      detectDatasourceFamily(
+        elements,
+        nodeId,
+        (scriptNodeData?.data as { arguments?: unknown })?.arguments as never,
+      ),
+    [elements, nodeId, scriptNodeData],
+  )
+
   useEffect(() => {
     if (isOpen) {
       setTimeout(() => {
@@ -87,6 +116,58 @@ export const DatasourceModal = ({
       }, 100)
     }
   }, [isOpen])
+
+  const runValidation = useCallback(
+    async (path: string) => {
+      if (!selectedFs || path === DEFAULT_TEXT_PATH || !path) {
+        setValidationStatus('idle')
+        return
+      }
+
+      if (family.family === 'unknown') {
+        setValidationStatus('invalid')
+        setValidationMessage(
+          'Could not determine the required data type for this pipeline. Select an image folder or CSV/Parquet dataset file as appropriate for your script.',
+        )
+        Notification.showError(
+          'Could not determine the required data type for this pipeline. Select an image folder or CSV/Parquet dataset file as appropriate for your script.',
+        )
+        updateNodeData(nodeId, { verified: false })
+        return
+      }
+
+      setValidationStatus('checking')
+      setValidationMessage('')
+      Notification.showInfo('Checking folder contents...')
+
+      try {
+        const result = await validateDatasource({
+          fs: selectedFs,
+          path,
+          expectedType: family.family,
+          validExtensions: family.validExtensions,
+          recursive: family.recursive,
+        })
+        if (result.valid) {
+          setValidationStatus('valid')
+          setValidationMessage(result.reason)
+          Notification.showSuccess(result.reason)
+          updateNodeData(nodeId, { verified: true })
+        } else {
+          setValidationStatus('invalid')
+          setValidationMessage(result.reason)
+          Notification.showError(result.reason)
+          updateNodeData(nodeId, { verified: false })
+        }
+      } catch (err) {
+        setValidationStatus('invalid')
+        setValidationMessage(`Validation failed: ${err}`)
+        Notification.showError(`Validation failed: ${err}`)
+        updateNodeData(nodeId, { verified: false })
+      }
+    },
+    [selectedFs, family, updateNodeData, nodeId],
+  )
 
   const selectItem = useCallback(
     (path) => {
@@ -119,13 +200,21 @@ export const DatasourceModal = ({
             }),
           )
         }
+
+        if (isValidPath) {
+          runValidation(path)
+        } else {
+          setValidationStatus('idle')
+        }
       }
     },
-    [selectedPath, selectedFs, updateNodeData, nodeId],
+    [selectedPath, selectedFs, updateNodeData, nodeId, runValidation],
   )
 
   const selectDS = useCallback((fs) => {
     setSelectedFs({ ...fs })
+    setValidationStatus('idle')
+    setValidationMessage('')
 
     window.dispatchEvent(
       new CustomEvent('joyride-next-step', {
@@ -165,12 +254,29 @@ export const DatasourceModal = ({
             )}
           </CDropdownMenu>
         </CDropdown>
+        <CAlert color="secondary" dismissible className="mt-2 mb-0">
+          <div className="d-flex align-items-center">
+            <FaInfoCircle className="me-2" size={20} />
+            <p className="mb-0">
+              {family.family === 'imageFolder' &&
+                'This pipeline expects an image folder (e.g. containing .jpg, .jpeg, .png, .bmp files).'}
+              {family.family === 'datasetFile' &&
+                'This pipeline expects a CSV or Parquet dataset file (e.g. a LOST annotask export).'}
+              {family.family === 'unknown' &&
+                'Could not determine the required data type for this pipeline. Select an image folder or CSV/Parquet dataset file as appropriate for your script.'}
+            </p>
+          </div>
+        </CAlert>
       </div>
     )
   }
 
   const verifyNode = useCallback(() => {
-    if (datasourceNodeData.selectedPath) {
+    if (
+      selectedPath &&
+      selectedPath !== DEFAULT_TEXT_PATH &&
+      validationStatus === 'valid'
+    ) {
       updateNodeData(nodeId, {
         verified: true,
       })
@@ -179,7 +285,16 @@ export const DatasourceModal = ({
         verified: false,
       })
     }
-  }, [datasourceNodeData.selectedPath, nodeId, updateNodeData])
+  }, [selectedPath, validationStatus, nodeId, updateNodeData])
+
+  useEffect(() => {
+    if (isOpen && selectedPath && selectedPath !== DEFAULT_TEXT_PATH && selectedFs) {
+      if (validationStatus === 'idle') {
+        runValidation(selectedPath)
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen])
 
   return (
     //TODO: make sure it opens with the first click every time
@@ -204,6 +319,9 @@ export const DatasourceModal = ({
               fs={selectedFs}
               onPathSelected={(path) => selectItem(path)}
               initPath={initPath}
+              allowedExtensions={
+                family.family === 'datasetFile' ? ['csv', 'parquet'] : undefined
+              }
             />
           </div>
           <LDivider text={'Selected Datasource'} className="fw-bold fs-5"></LDivider>
@@ -226,8 +344,9 @@ export const DatasourceModal = ({
           }}
           id="done-button"
           disabled={
-            localStorage.getItem('joyrideRunning') === 'true' &&
-            (!selectedPath || selectedPath === DEFAULT_TEXT_PATH)
+            validationStatus !== 'valid' ||
+            (localStorage.getItem('joyrideRunning') === 'true' &&
+              (!selectedPath || selectedPath === DEFAULT_TEXT_PATH))
           }
         />
       </CModalFooter>

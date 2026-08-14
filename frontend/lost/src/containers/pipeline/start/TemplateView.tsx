@@ -118,6 +118,7 @@ export const TemplateView = () => {
                 toggleModal={toggleModal}
                 availableGroups={data.availableGroups}
                 availableLabelTrees={data.availableLabelTrees}
+                elements={data.elements}
               />
               <PipelineStartModal
                 isOpen={isSubmitModalOpen}
