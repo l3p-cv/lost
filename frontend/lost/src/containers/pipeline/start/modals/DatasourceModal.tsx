@@ -320,7 +320,7 @@ export const DatasourceModal = ({
               onPathSelected={(path) => selectItem(path)}
               initPath={initPath}
               allowedExtensions={
-                family.family === 'datasetFile' ? ['csv', 'parquet'] : undefined
+                family.validExtensions.length > 0 ? family.validExtensions : undefined
               }
             />
           </div>

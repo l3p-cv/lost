@@ -30,8 +30,19 @@ const LostFileBrowser = ({ fs, onPathSelected, onPathsSelected, onSelectionChang
   const accept = allowedExtensions && allowedExtensions.length > 0
     ? Object.fromEntries(allowedExtensions.map(e => [`.${e}`, []]))
     : undefined
+  const MAX_FILES = 200
   const { acceptedFiles, fileRejections, getRootProps, getInputProps, isDragActive, isDragReject, isFocused } =
-    useDropzone({ accept })
+    useDropzone({
+      accept,
+      maxFiles: MAX_FILES,
+      onDrop: (accepted, rejections) => {
+        if (rejections.some(r => r.errors.some(e => e.code === 'too-many-files'))) {
+          Notification.showError(
+            `Too many files selected. Maximum is ${MAX_FILES} per batch.`
+          )
+        }
+      },
+    })
   const [uploadFilesData, uploadFiles, breakUpload] = fb_api.useUploadFiles()
   const [isUploading, setIsUploading] = useState(false)
   const {
@@ -106,9 +117,12 @@ const LostFileBrowser = ({ fs, onPathSelected, onPathsSelected, onSelectionChang
     if (fileRejections && fileRejections.length > 0) {
       setRejectFlash(true)
       setTimeout(() => setRejectFlash(false), 1500)
-      Notification.showError(
-        `${fileRejections.length} file${fileRejections.length > 1 ? 's' : ''} rejected.<br>Accepted types: ${allowedExtensions.map(e => `.${e}`).join(', ')}`
-      )
+      const hasTooMany = fileRejections.some(r => r.errors.some(e => e.code === 'too-many-files'))
+      if (!hasTooMany) {
+        Notification.showError(
+          `${fileRejections.length} file${fileRejections.length > 1 ? 's' : ''} rejected.<br>Accepted types: ${(allowedExtensions || []).map(e => `.${e}`).join(', ')}`
+        )
+      }
     }
   }, [fileRejections])
 
@@ -328,6 +342,9 @@ const LostFileBrowser = ({ fs, onPathSelected, onPathsSelected, onSelectionChang
                     Drag files here or{' '}
                     <span style={{ color: '#1976d2', textDecoration: 'underline' }}>browse</span>
                     {' '}to upload.
+                  </span>
+                  <span style={{ fontSize: 11, color: isDragActive ? '#1976d2' : '#757575' }}>
+                    Max {MAX_FILES} files per selection.
                   </span>
                   {allowedExtensions && allowedExtensions.length > 0 && (
                     <span style={{ fontSize: 11, color: isDragActive ? '#1976d2' : '#757575' }}>

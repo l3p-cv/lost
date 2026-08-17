@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `file_browser.tsx` : Added `validateDatasource` API function that POSTs to the new validation endpoint.
 - `datasourceValidation.ts` : Added `detectDatasourceFamily` to inspect downstream script args (`valid_imgtypes` → imageFolder, `img_path_key` → datasetFile) and determine expected datasource type, plus `parseValidImgtypes` and `parseBoolArg` helpers.
 - `DatasourceModal.tsx` : Added datasource validation on path selection with toast feedback and `verified` flag on node, info `CAlert` showing expected data type, and auto-validation of existing path when modal opens.
+- `LostFileBrowser.jsx` : Added Max file per selection cap upto 200 files.
+- `DatasourceModal.tsx` : Added acceptable file types to be uploaded even for the pipeline in family-1 (those which expect the types .jpg, .jpeg, .png, .bmp)
 ### Fixed
 - `EditInstruction.jsx` : Fixed the instruction_media creation when it doesnt exist.
 - `LostFileBrowser.jsx` : Fixed `restrictToPath` boundary check, duplicate shake using composite `name-size` key, and double-click during tour now selects instead of inserting.
