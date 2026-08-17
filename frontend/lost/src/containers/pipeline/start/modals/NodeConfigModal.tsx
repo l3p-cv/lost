@@ -14,6 +14,7 @@ interface NodeConfigModalProps {
   toggleModal: () => void
   modalOpened: boolean
   modalData: PipelineTemplateElement | null
+  elements: PipelineTemplateElement[]
 }
 
 export const NodeConfigModal = ({
@@ -22,6 +23,7 @@ export const NodeConfigModal = ({
   availableGroups,
   toggleModal,
   modalOpened,
+  elements,
 }: NodeConfigModalProps) => {
   if (!modalData) return null
 
@@ -32,7 +34,7 @@ export const NodeConfigModal = ({
   }
 
   if (modalData.datasource) {
-    return <DatasourceModal {...commonProps} datasource={modalData.datasource} />
+    return <DatasourceModal {...commonProps} datasource={modalData.datasource} elements={elements} />
   } else if (modalData.loop) {
     return <LoopModal {...commonProps} />
   } else if (modalData.script) {
