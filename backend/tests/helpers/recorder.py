@@ -135,15 +135,20 @@ def capture(client, spec: RequestSpec) -> dict:
     status = resp.status_code
     headers = dict(resp.headers)
 
-    # Determine body: JSON if possible, else raw bytes
+    # Determine body: JSON if possible, else text, else raw bytes
     content_type = headers.get("Content-Type", "")
+    raw_data = resp.get_data()
     if "application/json" in content_type:
-        body = resp.get_json()
+        # Handle empty bodies (e.g. 204 No Content) gracefully
+        if raw_data:
+            body = resp.get_json()
+        else:
+            body = None
     elif "text" in content_type or "html" in content_type:
-        body = resp.get_data(as_text=True)
+        body = raw_data.decode("utf-8", errors="replace") if raw_data else None
     else:
-        # Binary response — store as base64 or raw bytes
-        body = resp.get_data()
+        # Binary response — store raw bytes
+        body = raw_data
 
     # Normalize response (redact, strip headers)
     normalized_response = normalize({"status": status, "headers": headers, "body": body})
