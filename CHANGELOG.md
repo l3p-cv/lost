@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 ### Added
+
+## [4.0.0-alpha] - 2026-08-18
+### Added
 - AnnotationTop shows basename of image one views
 - `index.css`: Added shake animation for duplicate file rows with red highlight background
 - `EditInstruction.jsx` : Added multi-image selection and insertion with `handlePathsSelection` function, images now insert with one empty line between them for better readability.
