@@ -91,6 +91,7 @@ const AnnoTaskModal = ({
         hasChangeUser={true}
         hasShowLabels={true}
         hasAdaptConfiguration={true}
+        mergeExports={true}
       />
       <CRow className="justify-content-end">
         <CCol sm="auto">

@@ -138,3 +138,26 @@ export const checkIfPathExists = async (fs, path) => {
     return false
   }
 }
+
+export async function validateDatasource({
+  fs,
+  path,
+  expectedType,
+  validExtensions,
+  recursive,
+}: {
+  fs: { id: number }
+  path: string
+  expectedType: string
+  validExtensions: string[]
+  recursive: boolean
+}): Promise<{ valid: boolean; reason: string; isDir: boolean | null }> {
+  const res = await axios.post(`${API_URL}/fb/validate-datasource`, {
+    fsId: fs.id,
+    path,
+    expectedType,
+    validExtensions,
+    recursive,
+  })
+  return res.data
+}

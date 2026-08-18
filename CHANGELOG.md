@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `LostFileBrowser.jsx` : Added multiselect support for file browser, single-click selects files (multiselect mode), double-click inserts immediately, and fixed double insertion bug by restricting `OpenFiles` to directories only.
 - `ImageBrowserModal.tsx` : Added `onPathsSelected` prop and multiselect mode support, dynamic modal title changes based on selection mode, renders `Insert` button in modal footer beside `Close` button with live selection count.
 - `useJoyrideSteps.tsx` : Added joyride step for Insert button with multiselect instructions (Ctrl+Click / Shift+Click).
+- `/filebrowser/endpoint.py` : Added `/fb/validate-datasource` endpoint that validates a selected path as an image folder (extension match, capped at 1000) or a dataset file (.csv/.parquet), returning `{valid, reason, isDir}`.
+- `file_browser.tsx` : Added `validateDatasource` API function that POSTs to the new validation endpoint.
+- `datasourceValidation.ts` : Added `detectDatasourceFamily` to inspect downstream script args (`valid_imgtypes` → imageFolder, `img_path_key` → datasetFile) and determine expected datasource type, plus `parseValidImgtypes` and `parseBoolArg` helpers.
+- `DatasourceModal.tsx` : Added datasource validation on path selection with toast feedback and `verified` flag on node, info `CAlert` showing expected data type, and auto-validation of existing path when modal opens.
+- `LostFileBrowser.jsx` : Added Max file per selection cap upto 200 files.
+- `DatasourceModal.tsx` : Added acceptable file types to be uploaded even for the pipeline in family-1 (those which expect the types .jpg, .jpeg, .png, .bmp)
 ### Fixed
 - `EditInstruction.jsx` : Fixed the instruction_media creation when it doesnt exist.
 - `LostFileBrowser.jsx` : Fixed `restrictToPath` boundary check, duplicate shake using composite `name-size` key, and double-click during tour now selects instead of inserting.
@@ -23,6 +29,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `LostFileBrowser.jsx`: added restriction for `allowedExtensions` and rejected-file toast, red flash border.
 - `ImageBrowserModal.tsx`, `BaseModal.tsx`: Added box shadow to nested image browser modal for visual separation from parent modal.
 - `index.css`: styles for image browser modal box shadow.
+- `AnnoTaskTabs.tsx`, `DatasetExportModal.jsx`: Added `mergeExports` mode merging Generate Export and Available Exports into a single "Exports" tab for Annotask exports
+- `TabAvailableExports.jsx`: Added configurable `pageSize` prop so in merge view shows 4 rows per page.
+- `AnnoTaskModal.tsx`: Added `mergeExports` mode to pipeline view annotask modal so `Generate Export and Available Exports` merge into a single `"Exports"` tab, matching `DatasetExportModal`.
+- `anno_task.tsx`: Included `annoTaskId` in `useGetDataexports` query key to prevent stale cached exports from a previously opened annotask flashing when opening a new one.
+- `TabUser.tsx`: Fixed `"Selected"` badge not updating after changing user by tracking currentUser in local state.
 ### Changed
 - Reworked display of Instructions
 - Updated loads of packages
@@ -30,6 +41,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `LostFileBrowser.jsx`: Modified `OpenFiles` handler to navigate only directories with `restrictToPath` validation, updated `MouseClickFile` to differentiate single/double-click in multiselect mode, non-matching files now hidden when `allowedExtensions` is set (folders still shown), and marked folder-chain entries as `isDir: true` to keep navbar breadcrumb navigation working.
 - Shifted all instruction tour step indices by +1 across `stepMaps.js`, `tourNavigationHandler.js`, `tourClickHandler.js`, `tourStyles.js`, `useTourStepManager.js`, `EditInstruction.jsx`, `Instruction.jsx` after inserting Insert button step at index 6.
 - `LostFileBrowser.jsx`: Redesigned upload dropzone "browse" inline link, and drag-state visual cues.
+- `TabUser.tsx` : Switched notification from `alertSuccess` to use `Notification.showSuccess`.
+- `DatasourceModal.tsx` : Done button now is disabled unless validation passes and `allowedExtensions` filter applied to file browser when pipeline expects a dataset file.
+- `NodeConfigModal.tsx` : Passes `elements` prop to `DatasourceModal` for downstream script argument inspection.
+- `TemplateView.tsx` : Passes `elements` prop to `NodeConfigModal`.
 ### Removed
 - Unused arg onEdit from ViewInstruction
 

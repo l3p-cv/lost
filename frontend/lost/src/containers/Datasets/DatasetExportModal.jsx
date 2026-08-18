@@ -24,6 +24,7 @@ const DatasetExportModal = ({
           hasChangeUser={false}
           hasShowLabels={false}
           hasAdaptConfiguration={false}
+          mergeExports={true}
           active={activeTaskTab} // for remembering which tab was opened last
           setActive={setActiveTaskTab} // see above comment
         />
