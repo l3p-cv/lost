@@ -1,14 +1,19 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { CSpinner } from '@coreui/react'
+import { faImages } from '@fortawesome/free-solid-svg-icons'
 import LostFileBrowser from './LostFileBrowser'
 import BaseModal from '../BaseModal'
+import CoreIconButton from '../CoreIconButton'
 
 type ImageBrowserModalProps = {
   visible: boolean
   onClose: () => void
   fsLoading: boolean
   initPath: string
-  onPathSelected: () => void
+  onPathSelected?: (path: string) => void
+  onPathsSelected?: (paths: string[]) => void
+  restrictToPath?: string
+  allowedExtensions?: string[]
 }
 
 const ImageBrowserModal = ({
@@ -19,15 +24,52 @@ const ImageBrowserModal = ({
   fullFs,
   initPath,
   onPathSelected,
+  onPathsSelected,
+  restrictToPath,
+  allowedExtensions,
 }: ImageBrowserModalProps) => {
+  const hasMultiselect = !!onPathsSelected
+  const [selectedFiles, setSelectedFiles] = useState<any[]>([])
+
+  const handleSelectionChange = (files: any[]) => {
+    setSelectedFiles(files)
+  }
+
+  const imageCount = selectedFiles.filter(f => !f.isDir).length
+
+  const handleInsert = () => {
+    const paths = selectedFiles.filter(f => !f.isDir).map(f => f.id)
+    setSelectedFiles([])
+    onPathsSelected?.(paths)
+  }
+
+  const handleClose = () => {
+    setSelectedFiles([])
+    onClose()
+  }
+
+  const footer = hasMultiselect ? (
+    <CoreIconButton
+      className="insert-images-button"
+      icon={faImages}
+      color="info"
+      isOutline={true}
+      disabled={imageCount === 0}
+      text={`Insert${imageCount > 0 ? ` (${imageCount})` : ''}`}
+      onClick={handleInsert}
+    />
+  ) : null
+
   return (
     <BaseModal
       isOpen={visible}
-      title="Select an Image"
-      onClosed={onClose}
+      title={hasMultiselect ? "Select Images" : "Select an Image"}
+      onClosed={handleClose}
       size="lg"
       isShowCancelButton
-      toggle={onClose}
+      toggle={handleClose}
+      footer={footer}
+      modalClassName="image-browser-modal"
     >
       <div className="file-browser-modal">
         {fsLoading ? (
@@ -37,7 +79,12 @@ const ImageBrowserModal = ({
             <LostFileBrowser
               fs={fullFs}
               initPath={initPath}
+              multiselect={hasMultiselect}
               onPathSelected={onPathSelected}
+              onPathsSelected={onPathsSelected}
+              onSelectionChange={handleSelectionChange}
+              restrictToPath={restrictToPath}
+              allowedExtensions={allowedExtensions}
             />
           )
         )}

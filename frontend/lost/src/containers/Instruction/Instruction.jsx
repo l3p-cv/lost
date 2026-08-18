@@ -40,7 +40,7 @@ const Instruction = ({ visLevel }) => {
     const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true'
     if (joyrideRunning && instructions?.length > 10) {
       const currentStep = parseInt(localStorage.getItem('currentStep') || '0')
-      if (currentStep === 7) {
+      if (currentStep === 8) {
         setTimeout(() => {
           window.dispatchEvent(
             new CustomEvent('joyride-next-step', {
@@ -51,7 +51,7 @@ const Instruction = ({ visLevel }) => {
       }
     } else if (joyrideRunning && instructions?.length <= 10) {
       const currentStep = parseInt(localStorage.getItem('currentStep') || '0')
-      if (currentStep === 7) {
+      if (currentStep === 8) {
         window.dispatchEvent(
           new CustomEvent('joyride-next-step', {
             detail: { step: 'last-row-highlight' },
@@ -300,7 +300,6 @@ const Instruction = ({ visLevel }) => {
         <ViewInstruction
           instructionData={viewingInstruction}
           onClose={() => setViewingInstruction(null)}
-          onEdit={handleEditClick}
         />
       )}
 

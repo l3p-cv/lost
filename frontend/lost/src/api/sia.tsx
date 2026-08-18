@@ -15,11 +15,9 @@ export type CreateAnnotationOptions = {
 
 export type SiaApi = {
   useGetPossibleLabels: (annoTaskId: number) => UseQueryResult
-  useCreateAnnotation: (options?: CreateAnnotationOptions) => UseMutationResult<
-    EditAnnotationResponse,
-    AxiosError,
-    EditAnnotationData
-  >
+  useCreateAnnotation: (
+    options?: CreateAnnotationOptions,
+  ) => UseMutationResult<EditAnnotationResponse, AxiosError, EditAnnotationData>
   useEditAnnotation: () => UseMutationResult<
     EditAnnotationResponse,
     AxiosError,
@@ -130,6 +128,23 @@ export const useGetSiaImage = (imageRequestData: SiaImageRequest) => {
       // only fetch when imageId is available
       // request will automatically refetch when value changes
       enabled: !!imageRequestData?.imageId && imageRequestData?.imageId != -1,
+      refetchOnWindowFocus: false,
+    },
+  )
+}
+
+export const useGetSiaImageName = (imageId: number) => {
+  return useQuery(
+    ['getsiaimagename', imageId],
+    () =>
+      axios
+        .get(`${API_URL}/sia/image/${imageId}/name`)
+        .then((res) => res.data)
+        .catch((error) => error.response.data),
+    {
+      // only fetch when imageId is available
+      // request will automatically refetch when value changes
+      enabled: !!imageId && imageId != -1,
       refetchOnWindowFocus: false,
     },
   )
@@ -268,9 +283,7 @@ export const useGetSiaImageList = (enabled: boolean, currentImgId?: number) => {
     () =>
       axios
         .get(API_URL + `/sia/images`, {
-          params: currentImgId !== undefined && currentImgId > 0
-            ? { currentImgId }
-            : {},
+          params: currentImgId !== undefined && currentImgId > 0 ? { currentImgId } : {},
         })
         .then((res) => res.data.images),
     { enabled, refetchOnWindowFocus: false, staleTime: 0 },

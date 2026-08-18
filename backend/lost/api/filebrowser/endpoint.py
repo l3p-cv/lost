@@ -370,3 +370,104 @@ class CheckPath(Resource):
         except Exception as e:
             dbm.close_session()
             return {"error": str(e)}, 500
+
+
+@namespace.route("/validate-datasource")
+@api.doc(security="apikey")
+class ValidateDatasource(Resource):
+    @jwt_required()
+    def post(self):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return f"You need to be {roles.DESIGNER} in order to perform this request.", 401
+
+        data = request.get_json()
+        fs_id = data.get("fsId")
+        path = data.get("path")
+        expected_type = data.get("expectedType")
+        valid_extensions = data.get("validExtensions", [])
+        recursive = data.get("recursive", True)
+
+        valid_extensions = [e.lower().lstrip(".") for e in valid_extensions]
+
+        fs_db = dbm.get_fs(fs_id=fs_id)
+        ufa = UserFileAccess(dbm, user, fs_db)
+        fm = FileMan(fs_db=fs_db)
+
+        commonprefix = os.path.commonprefix([path, fs_db.root_path])
+        if commonprefix != fs_db.root_path:
+            path = fs_db.root_path
+
+        try:
+            if not ufa.exists(path):
+                dbm.close_session()
+                return {"valid": False, "reason": "Path does not exist", "isDir": None}, 200
+
+            if expected_type == "datasetFile":
+                ext = os.path.splitext(path)[1].lower().lstrip(".")
+                is_dir = fm.fs.isdir(path)
+                if is_dir:
+                    dbm.close_session()
+                    return {"valid": False, "reason": "Expected a .csv or .parquet file, but a folder was selected", "isDir": True}, 200
+                if ext in valid_extensions:
+                    dbm.close_session()
+                    return {"valid": True, "reason": f"Valid dataset file (.{ext})", "isDir": False}, 200
+                dbm.close_session()
+                return {"valid": False, "reason": f"Expected a .csv or .parquet file, got .{ext}", "isDir": False}, 200
+
+            if expected_type == "imageFolder":
+                is_dir = fm.fs.isdir(path)
+                if not is_dir:
+                    ext = os.path.splitext(path)[1].lower().lstrip(".")
+                    dbm.close_session()
+                    return {"valid": False, "reason": "Expected a folder, but a file was selected", "isDir": False}, 200
+
+                match_count = 0
+                cap = 1000
+
+                try:
+                    top_listing = fm.fs.ls(path, detail=True)
+                    for entry in top_listing:
+                        entry_type = entry.get("type", "")
+                        entry_name = entry.get("name", "")
+                        if entry_type == "file" or (entry_type == "" and not fm.fs.isdir(entry_name)):
+                            ext = os.path.splitext(entry_name)[1].lower().lstrip(".")
+                            if ext in valid_extensions:
+                                match_count += 1
+                                if match_count >= cap:
+                                    break
+                except Exception:
+                    pass
+
+                if match_count > 0:
+                    dbm.close_session()
+                    return {"valid": True, "reason": "Folder contains valid images", "isDir": True}, 200
+
+                if recursive:
+                    try:
+                        for file_path in fm.fs.find(path):
+                            ext = os.path.splitext(file_path)[1].lower().lstrip(".")
+                            if ext in valid_extensions:
+                                match_count += 1
+                                if match_count >= cap:
+                                    break
+                    except Exception:
+                        pass
+
+                if match_count > 0:
+                    dbm.close_session()
+                    return {"valid": True, "reason": "Folder contains valid images", "isDir": True}, 200
+
+                dbm.close_session()
+                return {"valid": False, "reason": "No valid images found in this folder", "isDir": True}, 200
+
+            dbm.close_session()
+            return {"valid": False, "reason": f"Unknown expectedType: {expected_type}", "isDir": None}, 200
+
+        except Exception as e:
+            dbm.close_session()
+            return {"error": str(e)}, 500

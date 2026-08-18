@@ -14,6 +14,7 @@ import BaseContainer from '../../../../../../components/BaseContainer'
 import InfoText from '../../../../../../components/InfoText'
 
 const TabAvailableExports = (props) => {
+  const { pageSize = 10 } = props
   const {
     data: deleteExportData,
     mutate: deleteExport,
@@ -157,7 +158,7 @@ const TabAvailableExports = (props) => {
 
   return (
     <BaseContainer>
-      <CoreDataTable tableData={props.dataExports} columns={columns} />
+      <CoreDataTable tableData={props.dataExports} columns={columns} pageSize={pageSize} />
     </BaseContainer>
   )
 }

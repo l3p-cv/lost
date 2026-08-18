@@ -8,6 +8,7 @@ import CoreIconButton from '../../../components/CoreIconButton'
 import { CCol, CContainer, CProgress, CRow, CTooltip } from '@coreui/react'
 import { faCrown, faEye } from '@fortawesome/free-solid-svg-icons'
 import { showError } from '../../../components/Notification'
+import { useGetSiaImageName } from '../../../api/sia'
 
 const AnnotationTop = ({
   annoTask,
@@ -23,6 +24,7 @@ const AnnotationTop = ({
   const [selectedInstruction, setSelectedInstruction] = useState(null)
   const [currentImage, setCurrentImage] = useState(null)
   const [totalImages, setTotalImages] = useState(null)
+  const { data: imageName } = useGetSiaImageName(annoData?.image?.id)
 
   useEffect(() => {
     if (!!annoData?.image) {
@@ -106,6 +108,12 @@ const AnnotationTop = ({
                   ? `${currentImage}/${totalImages}`
                   : `${annoTask.finished}/${annoTask.size}`}
               </strong>
+              {!!isReview && (
+                <>
+                  <br />
+                  <small className="text-muted">Image: {imageName?.img_name}</small>
+                </>
+              )}
             </CCol>
             <CCol>
               {/* <div className="callout callout-primary"> */}
@@ -152,11 +160,18 @@ const AnnotationTop = ({
                   color={getColor(progress)}
                   value={progress}
                 />
-                <div className="float-right">
-                  <small className="text-muted">
-                    Started at: {new Date(createdAt).toLocaleString()}
-                  </small>
-                </div>
+                <CRow>
+                  <CCol xs={2}>
+                    <small className="text-muted">
+                      Started at: {new Date(createdAt).toLocaleString()}
+                    </small>
+                  </CCol>
+                  {!!isSIA && (
+                    <CCol>
+                      <small className="text-muted">Image: {imageName?.img_name}</small>
+                    </CCol>
+                  )}
+                </CRow>
               </CCol>
             </CRow>
           )}

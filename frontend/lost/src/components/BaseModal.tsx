@@ -12,6 +12,7 @@ type BaseModalProps = {
   size?: 'sm' | 'lg' | 'xl'
   onClosed?: () => void
   className?: string
+  modalClassName?: string
   isShowCancelButton?: boolean
   backdropOption?: boolean | 'static'
   style?: React.CSSProperties
@@ -34,6 +35,7 @@ const BaseModal: React.FC<BaseModalProps> = ({
   size = 'xl',
   onClosed = () => {},
   className,
+  modalClassName,
   backdropOption = true,
   style = {},
   fullscreen = false,
@@ -99,6 +101,7 @@ const BaseModal: React.FC<BaseModalProps> = ({
       visible={isOpen}
       backdrop={backdropOption}
       fullscreen={fullscreen}
+      className={modalClassName}
       onClosePrevented={onClosePrevented}
       onClose={() => {
         if (isOpen) {

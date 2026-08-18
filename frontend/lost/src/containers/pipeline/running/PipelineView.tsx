@@ -40,7 +40,7 @@ export const PipelineView = () => {
       ) {
         window.dispatchEvent(
           new CustomEvent('joyride-next-step', {
-            detail: { step: 'view-created-annotask' },
+            detail: { step: 'view-created-pipeline' },
           }),
         )
       }

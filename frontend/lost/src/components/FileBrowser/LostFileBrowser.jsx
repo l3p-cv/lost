@@ -1,5 +1,6 @@
-import { CCol, CRow } from '@coreui/react'
-import { faUpload } from '@fortawesome/free-solid-svg-icons'
+import { CCol, CRow, CTable, CTableHead, CTableBody, CTooltip } from '@coreui/react'
+import { faTimes, faUpload, faTrash, faCloudArrowUp } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   ChonkyActions,
   FileBrowser,
@@ -10,21 +11,38 @@ import {
   setChonkyDefaults,
 } from 'chonky2'
 import { ChonkyIconFA } from 'chonky-icon-fontawesome'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import * as Notification from '../Notification'
 import * as fb_api from '../../api/file_browser'
 import CoreIconButton from '../CoreIconButton'
 
-const LostFileBrowser = ({ fs, onPathSelected, mode = undefined, initPath }) => {
+const LostFileBrowser = ({ fs, onPathSelected, onPathsSelected, onSelectionChange, multiselect = false, mode = undefined, initPath, restrictToPath, allowedExtensions }) => {
   const [files, setFiles] = useState([])
   const [folderChain, setFolderChain] = useState([])
   const [size, setSize] = useState(0)
   const [selectedPath, setSelectedPath] = useState('/')
   const [selectedDir, setSelectedDir] = useState('/')
   const [copiedAccecptedFiles, setCopiedAcceptedFiles] = useState([])
-  const { acceptedFiles, getRootProps, getInputProps, isDragReject, isFocused } =
-    useDropzone({})
+  const [shakingFiles, setShakingFiles] = useState(new Set())
+  const [rejectFlash, setRejectFlash] = useState(false)
+  const rowRefs = useRef({})
+  const accept = allowedExtensions && allowedExtensions.length > 0
+    ? Object.fromEntries(allowedExtensions.map(e => [`.${e}`, []]))
+    : undefined
+  const MAX_FILES = 200
+  const { acceptedFiles, fileRejections, getRootProps, getInputProps, isDragActive, isDragReject, isFocused } =
+    useDropzone({
+      accept,
+      maxFiles: MAX_FILES,
+      onDrop: (accepted, rejections) => {
+        if (rejections.some(r => r.errors.some(e => e.code === 'too-many-files'))) {
+          Notification.showError(
+            `Too many files selected. Maximum is ${MAX_FILES} per batch.`
+          )
+        }
+      },
+    })
   const [uploadFilesData, uploadFiles, breakUpload] = fb_api.useUploadFiles()
   const [isUploading, setIsUploading] = useState(false)
   const {
@@ -53,13 +71,85 @@ const LostFileBrowser = ({ fs, onPathSelected, mode = undefined, initPath }) => 
   }, [fs])
 
   useEffect(() => {
-    let newSize = 0
-    acceptedFiles.map((a) => {
-      newSize += a.size
-    })
-    setCopiedAcceptedFiles(acceptedFiles)
-    setSize(newSize)
+    if (acceptedFiles.length === 0) return
+    
+    const duplicateKeys = new Set(
+      acceptedFiles
+        .filter((newFile) =>
+          copiedAccecptedFiles.some(
+            (existingFile) => existingFile.name === newFile.name && existingFile.size === newFile.size
+          )
+        )
+        .map((f) => `${f.name}-${f.size}`)
+    )
+    
+    if (duplicateKeys.size > 0) {
+      setShakingFiles(duplicateKeys)
+      
+      setTimeout(() => {
+        const firstDuplicateKey = Array.from(duplicateKeys)[0]
+        const rowElement = rowRefs.current[firstDuplicateKey]
+        if (rowElement) {
+          rowElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        }
+      }, 50)
+      
+      Notification.showInfo(
+        `${duplicateKeys.size} file${duplicateKeys.size > 1 ? 's' : ''} already selected to upload.`
+      )
+      
+      setTimeout(() => setShakingFiles(new Set()), 1000)
+    }
+    
+    const newFiles = acceptedFiles.filter(
+      (newFile) =>
+        !copiedAccecptedFiles.some(
+          (existingFile) => existingFile.name === newFile.name && existingFile.size === newFile.size
+        )
+    )
+    
+    if (newFiles.length > 0) {
+      setCopiedAcceptedFiles([...copiedAccecptedFiles, ...newFiles])
+    }
   }, [acceptedFiles])
+
+  useEffect(() => {
+    if (fileRejections && fileRejections.length > 0) {
+      setRejectFlash(true)
+      setTimeout(() => setRejectFlash(false), 1500)
+      const hasTooMany = fileRejections.some(r => r.errors.some(e => e.code === 'too-many-files'))
+      if (!hasTooMany) {
+        Notification.showError(
+          `${fileRejections.length} file${fileRejections.length > 1 ? 's' : ''} rejected.<br>Accepted types: ${(allowedExtensions || []).map(e => `.${e}`).join(', ')}`
+        )
+      }
+    }
+  }, [fileRejections])
+
+  useEffect(() => {
+    setSize(copiedAccecptedFiles.reduce((acc, f) => acc + f.size, 0))
+  }, [copiedAccecptedFiles])
+
+  const removeFile = (fileToRemove) => {
+    setCopiedAcceptedFiles(copiedAccecptedFiles.filter((f) => f !== fileToRemove))
+  }
+
+  const clearAllFiles = () => {
+    setCopiedAcceptedFiles([])
+  }
+
+  const formatSize = (bytes) => {
+    if (bytes >= 1024 * 1024) return `${(bytes / 1024 / 1024).toFixed(2)} MB`
+    if (bytes >= 1024) return `${(bytes / 1024).toFixed(1)} KB`
+    return `${bytes} B`
+  }
+
+  const getFileType = (file) => {
+    if (file.type) return file.type
+    if (!file.name.includes('.')) return 'unknown'
+    const ext = file.name.split('.').pop()
+    return ext ? `.${ext}` : 'unknown'
+  }
 
   const getAllowedFileActions = () => {
     if (fs) {
@@ -82,8 +172,21 @@ const LostFileBrowser = ({ fs, onPathSelected, mode = undefined, initPath }) => 
     } else {
       res_data = await fb_api.ls(fs, path)
     }
-    setFiles(res_data['files'])
-    setFolderChain(res_data['folderChain'])
+    
+    let files = res_data['files']
+    
+    // Hide non-allowed files when allowedExtensions is specified (folders always shown)
+    if (allowedExtensions && files) {
+      files = files.filter(file => {
+        if (file.isDir) return true
+        const ext = file.name.split('.').pop()?.toLowerCase()
+        return allowedExtensions.includes(ext)
+      })
+    }
+    
+    setFiles(files)
+    const normalizedChain = (res_data['folderChain'] || []).map(f => ({ ...f, isDir: true }))
+    setFolderChain(normalizedChain)
   }
 
   useEffect(() => {
@@ -120,20 +223,47 @@ const LostFileBrowser = ({ fs, onPathSelected, mode = undefined, initPath }) => 
 
   const handleFileAction = (data) => {
     switch (data.id) {
+      case ChonkyActions.ChangeSelection.id:
+        if (multiselect && data.state && data.state.selectedFiles) {
+          onSelectionChange?.(data.state.selectedFiles)
+        }
+        break
       case ChonkyActions.OpenFiles.id:
         if (data) {
-          ls(fs, data.payload.targetFile.id)
-          setSelectedPath(data.payload.targetFile.id)
-          setSelectedDir(data.payload.targetFile.id)
-          if (onPathSelected) {
-            onPathSelected(data.payload.targetFile.id)
+          const targetFile = data.payload.targetFile
+          const targetPath = targetFile.id
+          
+          // Check if navigation is allowed when restrictToPath is set
+          if (restrictToPath && targetPath !== restrictToPath && !targetPath.startsWith(restrictToPath + '/')) {
+            Notification.showError('Navigation outside instruction_media is not allowed.')
+            return
+          }
+          
+          // Only navigate if it's a directory
+          if (targetFile.isDir) {
+            ls(fs, targetPath)
+            setSelectedPath(targetPath)
+            setSelectedDir(targetPath)
+            if (onPathSelected) {
+              onPathSelected(targetPath)
+            }
           }
         }
         break
       case ChonkyActions.MouseClickFile.id:
         if (data) {
-          if (onPathSelected) {
-            onPathSelected(data.payload.file.id)
+          const { file, clickType } = data.payload
+          
+          if (multiselect) {
+            const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true'
+            const currentStep = parseInt(localStorage.getItem('currentStep') || '0')
+            if (clickType === 'double' && onPathSelected && !(joyrideRunning && currentStep === 5)) {
+              onPathSelected(file.id)
+            }
+          } else {
+            if (onPathSelected) {
+              onPathSelected(file.id)
+            }
           }
         }
         break
@@ -174,6 +304,7 @@ const LostFileBrowser = ({ fs, onPathSelected, mode = undefined, initPath }) => 
           >
             <CCol sm="10">
               <section
+                {...getRootProps({ className: 'dropzone' })}
                 style={{
                   flex: 1,
                   display: 'flex',
@@ -183,36 +314,90 @@ const LostFileBrowser = ({ fs, onPathSelected, mode = undefined, initPath }) => 
                   // marginTop: '10px',
                   borderWidth: '2px',
                   borderRadius: '2px',
-                  borderColor: '#cccccc',
+                  borderColor: rejectFlash ? '#f44336' : (isDragActive ? '#2196f3' : '#cccccc'),
                   borderStyle: 'dashed',
-                  backgroundColor: '#fafafa',
+                  backgroundColor: rejectFlash ? '#ffebee' : (isDragActive ? '#e3f2fd' : '#fafafa'),
                   color: '#bdbdbd',
                   outline: 'none',
-                  transition: 'border 0.24s ease-in-out',
-                  height: '100px',
+                  transition: 'border 0.24s ease-in-out, background-color 0.24s ease-in-out',
+                  minHeight: '100px',
+                  maxHeight: '220px',
+                  overflowY: 'auto',
+                  cursor: isDragActive ? 'copy' : 'pointer',
                 }}
               >
-                <div {...getRootProps({ className: 'dropzone' })}>
-                  <input {...getInputProps()} />
-                  <p>Upload files to this folder by drag 'n' drop or clicking.</p>
-                </div>
-                <aside>
-                  <b style={{ color: '#898989' }}>
-                    <ul>
-                      {' '}
-                      {copiedAccecptedFiles.length > 0 ? (
-                        <li key={copiedAccecptedFiles[0].path}>
-                          {copiedAccecptedFiles.length} File
-                          {copiedAccecptedFiles.length > 1 ? 's' : ''}
-                          {' - '}
-                          {Number((size / 1024 / 1024).toFixed(2))} MBytes
-                        </li>
-                      ) : (
-                        ''
-                      )}
-                    </ul>
-                  </b>
-                </aside>
+                <input {...getInputProps()} />
+                <p style={{
+                  margin: 0,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: 10,
+                  color: isDragActive ? '#1976d2' : '#9e9e9e',
+                  cursor: isDragActive ? 'copy' : 'pointer',
+                  transition: 'color 0.2s ease',
+                }}>
+                  <FontAwesomeIcon icon={faCloudArrowUp} style={{ fontSize: 26 }} />
+                  <span style={{ fontSize: 14 }}>
+                    Drag files here or{' '}
+                    <span style={{ color: '#1976d2', textDecoration: 'underline' }}>browse</span>
+                    {' '}to upload.
+                  </span>
+                  <span style={{ fontSize: 11, color: isDragActive ? '#1976d2' : '#757575' }}>
+                    Max {MAX_FILES} files per selection.
+                  </span>
+                  {allowedExtensions && allowedExtensions.length > 0 && (
+                    <span style={{ fontSize: 11, color: isDragActive ? '#1976d2' : '#757575' }}>
+                      Accepted file types: {allowedExtensions.map(e => `.${e}`).join(', ')}
+                    </span>
+                  )}
+                </p>
+                {copiedAccecptedFiles.length > 0 && (
+                  <aside style={{ width: '100%', marginTop: 8, pointerEvents: 'none' }}>
+                    <CTable striped small style={{ fontSize: 12, marginBottom: 0, color: '#555' }}>
+                      <CTableHead>
+                        <tr style={{ color: '#888' }}>
+                          <th style={{ textAlign: 'left', padding: '2px 4px' }}>Name</th>
+                          <th style={{ textAlign: 'left', padding: '2px 4px' }}>Size</th>
+                          <th style={{ textAlign: 'left', padding: '2px 4px' }}>Type</th>
+                          <th style={{ padding: '2px 4px', textAlign: 'center' }}>
+                            <CTooltip content="Clear all" placement="top">
+                              <FontAwesomeIcon
+                                icon={faTrash}
+                                style={{ cursor: 'pointer', color: '#c00', pointerEvents: 'auto' }}
+                                onClick={(e) => { e.stopPropagation(); clearAllFiles() }}
+                                title="Clear all"
+                              />
+                            </CTooltip>
+                          </th>
+                        </tr>
+                      </CTableHead>
+                      <CTableBody>
+                        {copiedAccecptedFiles.map((file, idx) => (
+                          <tr 
+                            ref={(el) => rowRefs.current[`${file.name}-${file.size}`] = el}
+                            key={`${file.name}-${idx}`}
+                            className={shakingFiles.has(`${file.name}-${file.size}`) ? 'shake-row' : ''}
+                          >
+                            <td style={{ padding: '2px 4px', wordBreak: 'break-all' }}>{file.name}</td>
+                            <td style={{ padding: '2px 4px', whiteSpace: 'nowrap' }}>{formatSize(file.size)}</td>
+                            <td style={{ padding: '2px 4px', whiteSpace: 'nowrap' }}>{getFileType(file)}</td>
+                            <td style={{ padding: '2px 4px', textAlign: 'center' }}>
+                              <CTooltip content="Remove file" placement="top">
+                                <FontAwesomeIcon
+                                  icon={faTimes}
+                                  style={{ cursor: 'pointer', color: '#c00', pointerEvents: 'auto' }}
+                                  onClick={(e) => { e.stopPropagation(); removeFile(file) }}
+                                  title="Remove file"
+                                />
+                              </CTooltip>
+                            </td>
+                          </tr>
+                        ))}
+                      </CTableBody>
+                    </CTable>
+                  </aside>
+                )}
               </section>
             </CCol>
             <CCol sm="2">
@@ -258,7 +443,7 @@ const LostFileBrowser = ({ fs, onPathSelected, mode = undefined, initPath }) => 
 
   return (
     <>
-      <div style={{ height: 400 }}>
+      <div style={{ height: 400, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         <FileBrowser
           defaultFileViewActionId={ChonkyActions.EnableListView.id}
           files={files}
