@@ -8,9 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - `backend/tests/` : Added golden-snapshot API comparison harness for the Flask→FastAPI migration (P0). Records Flask's API responses as reference snapshots and replays them against FastAPI to verify behavioral equivalence. Includes `conftest.py` with JWT minting, `helpers/` (client, comparator, recorder, seed), and parametrized comparison tests for the `user` namespace.
 - `backend/run_snapshots.sh` : Added one-command wrapper script that ensures compose stack is up, runs idempotent DB seed (`initlost.py`), and executes the golden-snapshot pytest suite inside the backend container. Supports `--record` (re-capture snapshots), `--cleanup` (force-remove test data), and `--verbose` (show container logs after run).
-- `docker/compose/compose.override.yaml` : Existing dev override now also bind-mounts `backend/tests/` into the container at `/code/tests/` so the test suite is visible without rebuilding the image.
 - `backend/.dockerignore` : Added `tests` and `pytest.sh` exclusions so the golden-snapshot suite is not shipped in the production Docker image.
 - `compare/{sia,annotask,dataset,system,worker,config,statistics}_specs.py` : Added namespace request specs, reversible mutation helpers.
+- `compare/{group,instructions,data,instructionmedia}_specs.py` : Added new namespace request specs, reversible mutation helpers.
+- `backend/tests/compare/` : Added parametrized comparison tests for following covered namespaces (`test_{user,sia,annotask,dataset,system,worker,config,statistics,group,instruction,data,instructionmedia}_compare.py`).
 ### Fixed
 - `backend/tests/helpers/recorder.py` : Fixed empty-body handling for 204 No Content responses 
 
