@@ -1,4 +1,10 @@
-"""Golden-snapshot comparison tests for the data namespace."""
+"""Golden-snapshot comparison tests for the data namespace.
+
+Handles:
+- GETs with setup (resolve image_id from compare_test_sia)
+- Static GETs (no setup needed)
+- Path + params substitution ({image_id} → actual ID from context)
+"""
 
 from __future__ import annotations
 
@@ -9,27 +15,58 @@ from tests.helpers.comparator import load_golden, assert_equal
 from tests.compare.data_specs import get_active_data_specs, RouteSpec
 
 
-def _run_data_spec(client, auth_headers, spec: RouteSpec, record: bool):
-    req = spec.request
-    headers = {**auth_headers, **req.headers}
+def _substitute(value, context: dict):
+    """Replace {placeholders} in strings/dicts/lists with values from context."""
+    if isinstance(value, str):
+        result = value
+        for key, val in context.items():
+            result = result.replace(f"{{{key}}}", str(val))
+        return result
+    if isinstance(value, dict):
+        return {k: _substitute(v, context) for k, v in value.items()}
+    if isinstance(value, list):
+        return [_substitute(item, context) for item in value]
+    return value
 
-    live_spec = RequestSpec(
-        method=req.method, path=req.path, headers=headers,
-        json=req.json, params=req.params, mode=req.mode, label=req.label,
-    )
-    captured = capture(client, live_spec)
-    gpath = f"data/{spec.name}.json"
 
-    if record:
-        save(gpath, captured)
+def _run_data_spec(client, auth_headers, dbm, spec: RouteSpec, record: bool):
+    """Execute a single data RouteSpec: setup → capture → save → compare → cleanup."""
+    context: dict = {}
 
-    golden = load_golden(gpath)
-    assert_equal(golden, captured, mode=spec.request.mode)
+    if spec.setup:
+        context = spec.setup(dbm)
+
+    if context.get("skip"):
+        pytest.skip("compare_test_sia annotask/image not found — run init_test_data.py")
+
+    try:
+        req = spec.request
+        path = _substitute(req.path, context)
+        params = _substitute(req.params, context) if req.params else None
+        headers = {**auth_headers, **req.headers}
+
+        live_spec = RequestSpec(
+            method=req.method, path=path, headers=headers,
+            json=req.json, params=params, mode=req.mode, label=req.label,
+        )
+        captured = capture(client, live_spec)
+        gpath = f"data/{spec.name}.json"
+
+        if record:
+            save(gpath, captured)
+
+        golden = load_golden(gpath)
+        assert_equal(golden, captured, mode=spec.request.mode)
+
+    finally:
+        if spec.cleanup:
+            spec.cleanup(dbm, context)
 
 
 _ACTIVE_SPECS = get_active_data_specs()
 
 
 @pytest.mark.parametrize("spec", _ACTIVE_SPECS, ids=[s.name for s in _ACTIVE_SPECS])
-def test_data_route(client, auth_headers, record, spec: RouteSpec):
-    _run_data_spec(client, auth_headers, spec, record=record)
+def test_data_route(client, auth_headers, dbm, record, spec: RouteSpec):
+    """Golden-snapshot test for a data namespace route."""
+    _run_data_spec(client, auth_headers, dbm, spec, record=record)

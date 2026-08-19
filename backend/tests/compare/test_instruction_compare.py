@@ -24,7 +24,11 @@ def _substitute_path(path: str, context: dict) -> str:
 
 
 def _substitute_json(json_data, context: dict):
-    """Replace {placeholders} in string values within a JSON body."""
+    """Replace {placeholders} in string values within a JSON body.
+
+    If a string is exactly '{key}' and the context value is an int, the int is
+    returned directly (not stringified).
+    """
     if json_data is None:
         return None
     if isinstance(json_data, dict):
@@ -32,6 +36,11 @@ def _substitute_json(json_data, context: dict):
     if isinstance(json_data, list):
         return [_substitute_json(item, context) for item in json_data]
     if isinstance(json_data, str):
+        stripped = json_data.strip()
+        if stripped.startswith("{") and stripped.endswith("}") and stripped.count("{") == 1:
+            key = stripped[1:-1]
+            if key in context:
+                return context[key]
         return _substitute_path(json_data, context)
     return json_data
 

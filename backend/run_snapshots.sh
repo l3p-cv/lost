@@ -44,6 +44,10 @@ fi
 echo "▶ Running initlost (idempotent DB seed)..."
 docker exec "$CONTAINER" python3 /code/lost/logic/init/initlost.py 2>&1 | tail -5
 
+# 2b. Ensure test data (idempotent — creates compare_test_* entities if missing)
+echo "▶ Running init_test_data (idempotent test data seed)..."
+docker exec "$CONTAINER" python3 /code/tests/helpers/init_test_data.py 2>&1 | tail -2
+
 # 3. Verify tests dir is visible in container (bind mount check)
 echo "▶ Verifying tests dir visible in container..."
 if ! docker exec "$CONTAINER" test -d /code/tests; then

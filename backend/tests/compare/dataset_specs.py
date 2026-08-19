@@ -18,11 +18,22 @@ from tests.helpers.seed import unique_suffix, TEST_PREFIX
 from tests.compare.user_specs import RouteSpec
 
 # ---------------------------------------------------------------------------
-# Dev DB constants
+# Setup: look up test dataset + export IDs by name
 # ---------------------------------------------------------------------------
 
-DATASET_ID = 1  # "Dataset 2" — has annotask children, used for review/export tests
-DATASET_EXPORT_ID = 3  # First export for dataset 1
+
+def _setup_dataset_context(dbm):
+    """Look up compare_test_dataset + its export ID by name."""
+    from tests.helpers.lookups import get_test_dataset_id, get_test_dataset_export_id
+
+    ds_id = get_test_dataset_id(dbm)
+    if ds_id is None:
+        return {"skip": True}
+    return {
+        "dataset_id": ds_id,
+        "export_id": get_test_dataset_export_id(dbm),
+        "skip": False,
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -31,17 +42,35 @@ DATASET_EXPORT_ID = 3  # First export for dataset 1
 
 
 def _save_dataset_name(dbm):
-    """Read current name + description from dataset 1 before mutation."""
-    ds = dbm.get_dataset(DATASET_ID)
-    return {"original_name": ds.name, "original_description": ds.description}
+    """Read current name + description from compare_test_dataset before mutation."""
+    from tests.helpers.lookups import get_test_dataset_id
+
+    ds_id = get_test_dataset_id(dbm)
+    if ds_id is None:
+        return {"skip": True}
+    ds = dbm.get_dataset(ds_id)
+    return {"original_name": ds.name, "original_description": ds.description, "dataset_id": ds_id, "skip": False}
 
 
 def _revert_dataset_name(dbm, context):
-    """Revert name + description to original values after mutation."""
-    ds = dbm.get_dataset(DATASET_ID)
-    ds.name = context["original_name"]
-    ds.description = context["original_description"]
-    dbm.save_obj(ds)
+    """Revert name + description to original values after mutation.
+
+    Uses a fresh DBMan session to avoid stale state — the Flask API endpoint
+    committed the mutation with its own DBMan session, so the shared fixture
+    session may have cached the pre-mutation object.
+    """
+    from lost.db import access
+    from lost.settings import LOST_CONFIG
+
+    fresh_dbm = access.DBMan(LOST_CONFIG)
+    try:
+        ds = fresh_dbm.get_dataset(context["dataset_id"])
+        if ds:
+            ds.name = context["original_name"]
+            ds.description = context["original_description"]
+            fresh_dbm.save_obj(ds)
+    finally:
+        fresh_dbm.close_session()
 
 
 # ---------------------------------------------------------------------------
@@ -100,47 +129,51 @@ def get_dataset_specs() -> list[RouteSpec]:
         ),
     ))
 
-    # 4. GET /api/datasets/1/review/images — review image search
+    # 4. GET /api/datasets/{id}/review/images — review image search
     specs.append(RouteSpec(
         name="GET_dataset_review_images",
         request=RequestSpec(
             method="GET",
-            path=f"/api/datasets/{DATASET_ID}/review/images",
+            path="/api/datasets/{dataset_id}/review/images",
             mode="structural",
         ),
+        setup=_setup_dataset_context,
     ))
 
-    # 5. GET /api/datasets/1/review/possibleLabels
+    # 5. GET /api/datasets/{id}/review/possibleLabels
     specs.append(RouteSpec(
         name="GET_dataset_review_possibleLabels",
         request=RequestSpec(
             method="GET",
-            path=f"/api/datasets/{DATASET_ID}/review/possibleLabels",
+            path="/api/datasets/{dataset_id}/review/possibleLabels",
             mode="structural",
         ),
+        setup=_setup_dataset_context,
     ))
 
-    # 6. GET /api/datasets/1/ds_exports — list exports
+    # 6. GET /api/datasets/{id}/ds_exports — list exports
     specs.append(RouteSpec(
         name="GET_dataset_exports",
         request=RequestSpec(
             method="GET",
-            path=f"/api/datasets/{DATASET_ID}/ds_exports",
+            path="/api/datasets/{dataset_id}/ds_exports",
             mode="structural",
         ),
+        setup=_setup_dataset_context,
     ))
 
     # --- POST that's a read (navigation, not destructive) ---
 
-    # 7. POST /api/datasets/1/review — review navigation (direction=first)
+    # 7. POST /api/datasets/{id}/review — review navigation (direction=first)
     specs.append(RouteSpec(
         name="POST_dataset_review",
         request=RequestSpec(
             method="POST",
-            path=f"/api/datasets/{DATASET_ID}/review",
+            path="/api/datasets/{dataset_id}/review",
             json={"direction": "first"},
             mode="structural",
         ),
+        setup=_setup_dataset_context,
     ))
 
     # --- Mutate-then-GET (create + cleanup) ---
@@ -179,7 +212,7 @@ def get_dataset_specs() -> list[RouteSpec]:
             method="PATCH",
             path="/api/datasets",
             json={
-                "id": DATASET_ID,
+                "id": "{dataset_id}",
                 "name": f"{TEST_PREFIX}renamed",
                 "description": "Temporarily renamed by golden snapshot test",
                 "parentDatasetId": -1,
@@ -198,34 +231,34 @@ def get_dataset_specs() -> list[RouteSpec]:
 
     # --- Skipped: irreversible / risky ---
 
-    # 10. DELETE /api/datasets/1 — deletes dataset 1
+    # 10. DELETE /api/datasets/{id} — deletes dataset
     specs.append(RouteSpec(
         name="DELETE_dataset",
-        request=RequestSpec(method="DELETE", path=f"/api/datasets/{DATASET_ID}"),
+        request=RequestSpec(method="DELETE", path="/api/datasets/{dataset_id}"),
         skip=True,
-        skip_reason="Irreversible — deletes dataset 1 + orphans children. Verified manually in P1.2.",
+        skip_reason="Irreversible — deletes dataset + orphans children. Verified manually in P1.2.",
     ))
 
-    # 11. POST /api/datasets/export_ds_parquet/1 — triggers async dask job
+    # 11. POST /api/datasets/export_ds_parquet/{id} — triggers async dask job
     specs.append(RouteSpec(
         name="POST_dataset_parquet_export",
-        request=RequestSpec(method="POST", path=f"/api/datasets/export_ds_parquet/{DATASET_ID}"),
+        request=RequestSpec(method="POST", path="/api/datasets/export_ds_parquet/{dataset_id}"),
         skip=True,
         skip_reason="Triggers async dask export job. Verified manually in P1.2.",
     ))
 
-    # 12. DELETE /api/datasets/ds_exports/3 — deletes export
+    # 12. DELETE /api/datasets/ds_exports/{id} — deletes export
     specs.append(RouteSpec(
         name="DELETE_dataset_export",
-        request=RequestSpec(method="DELETE", path=f"/api/datasets/ds_exports/{DATASET_EXPORT_ID}"),
+        request=RequestSpec(method="DELETE", path="/api/datasets/ds_exports/{export_id}"),
         skip=True,
         skip_reason="Irreversible — deletes export file + DB entry. Verified manually in P1.2.",
     ))
 
-    # 13. GET /api/datasets/ds_exports/3 — binary file download
+    # 13. GET /api/datasets/ds_exports/{id} — binary file download
     specs.append(RouteSpec(
         name="GET_dataset_export_download",
-        request=RequestSpec(method="GET", path=f"/api/datasets/ds_exports/{DATASET_EXPORT_ID}"),
+        request=RequestSpec(method="GET", path="/api/datasets/ds_exports/{export_id}"),
         skip=True,
         skip_reason="Binary file download — recorder needs fix for binary responses. Verified manually in P1.2.",
     ))
