@@ -11,7 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `backend/.dockerignore` : Added `tests` and `pytest.sh` exclusions so the golden-snapshot suite is not shipped in the production Docker image.
 - `compare/{sia,annotask,dataset,system,worker,config,statistics}_specs.py` : Added namespace request specs, reversible mutation helpers.
 - `compare/{group,instructions,data,instructionmedia}_specs.py` : Added new namespace request specs, reversible mutation helpers.
-- `backend/tests/compare/` : Added parametrized comparison tests for following covered namespaces (`test_{user,sia,annotask,dataset,system,worker,config,statistics,group,instruction,data,instructionmedia}_compare.py`).
+- `backend/tests/compare/` : Added parametrized comparison tests for following covered namespaces (`test_{user,sia,annotask,dataset,system,worker,config,statistics,group,instruction,data,instructionmedia}_compare.py`). More namespaces to the harness added mia,label,filebrowser, pipeline.
+- `init_test_data.py` : Added as test data seeder for the golden-snapshot harness.
+- `lookups.py` : has shared lookup helpers for test specs.
 ### Fixed
 - `backend/tests/helpers/recorder.py` : Fixed empty-body handling for 204 No Content responses 
 
