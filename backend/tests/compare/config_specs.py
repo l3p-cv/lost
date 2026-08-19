@@ -1,0 +1,37 @@
+"""Config namespace request specs for golden-snapshot testing.
+
+2 routes: 1 active (GET), 1 skipped (PATCH — no config entries to update in dev DB).
+"""
+
+from __future__ import annotations
+
+from tests.helpers.recorder import RequestSpec
+from tests.compare.user_specs import RouteSpec
+
+
+def get_config_specs() -> list[RouteSpec]:
+    specs: list[RouteSpec] = []
+
+    # 1. GET /api/config — list all config entries (admin)
+    specs.append(RouteSpec(
+        name="GET_config",
+        request=RequestSpec(
+            method="GET",
+            path="/api/config",
+            mode="structural",
+        ),
+    ))
+
+    # 2. PATCH /api/config — skip (0 config entries to update)
+    specs.append(RouteSpec(
+        name="PATCH_config",
+        request=RequestSpec(method="PATCH", path="/api/config"),
+        skip=True,
+        skip_reason="0 config entries in dev DB — nothing to update. Verified manually in P1.2.",
+    ))
+
+    return specs
+
+
+def get_active_config_specs() -> list[RouteSpec]:
+    return [s for s in get_config_specs() if not s.skip]
