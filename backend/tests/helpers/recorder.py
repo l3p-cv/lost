@@ -119,14 +119,22 @@ def capture(client, spec: RequestSpec) -> dict:
     """
     # Build kwargs for the client request
     kwargs: dict[str, Any] = {"headers": spec.headers}
-    if spec.json is not None:
+
+    # Multipart upload: merge data + files into a single data dict, set content_type
+    if spec.files is not None:
+        form_data = dict(spec.data or {})
+        # Flask test client expects file tuples as (filename, BytesIO) or (filename, bytes, content_type)
+        for field_name, file_tuple in spec.files.items():
+            form_data[field_name] = file_tuple
+        kwargs["data"] = form_data
+        kwargs["content_type"] = "multipart/form-data"
+    elif spec.data is not None:
+        kwargs["data"] = spec.data
+    elif spec.json is not None:
         kwargs["json"] = spec.json
+
     if spec.params is not None:
         kwargs["query_string"] = spec.params
-    if spec.data is not None:
-        kwargs["data"] = spec.data
-    if spec.files is not None:
-        kwargs["files"] = spec.files
 
     method = spec.method.lower()
     resp = getattr(client, method)(spec.path, **kwargs)
@@ -135,7 +143,7 @@ def capture(client, spec: RequestSpec) -> dict:
     status = resp.status_code
     headers = dict(resp.headers)
 
-    # Determine body: JSON if possible, else text, else raw bytes
+    # Determine body: JSON if possible, else text, else binary metadata
     content_type = headers.get("Content-Type", "")
     raw_data = resp.get_data()
     if "application/json" in content_type:
@@ -147,8 +155,18 @@ def capture(client, spec: RequestSpec) -> dict:
     elif "text" in content_type or "html" in content_type:
         body = raw_data.decode("utf-8", errors="replace") if raw_data else None
     else:
-        # Binary response — store raw bytes
-        body = raw_data
+        # Binary response — store metadata (JSON-serializable), not raw bytes
+        if raw_data:
+            import hashlib as _hashlib
+
+            body = {
+                "_binary": True,
+                "content_type": content_type,
+                "sha256": _hashlib.sha256(raw_data).hexdigest(),
+                "size": len(raw_data),
+            }
+        else:
+            body = None
 
     # Normalize response (redact, strip headers)
     normalized_response = normalize({"status": status, "headers": headers, "body": body})

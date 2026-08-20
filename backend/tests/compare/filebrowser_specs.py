@@ -1,12 +1,14 @@
 """Filebrowser namespace request specs for golden-snapshot testing.
 
-12 routes: 6 active (read-only GETs + POSTs), 6 skipped (destructive mutations + file upload).
+12 routes: 7 active (read-only GETs + POSTs + upload), 5 skipped (destructive mutations + complex).
 
 Self-contained: uses OOTB 'default' filesystem (idx looked up by name, seeded by initlost).
 No new init_test_data.py additions needed.
 """
 
 from __future__ import annotations
+
+import os
 
 from tests.helpers.recorder import RequestSpec
 from tests.compare.user_specs import RouteSpec
@@ -127,11 +129,17 @@ def get_filebrowser_specs() -> list[RouteSpec]:
         skip_reason="Mutation — creates/updates filesystem entries. Verified manually in P1.2.",
     ))
 
+    # 7. POST /api/fb/upload — file upload (multipart) → cleanup delete uploaded file
     specs.append(RouteSpec(
         name="POST_fb_upload",
-        request=RequestSpec(method="POST", path="/api/fb/upload"),
-        skip=True,
-        skip_reason="File upload (multipart) — writes to filesystem. Verified manually in P1.2.",
+        request=RequestSpec(
+            method="POST", path="/api/fb/upload",
+            data={"fsId": "{fs_id}", "path": OOTB_FS_ROOT + "/test_uploads"},
+            files={"file[]": ("compare_test_upload.txt", b"test content from golden snapshots\n", "text/plain")},
+            mode="structural",
+        ),
+        setup=_setup_fs_context,
+        cleanup=_cleanup_uploaded_file,
     ))
 
     specs.append(RouteSpec(
@@ -142,6 +150,16 @@ def get_filebrowser_specs() -> list[RouteSpec]:
     ))
 
     return specs
+
+
+def _cleanup_uploaded_file(dbm, context):
+    """Delete the file uploaded by POST /api/fb/upload."""
+    upload_path = os.path.join(OOTB_FS_ROOT, "test_uploads", "compare_test_upload.txt")
+    try:
+        if os.path.exists(upload_path):
+            os.remove(upload_path)
+    except Exception:
+        pass
 
 
 def get_active_filebrowser_specs() -> list[RouteSpec]:

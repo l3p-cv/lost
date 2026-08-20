@@ -89,6 +89,65 @@ def _cleanup_created_dataset(dbm, context):
 
 
 # ---------------------------------------------------------------------------
+# Setup: create a throwaway dataset for DELETE test
+# ---------------------------------------------------------------------------
+
+
+def _setup_delete_dataset(dbm):
+    """Create a throwaway dataset to be deleted via the API."""
+    from lost.db import model
+    from tests.helpers.seed import unique_suffix, TEST_PREFIX
+
+    ds = model.Dataset(
+        name=f"{TEST_PREFIX}delete_{unique_suffix()}",
+        description="Throwaway dataset for DELETE test",
+    )
+    dbm.save_obj(ds)
+    return {"dataset_id": ds.idx, "skip": False}
+
+
+# ---------------------------------------------------------------------------
+# Setup: create a throwaway DatasetExport for DELETE test
+# ---------------------------------------------------------------------------
+
+
+def _setup_delete_export(dbm):
+    """Create a throwaway DatasetExport to be deleted via the API."""
+    from lost.db import model
+    from tests.helpers.seed import unique_suffix, TEST_PREFIX
+    from tests.helpers.lookups import get_test_dataset_id
+    from datetime import datetime, timezone
+
+    ds_id = get_test_dataset_id(dbm)
+    if ds_id is None:
+        return {"skip": True}
+    exp = model.DatasetExport(
+        dataset_id=ds_id,
+        file_path=f"/home/lost/data/1/ds_export/test/{TEST_PREFIX}delete_export_{unique_suffix()}.parquet",
+        progress=100,
+    )
+    dbm.save_obj(exp)
+    return {"export_id": exp.idx, "skip": False}
+
+
+# ---------------------------------------------------------------------------
+# Cleanup: delete a DatasetExport created by POST parquet export
+# ---------------------------------------------------------------------------
+
+
+def _cleanup_created_export(dbm, context):
+    """Delete a DatasetExport created by POST export (if the API didn't already)."""
+    from lost.db import model
+
+    exp_id = context.get("export_id")
+    if exp_id is not None:
+        exp = dbm.session.query(model.DatasetExport).filter_by(idx=exp_id).first()
+        if exp:
+            dbm.session.delete(exp)
+            dbm.session.commit()
+
+
+# ---------------------------------------------------------------------------
 # The 13 dataset route specs (8 active, 5 skipped)
 # ---------------------------------------------------------------------------
 
@@ -119,14 +178,12 @@ def get_dataset_specs() -> list[RouteSpec]:
         ),
     ))
 
-    # 3. GET /api/datasets/flat — flat dict {id: name}
+    # 3. GET /api/datasets/flat — skip (flat dict with DB-ID keys, non-deterministic across runs)
     specs.append(RouteSpec(
         name="GET_datasets_flat",
-        request=RequestSpec(
-            method="GET",
-            path="/api/datasets/flat",
-            mode="structural",
-        ),
+        request=RequestSpec(method="GET", path="/api/datasets/flat"),
+        skip=True,
+        skip_reason="Flat dict with DB-ID keys — new datasets created during test runs add keys. Non-deterministic. Verified manually in P1.2.",
     ))
 
     # 4. GET /api/datasets/{id}/review/images — review image search
@@ -164,7 +221,7 @@ def get_dataset_specs() -> list[RouteSpec]:
 
     # --- POST that's a read (navigation, not destructive) ---
 
-    # 7. POST /api/datasets/{id}/review — review navigation (direction=first)
+    # 7. POST /api/datasets/{id}/review — skip (stateful navigation, non-deterministic)
     specs.append(RouteSpec(
         name="POST_dataset_review",
         request=RequestSpec(
@@ -174,6 +231,8 @@ def get_dataset_specs() -> list[RouteSpec]:
             mode="structural",
         ),
         setup=_setup_dataset_context,
+        skip=True,
+        skip_reason="Stateful navigation — advances through images, returns different data on each run. Non-deterministic. Verified manually in P1.2.",
     ))
 
     # --- Mutate-then-GET (create + cleanup) ---
@@ -231,28 +290,41 @@ def get_dataset_specs() -> list[RouteSpec]:
 
     # --- Skipped: irreversible / risky ---
 
-    # 10. DELETE /api/datasets/{id} — deletes dataset
+    # 10. DELETE /api/datasets/{id} — create throwaway → DELETE via API → GET 404
     specs.append(RouteSpec(
         name="DELETE_dataset",
-        request=RequestSpec(method="DELETE", path="/api/datasets/{dataset_id}"),
-        skip=True,
-        skip_reason="Irreversible — deletes dataset + orphans children. Verified manually in P1.2.",
+        request=RequestSpec(method="DELETE", path="/api/datasets/{dataset_id}", mode="structural"),
+        follow_up=RequestSpec(
+            method="GET", path="/api/datasets/{dataset_id}", mode="structural",
+            label="DELETE_dataset__then_GET",
+        ),
+        setup=_setup_delete_dataset,
     ))
 
-    # 11. POST /api/datasets/export_ds_parquet/{id} — triggers async dask job
+    # 11. POST /api/datasets/export_ds_parquet/{id} — trigger dask export → GET verify → cleanup
     specs.append(RouteSpec(
         name="POST_dataset_parquet_export",
-        request=RequestSpec(method="POST", path="/api/datasets/export_ds_parquet/{dataset_id}"),
-        skip=True,
-        skip_reason="Triggers async dask export job. Verified manually in P1.2.",
+        request=RequestSpec(
+            method="POST", path="/api/datasets/export_ds_parquet/{dataset_id}",
+            json={"annotatedOnly": True}, mode="structural",
+        ),
+        follow_up=RequestSpec(
+            method="GET", path="/api/datasets/{dataset_id}/ds_exports", mode="structural",
+            label="POST_dataset_parquet_export__then_GET",
+        ),
+        setup=_setup_dataset_context,
+        cleanup=_cleanup_created_export,
     ))
 
-    # 12. DELETE /api/datasets/ds_exports/{id} — deletes export
+    # 12. DELETE /api/datasets/ds_exports/{id} — create throwaway export → DELETE via API → GET verify
     specs.append(RouteSpec(
         name="DELETE_dataset_export",
-        request=RequestSpec(method="DELETE", path="/api/datasets/ds_exports/{export_id}"),
-        skip=True,
-        skip_reason="Irreversible — deletes export file + DB entry. Verified manually in P1.2.",
+        request=RequestSpec(method="DELETE", path="/api/datasets/ds_exports/{export_id}", mode="structural"),
+        follow_up=RequestSpec(
+            method="GET", path="/api/datasets/{dataset_id}/ds_exports", mode="structural",
+            label="DELETE_dataset_export__then_GET",
+        ),
+        setup=_setup_delete_export,
     ))
 
     # 13. GET /api/datasets/ds_exports/{id} — binary file download

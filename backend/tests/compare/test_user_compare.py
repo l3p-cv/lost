@@ -45,7 +45,11 @@ def _run_spec(client, auth_headers, dbm, spec: RouteSpec, record: bool):
         # --- Primary request ---
         req = spec.request
         path = _substitute_path(req.path, context)
-        headers = {**auth_headers, **req.headers}
+        # Use fresh token if the setup provided one (e.g. logout test)
+        if "fresh_token" in context:
+            headers = {"Authorization": f"Bearer {context['fresh_token']}", **req.headers}
+        else:
+            headers = {**auth_headers, **req.headers}
 
         from tests.helpers.recorder import RequestSpec
 

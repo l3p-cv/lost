@@ -100,6 +100,14 @@ def _run_dataset_spec(client, auth_headers, dbm, spec: RouteSpec, record: bool):
             fu_golden = load_golden(fu_gpath)
             assert_equal(fu_golden, fu_captured, mode=fu.mode)
 
+            # Extract created export ID from follow-up GET for cleanup
+            if spec.name == "POST_dataset_parquet_export":
+                fu_body = fu_captured.get("response", {}).get("body", {})
+                if isinstance(fu_body, dict) and "exports" in fu_body:
+                    exports = fu_body["exports"]
+                    if exports and isinstance(exports, list) and isinstance(exports[-1], dict):
+                        context["export_id"] = exports[-1].get("id")
+
     finally:
         # Cleanup (delete created dataset or revert name)
         if spec.cleanup:

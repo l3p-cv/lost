@@ -1,11 +1,13 @@
 """Label namespace request specs for golden-snapshot testing.
 
-8 routes: 6 active, 2 skipped.
+8 routes: 7 active, 1 skipped.
 - 3 GETs (tree/all, tree/global, by_id) — use OOTB VOC2012 root leaf (idx=1)
 - POST add label (create test leaf → cleanup delete)
 - PATCH edit label (create in setup → edit via API → cleanup delete)
 - DELETE label (create in setup → delete via API → GET verify 404)
-- Skip: export (binary CSV), import (file upload)
+- GET export (CSV, exact mode — generated on the fly)
+- POST import (CSV upload → cleanup delete imported tree)
+- Skip: pipeline import_zip, import_git (complex cleanup)
 
 Self-contained: GETs use OOTB VOC2012 label leaf (idx=1, seeded by initlost).
 POST/PATCH/DELETE create test leaves with compare_test_ prefix.
@@ -13,12 +15,21 @@ POST/PATCH/DELETE create test leaves with compare_test_ prefix.
 
 from __future__ import annotations
 
+import io
+
 from tests.helpers.recorder import RequestSpec
 from tests.helpers.seed import unique_suffix, TEST_PREFIX
 from tests.compare.user_specs import RouteSpec
 
 # OOTB VOC2012 root label leaf (idx=1 — seeded by initlost on every dev instance)
 OOTB_LABEL_LEAF_ID = 1
+
+# Minimal CSV for label import test — creates a 2-leaf tree under a compare_test_ root
+_TEST_LABEL_CSV = (
+    "name,abbreviation,description,external_id,is_root,parent_leaf_id,color\n"
+    f"{TEST_PREFIX}label_tree,,Test label tree for golden snapshots,,True,,#ff0000\n"
+    f"{TEST_PREFIX}leaf1,L1,First test leaf,1,False,,#00ff00\n"
+)
 
 
 # ---------------------------------------------------------------------------
@@ -150,20 +161,25 @@ def get_label_specs() -> list[RouteSpec]:
 
     # --- Skipped ---
 
-    # 7. GET /api/label/1/export — binary CSV download
+    # 7. GET /api/label/1/export — CSV download (generated on the fly, text/csv content type)
     specs.append(RouteSpec(
         name="GET_label_export",
-        request=RequestSpec(method="GET", path=f"/api/label/{OOTB_LABEL_LEAF_ID}/export"),
-        skip=True,
-        skip_reason="Binary CSV download — recorder needs fix for binary responses. Verified manually in P1.2.",
+        request=RequestSpec(method="GET", path=f"/api/label/{OOTB_LABEL_LEAF_ID}/export", mode="exact"),
     ))
 
-    # 8. POST /api/label/tree/all — import label tree from CSV (file upload)
+    # 8. POST /api/label/tree/all — import label tree from CSV (multipart upload)
     specs.append(RouteSpec(
         name="POST_label_import",
-        request=RequestSpec(method="POST", path="/api/label/tree/all"),
-        skip=True,
-        skip_reason="File upload (multipart) — complex handling. Verified manually in P1.2.",
+        request=RequestSpec(
+            method="POST", path="/api/label/tree/all",
+            files={"file": ("compare_test_label.csv", _TEST_LABEL_CSV.encode("utf-8"), "text/csv")},
+            mode="structural",
+        ),
+        follow_up=RequestSpec(
+            method="GET", path="/api/label/tree/all", mode="structural",
+            label="POST_label_import__then_GET",
+        ),
+        cleanup=_cleanup_imported_label_tree,
     ))
 
     return specs
@@ -179,6 +195,25 @@ def _cleanup_created_label_by_name(dbm, context):
         if leaf:
             dbm.delete(leaf)
             dbm.commit()
+
+
+def _cleanup_imported_label_tree(dbm, context):
+    """Delete a label tree imported via POST /api/label/tree/all.
+
+    Finds the root leaf by name (compare_test_label_tree) and cascades delete.
+    """
+    from lost.db import model
+
+    root_name = f"{TEST_PREFIX}label_tree"
+    root = dbm.session.query(model.LabelLeaf).filter_by(name=root_name).first()
+    if root:
+        # Delete children first
+        children = dbm.session.query(model.LabelLeaf).filter_by(parent_leaf_id=root.idx).all()
+        for child in children:
+            dbm.delete(child)
+            dbm.commit()
+        dbm.delete(root)
+        dbm.commit()
 
 
 def get_active_label_specs() -> list[RouteSpec]:

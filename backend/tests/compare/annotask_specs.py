@@ -170,6 +170,83 @@ def _cleanup_created_dataset(dbm, context):
 
 
 # ---------------------------------------------------------------------------
+# Setup: create throwaway AnnoTaskExport for DELETE test
+# ---------------------------------------------------------------------------
+
+
+def _setup_delete_annotask_export(dbm):
+    """Create a throwaway AnnoTaskExport to be deleted via the API."""
+    from lost.db import model
+    from tests.helpers.seed import unique_suffix, TEST_PREFIX
+    from tests.helpers.lookups import get_test_sia_annotask_id
+    from datetime import datetime, timezone
+
+    at_id = get_test_sia_annotask_id(dbm)
+    if at_id is None:
+        return {"skip": True}
+    exp = model.AnnoTaskExport(
+        anno_task_id=at_id,
+        name=f"{TEST_PREFIX}delete_export_{unique_suffix()}",
+        file_path=f"/home/lost/data/1/ds_export/test/{TEST_PREFIX}delete.zip",
+        fs_id=2,
+        progress=100,
+        img_count=2,
+        anno_task_progress=100,
+        timestamp=datetime.now(timezone.utc),
+    )
+    dbm.save_obj(exp)
+    return {"export_id": exp.idx, "skip": False}
+
+
+# ---------------------------------------------------------------------------
+# Cleanup: delete AnnoTaskExport created by POST export
+# ---------------------------------------------------------------------------
+
+
+def _cleanup_created_annotask_export(dbm, context):
+    """Delete an AnnoTaskExport created by POST export (if the API didn't already)."""
+    from lost.db import model
+
+    exp_id = context.get("export_id")
+    if exp_id is not None:
+        exp = dbm.session.query(model.AnnoTaskExport).filter_by(idx=exp_id).first()
+        if exp:
+            dbm.session.delete(exp)
+            dbm.session.commit()
+
+
+# ---------------------------------------------------------------------------
+# Setup/cleanup: reversible PATCH instruction
+# ---------------------------------------------------------------------------
+
+
+def _save_instruction_id(dbm):
+    """Save current instruction_id from compare_test_sia before mutation."""
+    from tests.helpers.lookups import get_test_sia_annotask_id
+
+    at_id = get_test_sia_annotask_id(dbm)
+    if at_id is None:
+        return {"skip": True}
+    at = dbm.get_anno_task(at_id)
+    return {"original_instruction_id": at.instruction_id, "annotask_id": at_id, "skip": False}
+
+
+def _revert_instruction_id(dbm, context):
+    """Revert instruction_id to the original value after mutation."""
+    from lost.db import access
+    from lost.settings import LOST_CONFIG
+
+    fresh_dbm = access.DBMan(LOST_CONFIG)
+    try:
+        at = fresh_dbm.get_anno_task(context["annotask_id"])
+        if at:
+            at.instruction_id = context["original_instruction_id"]
+            fresh_dbm.save_obj(at)
+    finally:
+        fresh_dbm.close_session()
+
+
+# ---------------------------------------------------------------------------
 # The 23 annotasks route specs (17 active, 6 skipped)
 # ---------------------------------------------------------------------------
 
@@ -284,7 +361,7 @@ def get_annotask_specs() -> list[RouteSpec]:
 
     # --- POST that's a read (navigation, not destructive) ---
 
-    # 13. POST /api/annotasks/{id}/review — review navigation (direction=first)
+    # 13. POST /api/annotasks/{id}/review — skip (stateful navigation: advances through images, non-deterministic)
     specs.append(RouteSpec(
         name="POST_annotask_review",
         request=RequestSpec(
@@ -293,6 +370,8 @@ def get_annotask_specs() -> list[RouteSpec]:
             mode="structural",
         ),
         setup=_setup_annotask_context,
+        skip=True,
+        skip_reason="Stateful navigation — advances through images, returns different data on each run. Non-deterministic. Verified manually in P1.2.",
     ))
 
     # --- Idempotent mutate-then-GET ---
@@ -368,25 +447,49 @@ def get_annotask_specs() -> list[RouteSpec]:
         skip_reason="Irreversible — releases locked annotations. Verified manually in P1.2.",
     ))
 
+    # --- Un-skipped mutations with setup/cleanup ---
+
+    # POST /api/annotasks/{id}/exports — trigger dask export → GET verify → cleanup
     specs.append(RouteSpec(
         name="POST_annotask_export",
-        request=RequestSpec(method="POST", path="/api/annotasks/{annotask_id}/exports"),
-        skip=True,
-        skip_reason="Triggers async dask job. Verified manually in P1.2.",
+        request=RequestSpec(
+            method="POST", path="/api/annotasks/{annotask_id}/exports",
+            json={"exportName": "compare_test_export", "exportType": "parquet", "annotatedOnly": True, "includeImages": False},
+            mode="structural",
+        ),
+        follow_up=RequestSpec(
+            method="GET", path="/api/annotasks/{annotask_id}/exports", mode="structural",
+            label="POST_annotask_export__then_GET",
+        ),
+        setup=_setup_annotask_context,
+        cleanup=_cleanup_created_annotask_export,
     ))
 
+    # DELETE /api/annotasks/exports/{id} — create throwaway → DELETE via API → GET verify
     specs.append(RouteSpec(
         name="DELETE_annotask_export",
-        request=RequestSpec(method="DELETE", path="/api/annotasks/exports/{export_id}"),
-        skip=True,
-        skip_reason="Irreversible — deletes export. Verified manually in P1.2.",
+        request=RequestSpec(method="DELETE", path="/api/annotasks/exports/{export_id}", mode="structural"),
+        follow_up=RequestSpec(
+            method="GET", path="/api/annotasks/{annotask_id}/exports", mode="structural",
+            label="DELETE_annotask_export__then_GET",
+        ),
+        setup=_setup_delete_annotask_export,
     ))
 
+    # PATCH /api/annotasks/{id}/instruction — reversible: save → set to 1 → GET → revert
     specs.append(RouteSpec(
         name="PATCH_annotask_instruction",
-        request=RequestSpec(method="PATCH", path="/api/annotasks/{annotask_id}/instruction"),
-        skip=True,
-        skip_reason="No instructions in DB to meaningfully test. Verified manually in P1.2.",
+        request=RequestSpec(
+            method="PATCH", path="/api/annotasks/{annotask_id}/instruction",
+            json={"annotaskId": "{annotask_id}", "instructionId": 1},
+            mode="structural",
+        ),
+        follow_up=RequestSpec(
+            method="GET", path="/api/annotasks/{annotask_id}/instruction", mode="structural",
+            label="PATCH_annotask_instruction__then_GET",
+        ),
+        setup=_save_instruction_id,
+        cleanup=_revert_instruction_id,
     ))
 
     specs.append(RouteSpec(

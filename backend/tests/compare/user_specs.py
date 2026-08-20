@@ -70,6 +70,22 @@ def _setup_existing_user(dbm):
     return {"user_id": user.idx, "user_name": user.user_name, "user_obj": user}
 
 
+def _setup_fresh_token(dbm):
+    """Mint a fresh JWT for admin so logout doesn't invalidate the shared session token.
+
+    The fresh token is stored in context['fresh_token']. The test runner
+    uses it as the Authorization header instead of the shared auth_headers.
+    """
+    from lost.app import app
+    from lost.api.user.login_manager import LoginManager
+
+    with app.app_context():
+        user = dbm.find_user_by_user_name("admin")
+        lm = LoginManager(dbm, "admin", "admin")
+        token, _ = lm.create_jwt(user.idx, user.user_name, user.roles)
+    return {"fresh_token": token, "skip": False}
+
+
 def _cleanup_existing_user(dbm, context):
     """Clean up a test user created by _setup_existing_user."""
     if "user_obj" in context:
@@ -237,11 +253,11 @@ def get_user_specs() -> list[RouteSpec]:
         skip=True,
         skip_reason="JWT token issuance — non-deterministic, verified manually in P1.2",
     ))
+    # 8. POST /api/user/logout — uses a fresh token (so the shared session token stays valid)
     specs.append(RouteSpec(
         name="POST_user_logout",
-        request=RequestSpec(method="POST", path="/api/user/logout"),
-        skip=True,
-        skip_reason="Token revocation — no GET to compare, verified manually in P1.2",
+        request=RequestSpec(method="POST", path="/api/user/logout", mode="structural"),
+        setup=_setup_fresh_token,
     ))
 
     return specs

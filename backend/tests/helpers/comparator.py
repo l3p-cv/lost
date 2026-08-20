@@ -49,15 +49,19 @@ _REDACTED_KEYS = {
     "refresh_token",
     "refreshToken",
     "access_token",
-    # Timestamps (non-deterministic)
+    # Timestamps (non-deterministic) — snake_case + camelCase variants
     "email_confirmed_at",
     "created_at",
+    "createdAt",
     "updated_at",
+    "updatedAt",
     "timestamp",
     "date",
     "started_at",
     "finished_at",
+    "lastActivity",
     "last_seen",
+    "register_timestamp",
     "registered_at",
 }
 
@@ -66,9 +70,9 @@ def _placeholder_for(key: str) -> str:
     """Return a placeholder string for a redacted key."""
     if "token" in key.lower():
         return "<TOKEN>"
-    if key in ("idx", "id") or key.endswith("_id"):
+    if key in ("idx", "id") or key.endswith("_id") or key.endswith("Id"):
         return "<ID>"
-    if "at" in key.lower() or key in ("timestamp", "date", "last_seen"):
+    if "at" in key.lower() or key in ("timestamp", "date", "last_seen", "lastActivity"):
         return "<TS>"
     return "<REDACTED>"
 
@@ -137,7 +141,14 @@ def _normalize_headers(headers: dict | list[tuple] | None) -> dict:
 
 
 def _normalize_response(response: dict) -> dict:
-    """Normalize a response dict (status, headers, body) for comparison."""
+    """Normalize a response dict (status, headers, body) for comparison.
+
+    If the input is a full snapshot dict (with ``request``/``response`` keys),
+    the ``response`` sub-dict is extracted automatically.
+    """
+    # Extract the response part from a full snapshot dict
+    if "response" in response and "request" in response:
+        response = response["response"]
     out = {
         "status": response.get("status") or response.get("status_code"),
         "headers": _normalize_headers(response.get("headers")),
@@ -180,16 +191,21 @@ def _compare_structural(golden: Any, actual: Any, path: str = "") -> list[str]:
         for k in g_keys & a_keys:
             diffs.extend(_compare_structural(golden[k], actual[k], f"{path}.{k}"))
     elif isinstance(golden, list) and isinstance(actual, list):
-        if len(golden) != len(actual):
-            diffs.append(f"{path}: list length mismatch (golden={len(golden)}, actual={len(actual)})")
-        for i, (g, a) in enumerate(zip(golden, actual)):
-            diffs.extend(_compare_structural(g, a, f"{path}[{i}]"))
+        # Structural mode: compare only the first element's shape, ignore list length
+        # (list length is data-dependent — test runs create/delete entities)
+        if golden and actual:
+            diffs.extend(_compare_structural(golden[0], actual[0], f"{path}[0]"))
+        elif golden and not actual:
+            diffs.append(f"{path}: golden has items but actual list is empty")
+        elif actual and not golden:
+            diffs.append(f"{path}: actual has items but golden list is empty")
     else:
-        # Scalar: compare types (and values for non-redacted)
+        # Scalar: compare type only (not value) in structural mode.
+        # Redacted fields are already replaced with placeholders by _normalize_data,
+        # so their values match (both are "<ID>", "<TS>", etc.).
+        # Non-redacted fields (names, counts, progress) are non-deterministic → type only.
         if type(golden) is not type(actual):
             diffs.append(f"{path}: type mismatch (golden={type(golden).__name__}, actual={type(actual).__name__})")
-        elif golden != actual:
-            diffs.append(f"{path}: value mismatch (golden={golden!r}, actual={actual!r})")
     return diffs
 
 
@@ -222,26 +238,43 @@ def _compare_exact(golden: Any, actual: Any, path: str = "") -> list[str]:
 
 
 def _compare_binary(golden: dict, actual: dict, path: str = "") -> list[str]:
-    """Compare binary responses: Content-Type + Content-Length + SHA256."""
+    """Compare binary responses: Content-Type + SHA256 from stored metadata dict.
+
+    The body is stored as ``{"_binary": true, "content_type": "...", "sha256": "...", "size": N}``
+    by the recorder (JSON-serializable, not raw bytes).
+    """
     diffs: list[str] = []
+
+    # Compare Content-Type from headers (already normalized to lowercase)
     g_headers = golden.get("headers", {})
     a_headers = actual.get("headers", {})
-    g_ct = g_headers.get("content-type", g_headers.get("Content-Type", ""))
-    a_ct = a_headers.get("content-type", a_headers.get("Content-Type", ""))
+    g_ct = g_headers.get("content-type", "")
+    a_ct = a_headers.get("content-type", "")
     if g_ct != a_ct:
         diffs.append(f"{path}: Content-Type mismatch (golden={g_ct!r}, actual={a_ct!r})")
 
-    # Body hash
-    g_body = golden.get("body", "")
-    a_body = actual.get("body", "")
-    if isinstance(g_body, str):
-        g_body = g_body.encode("utf-8", errors="replace")
-    if isinstance(a_body, str):
-        a_body = a_body.encode("utf-8", errors="replace")
-    g_hash = hashlib.sha256(g_body).hexdigest() if g_body else ""
-    a_hash = hashlib.sha256(a_body).hexdigest() if a_body else ""
-    if g_hash != a_hash:
-        diffs.append(f"{path}: body SHA256 mismatch (golden={g_hash[:12]}..., actual={a_hash[:12]}...)")
+    # Compare binary metadata from body
+    g_body = golden.get("body", {}) or {}
+    a_body = actual.get("body", {}) or {}
+
+    if not isinstance(g_body, dict) or not g_body.get("_binary"):
+        diffs.append(f"{path}: golden body is not binary metadata: {type(g_body).__name__}")
+        return diffs
+    if not isinstance(a_body, dict) or not a_body.get("_binary"):
+        diffs.append(f"{path}: actual body is not binary metadata: {type(a_body).__name__}")
+        return diffs
+
+    g_sha = g_body.get("sha256", "")
+    a_sha = a_body.get("sha256", "")
+    if g_sha != a_sha:
+        diffs.append(f"{path}: body SHA256 mismatch (golden={g_sha[:12]}..., actual={a_sha[:12]}...)")
+
+    g_size = g_body.get("size", 0)
+    a_size = a_body.get("size", 0)
+    if g_size != a_size:
+        diffs.append(f"{path}: body size mismatch (golden={g_size}, actual={a_size})")
+
+    return diffs
     return diffs
 
 

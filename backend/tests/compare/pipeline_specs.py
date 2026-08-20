@@ -159,9 +159,9 @@ def get_pipeline_specs() -> list[RouteSpec]:
 
     specs.append(RouteSpec(
         name="GET_pipeline_export",
-        request=RequestSpec(method="GET", path="/api/pipeline/project/export/{pipe_project}"),
+        request=RequestSpec(method="GET", path="/api/pipeline/project/export/found"),
         skip=True,
-        skip_reason="Binary zip download — recorder needs fix for binary responses. Verified manually in P1.2.",
+        skip_reason="ZIP includes .git/ contents which change between runs (git pack files, timestamps). Non-deterministic SHA256. Verified manually in P1.2.",
     ))
 
     specs.append(RouteSpec(

@@ -8,12 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - `backend/tests/` : Added golden-snapshot API comparison harness for the Flask→FastAPI migration (P0). Records Flask's API responses as reference snapshots and replays them against FastAPI to verify behavioral equivalence. Includes `conftest.py` with JWT minting, `helpers/` (client, comparator, recorder, seed), and parametrized comparison tests for the `user` namespace.
 - `backend/run_snapshots.sh` : Added one-command wrapper script that ensures compose stack is up, runs idempotent DB seed (`initlost.py`), and executes the golden-snapshot pytest suite inside the backend container. Supports `--record` (re-capture snapshots), `--cleanup` (force-remove test data), and `--verbose` (show container logs after run).
-- `backend/.dockerignore` : Added `tests` and `pytest.sh` exclusions so the golden-snapshot suite is not shipped in the production Docker image.
+- `backend/.dockerignore` : Added `tests` so the golden-snapshot suite is not shipped in the production Docker image.
 - `compare/{sia,annotask,dataset,system,worker,config,statistics}_specs.py` : Added namespace request specs, reversible mutation helpers.
 - `compare/{group,instructions,data,instructionmedia}_specs.py` : Added new namespace request specs, reversible mutation helpers.
 - `backend/tests/compare/` : Added parametrized comparison tests for following covered namespaces (`test_{user,sia,annotask,dataset,system,worker,config,statistics,group,instruction,data,instructionmedia}_compare.py`). More namespaces to the harness added mia,label,filebrowser, pipeline.
 - `init_test_data.py` : Added as test data seeder for the golden-snapshot harness.
 - `lookups.py` : has shared lookup helpers for test specs.
+- `backend/tests/helpers/recorder.py` : Added binary response handling — stores content_type + SHA256 + size as JSON-serializable metadata instead of raw bytes; `comparator.py` compares the metadata dict. Unlocks CSV export and binary download specs.
+- `backend/tests/helpers/recorder.py` : Added multipart file upload handling — merges form data + file objects with `content_type=multipart/form-data`. Unlocks label CSV import and filebrowser upload specs with cleanup.
+- `backend/tests/` : Un-skipped 7 mutation specs (logout, PATCH instruction, 3 DELETEs, 2 POST exports) using reversible-mutation and create-then-DELETE patterns with cleanup; un-skipped label CSV export and 2 upload specs. Coverage now 96 active tests across 16 namespaces.
 ### Fixed
 - `backend/tests/helpers/recorder.py` : Fixed empty-body handling for 204 No Content responses 
 
