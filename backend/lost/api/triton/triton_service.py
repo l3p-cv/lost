@@ -1,8 +1,8 @@
+import logging
 import uuid
 from datetime import datetime, timezone
 
 import cv2
-import flask
 import numpy as np
 import requests
 import tritonclient.grpc as grpcclient
@@ -13,6 +13,8 @@ from db.model import InferenceModel
 from tritonclient.utils import InferenceServerException
 
 from lost.logic import sia
+
+logger = logging.getLogger("lost.api.triton")
 
 
 def process_detection(detection, img_height, img_width, img_id, labels):
@@ -102,7 +104,7 @@ class TritonService:
         if self._client is None:
             try:
                 self._client = grpcclient.InferenceServerClient(url=self.url)
-                flask.current_app.logger.info(f"Connected to Triton server at {self.url}")
+                logger.info(f"Connected to Triton server at {self.url}")
             except Exception as e:
                 raise ConnectionError(f"Failed to connect to Triton server: {e!s}")
         return self._client
@@ -147,7 +149,7 @@ class TritonService:
                 detections = response.as_numpy("detections")
 
                 if detections is None:
-                    flask.current_app.logger.debug("No detections found in the response.")
+                    logger.debug("No detections found in the response.")
                     return
 
                 # print(f"Detections: {detections}")
@@ -169,7 +171,7 @@ class TritonService:
                 class_ids = response.as_numpy("class_ids")
 
                 if polygons is None or class_ids is None:
-                    flask.current_app.logger.debug("No polygons found in the response.")
+                    logger.debug("No polygons found in the response.")
                     return
 
                 img_height, img_width = image.shape[:2]

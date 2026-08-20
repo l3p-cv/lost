@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `backend/tests/helpers/recorder.py` : Added binary response handling — stores content_type + SHA256 + size as JSON-serializable metadata instead of raw bytes; `comparator.py` compares the metadata dict. Unlocks CSV export and binary download specs.
 - `backend/tests/helpers/recorder.py` : Added multipart file upload handling — merges form data + file objects with `content_type=multipart/form-data`. Unlocks label CSV import and filebrowser upload specs with cleanup.
 - `backend/tests/` : Un-skipped 7 mutation specs (logout, PATCH instruction, 3 DELETEs, 2 POST exports) using reversible-mutation and create-then-DELETE patterns with cleanup; un-skipped label CSV export and 2 upload specs. Coverage now 96 active tests across 16 namespaces.
+- `backend/` : added FastAPI deps to `pyproject.toml`, created `lost/db/session.py` (shared engine + `get_db()` dependency)
+- Added  stdlib `logging.getLogger` instead of `flask.current_app.logger` from `logic/sia.py` + 3 endpoint files.
 ### Fixed
 - `backend/tests/helpers/recorder.py` : Fixed empty-body handling for 204 No Content responses 
 

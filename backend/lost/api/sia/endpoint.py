@@ -1,5 +1,6 @@
 import base64
 import json
+import logging
 import traceback
 import os
 
@@ -11,6 +12,8 @@ from flask_restx import Resource
 from shapely.errors import TopologicalError
 
 from lost.api.api import api
+
+logger = logging.getLogger("lost.api.sia")
 from lost.api.sia.api_definition import (
     error_model,
     image_filters,
@@ -98,7 +101,7 @@ class First(Resource):
                 msg = traceback.format_exc()
                 msg += f"\nuser.idx: {user.idx}, user.name: {user.user_name}\n"
                 msg += f"Received data:\n{json.dumps(data, indent=4)}\n"
-                flask.current_app.logger.error(f"{msg}")
+                logger.error(f"{msg}")
                 dbm.close_session()
                 return "error updating sia anno", 500
 
@@ -155,8 +158,8 @@ class Filter(Resource):
                 clipLimit = int(clipLimit)
 
             img = dbm.get_image_anno(image_id)
-            flask.current_app.logger.info(f"img.img_path: {img.img_path}")
-            flask.current_app.logger.info(f"img.fs.name: {img.fs.name}")
+            logger.info(f"img.img_path: {img.img_path}")
+            logger.info(f"img.fs.name: {img.fs.name}")
             # fs_db = dbm.get_fs(img.fs_id)
             fs = FileMan(fs_db=img.fs)
             # img = PIL.Image.open('/home/lost/data/media/10_voc2012/2007_008547.jpg')
@@ -204,8 +207,8 @@ class SiaImagePath(Resource):
             if img is None:
                 dbm.close_session()
                 return {"error": "Not found"}, 404
-            flask.current_app.logger.info(f"img.img_path: {img.img_path}")
-            flask.current_app.logger.info(f"img.fs.name: {img.fs.name}")
+            logger.info(f"img.img_path: {img.img_path}")
+            logger.info(f"img.fs.name: {img.fs.name}")
             dbm.close_session()
             return {"img_name": os.path.basename(img.img_path)}
 
@@ -235,8 +238,8 @@ class ImageFilters(Resource):
             filters = data.get("filters", [])
 
             img = dbm.get_image_anno(image_id)
-            flask.current_app.logger.info(f"img.img_path: {img.img_path}")
-            flask.current_app.logger.info(f"img.fs.name: {img.fs.name}")
+            logger.info(f"img.img_path: {img.img_path}")
+            logger.info(f"img.fs.name: {img.fs.name}")
             fs = FileMan(fs_db=img.fs)
             img_data = fs.load_img(
                 img.img_path, color_type="gray" if any(f["name"] == "cannyEdge" for f in filters) else "color"
@@ -249,11 +252,11 @@ class ImageFilters(Resource):
             dbm.close_session()
             return "data:image/jpeg;base64," + data64.decode("utf-8")
         except ValueError as ve:
-            flask.current_app.logger.warning(f"ValueError applying filters: {ve!s}")
+            logger.warning(f"ValueError applying filters: {ve!s}")
             dbm.close_session()
             return {"error": str(ve)}, 400
         except Exception as e:
-            flask.current_app.logger.error(f"Error applying filters: {e!s}")
+            logger.error(f"Error applying filters: {e!s}")
             dbm.close_session()
             return {"error": str(e)}, 500
 
@@ -345,7 +348,7 @@ class SiaThumbnail(Resource):
             dbm.close_session()
             return "data:image/jpeg;base64," + data64.decode("utf-8")
         except Exception as e:
-            flask.current_app.logger.error(f"Error generating thumbnail: {e!s}")
+            logger.error(f"Error generating thumbnail: {e!s}")
             dbm.close_session()
             return {"error": str(e)}, 500
 
@@ -469,20 +472,20 @@ class PolygonUnion(Resource):
         try:
             data = json.loads(request.data)
             data = sia.normalize_annotations(data)
-            flask.current_app.logger.info(f"Normalized payload for union: {data}")
+            logger.info(f"Normalized payload for union: {data}")
             response = sia.perform_polygon_union(data)
             dbm.close_session()
             return response, 200
         except sia.PolygonOperationError as e:
-            flask.current_app.logger.error(f"Validation error in polygon union: {e!s}")
+            logger.error(f"Validation error in polygon union: {e!s}")
             dbm.close_session()
             return {"error": str(e)}, 400
         except TopologicalError as e:
-            flask.current_app.logger.error(f"Topology error in polygon union: {e!s}")
+            logger.error(f"Topology error in polygon union: {e!s}")
             dbm.close_session()
             return {"error": str(e)}, 400
         except Exception as e:
-            flask.current_app.logger.error(f"Unexpected error in polygon union: {e!s}")
+            logger.error(f"Unexpected error in polygon union: {e!s}")
             dbm.close_session()
             return {"error": str(e)}, 500
 
@@ -511,15 +514,15 @@ class PolygonIntersection(Resource):
             dbm.close_session()
             return response, 200
         except sia.PolygonOperationError as e:
-            flask.current_app.logger.error(f"Validation error in polygon intersection: {e!s}")
+            logger.error(f"Validation error in polygon intersection: {e!s}")
             dbm.close_session()
             return {"error": str(e)}, 400
         except TopologicalError as e:
-            flask.current_app.logger.error(f"Topology error in polygon intersection: {e!s}")
+            logger.error(f"Topology error in polygon intersection: {e!s}")
             dbm.close_session()
             return {"error": str(e)}, 400
         except Exception as e:
-            flask.current_app.logger.error(f"Unexpected error in polygon intersection: {e!s}")
+            logger.error(f"Unexpected error in polygon intersection: {e!s}")
             dbm.close_session()
             return {"error": str(e)}, 500
 
@@ -546,7 +549,7 @@ class PolygonDifference(Resource):
             return api.abort(403, f"You need to be {roles.ANNOTATOR} in order to perform this request.")
         try:
             data = json.loads(request.data)
-            flask.current_app.logger.info(f"Received payload for difference: {data}")
+            logger.info(f"Received payload for difference: {data}")
 
             data = sia.normalize_annotations({
                 "annotations": [data["selectedPolygon"]] + data.get("polygonModifiers", [])
@@ -558,15 +561,15 @@ class PolygonDifference(Resource):
             dbm.close_session()
             return response, 200
         except sia.PolygonOperationError as e:
-            flask.current_app.logger.error(f"Validation error in polygon difference: {e!s}")
+            logger.error(f"Validation error in polygon difference: {e!s}")
             dbm.close_session()
             return {"error": str(e)}, 400
         except TopologicalError as e:
-            flask.current_app.logger.error(f"Topology error in polygon difference: {e!s}")
+            logger.error(f"Topology error in polygon difference: {e!s}")
             dbm.close_session()
             return {"error": str(e)}, 400
         except Exception as e:
-            flask.current_app.logger.error(f"Unexpected error in polygon difference: {e!s}")
+            logger.error(f"Unexpected error in polygon difference: {e!s}")
             dbm.close_session()
             return {"error": str(e)}, 500
 
@@ -590,17 +593,17 @@ class BBoxFromPoints(Resource):
             return api.abort(403, f"You need to be {roles.ANNOTATOR} in order to perform this request.")
         try:
             data = json.loads(request.data)
-            flask.current_app.logger.info(f"Received payload for bounding box computation: {data}")
+            logger.info(f"Received payload for bounding box computation: {data}")
 
             response = sia.compute_bboxes_from_points(data)
 
             dbm.close_session()
             return {"data": response}, 200
         except sia.PolygonOperationError as e:
-            flask.current_app.logger.error(f"Validation error in bounding box computation: {e!s}")
+            logger.error(f"Validation error in bounding box computation: {e!s}")
             dbm.close_session()
             return {"error": str(e)}, 400
         except Exception as e:
-            flask.current_app.logger.error(f"Unexpected error in bounding box computation: {e!s}")
+            logger.error(f"Unexpected error in bounding box computation: {e!s}")
             dbm.close_session()
             return {"error": str(e)}, 500
