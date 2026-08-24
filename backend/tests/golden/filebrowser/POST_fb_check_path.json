@@ -1,0 +1,24 @@
+{
+  "mode": "exact",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "json": {
+      "fsId": 1,
+      "path": "/home/lost/data"
+    },
+    "method": "POST",
+    "path": "/api/fb/check-path"
+  },
+  "response": {
+    "body": {
+      "exists": true
+    },
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

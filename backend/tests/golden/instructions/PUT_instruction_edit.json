@@ -1,0 +1,37 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "json": {
+      "description": "Edited by golden snapshot test",
+      "id": 171,
+      "instruction": "Edited content",
+      "option": "compare_test_edited"
+    },
+    "method": "PUT",
+    "path": "/api/instructions/editInstruction"
+  },
+  "response": {
+    "body": {
+      "instruction": {
+        "created_at": "<TS>",
+        "description": "Edited by golden snapshot test",
+        "group_id": "<ID>",
+        "id": "<ID>",
+        "instruction": "Edited content",
+        "is_deleted": false,
+        "option": "compare_test_edited",
+        "parent_instruction_id": null,
+        "updated_at": "<TS>"
+      },
+      "message": "Instruction updated successfully"
+    },
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

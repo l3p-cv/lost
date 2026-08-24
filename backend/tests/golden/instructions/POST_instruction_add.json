@@ -1,0 +1,37 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "json": {
+      "description": "Test for golden snapshots",
+      "instruction": "Test instruction content",
+      "option": "compare_test_39db4449",
+      "visibility": "global"
+    },
+    "method": "POST",
+    "path": "/api/instructions/addInstruction"
+  },
+  "response": {
+    "body": {
+      "instruction": {
+        "created_at": "<TS>",
+        "description": "Test for golden snapshots",
+        "group_id": "<ID>",
+        "id": "<ID>",
+        "instruction": "Test instruction content",
+        "is_deleted": false,
+        "option": "compare_test_39db4449",
+        "parent_instruction_id": null,
+        "updated_at": "<TS>"
+      },
+      "message": "Instruction added successfully"
+    },
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 201
+  }
+}

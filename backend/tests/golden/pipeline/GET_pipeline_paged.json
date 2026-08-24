@@ -1,0 +1,134 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/pipeline/0/10"
+  },
+  "response": {
+    "body": {
+      "pages": 7,
+      "pipelines": {
+        "pipes": [
+          {
+            "creatorName": "admin",
+            "date": "<TS>",
+            "description": "1",
+            "id": "<ID>",
+            "isDebug": false,
+            "logfilePath": "/home/lost/data/1/logs/pipes/p-126.log",
+            "name": "strpp",
+            "progress": "66%",
+            "templateName": "found.sia"
+          },
+          {
+            "creatorName": "admin",
+            "date": "<TS>",
+            "description": "1",
+            "id": "<ID>",
+            "isDebug": false,
+            "logfilePath": "/home/lost/data/1/logs/pipes/p-125.log",
+            "name": "recrt",
+            "progress": "66%",
+            "templateName": "found.sia"
+          },
+          {
+            "creatorName": "admin",
+            "date": "<TS>",
+            "description": "check",
+            "id": "<ID>",
+            "isDebug": false,
+            "logfilePath": "/home/lost/data/1/logs/pipes/p-117.log",
+            "name": "testtosee",
+            "progress": "66%",
+            "templateName": "found.sia"
+          },
+          {
+            "creatorName": "admin",
+            "date": "<TS>",
+            "description": "test",
+            "id": "<ID>",
+            "isDebug": false,
+            "logfilePath": "/home/lost/data/1/logs/pipes/p-106.log",
+            "name": "mia1",
+            "progress": "100%",
+            "templateName": "found.mia"
+          },
+          {
+            "creatorName": "admin",
+            "date": "<TS>",
+            "description": "t2",
+            "id": "<ID>",
+            "isDebug": false,
+            "logfilePath": "/home/lost/data/1/logs/pipes/p-105.log",
+            "name": "test2",
+            "progress": "66%",
+            "templateName": "found.sia"
+          },
+          {
+            "creatorName": "admin",
+            "date": "<TS>",
+            "description": "t2",
+            "id": "<ID>",
+            "isDebug": false,
+            "logfilePath": "/home/lost/data/1/logs/pipes/p-104.log",
+            "name": "test t2",
+            "progress": "ERROR",
+            "templateName": "found.sia_request_again"
+          },
+          {
+            "creatorName": "admin",
+            "date": "<TS>",
+            "description": "v",
+            "id": "<ID>",
+            "isDebug": false,
+            "logfilePath": "/home/lost/data/1/logs/pipes/p-103.log",
+            "name": "testv",
+            "progress": "66%",
+            "templateName": "found.sia"
+          },
+          {
+            "creatorName": "admin",
+            "date": "<TS>",
+            "description": "v1",
+            "id": "<ID>",
+            "isDebug": false,
+            "logfilePath": "/home/lost/data/1/logs/pipes/p-102.log",
+            "name": "v1",
+            "progress": "66%",
+            "templateName": "found.sia"
+          },
+          {
+            "creatorName": "admin",
+            "date": "<TS>",
+            "description": "3",
+            "id": "<ID>",
+            "isDebug": false,
+            "logfilePath": "/home/lost/data/1/logs/pipes/p-97.log",
+            "name": "test3",
+            "progress": "66%",
+            "templateName": "found.sia"
+          },
+          {
+            "creatorName": "admin",
+            "date": "<TS>",
+            "description": "test",
+            "id": "<ID>",
+            "isDebug": false,
+            "logfilePath": "/home/lost/data/1/logs/pipes/p-88.log",
+            "name": "test_export",
+            "progress": "100%",
+            "templateName": "found.sia"
+          }
+        ]
+      }
+    },
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

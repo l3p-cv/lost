@@ -1,0 +1,21 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/pipeline/element/340/logs"
+  },
+  "response": {
+    "body": {
+      "error": "[Errno 2] No such file or directory: '/home/lost/data/1/logs/pipes/p-340.log'",
+      "type": "FileNotFoundError"
+    },
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 500
+  }
+}

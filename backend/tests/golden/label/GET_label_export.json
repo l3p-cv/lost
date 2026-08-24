@@ -1,0 +1,24 @@
+{
+  "mode": "exact",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/label/1/export"
+  },
+  "response": {
+    "body": {
+      "_binary": true,
+      "content_type": "blob",
+      "sha256": "73c63fcbf442c68fd2da786c47b0a38920535c49164e3c579213a81f334920a3",
+      "size": 1866
+    },
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-disposition": "attachment; filename=VOC2012.csv",
+      "content-type": "blob"
+    },
+    "status": 200
+  }
+}

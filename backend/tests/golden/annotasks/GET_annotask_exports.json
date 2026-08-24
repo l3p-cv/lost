@@ -1,0 +1,34 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/annotasks/127/exports"
+  },
+  "response": {
+    "body": {
+      "annoTasksExports": [
+        {
+          "annoTaskId": 127,
+          "annotaskProgress": 100.0,
+          "filePath": "/home/lost/data/1/ds_export/test/compare_test_sia_export.zip",
+          "fileSize": 0,
+          "fileType": "zip",
+          "fsId": 2,
+          "id": "<ID>",
+          "imgCount": 2,
+          "name": "compare_test_sia_export",
+          "progress": 100.0,
+          "timestamp": "<TS>"
+        }
+      ]
+    },
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

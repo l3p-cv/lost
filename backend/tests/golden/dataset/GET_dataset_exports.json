@@ -1,0 +1,183 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/datasets/56/ds_exports"
+  },
+  "response": {
+    "body": {
+      "exports": [
+        {
+          "datasetId": 56,
+          "filePath": "/home/lost/data/1/ds_export/test/compare_test_delete_export_71d18d08.parquet",
+          "id": "<ID>",
+          "progress": 100
+        },
+        {
+          "datasetId": 56,
+          "filePath": "/home/lost/data/1/ds_export/whole_dataset/compare_test_dataset_56_20260822112957.parquet",
+          "id": "<ID>",
+          "progress": 1
+        },
+        {
+          "datasetId": 56,
+          "filePath": "/home/lost/data/1/ds_export/whole_dataset/compare_test_dataset_56_20260822111135.parquet",
+          "id": "<ID>",
+          "progress": 1
+        },
+        {
+          "datasetId": 56,
+          "filePath": "/home/lost/data/1/ds_export/test/compare_test_delete_export_2408565d.parquet",
+          "id": "<ID>",
+          "progress": 100
+        },
+        {
+          "datasetId": 56,
+          "filePath": "/home/lost/data/1/ds_export/whole_dataset/compare_test_dataset_56_20260822104754.parquet",
+          "id": "<ID>",
+          "progress": 1
+        },
+        {
+          "datasetId": 56,
+          "filePath": "/home/lost/data/1/ds_export/test/compare_test_delete_export_fa41a330.parquet",
+          "id": "<ID>",
+          "progress": 100
+        },
+        {
+          "datasetId": 56,
+          "filePath": "/home/lost/data/1/ds_export/whole_dataset/compare_test_dataset_56_20260821114432.parquet",
+          "id": "<ID>",
+          "progress": 1
+        },
+        {
+          "datasetId": 56,
+          "filePath": "/home/lost/data/1/ds_export/test/compare_test_delete_export_2bd15259.parquet",
+          "id": "<ID>",
+          "progress": 100
+        },
+        {
+          "datasetId": 56,
+          "filePath": "/home/lost/data/1/ds_export/test/compare_test_delete_export_223e0218.parquet",
+          "id": "<ID>",
+          "progress": 100
+        },
+        {
+          "datasetId": 56,
+          "filePath": "/home/lost/data/1/ds_export/whole_dataset/compare_test_dataset_56_20260820141312.parquet",
+          "id": "<ID>",
+          "progress": 1
+        },
+        {
+          "datasetId": 56,
+          "filePath": "/home/lost/data/1/ds_export/test/compare_test_delete_export_6de8a7c9.parquet",
+          "id": "<ID>",
+          "progress": 100
+        },
+        {
+          "datasetId": 56,
+          "filePath": "/home/lost/data/1/ds_export/whole_dataset/compare_test_dataset_56_20260820135100.parquet",
+          "id": "<ID>",
+          "progress": 1
+        },
+        {
+          "datasetId": 56,
+          "filePath": "/home/lost/data/1/ds_export/test/compare_test_delete_export_459c72f1.parquet",
+          "id": "<ID>",
+          "progress": 100
+        },
+        {
+          "datasetId": 56,
+          "filePath": "/home/lost/data/1/ds_export/whole_dataset/compare_test_dataset_56_20260820133309.parquet",
+          "id": "<ID>",
+          "progress": 1
+        },
+        {
+          "datasetId": 56,
+          "filePath": "/home/lost/data/1/ds_export/test/compare_test_delete_export_e2fcb336.parquet",
+          "id": "<ID>",
+          "progress": 100
+        },
+        {
+          "datasetId": 56,
+          "filePath": "/home/lost/data/1/ds_export/whole_dataset/compare_test_dataset_56_20260820132942.parquet",
+          "id": "<ID>",
+          "progress": 1
+        },
+        {
+          "datasetId": 56,
+          "filePath": "/home/lost/data/1/ds_export/whole_dataset/compare_test_dataset_56_20260820131115.parquet",
+          "id": "<ID>",
+          "progress": 1
+        },
+        {
+          "datasetId": 56,
+          "filePath": "/home/lost/data/1/ds_export/test/compare_test_delete_export_58103e1f.parquet",
+          "id": "<ID>",
+          "progress": 100
+        },
+        {
+          "datasetId": 56,
+          "filePath": "/home/lost/data/1/ds_export/test/compare_test_delete_export_deeedf45.parquet",
+          "id": "<ID>",
+          "progress": 100
+        },
+        {
+          "datasetId": 56,
+          "filePath": "/home/lost/data/1/ds_export/whole_dataset/compare_test_dataset_56_20260820122045.parquet",
+          "id": "<ID>",
+          "progress": 1
+        },
+        {
+          "datasetId": 56,
+          "filePath": "/home/lost/data/1/ds_export/test/compare_test_delete_export_55e55dd6.parquet",
+          "id": "<ID>",
+          "progress": 100
+        },
+        {
+          "datasetId": 56,
+          "filePath": "/home/lost/data/1/ds_export/whole_dataset/compare_test_dataset_56_20260820122028.parquet",
+          "id": "<ID>",
+          "progress": 1
+        },
+        {
+          "datasetId": 56,
+          "filePath": "/home/lost/data/1/ds_export/test/compare_test_delete_export_a9e003aa.parquet",
+          "id": "<ID>",
+          "progress": 100
+        },
+        {
+          "datasetId": 56,
+          "filePath": "/home/lost/data/1/ds_export/whole_dataset/compare_test_dataset_56_20260820113417.parquet",
+          "id": "<ID>",
+          "progress": 1
+        },
+        {
+          "datasetId": 56,
+          "filePath": "/home/lost/data/1/ds_export/test/compare_test_delete_export_2f860a97.parquet",
+          "id": "<ID>",
+          "progress": 100
+        },
+        {
+          "datasetId": 56,
+          "filePath": "/home/lost/data/1/ds_export/whole_dataset/compare_test_dataset_56_20260820113340.parquet",
+          "id": "<ID>",
+          "progress": 1
+        },
+        {
+          "datasetId": 56,
+          "filePath": "/home/lost/data/1/ds_export/test/compare_test_dataset_export.parquet",
+          "id": "<ID>",
+          "progress": 100
+        }
+      ]
+    },
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

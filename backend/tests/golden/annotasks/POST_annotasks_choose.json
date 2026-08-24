@@ -1,0 +1,21 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "json": {
+      "id": 127
+    },
+    "method": "POST",
+    "path": "/api/annotasks"
+  },
+  "response": {
+    "body": "success",
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

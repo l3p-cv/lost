@@ -1,0 +1,30 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/worker"
+  },
+  "response": {
+    "body": {
+      "workers": [
+        {
+          "env_name": "lost",
+          "idx": "<ID>",
+          "in_progress": "{}",
+          "register_timestamp": "<REDACTED>",
+          "resources": "[]",
+          "timestamp": "<TS>",
+          "worker_name": "lost"
+        }
+      ]
+    },
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

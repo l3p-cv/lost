@@ -1,0 +1,21 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/pipeline/127"
+  },
+  "response": {
+    "body": {
+      "error": "'NoneType' object has no attribute 'strftime'",
+      "type": "AttributeError"
+    },
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 500
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/label/1096"
+  },
+  "response": {
+    "body": {
+      "abbreviation": null,
+      "color": null,
+      "description": null,
+      "group": {
+        "idx": "<ID>",
+        "name": null
+      },
+      "id": "<ID>",
+      "is_root": null,
+      "label": null,
+      "leaf_id": null,
+      "name": null
+    },
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

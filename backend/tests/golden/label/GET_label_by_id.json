@@ -1,0 +1,31 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/label/1"
+  },
+  "response": {
+    "body": {
+      "abbreviation": null,
+      "color": "#ffffff",
+      "description": "Labels of PascalVOC 2012 dataset",
+      "group": {
+        "idx": "<ID>",
+        "name": null
+      },
+      "id": "<ID>",
+      "is_root": true,
+      "label": null,
+      "leaf_id": null,
+      "name": "VOC2012"
+    },
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

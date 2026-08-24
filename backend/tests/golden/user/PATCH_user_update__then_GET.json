@@ -1,0 +1,40 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/user/233"
+  },
+  "response": {
+    "body": {
+      "apiToken": "<TOKEN>",
+      "confidence_level": null,
+      "default_group_id": 370,
+      "email": "updated_186fbba7@test.local",
+      "email_confirmed_at": "<TS>",
+      "first_name": "Updated",
+      "groups": [
+        {
+          "idx": "<ID>",
+          "isUserDefault": true,
+          "name": "compare_test_61f82a6f"
+        }
+      ],
+      "idx": "<ID>",
+      "is_active": null,
+      "is_external": false,
+      "last_name": "Name",
+      "new_password": null,
+      "photo_path": null,
+      "roles": [],
+      "user_name": "compare_test_61f82a6f"
+    },
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

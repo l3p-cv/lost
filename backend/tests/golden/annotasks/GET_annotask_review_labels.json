@@ -1,0 +1,201 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/annotasks/127/review/labels"
+  },
+  "response": {
+    "body": {
+      "labels": [
+        {
+          "color": "#46aed7",
+          "description": "Includes gliders but not hang gliders or helicopters",
+          "externalId": "6",
+          "id": "<ID>",
+          "label": "Aeroplane",
+          "name": "Aeroplane",
+          "nameAndClass": "Aeroplane (VOC2012)"
+        },
+        {
+          "color": "#e28f81",
+          "description": "Includes tricycles, unicycles",
+          "externalId": "2",
+          "id": "<ID>",
+          "label": "Bicycle",
+          "name": "Bicycle",
+          "nameAndClass": "Bicycle (VOC2012)"
+        },
+        {
+          "color": "#50b897",
+          "description": "All birds",
+          "externalId": "13",
+          "id": "<ID>",
+          "label": "Bird",
+          "name": "Bird",
+          "nameAndClass": "Bird (VOC2012)"
+        },
+        {
+          "color": "#88712f",
+          "description": "Ships, rowing boats, pedaloes but not jet skis",
+          "externalId": "19",
+          "id": "<ID>",
+          "label": "Boat",
+          "name": "Boat",
+          "nameAndClass": "Boat (VOC2012)"
+        },
+        {
+          "color": "#9cb067",
+          "description": "Plastic, glass or feeding bottles",
+          "externalId": "8",
+          "id": "<ID>",
+          "label": "Bottle",
+          "name": "Bottle",
+          "nameAndClass": "Bottle (VOC2012)"
+        },
+        {
+          "color": "#a4527d",
+          "description": "Includes minibus but not trams",
+          "externalId": "3",
+          "id": "<ID>",
+          "label": "Bus",
+          "name": "Bus",
+          "nameAndClass": "Bus (VOC2012)"
+        },
+        {
+          "color": "#a55046",
+          "description": "Includes cars, vans, large family cars for 6-8 people etc.\nExcludes go-carts, tractors, emergency vehicles, lorries/trucks etc.\nDo not label where only the vehicle interior is shown.\nInclude toys that look just like real cars, but not 'cartoony' toys.",
+          "externalId": "1",
+          "id": "<ID>",
+          "label": "Car",
+          "name": "Car",
+          "nameAndClass": "Car (VOC2012)"
+        },
+        {
+          "color": "#6e90da",
+          "description": "Domestic cats (not lions etc.)",
+          "externalId": "14",
+          "id": "<ID>",
+          "label": "Cat",
+          "name": "Cat",
+          "nameAndClass": "Cat (VOC2012)"
+        },
+        {
+          "color": "#487b3b",
+          "description": "Includes armchairs, deckchairs but not stools or benches.\nExcludes seats in buses, cars etc.\nExcludes wheelchairs.",
+          "externalId": "7",
+          "id": "<ID>",
+          "label": "Chair",
+          "name": "Chair",
+          "nameAndClass": "Chair (VOC2012)"
+        },
+        {
+          "color": "#6360a7",
+          "description": "All cows",
+          "externalId": "15",
+          "id": "<ID>",
+          "label": "Cow",
+          "name": "Cow",
+          "nameAndClass": "Cow (VOC2012)"
+        },
+        {
+          "color": "#cd8fd3",
+          "description": "Only tables for eating at.\nNot coffee tables, desks, side tables or picnic benches",
+          "externalId": "9",
+          "id": "<ID>",
+          "label": "Dining table",
+          "name": "Dining table",
+          "nameAndClass": "Dining table (VOC2012)"
+        },
+        {
+          "color": "#d5a442",
+          "description": "Domestic dogs (not wolves etc.)",
+          "externalId": "16",
+          "id": "<ID>",
+          "label": "Dog",
+          "name": "Dog",
+          "nameAndClass": "Dog (VOC2012)"
+        },
+        {
+          "color": "#cf7635",
+          "description": "Includes ponies, donkeys, mules etc.",
+          "externalId": "17",
+          "id": "<ID>",
+          "label": "Horse",
+          "name": "Horse",
+          "nameAndClass": "Horse (VOC2012)"
+        },
+        {
+          "color": "#da4971",
+          "description": "Includes mopeds, scooters, sidecars",
+          "externalId": "4",
+          "id": "<ID>",
+          "label": "Motorbike",
+          "name": "Motorbike",
+          "nameAndClass": "Motorbike (VOC2012)"
+        },
+        {
+          "color": "#a4b137",
+          "description": "Includes babies, faces (i.e. truncated people)",
+          "externalId": "0",
+          "id": "<ID>",
+          "label": "Person",
+          "name": "Person",
+          "nameAndClass": "Person (VOC2012)"
+        },
+        {
+          "color": "#d44da4",
+          "description": "Indoor plants excluding flowers in vases, or outdoor plants clearly in a pot. ",
+          "externalId": "10",
+          "id": "<ID>",
+          "label": "Potted plant",
+          "name": "Potted plant",
+          "nameAndClass": "Potted plant (VOC2012)"
+        },
+        {
+          "color": "#aa54be",
+          "description": "Sheep, not goats",
+          "externalId": "18",
+          "id": "<ID>",
+          "label": "Sheep",
+          "name": "Sheep",
+          "nameAndClass": "Sheep (VOC2012)"
+        },
+        {
+          "color": "#5ab74d",
+          "description": "Excludes sofas made up as sofa-beds",
+          "externalId": "12",
+          "id": "<ID>",
+          "label": "Sofa",
+          "name": "Sofa",
+          "nameAndClass": "Sofa (VOC2012)"
+        },
+        {
+          "color": "#7166d9",
+          "description": "Includes train carriages, excludes trams",
+          "externalId": "5",
+          "id": "<ID>",
+          "label": "Train",
+          "name": "Train",
+          "nameAndClass": "Train (VOC2012)"
+        },
+        {
+          "color": "#d14734",
+          "description": "Standalone screens (not laptops), not advertising displays",
+          "externalId": "11",
+          "id": "<ID>",
+          "label": "TV/monitor",
+          "name": "TV/monitor",
+          "nameAndClass": "TV/monitor (VOC2012)"
+        }
+      ]
+    },
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "params": {
+      "direction": "next",
+      "lastImgId": "1747"
+    },
+    "path": "/api/sia"
+  },
+  "response": {
+    "body": {
+      "annotations": {
+        "bBoxes": null,
+        "lines": null,
+        "points": null,
+        "polygons": null
+      },
+      "image": {
+        "amount": null,
+        "annoTime": null,
+        "description": null,
+        "id": "<ID>",
+        "imgActions": null,
+        "isFirst": null,
+        "isJunk": null,
+        "isLast": null,
+        "labelIds": null,
+        "number": null
+      }
+    },
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

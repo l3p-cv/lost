@@ -1,0 +1,21 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "json": {
+      "groupId": 298
+    },
+    "method": "PATCH",
+    "path": "/api/annotasks/127/group"
+  },
+  "response": {
+    "body": "Success",
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

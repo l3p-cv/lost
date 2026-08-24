@@ -1,5 +1,3 @@
-# Golden-snapshot response files (regenerated via --record, safe to delete)
-golden/
 # pytest caches
 __pycache__/
 .pytest_cache/

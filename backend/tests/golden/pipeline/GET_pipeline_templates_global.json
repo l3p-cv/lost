@@ -1,0 +1,133 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/pipeline/template/global"
+  },
+  "response": {
+    "body": {
+      "templates": [
+        {
+          "author": "Jonas Jaeger",
+          "availableGroups": null,
+          "availableLabelTrees": null,
+          "date": "<TS>",
+          "description": "Request all annotations from a dataset file (csv or parquet) in lost_dataset format again.",
+          "elements": null,
+          "group_id": "<ID>",
+          "id": "<ID>",
+          "name": "found.mia_request_again",
+          "namespace": null,
+          "pipeProject": "found",
+          "pipelineCount": 0
+        },
+        {
+          "author": "Jonas Jaeger",
+          "availableGroups": null,
+          "availableLabelTrees": null,
+          "date": "<TS>",
+          "description": "Request single image annotations for all images of a specified data source.",
+          "elements": null,
+          "group_id": "<ID>",
+          "id": "<ID>",
+          "name": "found.mia_sia",
+          "namespace": null,
+          "pipeProject": "found",
+          "pipelineCount": 0
+        },
+        {
+          "author": "Jonas Jaeger",
+          "availableGroups": null,
+          "availableLabelTrees": null,
+          "date": "<TS>",
+          "description": "Request all annotations from a dataset file (csv or parquet) in lost_dataset format again.",
+          "elements": null,
+          "group_id": "<ID>",
+          "id": "<ID>",
+          "name": "found.mia_request_again_img_based",
+          "namespace": null,
+          "pipeProject": "found",
+          "pipelineCount": 0
+        },
+        {
+          "author": "Jonas Jaeger",
+          "availableGroups": null,
+          "availableLabelTrees": null,
+          "date": "<TS>",
+          "description": "Request all annotations from a dataset file (csv or parquet) in lost_dataset format again.",
+          "elements": null,
+          "group_id": "<ID>",
+          "id": "<ID>",
+          "name": "found.sia_request_again",
+          "namespace": null,
+          "pipeProject": "found",
+          "pipelineCount": 1
+        },
+        {
+          "author": "Jonas Jaeger",
+          "availableGroups": null,
+          "availableLabelTrees": null,
+          "date": "<TS>",
+          "description": "Request single image annotations for all images of a specified data source.",
+          "elements": null,
+          "group_id": "<ID>",
+          "id": "<ID>",
+          "name": "found.sia",
+          "namespace": null,
+          "pipeProject": "found",
+          "pipelineCount": 72
+        },
+        {
+          "author": "Joerg Gross",
+          "availableGroups": null,
+          "availableLabelTrees": null,
+          "date": "<TS>",
+          "description": "This pipeline is a two stage annotation process. First points are replaced with polygon annotations, then they are reviewed in a second stage.",
+          "elements": null,
+          "group_id": "<ID>",
+          "id": "<ID>",
+          "name": "found.online_anno_processing",
+          "namespace": null,
+          "pipeProject": "found",
+          "pipelineCount": 0
+        },
+        {
+          "author": "Jonas Jaeger",
+          "availableGroups": null,
+          "availableLabelTrees": null,
+          "date": "<TS>",
+          "description": "This pipeline represents a two stage annotation process. In a first stage bbox annotations are collected and in the second stage this bboxes will be labeled by MIA.",
+          "elements": null,
+          "group_id": "<ID>",
+          "id": "<ID>",
+          "name": "found.two_stage",
+          "namespace": null,
+          "pipeProject": "found",
+          "pipelineCount": 0
+        },
+        {
+          "author": "Jonas Jaeger",
+          "availableGroups": null,
+          "availableLabelTrees": null,
+          "date": "<TS>",
+          "description": "Request multi image annotations for all images of a specified data source.",
+          "elements": null,
+          "group_id": "<ID>",
+          "id": "<ID>",
+          "name": "found.mia",
+          "namespace": null,
+          "pipeProject": "found",
+          "pipelineCount": 4
+        }
+      ]
+    },
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

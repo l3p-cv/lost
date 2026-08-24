@@ -1,0 +1,336 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "params": {
+      "page": "1",
+      "pageSize": "5"
+    },
+    "path": "/api/annotasks"
+  },
+  "response": {
+    "body": {
+      "annoTasks": [
+        {
+          "annotatedImgCount": null,
+          "configuration": {
+            "annos": {
+              "actions": {
+                "draw": null,
+                "edit": null,
+                "label": null
+              },
+              "minArea": null,
+              "multilabels": null
+            },
+            "img": {
+              "actions": {
+                "label": null
+              },
+              "multilabels": null
+            },
+            "tools": {
+              "bbox": null,
+              "junk": null,
+              "line": null,
+              "point": null,
+              "polygon": null
+            }
+          },
+          "createdAt": "<TS>",
+          "finished": 0,
+          "group": "admin",
+          "id": "<ID>",
+          "imgCount": null,
+          "instructionId": null,
+          "labelLeaves": {
+            "abbreviation": null,
+            "color": null,
+            "description": null,
+            "group": {
+              "idx": "<ID>",
+              "name": null
+            },
+            "id": "<ID>",
+            "is_root": null,
+            "label": null,
+            "leaf_id": null,
+            "name": null
+          },
+          "lastActivity": "<TS>",
+          "lastAnnotator": "N/A",
+          "lockedImgCount": 0,
+          "name": "Single Image Annotation Task",
+          "pipelineCreator": "admin",
+          "pipelineName": "testv",
+          "progress": 0.0,
+          "size": 1,
+          "statistic": {
+            "amountPerLabel": [],
+            "secondsPerAnno": null
+          },
+          "status": "inProgress",
+          "type": "SIA",
+          "userName": null
+        },
+        {
+          "annotatedImgCount": null,
+          "configuration": {
+            "annos": {
+              "actions": {
+                "draw": null,
+                "edit": null,
+                "label": null
+              },
+              "minArea": null,
+              "multilabels": null
+            },
+            "img": {
+              "actions": {
+                "label": null
+              },
+              "multilabels": null
+            },
+            "tools": {
+              "bbox": null,
+              "junk": null,
+              "line": null,
+              "point": null,
+              "polygon": null
+            }
+          },
+          "createdAt": "<TS>",
+          "finished": 0,
+          "group": "admin",
+          "id": "<ID>",
+          "imgCount": null,
+          "instructionId": null,
+          "labelLeaves": {
+            "abbreviation": null,
+            "color": null,
+            "description": null,
+            "group": {
+              "idx": "<ID>",
+              "name": null
+            },
+            "id": "<ID>",
+            "is_root": null,
+            "label": null,
+            "leaf_id": null,
+            "name": null
+          },
+          "lastActivity": "<TS>",
+          "lastAnnotator": "N/A",
+          "lockedImgCount": 0,
+          "name": "Single Image Annotation Task",
+          "pipelineCreator": "admin",
+          "pipelineName": "v1",
+          "progress": 100.0,
+          "size": 0,
+          "statistic": {
+            "amountPerLabel": [],
+            "secondsPerAnno": null
+          },
+          "status": "inProgress",
+          "type": "SIA",
+          "userName": null
+        },
+        {
+          "annotatedImgCount": null,
+          "configuration": {
+            "annos": {
+              "actions": {
+                "draw": null,
+                "edit": null,
+                "label": null
+              },
+              "minArea": null,
+              "multilabels": null
+            },
+            "img": {
+              "actions": {
+                "label": null
+              },
+              "multilabels": null
+            },
+            "tools": {
+              "bbox": null,
+              "junk": null,
+              "line": null,
+              "point": null,
+              "polygon": null
+            }
+          },
+          "createdAt": "<TS>",
+          "finished": 1,
+          "group": "admin",
+          "id": "<ID>",
+          "imgCount": null,
+          "instructionId": null,
+          "labelLeaves": {
+            "abbreviation": null,
+            "color": null,
+            "description": null,
+            "group": {
+              "idx": "<ID>",
+              "name": null
+            },
+            "id": "<ID>",
+            "is_root": null,
+            "label": null,
+            "leaf_id": null,
+            "name": null
+          },
+          "lastActivity": "<TS>",
+          "lastAnnotator": "admin",
+          "lockedImgCount": 1,
+          "name": "Single Image Annotation Task",
+          "pipelineCreator": "admin",
+          "pipelineName": "test3",
+          "progress": 2.85714,
+          "size": 35,
+          "statistic": {
+            "amountPerLabel": [],
+            "secondsPerAnno": null
+          },
+          "status": "inProgress",
+          "type": "SIA",
+          "userName": null
+        },
+        {
+          "annotatedImgCount": null,
+          "configuration": {
+            "annos": {
+              "actions": {
+                "draw": null,
+                "edit": null,
+                "label": null
+              },
+              "minArea": null,
+              "multilabels": null
+            },
+            "img": {
+              "actions": {
+                "label": null
+              },
+              "multilabels": null
+            },
+            "tools": {
+              "bbox": null,
+              "junk": null,
+              "line": null,
+              "point": null,
+              "polygon": null
+            }
+          },
+          "createdAt": "<TS>",
+          "finished": 33,
+          "group": "admin",
+          "id": "<ID>",
+          "imgCount": null,
+          "instructionId": null,
+          "labelLeaves": {
+            "abbreviation": null,
+            "color": null,
+            "description": null,
+            "group": {
+              "idx": "<ID>",
+              "name": null
+            },
+            "id": "<ID>",
+            "is_root": null,
+            "label": null,
+            "leaf_id": null,
+            "name": null
+          },
+          "lastActivity": "<TS>",
+          "lastAnnotator": "admin",
+          "lockedImgCount": 0,
+          "name": "Single Image Annotation Task",
+          "pipelineCreator": "admin",
+          "pipelineName": "test_export",
+          "progress": 100.0,
+          "size": 33,
+          "statistic": {
+            "amountPerLabel": [],
+            "secondsPerAnno": null
+          },
+          "status": "finished",
+          "type": "SIA",
+          "userName": null
+        },
+        {
+          "annotatedImgCount": null,
+          "configuration": {
+            "annos": {
+              "actions": {
+                "draw": null,
+                "edit": null,
+                "label": null
+              },
+              "minArea": null,
+              "multilabels": null
+            },
+            "img": {
+              "actions": {
+                "label": null
+              },
+              "multilabels": null
+            },
+            "tools": {
+              "bbox": null,
+              "junk": null,
+              "line": null,
+              "point": null,
+              "polygon": null
+            }
+          },
+          "createdAt": "<TS>",
+          "finished": 33,
+          "group": "admin",
+          "id": "<ID>",
+          "imgCount": null,
+          "instructionId": null,
+          "labelLeaves": {
+            "abbreviation": null,
+            "color": null,
+            "description": null,
+            "group": {
+              "idx": "<ID>",
+              "name": null
+            },
+            "id": "<ID>",
+            "is_root": null,
+            "label": null,
+            "leaf_id": null,
+            "name": null
+          },
+          "lastActivity": "<TS>",
+          "lastAnnotator": "admin",
+          "lockedImgCount": 0,
+          "name": "Single Image Annotation Task",
+          "pipelineCreator": "admin",
+          "pipelineName": "test label 22",
+          "progress": 100.0,
+          "size": 33,
+          "statistic": {
+            "amountPerLabel": [],
+            "secondsPerAnno": null
+          },
+          "status": "inProgress",
+          "type": "SIA",
+          "userName": null
+        }
+      ],
+      "pages": "15"
+    },
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

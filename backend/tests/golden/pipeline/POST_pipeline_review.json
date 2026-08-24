@@ -1,0 +1,24 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "json": {
+      "direction": "first"
+    },
+    "method": "POST",
+    "path": "/api/pipeline/element/127/review"
+  },
+  "response": {
+    "body": {
+      "error": "'image_anno_id'",
+      "type": "KeyError"
+    },
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 500
+  }
+}

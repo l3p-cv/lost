@@ -1,0 +1,28 @@
+{
+  "mode": "exact",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/fb/fstypes"
+  },
+  "response": {
+    "body": [
+      "ssh",
+      "ftp",
+      "sftp",
+      "s3",
+      "s3a",
+      "adl",
+      "abfs",
+      "abfss",
+      "file"
+    ],
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

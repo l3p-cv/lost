@@ -1,0 +1,29 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "json": {
+      "annotatedOnly": true,
+      "exportName": "compare_test_export",
+      "exportType": "parquet",
+      "includeImages": false
+    },
+    "method": "POST",
+    "path": "/api/annotasks/127/exports"
+  },
+  "response": {
+    "body": {
+      "errors": {
+        "randomSplits": "Dataset ID Missing required parameter in the JSON body or the post body or the query string"
+      },
+      "message": "Input payload validation failed"
+    },
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 400
+  }
+}

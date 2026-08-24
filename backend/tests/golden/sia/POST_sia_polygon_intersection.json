@@ -1,0 +1,48 @@
+{
+  "mode": "exact",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "json": {
+      "annotations": [
+        {
+          "data": {
+            "h": 0.14346118732824645,
+            "w": 0.12836000971474684,
+            "x": 0.5483237683631988,
+            "y": 0.6519178560088337
+          },
+          "type": "bbox"
+        },
+        {
+          "data": {
+            "h": 0.20990636882764482,
+            "w": 0.23406825300924422,
+            "x": 0.4350649362619516,
+            "y": 0.5477197304756862
+          },
+          "type": "bbox"
+        }
+      ]
+    },
+    "method": "POST",
+    "path": "/api/sia/polygonOperations/intersection"
+  },
+  "response": {
+    "body": {
+      "resultantBBox": {
+        "h": 0.07248565254479822,
+        "w": 0.06795529926074828,
+        "x": 0.5181214131361995,
+        "y": 0.6164300886171095
+      },
+      "type": "bbox"
+    },
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

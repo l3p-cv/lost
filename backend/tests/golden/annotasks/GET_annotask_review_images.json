@@ -1,0 +1,39 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/annotasks/127/review/images"
+  },
+  "response": {
+    "body": {
+      "images": [
+        {
+          "annotationId": 127,
+          "annotationName": "compare_test_sia",
+          "imageId": 1747,
+          "imageName": "/home/lost/data/1/media/images/10_voc2012/2007_008547.jpg"
+        },
+        {
+          "annotationId": 127,
+          "annotationName": "compare_test_sia",
+          "imageId": 1748,
+          "imageName": "/home/lost/data/1/media/images/10_voc2012/2008_002123.jpg"
+        },
+        {
+          "annotationId": 127,
+          "annotationName": "compare_test_sia",
+          "imageId": 1751,
+          "imageName": "/home/lost/data/1/media/images/10_voc2012/2008_002597.jpg"
+        }
+      ]
+    },
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

@@ -1,0 +1,558 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/user"
+  },
+  "response": {
+    "body": {
+      "users": [
+        {
+          "apiToken": "<TOKEN>",
+          "confidence_level": null,
+          "default_group_id": null,
+          "email": "admin@example.com",
+          "email_confirmed_at": "<TS>",
+          "first_name": "LOST",
+          "groups": [
+            {
+              "idx": "<ID>",
+              "isUserDefault": false,
+              "name": "admintest"
+            }
+          ],
+          "idx": "<ID>",
+          "is_active": null,
+          "is_external": false,
+          "last_name": "Admin",
+          "new_password": null,
+          "photo_path": null,
+          "roles": [
+            {
+              "idx": "<ID>",
+              "name": "Administrator"
+            },
+            {
+              "idx": "<ID>",
+              "name": "Designer"
+            },
+            {
+              "idx": "<ID>",
+              "name": "Annotator"
+            }
+          ],
+          "user_name": "admin"
+        },
+        {
+          "apiToken": "<TOKEN>",
+          "confidence_level": null,
+          "default_group_id": null,
+          "email": "test@example.com",
+          "email_confirmed_at": "<TS>",
+          "first_name": "Test",
+          "groups": [
+            {
+              "idx": "<ID>",
+              "isUserDefault": false,
+              "name": "admintest"
+            }
+          ],
+          "idx": "<ID>",
+          "is_active": null,
+          "is_external": false,
+          "last_name": "User",
+          "new_password": null,
+          "photo_path": null,
+          "roles": [
+            {
+              "idx": "<ID>",
+              "name": "Administrator"
+            },
+            {
+              "idx": "<ID>",
+              "name": "Designer"
+            },
+            {
+              "idx": "<ID>",
+              "name": "Annotator"
+            }
+          ],
+          "user_name": "test"
+        },
+        {
+          "apiToken": "<TOKEN>",
+          "confidence_level": null,
+          "default_group_id": null,
+          "email": "admin2@123.com",
+          "email_confirmed_at": "<TS>",
+          "first_name": "",
+          "groups": [
+            {
+              "idx": "<ID>",
+              "isUserDefault": false,
+              "name": "admintest"
+            },
+            {
+              "idx": "<ID>",
+              "isUserDefault": false,
+              "name": "admingrp2"
+            }
+          ],
+          "idx": "<ID>",
+          "is_active": null,
+          "is_external": false,
+          "last_name": "",
+          "new_password": null,
+          "photo_path": null,
+          "roles": [
+            {
+              "idx": "<ID>",
+              "name": "Administrator"
+            },
+            {
+              "idx": "<ID>",
+              "name": "Designer"
+            },
+            {
+              "idx": "<ID>",
+              "name": "Annotator"
+            }
+          ],
+          "user_name": "admin2"
+        },
+        {
+          "apiToken": "<TOKEN>",
+          "confidence_level": null,
+          "default_group_id": null,
+          "email": "admin3@122.com",
+          "email_confirmed_at": "<TS>",
+          "first_name": "",
+          "groups": [
+            {
+              "idx": "<ID>",
+              "isUserDefault": false,
+              "name": "admintest"
+            }
+          ],
+          "idx": "<ID>",
+          "is_active": null,
+          "is_external": false,
+          "last_name": "",
+          "new_password": null,
+          "photo_path": null,
+          "roles": [
+            {
+              "idx": "<ID>",
+              "name": "Annotator"
+            },
+            {
+              "idx": "<ID>",
+              "name": "Designer"
+            },
+            {
+              "idx": "<ID>",
+              "name": "Administrator"
+            }
+          ],
+          "user_name": "admin3"
+        },
+        {
+          "apiToken": "<TOKEN>",
+          "confidence_level": null,
+          "default_group_id": null,
+          "email": "user1@123.com",
+          "email_confirmed_at": "<TS>",
+          "first_name": "",
+          "groups": [
+            {
+              "idx": "<ID>",
+              "isUserDefault": false,
+              "name": "admintest"
+            }
+          ],
+          "idx": "<ID>",
+          "is_active": null,
+          "is_external": false,
+          "last_name": "",
+          "new_password": null,
+          "photo_path": null,
+          "roles": [
+            {
+              "idx": "<ID>",
+              "name": "Annotator"
+            },
+            {
+              "idx": "<ID>",
+              "name": "Administrator"
+            },
+            {
+              "idx": "<ID>",
+              "name": "Designer"
+            }
+          ],
+          "user_name": "user1"
+        },
+        {
+          "apiToken": "<TOKEN>",
+          "confidence_level": null,
+          "default_group_id": null,
+          "email": "user2@123.com",
+          "email_confirmed_at": "<TS>",
+          "first_name": "",
+          "groups": [],
+          "idx": "<ID>",
+          "is_active": null,
+          "is_external": false,
+          "last_name": "",
+          "new_password": null,
+          "photo_path": null,
+          "roles": [
+            {
+              "idx": "<ID>",
+              "name": "Annotator"
+            },
+            {
+              "idx": "<ID>",
+              "name": "Designer"
+            }
+          ],
+          "user_name": "user2"
+        },
+        {
+          "apiToken": "<TOKEN>",
+          "confidence_level": null,
+          "default_group_id": null,
+          "email": "test2@123.com",
+          "email_confirmed_at": "<TS>",
+          "first_name": "",
+          "groups": [],
+          "idx": "<ID>",
+          "is_active": null,
+          "is_external": false,
+          "last_name": "",
+          "new_password": null,
+          "photo_path": null,
+          "roles": [
+            {
+              "idx": "<ID>",
+              "name": "Annotator"
+            },
+            {
+              "idx": "<ID>",
+              "name": "Administrator"
+            }
+          ],
+          "user_name": "test2"
+        },
+        {
+          "apiToken": "<TOKEN>",
+          "confidence_level": null,
+          "default_group_id": null,
+          "email": "test3@123.com",
+          "email_confirmed_at": "<TS>",
+          "first_name": "",
+          "groups": [],
+          "idx": "<ID>",
+          "is_active": null,
+          "is_external": false,
+          "last_name": "",
+          "new_password": null,
+          "photo_path": null,
+          "roles": [
+            {
+              "idx": "<ID>",
+              "name": "Annotator"
+            },
+            {
+              "idx": "<ID>",
+              "name": "Administrator"
+            }
+          ],
+          "user_name": "test3"
+        },
+        {
+          "apiToken": "<TOKEN>",
+          "confidence_level": null,
+          "default_group_id": null,
+          "email": "test4@123.com",
+          "email_confirmed_at": "<TS>",
+          "first_name": "",
+          "groups": [],
+          "idx": "<ID>",
+          "is_active": null,
+          "is_external": false,
+          "last_name": "",
+          "new_password": null,
+          "photo_path": null,
+          "roles": [
+            {
+              "idx": "<ID>",
+              "name": "Annotator"
+            },
+            {
+              "idx": "<ID>",
+              "name": "Administrator"
+            }
+          ],
+          "user_name": "test4"
+        },
+        {
+          "apiToken": "<TOKEN>",
+          "confidence_level": null,
+          "default_group_id": null,
+          "email": "test6@123.com",
+          "email_confirmed_at": "<TS>",
+          "first_name": "",
+          "groups": [],
+          "idx": "<ID>",
+          "is_active": null,
+          "is_external": false,
+          "last_name": "",
+          "new_password": null,
+          "photo_path": null,
+          "roles": [
+            {
+              "idx": "<ID>",
+              "name": "Annotator"
+            },
+            {
+              "idx": "<ID>",
+              "name": "Designer"
+            }
+          ],
+          "user_name": "test6"
+        },
+        {
+          "apiToken": "<TOKEN>",
+          "confidence_level": null,
+          "default_group_id": null,
+          "email": "test7@123.com",
+          "email_confirmed_at": "<TS>",
+          "first_name": "",
+          "groups": [],
+          "idx": "<ID>",
+          "is_active": null,
+          "is_external": false,
+          "last_name": "",
+          "new_password": null,
+          "photo_path": null,
+          "roles": [
+            {
+              "idx": "<ID>",
+              "name": "Designer"
+            }
+          ],
+          "user_name": "test7"
+        },
+        {
+          "apiToken": "<TOKEN>",
+          "confidence_level": null,
+          "default_group_id": null,
+          "email": "test@123.com",
+          "email_confirmed_at": "<TS>",
+          "first_name": "",
+          "groups": [],
+          "idx": "<ID>",
+          "is_active": null,
+          "is_external": false,
+          "last_name": "",
+          "new_password": null,
+          "photo_path": null,
+          "roles": [
+            {
+              "idx": "<ID>",
+              "name": "Annotator"
+            }
+          ],
+          "user_name": "test1"
+        },
+        {
+          "apiToken": "<TOKEN>",
+          "confidence_level": null,
+          "default_group_id": null,
+          "email": "user5@d.de",
+          "email_confirmed_at": "<TS>",
+          "first_name": "",
+          "groups": [],
+          "idx": "<ID>",
+          "is_active": null,
+          "is_external": false,
+          "last_name": "",
+          "new_password": null,
+          "photo_path": null,
+          "roles": [
+            {
+              "idx": "<ID>",
+              "name": "Annotator"
+            }
+          ],
+          "user_name": "user5"
+        },
+        {
+          "apiToken": "<TOKEN>",
+          "confidence_level": null,
+          "default_group_id": null,
+          "email": "user6@g.de",
+          "email_confirmed_at": "<TS>",
+          "first_name": "",
+          "groups": [],
+          "idx": "<ID>",
+          "is_active": null,
+          "is_external": false,
+          "last_name": "",
+          "new_password": null,
+          "photo_path": null,
+          "roles": [
+            {
+              "idx": "<ID>",
+              "name": "Annotator"
+            },
+            {
+              "idx": "<ID>",
+              "name": "Designer"
+            }
+          ],
+          "user_name": "user6"
+        },
+        {
+          "apiToken": "<TOKEN>",
+          "confidence_level": null,
+          "default_group_id": null,
+          "email": "user9@d.de",
+          "email_confirmed_at": "<TS>",
+          "first_name": "",
+          "groups": [],
+          "idx": "<ID>",
+          "is_active": null,
+          "is_external": false,
+          "last_name": "",
+          "new_password": null,
+          "photo_path": null,
+          "roles": [
+            {
+              "idx": "<ID>",
+              "name": "Annotator"
+            }
+          ],
+          "user_name": "user9"
+        },
+        {
+          "apiToken": "<TOKEN>",
+          "confidence_level": null,
+          "default_group_id": null,
+          "email": "user10@r.de",
+          "email_confirmed_at": "<TS>",
+          "first_name": "",
+          "groups": [],
+          "idx": "<ID>",
+          "is_active": null,
+          "is_external": false,
+          "last_name": "",
+          "new_password": null,
+          "photo_path": null,
+          "roles": [
+            {
+              "idx": "<ID>",
+              "name": "Annotator"
+            },
+            {
+              "idx": "<ID>",
+              "name": "Administrator"
+            }
+          ],
+          "user_name": "user10"
+        },
+        {
+          "apiToken": "<TOKEN>",
+          "confidence_level": null,
+          "default_group_id": null,
+          "email": "userAdmin@123.com",
+          "email_confirmed_at": "<TS>",
+          "first_name": "",
+          "groups": [],
+          "idx": "<ID>",
+          "is_active": null,
+          "is_external": false,
+          "last_name": "",
+          "new_password": null,
+          "photo_path": null,
+          "roles": [
+            {
+              "idx": "<ID>",
+              "name": "Annotator"
+            },
+            {
+              "idx": "<ID>",
+              "name": "Administrator"
+            },
+            {
+              "idx": "<ID>",
+              "name": "Designer"
+            }
+          ],
+          "user_name": "userAdmin1"
+        },
+        {
+          "apiToken": "<TOKEN>",
+          "confidence_level": null,
+          "default_group_id": null,
+          "email": "user12@123.com",
+          "email_confirmed_at": "<TS>",
+          "first_name": "",
+          "groups": [],
+          "idx": "<ID>",
+          "is_active": null,
+          "is_external": false,
+          "last_name": "",
+          "new_password": null,
+          "photo_path": null,
+          "roles": [
+            {
+              "idx": "<ID>",
+              "name": "Annotator"
+            },
+            {
+              "idx": "<ID>",
+              "name": "Designer"
+            },
+            {
+              "idx": "<ID>",
+              "name": "Administrator"
+            }
+          ],
+          "user_name": "user12"
+        },
+        {
+          "apiToken": "<TOKEN>",
+          "confidence_level": null,
+          "default_group_id": null,
+          "email": "user13@123.com",
+          "email_confirmed_at": "<TS>",
+          "first_name": "",
+          "groups": [],
+          "idx": "<ID>",
+          "is_active": null,
+          "is_external": false,
+          "last_name": "",
+          "new_password": null,
+          "photo_path": null,
+          "roles": [
+            {
+              "idx": "<ID>",
+              "name": "Annotator"
+            }
+          ],
+          "user_name": "user13"
+        }
+      ]
+    },
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

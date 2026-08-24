@@ -1,0 +1,22 @@
+{
+  "mode": "exact",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/system/settings"
+  },
+  "response": {
+    "body": {
+      "autoLogoutTime": null,
+      "autoLogoutWarnTime": 300,
+      "isDevMode": false
+    },
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

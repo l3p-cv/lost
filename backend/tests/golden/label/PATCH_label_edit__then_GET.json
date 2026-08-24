@@ -1,0 +1,31 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/label/1095"
+  },
+  "response": {
+    "body": {
+      "abbreviation": "edt",
+      "color": "#00FF00",
+      "description": "Edited by golden snapshot test",
+      "group": {
+        "idx": "<ID>",
+        "name": null
+      },
+      "id": "<ID>",
+      "is_root": false,
+      "label": null,
+      "leaf_id": null,
+      "name": "compare_test_edited"
+    },
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

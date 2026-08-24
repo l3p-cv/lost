@@ -1,0 +1,21 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "DELETE",
+    "path": "/api/datasets/ds_exports/61"
+  },
+  "response": {
+    "body": {
+      "error": "[Errno 2] No such file or directory: '/home/lost/data/1/ds_export/test/compare_test_delete_export_66b2754a.parquet'",
+      "type": "FileNotFoundError"
+    },
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 500
+  }
+}

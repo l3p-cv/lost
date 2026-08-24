@@ -1,0 +1,47 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/sia/configuration"
+  },
+  "response": {
+    "body": {
+      "annos": {
+        "actions": {
+          "draw": true,
+          "edit": true,
+          "label": true
+        },
+        "minArea": 250,
+        "multilabels": false
+      },
+      "img": {
+        "actions": {
+          "label": true
+        },
+        "multilabels": false
+      },
+      "inferenceModel": {
+        "displayName": null,
+        "id": "<ID>",
+        "modelType": null
+      },
+      "tools": {
+        "bbox": true,
+        "junk": true,
+        "line": true,
+        "point": true,
+        "polygon": true,
+        "sam": null
+      }
+    },
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

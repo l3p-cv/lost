@@ -1,0 +1,134 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/instructions/getInstructions/all"
+  },
+  "response": {
+    "body": {
+      "instructions": [
+        {
+          "created_at": "<TS>",
+          "description": "Please draw bounding boxes for all objects in the image.\n\n",
+          "group_id": "<ID>",
+          "id": "<ID>",
+          "instruction": "Use the bounding box tool to annotate every object.![Image](http://localhost/api/media/media-file?path=%2Fhome%2Flost%2Fdata%2F1%2Finstruction_media%2FAnnotationExample.png)",
+          "is_deleted": false,
+          "option": "Bounding Box",
+          "parent_instruction_id": null,
+          "updated_at": "<TS>"
+        },
+        {
+          "created_at": "<TS>",
+          "description": "test",
+          "group": {
+            "idx": "<ID>",
+            "is_user_default": true,
+            "manager_id": null,
+            "name": "admin"
+          },
+          "group_id": "<ID>",
+          "id": "<ID>",
+          "instruction": "\n\n![Image](http://localhost/api/media/media-file?path=%2Fhome%2Flost%2Fdata%2F1%2Finstruction_media%2Ftest8.jpg)\n\n![Image](http://localhost/api/media/media-file?path=%2Fhome%2Flost%2Fdata%2F1%2Finstruction_media%2Ftest7.jpg)\n\n![Image](http://localhost/api/media/media-file?path=%2Fhome%2Flost%2Fdata%2F1%2Finstruction_media%2Fadmin_media%2FMainBefore.jpg)\n\n![Image](http://localhost/api/media/media-file?path=%2Fhome%2Flost%2Fdata%2F1%2Finstruction_media%2Fadmin_media%2Ftest4.jpeg)",
+          "is_deleted": false,
+          "option": "test",
+          "parent_instruction_id": null,
+          "updated_at": "<TS>"
+        },
+        {
+          "created_at": "<TS>",
+          "description": "fs",
+          "group": {
+            "idx": "<ID>",
+            "is_user_default": true,
+            "manager_id": null,
+            "name": "admin"
+          },
+          "group_id": "<ID>",
+          "id": "<ID>",
+          "instruction": "fs\n\n![Image](http://localhost/api/media/media-file?path=%2Fhome%2Flost%2Fdata%2F1%2Finstruction_media%2Fadmin_media%2Ftest4.jpeg)\n\n![Image](http://localhost/api/media/media-file?path=%2Fhome%2Flost%2Fdata%2F1%2Finstruction_media%2Fadmin_media%2FMainBefore.jpg)",
+          "is_deleted": false,
+          "option": "ds",
+          "parent_instruction_id": null,
+          "updated_at": "<TS>"
+        },
+        {
+          "created_at": "<TS>",
+          "description": "g1",
+          "group": {
+            "idx": "<ID>",
+            "is_user_default": true,
+            "manager_id": null,
+            "name": "admin"
+          },
+          "group_id": "<ID>",
+          "id": "<ID>",
+          "instruction": "g1\n\n![Image](http://localhost/api/media/media-file?path=%2Fhome%2Flost%2Fdata%2F1%2Finstruction_media%2Ftest8.jpg)",
+          "is_deleted": false,
+          "option": "g1",
+          "parent_instruction_id": null,
+          "updated_at": "<TS>"
+        },
+        {
+          "created_at": "<TS>",
+          "description": "test",
+          "group": {
+            "idx": "<ID>",
+            "is_user_default": true,
+            "manager_id": null,
+            "name": "admin"
+          },
+          "group_id": "<ID>",
+          "id": "<ID>",
+          "instruction": "fcde\n\n![Image](http://localhost/api/media/media-file?path=%2Fhome%2Flost%2Fdata%2F1%2Finstruction_media%2Ftest7.jpg)\n\n![Image](http://localhost/api/media/media-file?path=%2Fhome%2Flost%2Fdata%2F1%2Finstruction_media%2Ftest6.jpeg)\n\n![Image](http://localhost/api/media/media-file?path=%2Fhome%2Flost%2Fdata%2F1%2Finstruction_media%2Ftest5.jpeg)\n\n![Image](http://localhost/api/media/media-file?path=%2Fhome%2Flost%2Fdata%2F1%2Finstruction_media%2Fpolygon_union.png)\n\n![Image](http://localhost/api/media/media-file?path=%2Fhome%2Flost%2Fdata%2F1%2Finstruction_media%2Fmask.jpg)\n\n![Image](http://localhost/api/media/media-file?path=%2Fhome%2Flost%2Fdata%2F1%2Finstruction_media%2FMainBefore.jpg)",
+          "is_deleted": false,
+          "option": "test1",
+          "parent_instruction_id": null,
+          "updated_at": "<TS>"
+        },
+        {
+          "created_at": "<TS>",
+          "description": "test",
+          "group": {
+            "idx": "<ID>",
+            "is_user_default": true,
+            "manager_id": null,
+            "name": "admin"
+          },
+          "group_id": "<ID>",
+          "id": "<ID>",
+          "instruction": "test\n\n![Image](http://localhost/api/media/media-file?path=%2Fhome%2Flost%2Fdata%2F1%2Finstruction_media%2Fpolygon_union.png)\n\n![Image](http://localhost/api/media/media-file?path=%2Fhome%2Flost%2Fdata%2F1%2Finstruction_media%2Fmask.jpg)\n\n![Image](http://localhost/api/media/media-file?path=%2Fhome%2Flost%2Fdata%2F1%2Finstruction_media%2FMainBefore.jpg)",
+          "is_deleted": false,
+          "option": "test",
+          "parent_instruction_id": null,
+          "updated_at": "<TS>"
+        },
+        {
+          "created_at": "<TS>",
+          "description": "gred",
+          "group": {
+            "idx": "<ID>",
+            "is_user_default": true,
+            "manager_id": null,
+            "name": "admin"
+          },
+          "group_id": "<ID>",
+          "id": "<ID>",
+          "instruction": "grd\n\n![Image](http://localhost/api/media/media-file?path=%2Fhome%2Flost%2Fdata%2F1%2Finstruction_media%2Ftest8.jpg)\n\n![Image](http://localhost/api/media/media-file?path=%2Fhome%2Flost%2Fdata%2F1%2Finstruction_media%2Ftest7.jpg)\n\n![Image](http://localhost/api/media/media-file?path=%2Fhome%2Flost%2Fdata%2F1%2Finstruction_media%2Ftest6.jpeg)\n\n![Image](http://localhost/api/media/media-file?path=%2Fhome%2Flost%2Fdata%2F1%2Finstruction_media%2Ftest5.jpeg)",
+          "is_deleted": false,
+          "option": "rg",
+          "parent_instruction_id": null,
+          "updated_at": "<TS>"
+        }
+      ]
+    },
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

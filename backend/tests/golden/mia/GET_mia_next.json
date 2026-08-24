@@ -1,0 +1,25 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/mia/next/10"
+  },
+  "response": {
+    "body": {
+      "chunk": {
+        "hasPrev": true,
+        "id": "<ID>"
+      },
+      "images": [],
+      "updateIds": []
+    },
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

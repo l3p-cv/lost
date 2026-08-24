@@ -1,0 +1,20 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "POST",
+    "path": "/api/user/logout"
+  },
+  "response": {
+    "body": {
+      "msg": "Successfully logged out"
+    },
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

@@ -1,0 +1,141 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/group"
+  },
+  "response": {
+    "body": {
+      "groups": [
+        {
+          "idx": "<ID>",
+          "name": "admintest"
+        },
+        {
+          "idx": "<ID>",
+          "name": "admingrp2"
+        },
+        {
+          "idx": "<ID>",
+          "name": "group3"
+        },
+        {
+          "idx": "<ID>",
+          "name": "group4"
+        },
+        {
+          "idx": "<ID>",
+          "name": "group5"
+        },
+        {
+          "idx": "<ID>",
+          "name": "group6"
+        },
+        {
+          "idx": "<ID>",
+          "name": "group7"
+        },
+        {
+          "idx": "<ID>",
+          "name": "group8"
+        },
+        {
+          "idx": "<ID>",
+          "name": "group9"
+        },
+        {
+          "idx": "<ID>",
+          "name": "group10"
+        },
+        {
+          "idx": "<ID>",
+          "name": "group11"
+        },
+        {
+          "idx": "<ID>",
+          "name": "add"
+        },
+        {
+          "idx": "<ID>",
+          "name": "compare_test_group"
+        },
+        {
+          "idx": "<ID>",
+          "name": "compare_test_f47f14f3"
+        },
+        {
+          "idx": "<ID>",
+          "name": "compare_test_012145ae"
+        },
+        {
+          "idx": "<ID>",
+          "name": "compare_test_8038bf94"
+        },
+        {
+          "idx": "<ID>",
+          "name": "compare_test_0009320b"
+        },
+        {
+          "idx": "<ID>",
+          "name": "compare_test_d18f8977"
+        },
+        {
+          "idx": "<ID>",
+          "name": "compare_test_99fbac86"
+        },
+        {
+          "idx": "<ID>",
+          "name": "compare_test_b1244fa5"
+        },
+        {
+          "idx": "<ID>",
+          "name": "compare_test_c55857ce"
+        },
+        {
+          "idx": "<ID>",
+          "name": "compare_test_45309b7a"
+        },
+        {
+          "idx": "<ID>",
+          "name": "compare_test_206e3c14"
+        },
+        {
+          "idx": "<ID>",
+          "name": "compare_test_3e1ef950"
+        },
+        {
+          "idx": "<ID>",
+          "name": "compare_test_cefbe798"
+        },
+        {
+          "idx": "<ID>",
+          "name": "compare_test_b6bc0114"
+        },
+        {
+          "idx": "<ID>",
+          "name": "compare_test_2dcd2c3d"
+        },
+        {
+          "idx": "<ID>",
+          "name": "compare_test_5a5b2b0d"
+        },
+        {
+          "idx": "<ID>",
+          "name": "compare_test_42c8eaf6"
+        },
+        {
+          "idx": "<ID>",
+          "name": "compare_test_0502f818"
+        }
+      ]
+    },
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

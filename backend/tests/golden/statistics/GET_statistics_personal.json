@@ -1,0 +1,269 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/statistics/personal"
+  },
+  "response": {
+    "body": {
+      "annos": {
+        "allTime": 2455.0,
+        "avg": 1.0,
+        "history": {
+          "month": [
+            1.0,
+            1.0
+          ],
+          "week": [
+            1.0
+          ]
+        },
+        "today": 0.0
+      },
+      "annosPerHour": {
+        "amountPerHour": null,
+        "avgPerHour": null,
+        "labels": null,
+        "totalTimePerHour": null
+      },
+      "annotasks": {
+        "allTime": 42.0,
+        "avg": 2.0,
+        "history": {
+          "month": [
+            1.0,
+            2.0
+          ],
+          "week": [
+            2.0
+          ]
+        },
+        "today": 0.0
+      },
+      "annotime": {
+        "allTime": 0.41,
+        "avg": 0.0,
+        "history": {
+          "month": [
+            2.12,
+            0.0
+          ],
+          "week": [
+            0.0
+          ]
+        },
+        "today": 0.0
+      },
+      "labels": {
+        "Aeroplane": {
+          "color": "#46aed7",
+          "value": 2
+        },
+        "Bicycle": {
+          "color": "#3399ff",
+          "value": 2
+        },
+        "Bird": {
+          "color": null,
+          "value": 35
+        },
+        "Boat": {
+          "color": null,
+          "value": 25
+        },
+        "Bottle": {
+          "color": null,
+          "value": 66
+        },
+        "Bus": {
+          "color": null,
+          "value": 47
+        },
+        "Car": {
+          "color": "#a55046",
+          "value": 1
+        },
+        "Citizen": {
+          "color": "#00b6da",
+          "value": 1
+        },
+        "Dog": {
+          "color": "#d5a442",
+          "value": 2
+        },
+        "Fern": {
+          "color": "#b9dd95",
+          "value": 1
+        },
+        "Flask": {
+          "color": "#9490a5",
+          "value": 1
+        },
+        "Frontier": {
+          "color": "#e97bf8",
+          "value": 2
+        },
+        "Horse": {
+          "color": "#cf7635",
+          "value": 2
+        },
+        "Loveseat": {
+          "color": "#00e1a9",
+          "value": 3
+        },
+        "Mammals": {
+          "color": "#00d8ff",
+          "value": 1
+        },
+        "Motorbike": {
+          "color": "#da4971",
+          "value": 1
+        },
+        "New Lab": {
+          "color": "#e311c8",
+          "value": 85
+        },
+        "New Label": {
+          "color": "#cf1918",
+          "value": 5
+        },
+        "New Label (1)": {
+          "color": "#d96319",
+          "value": 3
+        },
+        "New Label (2)": {
+          "color": "#21e727",
+          "value": 4
+        },
+        "New Label (3)": {
+          "color": "#d02aea",
+          "value": 5
+        },
+        "New Label (4)": {
+          "color": "#3d8b58",
+          "value": 9
+        },
+        "New Label (57)": {
+          "color": "#654e4e",
+          "value": 3
+        },
+        "New Label (58)": {
+          "color": "#db699e",
+          "value": 5
+        },
+        "New Label (59)": {
+          "color": "#1fe790",
+          "value": 10
+        },
+        "New Label (6)": {
+          "color": "#862bdd",
+          "value": 11
+        },
+        "New Label (60)": {
+          "color": "#7155ea",
+          "value": 11
+        },
+        "New Label (61)": {
+          "color": "#70e153",
+          "value": 4
+        },
+        "New Label (8)": {
+          "color": "#6394de",
+          "value": 29
+        },
+        "New Label (9)": {
+          "color": "#d8165c",
+          "value": 51
+        },
+        "New Label 1": {
+          "color": "#ffffff",
+          "value": 1
+        },
+        "New Label 2": {
+          "color": "#ffffff",
+          "value": 6
+        },
+        "Odyssey": {
+          "color": "#1fb5b2",
+          "value": 2
+        },
+        "Plane": {
+          "color": "#46aed7",
+          "value": 4
+        },
+        "Plants": {
+          "color": "#a37a94",
+          "value": 1
+        },
+        "Potted plant": {
+          "color": "#d44da4",
+          "value": 4
+        },
+        "Rucksack": {
+          "color": "#3aa421",
+          "value": 5
+        },
+        "Scooter": {
+          "color": "#c67d27",
+          "value": 10
+        },
+        "Sequoia": {
+          "color": "#dd8590",
+          "value": 1
+        },
+        "Sofa": {
+          "color": "#5ab74d",
+          "value": 1
+        },
+        "Solstice": {
+          "color": "#06c386",
+          "value": 2
+        },
+        "Sparrow": {
+          "color": "#00e2ff",
+          "value": 2
+        },
+        "Vessel": {
+          "color": "#009c97",
+          "value": 6
+        },
+        "mammals": {
+          "color": "#46aed7",
+          "value": 5
+        },
+        "plant": {
+          "color": "#e28f81",
+          "value": 2
+        }
+      },
+      "processedImages": {
+        "allTime": 699.0,
+        "avg": 36.0,
+        "history": {
+          "month": [
+            37.0
+          ],
+          "week": [
+            36.0
+          ]
+        },
+        "today": 0.0
+      },
+      "types": {
+        "bbox": 59,
+        "image": null,
+        "line": 6,
+        "point": 2246,
+        "polygon": 144
+      }
+    },
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

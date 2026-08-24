@@ -1,0 +1,302 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/annotasks/127/review/options"
+  },
+  "response": {
+    "body": {
+      "max_iteration": 0,
+      "possibleLabels": [
+        {
+          "abbreviation": null,
+          "color": "#46aed7",
+          "description": "Includes gliders but not hang gliders or helicopters",
+          "group": {
+            "idx": "<ID>",
+            "name": null
+          },
+          "id": "<ID>",
+          "is_root": null,
+          "label": "Aeroplane",
+          "leaf_id": null,
+          "name": "Aeroplane"
+        },
+        {
+          "abbreviation": null,
+          "color": "#e28f81",
+          "description": "Includes tricycles, unicycles",
+          "group": {
+            "idx": "<ID>",
+            "name": null
+          },
+          "id": "<ID>",
+          "is_root": null,
+          "label": "Bicycle",
+          "leaf_id": null,
+          "name": "Bicycle"
+        },
+        {
+          "abbreviation": null,
+          "color": "#50b897",
+          "description": "All birds",
+          "group": {
+            "idx": "<ID>",
+            "name": null
+          },
+          "id": "<ID>",
+          "is_root": null,
+          "label": "Bird",
+          "leaf_id": null,
+          "name": "Bird"
+        },
+        {
+          "abbreviation": null,
+          "color": "#88712f",
+          "description": "Ships, rowing boats, pedaloes but not jet skis",
+          "group": {
+            "idx": "<ID>",
+            "name": null
+          },
+          "id": "<ID>",
+          "is_root": null,
+          "label": "Boat",
+          "leaf_id": null,
+          "name": "Boat"
+        },
+        {
+          "abbreviation": null,
+          "color": "#9cb067",
+          "description": "Plastic, glass or feeding bottles",
+          "group": {
+            "idx": "<ID>",
+            "name": null
+          },
+          "id": "<ID>",
+          "is_root": null,
+          "label": "Bottle",
+          "leaf_id": null,
+          "name": "Bottle"
+        },
+        {
+          "abbreviation": null,
+          "color": "#a4527d",
+          "description": "Includes minibus but not trams",
+          "group": {
+            "idx": "<ID>",
+            "name": null
+          },
+          "id": "<ID>",
+          "is_root": null,
+          "label": "Bus",
+          "leaf_id": null,
+          "name": "Bus"
+        },
+        {
+          "abbreviation": null,
+          "color": "#a55046",
+          "description": "Includes cars, vans, large family cars for 6-8 people etc.\nExcludes go-carts, tractors, emergency vehicles, lorries/trucks etc.\nDo not label where only the vehicle interior is shown.\nInclude toys that look just like real cars, but not 'cartoony' toys.",
+          "group": {
+            "idx": "<ID>",
+            "name": null
+          },
+          "id": "<ID>",
+          "is_root": null,
+          "label": "Car",
+          "leaf_id": null,
+          "name": "Car"
+        },
+        {
+          "abbreviation": null,
+          "color": "#6e90da",
+          "description": "Domestic cats (not lions etc.)",
+          "group": {
+            "idx": "<ID>",
+            "name": null
+          },
+          "id": "<ID>",
+          "is_root": null,
+          "label": "Cat",
+          "leaf_id": null,
+          "name": "Cat"
+        },
+        {
+          "abbreviation": null,
+          "color": "#487b3b",
+          "description": "Includes armchairs, deckchairs but not stools or benches.\nExcludes seats in buses, cars etc.\nExcludes wheelchairs.",
+          "group": {
+            "idx": "<ID>",
+            "name": null
+          },
+          "id": "<ID>",
+          "is_root": null,
+          "label": "Chair",
+          "leaf_id": null,
+          "name": "Chair"
+        },
+        {
+          "abbreviation": null,
+          "color": "#6360a7",
+          "description": "All cows",
+          "group": {
+            "idx": "<ID>",
+            "name": null
+          },
+          "id": "<ID>",
+          "is_root": null,
+          "label": "Cow",
+          "leaf_id": null,
+          "name": "Cow"
+        },
+        {
+          "abbreviation": null,
+          "color": "#cd8fd3",
+          "description": "Only tables for eating at.\nNot coffee tables, desks, side tables or picnic benches",
+          "group": {
+            "idx": "<ID>",
+            "name": null
+          },
+          "id": "<ID>",
+          "is_root": null,
+          "label": "Dining table",
+          "leaf_id": null,
+          "name": "Dining table"
+        },
+        {
+          "abbreviation": null,
+          "color": "#d5a442",
+          "description": "Domestic dogs (not wolves etc.)",
+          "group": {
+            "idx": "<ID>",
+            "name": null
+          },
+          "id": "<ID>",
+          "is_root": null,
+          "label": "Dog",
+          "leaf_id": null,
+          "name": "Dog"
+        },
+        {
+          "abbreviation": null,
+          "color": "#cf7635",
+          "description": "Includes ponies, donkeys, mules etc.",
+          "group": {
+            "idx": "<ID>",
+            "name": null
+          },
+          "id": "<ID>",
+          "is_root": null,
+          "label": "Horse",
+          "leaf_id": null,
+          "name": "Horse"
+        },
+        {
+          "abbreviation": null,
+          "color": "#da4971",
+          "description": "Includes mopeds, scooters, sidecars",
+          "group": {
+            "idx": "<ID>",
+            "name": null
+          },
+          "id": "<ID>",
+          "is_root": null,
+          "label": "Motorbike",
+          "leaf_id": null,
+          "name": "Motorbike"
+        },
+        {
+          "abbreviation": null,
+          "color": "#a4b137",
+          "description": "Includes babies, faces (i.e. truncated people)",
+          "group": {
+            "idx": "<ID>",
+            "name": null
+          },
+          "id": "<ID>",
+          "is_root": null,
+          "label": "Person",
+          "leaf_id": null,
+          "name": "Person"
+        },
+        {
+          "abbreviation": null,
+          "color": "#d44da4",
+          "description": "Indoor plants excluding flowers in vases, or outdoor plants clearly in a pot. ",
+          "group": {
+            "idx": "<ID>",
+            "name": null
+          },
+          "id": "<ID>",
+          "is_root": null,
+          "label": "Potted plant",
+          "leaf_id": null,
+          "name": "Potted plant"
+        },
+        {
+          "abbreviation": null,
+          "color": "#aa54be",
+          "description": "Sheep, not goats",
+          "group": {
+            "idx": "<ID>",
+            "name": null
+          },
+          "id": "<ID>",
+          "is_root": null,
+          "label": "Sheep",
+          "leaf_id": null,
+          "name": "Sheep"
+        },
+        {
+          "abbreviation": null,
+          "color": "#5ab74d",
+          "description": "Excludes sofas made up as sofa-beds",
+          "group": {
+            "idx": "<ID>",
+            "name": null
+          },
+          "id": "<ID>",
+          "is_root": null,
+          "label": "Sofa",
+          "leaf_id": null,
+          "name": "Sofa"
+        },
+        {
+          "abbreviation": null,
+          "color": "#7166d9",
+          "description": "Includes train carriages, excludes trams",
+          "group": {
+            "idx": "<ID>",
+            "name": null
+          },
+          "id": "<ID>",
+          "is_root": null,
+          "label": "Train",
+          "leaf_id": null,
+          "name": "Train"
+        },
+        {
+          "abbreviation": null,
+          "color": "#d14734",
+          "description": "Standalone screens (not laptops), not advertising displays",
+          "group": {
+            "idx": "<ID>",
+            "name": null
+          },
+          "id": "<ID>",
+          "is_root": null,
+          "label": "TV/monitor",
+          "leaf_id": null,
+          "name": "TV/monitor"
+        }
+      ]
+    },
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}
