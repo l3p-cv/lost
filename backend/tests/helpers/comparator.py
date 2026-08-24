@@ -89,6 +89,10 @@ _STRIP_HEADERS = {
     "set-cookie",
     "connection",
     "x-powered-by",
+    "access-control-allow-origin",  # CORS — added by middleware, differs Flask vs FastAPI
+    "access-control-allow-credentials",
+    "access-control-allow-methods",
+    "access-control-allow-headers",
 }
 
 

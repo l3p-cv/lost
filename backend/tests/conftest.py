@@ -141,14 +141,23 @@ def auth_headers(auth_token) -> dict:
     return {"Authorization": f"Bearer {auth_token}"}
 
 
-# ---------------------------------------------------------------------------
-# Client fixture — selects Flask or FastAPI based on --target
-# ---------------------------------------------------------------------------
+# Client fixture — Flask or FastAPI, selected per-spec via indirect parametrize
+# Each test passes spec.target ("flask" or "fastapi") as the indirect param
 
 
 @pytest.fixture
-def client(target):
-    """A test client for the selected target app ('flask' or 'fastapi')."""
+def client(request):
+    """A test client for the target app, selected per-spec via indirect parametrize.
+
+    The parametrize decorator passes spec.target as the indirect param.
+    Falls back to the --target global flag if no indirect param is set.
+    """
+    # Prefer indirect param (per-spec target), fall back to global --target flag
+    if hasattr(request, "param"):
+        target = request.param
+    else:
+        target = request.config.getoption("--target")
+
     if target == "flask":
         from tests.helpers.client import flask_client
 

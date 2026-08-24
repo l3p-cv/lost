@@ -43,11 +43,12 @@ def flask_client():
 
 @contextmanager
 def fastapi_client():
-    """Yield a FastAPI TestClient.
+    """Yield a FastAPI TestClient (in-process, no server needed)."""
+    from lost.fastapi_app import app
+    from fastapi.testclient import TestClient
 
-    Stub — activated in P1.2 when the FastAPI app exists.
-    """
-    raise NotImplementedError("FastAPI client is not available until P1.2")
+    with TestClient(app) as client:
+        yield client
 
 
 def get_client(target: str = "flask"):

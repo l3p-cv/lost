@@ -22,8 +22,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `backend/` : added Traefik routing for FastAPI docs (`/docs` → port 8000, priority=100), updated `entrypoint.sh` to start uvicorn alongside Flask (1 worker)
 Added `create_jwt_pyjwt()` to LoginManager, PyJWT-based token creation.Same structure as flask-jwt-extended.
 - Added new `api/auth/dependencies.py` : Added `get_current_user` function which decodes the jwt via PyJWT (can decode both create_jwt(flask-jwt-extended) and creat_jwt_pyjwt in login_manager.py ) and checks blacklist,loads User and `required_role` that checks roles for the current user and raises exception.
+- `backend/` : P1.2: migrated `system` namespace to FastAPI.
+- Added `SystemEndpoint.py` which uses FastAPI.
+- added per-spec target field with central `migration_status.py` registry.
 ### Fixed
-- `backend/tests/helpers/recorder.py` : Fixed empty-body handling for 204 No Content responses 
+- `backend/tests/helpers/recorder.py` : Fixed empty-body handling for 204 No Content responses.
+- fixed recorder for FastAPI TestClient compatibility.
+### Changed
+- `dependencies.py` :auth scheme changed to `HTTPBearer` credentials extraction in auth dependencies from `OAuth2PasswordBearer`
 
 ## [4.0.0-alpha] - 2026-08-18
 ### Added

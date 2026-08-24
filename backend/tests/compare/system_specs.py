@@ -8,6 +8,9 @@ from __future__ import annotations
 
 from tests.helpers.recorder import RequestSpec
 from tests.compare.user_specs import RouteSpec
+from tests.compare.migration_status import target_for
+
+_TARGET = target_for("system")
 
 
 def get_system_specs() -> list[RouteSpec]:
@@ -21,6 +24,7 @@ def get_system_specs() -> list[RouteSpec]:
             path="/api/system/version",
             mode="exact",
         ),
+        target=_TARGET,
     ))
 
     # 2. GET /api/system/settings — returns static config dict (no auth)
@@ -31,6 +35,7 @@ def get_system_specs() -> list[RouteSpec]:
             path="/api/system/settings",
             mode="exact",
         ),
+        target=_TARGET,
     ))
 
     # 3. GET /api/system/jupyter — returns jupyter URL or empty string (admin)
@@ -41,6 +46,7 @@ def get_system_specs() -> list[RouteSpec]:
             path="/api/system/jupyter",
             mode="structural",
         ),
+        target=_TARGET,
     ))
 
     # 4. POST /api/system/logs/frontend — skip (Graylog side effect)

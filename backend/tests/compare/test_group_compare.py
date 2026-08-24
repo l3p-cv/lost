@@ -74,6 +74,11 @@ def _run_group_spec(client, auth_headers, dbm, spec: RouteSpec, record: bool):
 _ACTIVE_SPECS = get_active_group_specs()
 
 
-@pytest.mark.parametrize("spec", _ACTIVE_SPECS, ids=[s.name for s in _ACTIVE_SPECS])
+@pytest.mark.parametrize(
+    "spec,client",
+    [(s, s.target) for s in _ACTIVE_SPECS],
+    indirect=["client"],
+    ids=[s.name for s in _ACTIVE_SPECS],
+)
 def test_group_route(client, auth_headers, dbm, record, spec: RouteSpec):
     _run_group_spec(client, auth_headers, dbm, spec, record=record)

@@ -120,21 +120,27 @@ def capture(client, spec: RequestSpec) -> dict:
     # Build kwargs for the client request
     kwargs: dict[str, Any] = {"headers": spec.headers}
 
-    # Multipart upload: merge data + files into a single data dict, set content_type
+    # Multipart upload: merge data + files into a single data dict
+    is_fastapi = not hasattr(client, "open")
     if spec.files is not None:
         form_data = dict(spec.data or {})
-        # Flask test client expects file tuples as (filename, BytesIO) or (filename, bytes, content_type)
         for field_name, file_tuple in spec.files.items():
             form_data[field_name] = file_tuple
         kwargs["data"] = form_data
-        kwargs["content_type"] = "multipart/form-data"
+        if not is_fastapi:
+            kwargs["content_type"] = "multipart/form-data"
+        # FastAPI TestClient auto-detects multipart from files in data
     elif spec.data is not None:
         kwargs["data"] = spec.data
     elif spec.json is not None:
         kwargs["json"] = spec.json
 
     if spec.params is not None:
-        kwargs["query_string"] = spec.params
+        # Flask: query_string, FastAPI: params
+        if hasattr(client, "open"):  # Flask test client
+            kwargs["query_string"] = spec.params
+        else:  # FastAPI TestClient
+            kwargs["params"] = spec.params
 
     method = spec.method.lower()
     resp = getattr(client, method)(spec.path, **kwargs)
@@ -144,12 +150,14 @@ def capture(client, spec: RequestSpec) -> dict:
     headers = dict(resp.headers)
 
     # Determine body: JSON if possible, else text, else binary metadata
-    content_type = headers.get("Content-Type", "")
-    raw_data = resp.get_data()
+    content_type = headers.get("Content-Type", headers.get("content-type", ""))
+    # Get raw data — Flask uses get_data(), FastAPI TestClient uses .content
+    raw_data = resp.get_data() if hasattr(resp, "get_data") else resp.content
     if "application/json" in content_type:
         # Handle empty bodies (e.g. 204 No Content) gracefully
         if raw_data:
-            body = resp.get_json()
+            # Flask: resp.get_json(), FastAPI: resp.json()
+            body = resp.get_json() if hasattr(resp, "get_json") else resp.json()
         else:
             body = None
     elif "text" in content_type or "html" in content_type:

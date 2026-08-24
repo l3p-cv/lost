@@ -121,6 +121,7 @@ async def startup_event():
         t.start()
 
 
-# Routers added per-namespace in P1.2
-# from lost.api.system.endpoint import router as system_router
-# app.include_router(system_router, prefix=API_PREFIX + "/system")
+# Routers (added per-namespace in P1.2)
+from lost.api.system.SystemEndpoint import router as system_router
+
+app.include_router(system_router, prefix=API_PREFIX + "/system")

@@ -57,6 +57,7 @@ class RouteSpec:
     follow_up: Optional[RequestSpec] = None
     setup: Optional[Callable] = None
     cleanup: Optional[Callable] = None
+    target: str = "flask"  # "flask" or "fastapi" — which app to test against
 
 
 # ---------------------------------------------------------------------------

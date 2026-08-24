@@ -30,7 +30,7 @@ from __future__ import annotations
 
 import jwt as pyjwt
 from fastapi import Depends, HTTPException
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 from lost.db.model import User as DBUser
 from lost.db.access import DBMan
@@ -41,15 +41,15 @@ from lost.settings import LOST_CONFIG
 # At P1.3: replaced by Redis/DB-backed revocation store
 from lost.flaskapp import blacklist
 
-# OAuth2 scheme for Swagger UI "Authorize" button
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/user/login")
+# Bearer token scheme for Swagger UI "Authorize" button
+oauth2_scheme = HTTPBearer()
 
 SECRET_KEY = LOST_CONFIG.secret_key
 ALGORITHM = "HS256"
 
 
 def get_current_user(
-    token: str = Depends(oauth2_scheme),
+    credentials: HTTPAuthorizationCredentials = Depends(oauth2_scheme),
     dbm: DBMan = Depends(get_db),
 ) -> DBUser:
     """Decode JWT, check blacklist, load User from DB.
@@ -64,6 +64,8 @@ def get_current_user(
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
+
+    token = credentials.credentials  # extract the raw JWT string
 
     try:
         payload = pyjwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
