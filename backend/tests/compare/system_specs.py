@@ -7,7 +7,7 @@ No setup needed — all routes use static config or admin's existing state.
 from __future__ import annotations
 
 from tests.helpers.recorder import RequestSpec
-from tests.compare.user_specs import RouteSpec
+from tests.helpers.specs import RouteSpec
 from tests.compare.migration_status import target_for
 
 _TARGET = target_for("system")

@@ -10,7 +10,8 @@ import pytest
 
 from tests.helpers.recorder import RequestSpec, capture, save
 from tests.helpers.comparator import load_golden, assert_equal
-from tests.compare.mia_specs import get_active_mia_specs, RouteSpec
+from tests.compare.mia_specs import get_active_mia_specs
+from tests.helpers.specs import RouteSpec
 
 
 def _run_mia_spec(client, auth_headers, dbm, spec: RouteSpec, record: bool):

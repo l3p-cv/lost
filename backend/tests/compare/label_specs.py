@@ -19,7 +19,7 @@ import io
 
 from tests.helpers.recorder import RequestSpec
 from tests.helpers.seed import unique_suffix, TEST_PREFIX
-from tests.compare.user_specs import RouteSpec
+from tests.helpers.specs import RouteSpec
 
 # OOTB VOC2012 root label leaf (idx=1 — seeded by initlost on every dev instance)
 OOTB_LABEL_LEAF_ID = 1

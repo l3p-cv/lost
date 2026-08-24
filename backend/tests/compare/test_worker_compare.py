@@ -6,7 +6,8 @@ import pytest
 
 from tests.helpers.recorder import RequestSpec, capture, save
 from tests.helpers.comparator import load_golden, assert_equal
-from tests.compare.worker_specs import get_active_worker_specs, RouteSpec
+from tests.compare.worker_specs import get_active_worker_specs
+from tests.helpers.specs import RouteSpec
 
 
 def _run_worker_spec(client, auth_headers, spec: RouteSpec, record: bool):

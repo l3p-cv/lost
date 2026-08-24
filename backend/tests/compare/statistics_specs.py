@@ -7,7 +7,7 @@ No setup needed — uses admin's existing annotation data.
 from __future__ import annotations
 
 from tests.helpers.recorder import RequestSpec
-from tests.compare.user_specs import RouteSpec
+from tests.helpers.specs import RouteSpec
 
 
 def get_statistics_specs() -> list[RouteSpec]:

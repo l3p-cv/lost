@@ -11,7 +11,7 @@ from __future__ import annotations
 import os
 
 from tests.helpers.recorder import RequestSpec
-from tests.compare.user_specs import RouteSpec
+from tests.helpers.specs import RouteSpec
 
 # OOTB default filesystem root path
 OOTB_FS_ROOT = "/home/lost/data"

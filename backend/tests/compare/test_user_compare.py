@@ -19,7 +19,8 @@ import pytest
 
 from tests.helpers.recorder import capture, save, snapshot_path
 from tests.helpers.comparator import load_golden, assert_equal
-from tests.compare.user_specs import get_active_user_specs, RouteSpec
+from tests.compare.user_specs import get_active_user_specs
+from tests.helpers.specs import RouteSpec
 
 
 def _substitute_path(path: str, context: dict) -> str:

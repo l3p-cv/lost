@@ -8,7 +8,7 @@
 from __future__ import annotations
 
 from tests.helpers.recorder import RequestSpec
-from tests.compare.user_specs import RouteSpec
+from tests.helpers.specs import RouteSpec
 
 
 def get_instructionmedia_specs() -> list[RouteSpec]:

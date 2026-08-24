@@ -12,7 +12,7 @@ Self-contained: looks up image ID from compare_test_sia by name.
 from __future__ import annotations
 
 from tests.helpers.recorder import RequestSpec
-from tests.compare.user_specs import RouteSpec
+from tests.helpers.specs import RouteSpec
 
 
 def _setup_data_context(dbm):

@@ -13,7 +13,7 @@ from typing import Callable
 
 from tests.helpers.recorder import RequestSpec
 from tests.helpers.seed import unique_suffix, TEST_PREFIX
-from tests.compare.user_specs import RouteSpec
+from tests.helpers.specs import RouteSpec
 
 
 def _create_test_instruction_db(dbm):

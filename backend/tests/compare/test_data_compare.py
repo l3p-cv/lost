@@ -12,7 +12,8 @@ import pytest
 
 from tests.helpers.recorder import RequestSpec, capture, save
 from tests.helpers.comparator import load_golden, assert_equal
-from tests.compare.data_specs import get_active_data_specs, RouteSpec
+from tests.compare.data_specs import get_active_data_specs
+from tests.helpers.specs import RouteSpec
 
 
 def _substitute(value, context: dict):

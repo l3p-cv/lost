@@ -30,6 +30,7 @@ Added `create_jwt_pyjwt()` to LoginManager, PyJWT-based token creation.Same stru
 - fixed recorder for FastAPI TestClient compatibility.
 ### Changed
 - `dependencies.py` :auth scheme changed to `HTTPBearer` credentials extraction in auth dependencies from `OAuth2PasswordBearer`
+- placed the `RouteSpec` in `specs.py` from user_specs.py
 
 ## [4.0.0-alpha] - 2026-08-18
 ### Added

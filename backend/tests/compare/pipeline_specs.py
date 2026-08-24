@@ -9,7 +9,7 @@ No new init_test_data.py additions needed.
 from __future__ import annotations
 
 from tests.helpers.recorder import RequestSpec
-from tests.compare.user_specs import RouteSpec
+from tests.helpers.specs import RouteSpec
 
 
 def _setup_pipe_context(dbm):
