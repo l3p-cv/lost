@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `backend/` : added FastAPI deps to `pyproject.toml`, created `lost/db/session.py` (shared engine + `get_db()` dependency)
 - Added  stdlib `logging.getLogger` instead of `flask.current_app.logger` from `logic/sia.py` + 3 endpoint files.
 - `backend/` : added Traefik routing for FastAPI docs (`/docs` → port 8000, priority=100), updated `entrypoint.sh` to start uvicorn alongside Flask (1 worker)
+Added `create_jwt_pyjwt()` to LoginManager, PyJWT-based token creation.Same structure as flask-jwt-extended.
+- Added new `api/auth/dependencies.py` : Added `get_current_user` function which decodes the jwt via PyJWT (can decode both create_jwt(flask-jwt-extended) and creat_jwt_pyjwt in login_manager.py ) and checks blacklist,loads User and `required_role` that checks roles for the current user and raises exception.
 ### Fixed
 - `backend/tests/helpers/recorder.py` : Fixed empty-body handling for 204 No Content responses 
 

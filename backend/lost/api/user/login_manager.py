@@ -1,5 +1,7 @@
 import datetime
+import uuid
 
+import jwt as pyjwt
 from flask_jwt_extended import create_access_token, create_refresh_token
 
 from lost.db import roles
@@ -46,6 +48,48 @@ class LoginManager:
             identity=str(user_id), fresh=True, expires_delta=expires, additional_claims=additional_claims
         )
         refresh_token = create_refresh_token(str(user_id), expires_delta=expires_refresh)
+
+        return access_token, refresh_token
+
+    def create_jwt_pyjwt(self, user_id: int, user_name: str, roles: list[Role], expires=None):
+        """Create access + refresh tokens using PyJWT (for FastAPI endpoints).
+
+        Produces tokens compatible with flask-jwt-extended format:
+        same SECRET_KEY, HS256, same payload structure (sub, jti, type, roles, username, exp, csrf).
+        Tokens minted here are decodable by get_current_user (PyJWT) and vice versa.
+        """
+        if not expires:
+            expires = datetime.timedelta(minutes=LOST_CONFIG.session_timeout)
+        expires_refresh = datetime.timedelta(minutes=LOST_CONFIG.session_timeout + 5)
+
+        now = datetime.datetime.now(datetime.timezone.utc)
+        user_role_names: list[str] = [ur.role.name for ur in roles]
+
+        access_payload = {
+            "fresh": True,
+            "iat": now,
+            "jti": str(uuid.uuid4()),
+            "type": "access",
+            "sub": str(user_id),
+            "nbf": now,
+            "csrf": str(uuid.uuid4()),
+            "exp": now + expires,
+            "roles": user_role_names,
+            "username": user_name,
+        }
+        refresh_payload = {
+            "fresh": False,
+            "iat": now,
+            "jti": str(uuid.uuid4()),
+            "type": "refresh",
+            "sub": str(user_id),
+            "nbf": now,
+            "csrf": str(uuid.uuid4()),
+            "exp": now + expires_refresh,
+        }
+
+        access_token = pyjwt.encode(access_payload, LOST_CONFIG.secret_key, algorithm="HS256")
+        refresh_token = pyjwt.encode(refresh_payload, LOST_CONFIG.secret_key, algorithm="HS256")
 
         return access_token, refresh_token
 
