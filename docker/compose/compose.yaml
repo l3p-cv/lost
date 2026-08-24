@@ -48,10 +48,17 @@ services:
     restart: always
     labels:
       - traefik.enable=true
+      # Flask → :5000 | FastAPI docs → :8000 (priority=100) | per-namespace routers added in P1.2 (priority=100)
       - traefik.http.routers.backend.rule=PathPrefix(`/api`)||PathPrefix(`/swaggerui`)
       - traefik.http.routers.backend.entrypoints=web
-      - traefik.http.routers.backend.service=backend
-      - traefik.http.services.backend.loadbalancer.server.port=5000
+      - traefik.http.routers.backend.service=backend-flask
+      - traefik.http.services.backend-flask.loadbalancer.server.port=5000
+      - traefik.http.routers.fastapi-docs.rule=PathPrefix(`/docs`)||PathPrefix(`/openapi.json`)||PathPrefix(`/redoc`)
+      - traefik.http.routers.fastapi-docs.entrypoints=web
+      - traefik.http.routers.fastapi-docs.priority=100
+      - traefik.http.routers.fastapi-docs.service=backend-fastapi
+      # Example: fastapi-user.rule=PathPrefix(`/api/user`) + priority=100 + service=backend-fastapi
+      - traefik.http.services.backend-fastapi.loadbalancer.server.port=8000
     depends_on:
       db:
         condition: service_started
