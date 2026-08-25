@@ -11,6 +11,7 @@ post-P1.3 when all namespaces are on FastAPI.
 MIGRATED: set[str] = {
     "system",
     "worker",
+    "label",
 }
 
 

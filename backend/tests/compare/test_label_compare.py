@@ -50,6 +50,8 @@ def _run_label_spec(client, auth_headers, dbm, spec: RouteSpec, record: bool):
         primary_spec = RequestSpec(
             method=req.method, path=path, headers=headers,
             json=json_body, params=req.params, mode=req.mode, label=req.label,
+            files=req.files,
+            data=req.data,
         )
         captured = capture(client, primary_spec)
         gpath = f"label/{spec.name}.json"
@@ -69,6 +71,8 @@ def _run_label_spec(client, auth_headers, dbm, spec: RouteSpec, record: bool):
             fu_spec = RequestSpec(
                 method=fu.method, path=fu_path, headers=fu_headers,
                 json=fu.json, params=fu.params, mode=fu.mode, label=fu.label,
+                files=fu.files,
+                data=fu.data,
             )
             fu_captured = capture(client, fu_spec)
             fu_gpath = f"label/{fu.label}.json"

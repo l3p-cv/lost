@@ -23,7 +23,7 @@ from lost.api.group.endpoint import namespace as group_namespace
 from lost.api.inference_model.endpoint import namespace as inference_model_namespace
 from lost.api.instructionmedia.endpoint import namespace as media_namespace
 from lost.api.instructions.endpoint import namespace as instructions_namespace
-from lost.api.label.endpoint import namespace as label_namespace
+# label_namespace migrated to FastAPI in P1.2
 from lost.api.mia.endpoint import namespace as mia_namespace
 from lost.api.pipeline.endpoint import namespace as pipeline_namespace
 from lost.api.sia.endpoint import namespace as sia_namespace
@@ -91,7 +91,7 @@ api.add_namespace(pipeline_namespace)
 api.add_namespace(annotasks_namespace)
 api.add_namespace(dataset_namespace)
 api.add_namespace(data_namespace)
-api.add_namespace(label_namespace)
+# label_namespace migrated to FastAPI in P1.2
 # worker_namespace migrated to FastAPI in P1.2
 api.add_namespace(filebrowser_namespace)
 # system_namespace migrated to FastAPI in P1.2

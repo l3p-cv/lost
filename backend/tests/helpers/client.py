@@ -43,11 +43,15 @@ def flask_client():
 
 @contextmanager
 def fastapi_client():
-    """Yield a FastAPI TestClient (in-process, no server needed)."""
+    """Yield a FastAPI TestClient (in-process, no server needed).
+
+    raise_server_exceptions=False so 500 errors are returned as HTTP responses
+    (matching Flask behavior) instead of raising in the test.
+    """
     from lost.fastapi_app import app
     from fastapi.testclient import TestClient
 
-    with TestClient(app) as client:
+    with TestClient(app, raise_server_exceptions=False) as client:
         yield client
 
 

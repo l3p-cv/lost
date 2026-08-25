@@ -67,6 +67,11 @@ services:
       - traefik.http.routers.fastapi-worker.entrypoints=web
       - traefik.http.routers.fastapi-worker.priority=100
       - traefik.http.routers.fastapi-worker.service=backend-fastapi
+      # FastAPI — label namespace (third migrated in P1.2)
+      - traefik.http.routers.fastapi-label.rule=PathPrefix(`/api/label`)
+      - traefik.http.routers.fastapi-label.entrypoints=web
+      - traefik.http.routers.fastapi-label.priority=100
+      - traefik.http.routers.fastapi-label.service=backend-fastapi
       # Example: fastapi-user.rule=PathPrefix(`/api/user`) + priority=100 + service=backend-fastapi
       - traefik.http.services.backend-fastapi.loadbalancer.server.port=8000
     depends_on:

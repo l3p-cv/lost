@@ -123,11 +123,15 @@ def capture(client, spec: RequestSpec) -> dict:
     # Multipart upload: merge data + files into a single data dict
     is_fastapi = not hasattr(client, "open")
     if spec.files is not None:
-        form_data = dict(spec.data or {})
-        for field_name, file_tuple in spec.files.items():
-            form_data[field_name] = file_tuple
-        kwargs["data"] = form_data
-        if not is_fastapi:
+        if is_fastapi:
+            kwargs["files"] = spec.files
+            if spec.data:
+                kwargs["data"] = spec.data
+        else:
+            form_data = dict(spec.data or {})
+            for field_name, file_tuple in spec.files.items():
+                form_data[field_name] = file_tuple
+            kwargs["data"] = form_data
             kwargs["content_type"] = "multipart/form-data"
         # FastAPI TestClient auto-detects multipart from files in data
     elif spec.data is not None:

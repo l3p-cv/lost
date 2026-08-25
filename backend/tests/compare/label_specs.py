@@ -20,6 +20,9 @@ import io
 from tests.helpers.recorder import RequestSpec
 from tests.helpers.seed import unique_suffix, TEST_PREFIX
 from tests.helpers.specs import RouteSpec
+from tests.compare.migration_status import target_for
+
+_TARGET = target_for("label")
 
 # OOTB VOC2012 root label leaf (idx=1 — seeded by initlost on every dev instance)
 OOTB_LABEL_LEAF_ID = 1
@@ -76,18 +79,21 @@ def get_label_specs() -> list[RouteSpec]:
     specs.append(RouteSpec(
         name="GET_label_tree_all",
         request=RequestSpec(method="GET", path="/api/label/tree/all", mode="structural"),
+        target=_TARGET,
     ))
 
     # 2. GET /api/label/tree/global — global label trees (admin)
     specs.append(RouteSpec(
         name="GET_label_tree_global",
         request=RequestSpec(method="GET", path="/api/label/tree/global", mode="structural"),
+        target=_TARGET,
     ))
 
     # 3. GET /api/label/1 — get label leaf by ID (designer)
     specs.append(RouteSpec(
         name="GET_label_by_id",
         request=RequestSpec(method="GET", path=f"/api/label/{OOTB_LABEL_LEAF_ID}", mode="structural"),
+        target=_TARGET,
     ))
 
     # --- POST add label (create via API → cleanup delete) ---
@@ -114,6 +120,7 @@ def get_label_specs() -> list[RouteSpec]:
             method="GET", path="/api/label/tree/all", mode="structural",
             label="POST_label_add__then_GET",
         ),
+        target=_TARGET,
         setup=lambda dbm: {"label_name": label_name},
         cleanup=_cleanup_created_label_by_name,
     ))
@@ -139,6 +146,7 @@ def get_label_specs() -> list[RouteSpec]:
             method="GET", path="/api/label/{label_id}", mode="structural",
             label="PATCH_label_edit__then_GET",
         ),
+        target=_TARGET,
         setup=_create_test_label_db,
         cleanup=_cleanup_test_label_db,
     ))
@@ -155,6 +163,7 @@ def get_label_specs() -> list[RouteSpec]:
             method="GET", path="/api/label/{label_id}", mode="structural",
             label="DELETE_label__then_GET",
         ),
+        target=_TARGET,
         setup=_create_test_label_db,
         cleanup=_cleanup_test_label_db,  # safe if already deleted
     ))
@@ -165,6 +174,7 @@ def get_label_specs() -> list[RouteSpec]:
     specs.append(RouteSpec(
         name="GET_label_export",
         request=RequestSpec(method="GET", path=f"/api/label/{OOTB_LABEL_LEAF_ID}/export", mode="exact"),
+        target=_TARGET,
     ))
 
     # 8. POST /api/label/tree/all — import label tree from CSV (multipart upload)
@@ -179,6 +189,7 @@ def get_label_specs() -> list[RouteSpec]:
             method="GET", path="/api/label/tree/all", mode="structural",
             label="POST_label_import__then_GET",
         ),
+        target=_TARGET,
         cleanup=_cleanup_imported_label_tree,
     ))
 
