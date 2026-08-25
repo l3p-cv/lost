@@ -12,6 +12,7 @@ MIGRATED: set[str] = {
     "system",
     "worker",
     "label",
+    "group",
 }
 
 

@@ -13,9 +13,12 @@ from typing import Callable
 from tests.helpers.recorder import RequestSpec
 from tests.helpers.seed import unique_suffix, TEST_PREFIX
 from tests.helpers.specs import RouteSpec
+from tests.compare.migration_status import target_for
+
+_TARGET = target_for("group")
 
 # Dev DB constants
-GROUP_ID = 1  # admin's default group
+GROUP_ID = 1  # admin's default group (always prsent after initlost)
 
 
 def _create_test_group_db(dbm):
@@ -58,12 +61,14 @@ def get_group_specs() -> list[RouteSpec]:
     specs.append(RouteSpec(
         name="GET_group_list",
         request=RequestSpec(method="GET", path="/api/group", mode="structural"),
+        target=_TARGET,
     ))
 
     # 2. GET /api/group/1 — get group by id (jwt, no role check)
     specs.append(RouteSpec(
         name="GET_group_by_id",
         request=RequestSpec(method="GET", path=f"/api/group/{GROUP_ID}", mode="structural"),
+        target=_TARGET,
     ))
 
     # 3. POST /api/group — create test group → GET verify → cleanup
@@ -79,6 +84,7 @@ def get_group_specs() -> list[RouteSpec]:
             method="GET", path="/api/group", mode="structural",
             label="POST_group_create__then_GET",
         ),
+        target=_TARGET,
         setup=lambda dbm: {"group_name": group_name},
         cleanup=_cleanup_created_group_by_name,
     ))
@@ -95,6 +101,7 @@ def get_group_specs() -> list[RouteSpec]:
         ),
         setup=_create_test_group_db,
         cleanup=_cleanup_test_group_db,  # safe if already deleted
+        target=_TARGET,
     ))
 
     return specs

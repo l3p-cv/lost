@@ -19,7 +19,7 @@ from lost.api.data.endpoint import namespace as data_namespace
 from lost.api.auth.OpenidEndpoint import namespace as openid_namespace
 from lost.api.dataset.endpoint import namespace as dataset_namespace
 from lost.api.filebrowser.endpoint import namespace as filebrowser_namespace
-from lost.api.group.endpoint import namespace as group_namespace
+# group_namespace migrated to FastAPI in P1.2
 from lost.api.inference_model.endpoint import namespace as inference_model_namespace
 from lost.api.instructionmedia.endpoint import namespace as media_namespace
 from lost.api.instructions.endpoint import namespace as instructions_namespace
@@ -83,7 +83,7 @@ api.init_app(blueprint)
 # register endpoints here
 api.add_namespace(user_namespace)
 api.add_namespace(openid_namespace)
-api.add_namespace(group_namespace)
+# group_namespace migrated to FastAPI in P1.2
 api.add_namespace(sia_namespace)
 api.add_namespace(mia_namespace)
 api.add_namespace(pipeline_namespace)
