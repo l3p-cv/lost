@@ -27,6 +27,9 @@ from typing import Callable, Optional
 from tests.helpers.recorder import RequestSpec
 from tests.helpers.specs import RouteSpec
 from tests.helpers.seed import user_create_payload, create_test_user, cleanup_test_user, unique_suffix
+from tests.compare.migration_status import target_for
+
+_TARGET = target_for("user")
 
 
 # ---------------------------------------------------------------------------
@@ -103,6 +106,7 @@ def get_user_specs() -> list[RouteSpec]:
             path="/api/user",
             mode="structural",
         ),
+        target=_TARGET,
     ))
 
     # 2. GET /api/user/anno_task_user — list anno task users (designer)
@@ -113,6 +117,7 @@ def get_user_specs() -> list[RouteSpec]:
             path="/api/user/anno_task_user",
             mode="structural",
         ),
+        target=_TARGET,
     ))
 
     # 3. GET /api/user/<id> — get single user (admin)
@@ -124,6 +129,7 @@ def get_user_specs() -> list[RouteSpec]:
             path="/api/user/1",  # admin user, always exists
             mode="structural",
         ),
+        target=_TARGET,
     ))
 
     # 4. GET /api/user/self — get current user
@@ -134,6 +140,7 @@ def get_user_specs() -> list[RouteSpec]:
             path="/api/user/self",
             mode="structural",
         ),
+        target=_TARGET,
     ))
 
     # 5. POST /api/user — create user (admin) → mutate-then-GET
@@ -156,6 +163,7 @@ def get_user_specs() -> list[RouteSpec]:
         ),
         setup=lambda dbm: {"user_name": created_user_name},  # for cleanup tracking
         cleanup=_cleanup_created_user,
+        target=_TARGET,
     ))
 
     # 6. PATCH /api/user/<id> — update user (admin) → mutate-then-GET
@@ -180,6 +188,7 @@ def get_user_specs() -> list[RouteSpec]:
         ),
         setup=_setup_existing_user,
         cleanup=_cleanup_existing_user,
+        target=_TARGET,
     ))
 
     # 7. DELETE /api/user/<id> — skip (endpoint crashes for users without filesystem: pre-existing bug)
@@ -228,6 +237,7 @@ def get_user_specs() -> list[RouteSpec]:
         name="POST_user_logout",
         request=RequestSpec(method="POST", path="/api/user/logout", mode="structural"),
         setup=_setup_fresh_token,
+        target=_TARGET,
     ))
 
     return specs

@@ -30,7 +30,7 @@ from lost.api.sia.endpoint import namespace as sia_namespace
 from lost.api.statistics.endpoint import namespace as statistics_namespace
 # system_namespace migrated to FastAPI in P1.2
 from lost.api.triton.endpoint import namespace as triton_namespace
-from lost.api.user.endpoint import namespace as user_namespace
+# user_namespace migrated to FastAPI in P1.2
 # worker_namespace migrated to FastAPI in P1.2
 from lost.db import access
 from lost.logic import dask_session
@@ -81,7 +81,7 @@ blueprint = Blueprint("api", __name__, url_prefix="/api")
 
 api.init_app(blueprint)
 # register endpoints here
-api.add_namespace(user_namespace)
+# user_namespace migrated to FastAPI in P1.2
 api.add_namespace(openid_namespace)
 # group_namespace migrated to FastAPI in P1.2
 api.add_namespace(sia_namespace)
