@@ -7,7 +7,9 @@ from __future__ import annotations
 
 from tests.helpers.recorder import RequestSpec
 from tests.helpers.specs import RouteSpec
+from tests.compare.migration_status import target_for
 
+_TARGET = target_for("worker")
 
 def get_worker_specs() -> list[RouteSpec]:
     specs: list[RouteSpec] = []
@@ -20,6 +22,7 @@ def get_worker_specs() -> list[RouteSpec]:
             path="/api/worker",
             mode="structural",
         ),
+        target=_TARGET,
     ))
 
     # 2. GET /api/worker/workerlogs/1 — skip (Not Implemented, raises Exception)

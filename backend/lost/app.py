@@ -31,7 +31,7 @@ from lost.api.statistics.endpoint import namespace as statistics_namespace
 # system_namespace migrated to FastAPI in P1.2
 from lost.api.triton.endpoint import namespace as triton_namespace
 from lost.api.user.endpoint import namespace as user_namespace
-from lost.api.worker.endpoint import namespace as worker_namespace
+# worker_namespace migrated to FastAPI in P1.2
 from lost.db import access
 from lost.logic import dask_session
 
@@ -92,7 +92,7 @@ api.add_namespace(annotasks_namespace)
 api.add_namespace(dataset_namespace)
 api.add_namespace(data_namespace)
 api.add_namespace(label_namespace)
-api.add_namespace(worker_namespace)
+# worker_namespace migrated to FastAPI in P1.2
 api.add_namespace(filebrowser_namespace)
 # system_namespace migrated to FastAPI in P1.2
 api.add_namespace(statistics_namespace)
