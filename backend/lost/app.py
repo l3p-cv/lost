@@ -12,7 +12,7 @@ from lost import settings
 from lost.api.anno_example.endpoint import namespace as anno_example_namespace
 from lost.api.annotasks.endpoint import namespace as annotasks_namespace
 from lost.api.api import api
-from lost.api.config.endpoint import namespace as config_namespace
+# config_namespace migrated to FastAPI in P1.2
 from lost.api.data.endpoint import namespace as data_namespace
 
 # from lost.api.annotasks.endpoint import namespace as annotasks_namespace
@@ -27,7 +27,7 @@ from lost.api.instructionmedia.endpoint import namespace as media_namespace
 from lost.api.mia.endpoint import namespace as mia_namespace
 from lost.api.pipeline.endpoint import namespace as pipeline_namespace
 from lost.api.sia.endpoint import namespace as sia_namespace
-from lost.api.statistics.endpoint import namespace as statistics_namespace
+# statistics_namespace migrated to FastAPI in P1.2
 # system_namespace migrated to FastAPI in P1.2
 from lost.api.triton.endpoint import namespace as triton_namespace
 # user_namespace migrated to FastAPI in P1.2
@@ -95,8 +95,8 @@ api.add_namespace(data_namespace)
 # worker_namespace migrated to FastAPI in P1.2
 # filebrowser_namespace migrated to FastAPI in P1.2
 # system_namespace migrated to FastAPI in P1.2
-api.add_namespace(statistics_namespace)
-api.add_namespace(config_namespace)
+# statistics_namespace migrated to FastAPI in P1.2
+# config_namespace migrated to FastAPI in P1.2
 api.add_namespace(anno_example_namespace)
 # instructions_namespace migrated to FastAPI in P1.2
 api.add_namespace(media_namespace)

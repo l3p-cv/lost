@@ -33,6 +33,7 @@ _REDACTED_KEYS = {
     "id",
     "user_id",
     "group_id",
+    "groupId",
     "role_id",
     "anno_task_id",
     "dataset_id",

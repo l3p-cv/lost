@@ -7,6 +7,9 @@ from __future__ import annotations
 
 from tests.helpers.recorder import RequestSpec
 from tests.helpers.specs import RouteSpec
+from tests.compare.migration_status import target_for
+
+_TARGET = target_for("config")
 
 
 def get_config_specs() -> list[RouteSpec]:
@@ -20,6 +23,7 @@ def get_config_specs() -> list[RouteSpec]:
             path="/api/config",
             mode="structural",
         ),
+        target=_TARGET,
     ))
 
     # 2. PATCH /api/config — skip (0 config entries to update)

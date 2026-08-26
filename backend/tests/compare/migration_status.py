@@ -16,6 +16,8 @@ MIGRATED: set[str] = {
     "user",
     "filebrowser",
     "instructions",
+    "statistics",
+    "config",
 }
 
 
