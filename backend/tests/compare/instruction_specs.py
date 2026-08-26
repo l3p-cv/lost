@@ -14,6 +14,9 @@ from typing import Callable
 from tests.helpers.recorder import RequestSpec
 from tests.helpers.seed import unique_suffix, TEST_PREFIX
 from tests.helpers.specs import RouteSpec
+from tests.compare.migration_status import target_for
+
+_TARGET = target_for("instructions")
 
 
 def _create_test_instruction_db(dbm):
@@ -65,6 +68,7 @@ def get_instruction_specs() -> list[RouteSpec]:
         request=RequestSpec(
             method="GET", path="/api/instructions/getInstructions/all", mode="structural",
         ),
+        target=_TARGET,
     ))
 
     # 2. POST /api/instructions/addInstruction — create → GET verify → cleanup
@@ -88,6 +92,7 @@ def get_instruction_specs() -> list[RouteSpec]:
         ),
         setup=lambda dbm: {"instruction_option": option},
         cleanup=_cleanup_created_instruction_by_option,
+        target=_TARGET,
     ))
 
     # 3. PUT /api/instructions/editInstruction — create test → edit → GET verify → cleanup
@@ -109,6 +114,7 @@ def get_instruction_specs() -> list[RouteSpec]:
         ),
         setup=_create_test_instruction_db,
         cleanup=_cleanup_test_instruction_db,
+        target=_TARGET,
     ))
 
     # 4. DELETE /api/instructions/deleteInstruction/{id} — create → soft-delete → GET verify
@@ -123,6 +129,7 @@ def get_instruction_specs() -> list[RouteSpec]:
         ),
         setup=_create_test_instruction_db,
         cleanup=_cleanup_test_instruction_db,  # hard-delete after soft-delete test
+        target=_TARGET,
     ))
 
     return specs
