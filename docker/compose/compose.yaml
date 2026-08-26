@@ -82,6 +82,11 @@ services:
       - traefik.http.routers.fastapi-user.entrypoints=web
       - traefik.http.routers.fastapi-user.priority=100
       - traefik.http.routers.fastapi-user.service=backend-fastapi
+      # FastAPI — fb namespace or filebrowser namespace (sixth migrated in P1.2)
+      - traefik.http.routers.fastapi-fb.rule=PathPrefix(`/api/fb`)
+      - traefik.http.routers.fastapi-fb.entrypoints=web
+      - traefik.http.routers.fastapi-fb.priority=100
+      - traefik.http.routers.fastapi-fb.service=backend-fastapi
       # Example: fastapi-user.rule=PathPrefix(`/api/user`) + priority=100 + service=backend-fastapi
       - traefik.http.services.backend-fastapi.loadbalancer.server.port=8000
     depends_on:

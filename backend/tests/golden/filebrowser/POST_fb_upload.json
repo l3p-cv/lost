@@ -8,13 +8,10 @@
     "path": "/api/fb/upload"
   },
   "response": {
-    "body": {
-      "message": "The browser (or proxy) sent a request that this server could not understand."
-    },
+    "body": "success",
     "headers": {
-      "access-control-allow-origin": "*",
       "content-type": "application/json"
     },
-    "status": 400
+    "status": 200
   }
 }

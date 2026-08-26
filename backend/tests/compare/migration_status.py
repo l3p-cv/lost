@@ -14,6 +14,7 @@ MIGRATED: set[str] = {
     "label",
     "group",
     "user",
+    "filebrowser",
 }
 
 

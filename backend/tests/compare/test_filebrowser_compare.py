@@ -55,11 +55,12 @@ def _run_filebrowser_spec(client, auth_headers, dbm, spec: RouteSpec, record: bo
         json_body = _substitute(req.json, context)
         headers = {**auth_headers, **req.headers}
 
+        data_body = _substitute(req.data, context) if req.data else None
         live_spec = RequestSpec(
             method=req.method, path=path, headers=headers,
             json=json_body, params=req.params, mode=req.mode, label=req.label,
             files=req.files,
-            data=req.data,
+            data=data_body,
         )
         captured = capture(client, live_spec)
         gpath = f"filebrowser/{spec.name}.json"

@@ -127,9 +127,11 @@ from lost.api.worker.WorkerEndpoint import router as worker_router
 from lost.api.label.LabelEndpoint import router as label_router
 from lost.api.group.GroupEndpoint import router as group_router
 from lost.api.user.UserEndpoint import router as user_router
+from lost.api.filebrowser.FileBrowserEndpoint import router as fb_router
 
 app.include_router(system_router, prefix=API_PREFIX + "/system")
 app.include_router(worker_router, prefix=API_PREFIX + "/worker")
 app.include_router(label_router, prefix=API_PREFIX + "/label")
 app.include_router(group_router, prefix=API_PREFIX + "/group")
 app.include_router(user_router, prefix=API_PREFIX + "/user")
+app.include_router(fb_router, prefix=API_PREFIX + "/fb")

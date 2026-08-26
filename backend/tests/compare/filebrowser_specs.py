@@ -12,6 +12,9 @@ import os
 
 from tests.helpers.recorder import RequestSpec
 from tests.helpers.specs import RouteSpec
+from tests.compare.migration_status import target_for
+
+_TARGET = target_for("filebrowser")
 
 # OOTB default filesystem root path
 OOTB_FS_ROOT = "/home/lost/data"
@@ -39,12 +42,14 @@ def get_filebrowser_specs() -> list[RouteSpec]:
     specs.append(RouteSpec(
         name="GET_fb_fslist_all",
         request=RequestSpec(method="GET", path="/api/fb/fslist/all", mode="structural"),
+        target=_TARGET,
     ))
 
     # 2. GET /api/fb/fstypes — list fs types (admin sees "file" type too)
     specs.append(RouteSpec(
         name="GET_fb_fstypes",
         request=RequestSpec(method="GET", path="/api/fb/fstypes", mode="exact"),
+        target=_TARGET,
     ))
 
     # --- Read-only POSTs (need fs_id from setup) ---
@@ -58,6 +63,7 @@ def get_filebrowser_specs() -> list[RouteSpec]:
             mode="structural",
         ),
         setup=_setup_fs_context,
+        target=_TARGET,
     ))
 
     # 4. POST /api/fb/fullfs — get filesystem details
@@ -69,6 +75,7 @@ def get_filebrowser_specs() -> list[RouteSpec]:
             mode="structural",
         ),
         setup=_setup_fs_context,
+        target=_TARGET,
     ))
 
     # 5. POST /api/fb/check-path — check if path exists
@@ -80,6 +87,7 @@ def get_filebrowser_specs() -> list[RouteSpec]:
             mode="exact",
         ),
         setup=_setup_fs_context,
+        target=_TARGET,
     ))
 
     # 6. POST /api/fb/validate-datasource — validate image folder
@@ -97,6 +105,7 @@ def get_filebrowser_specs() -> list[RouteSpec]:
             mode="exact",
         ),
         setup=_setup_fs_context,
+        target=_TARGET,
     ))
 
     # --- Skipped: destructive mutations + complex ---
@@ -140,8 +149,7 @@ def get_filebrowser_specs() -> list[RouteSpec]:
         ),
         setup=_setup_fs_context,
         cleanup=_cleanup_uploaded_file,
-        skip=True,
-        skip_reason="File cleanup fails on Flask test client(path mismatch). Un-skip when filebrowser migrates to FastAPI in P1.2.",
+        target=_TARGET,
     ))
 
     specs.append(RouteSpec(
