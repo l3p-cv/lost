@@ -13,7 +13,7 @@ from lost.api.anno_example.endpoint import namespace as anno_example_namespace
 from lost.api.annotasks.endpoint import namespace as annotasks_namespace
 from lost.api.api import api
 # config_namespace migrated to FastAPI in P1.2
-from lost.api.data.endpoint import namespace as data_namespace
+# data_namespace migrated to FastAPI in P1.2
 
 # from lost.api.annotasks.endpoint import namespace as annotasks_namespace
 from lost.api.auth.OpenidEndpoint import namespace as openid_namespace
@@ -90,7 +90,7 @@ api.add_namespace(pipeline_namespace)
 # api.add_namespace(annotask_namespace)
 api.add_namespace(annotasks_namespace)
 api.add_namespace(dataset_namespace)
-api.add_namespace(data_namespace)
+# data_namespace migrated to FastAPI in P1.2
 # label_namespace migrated to FastAPI in P1.2
 # worker_namespace migrated to FastAPI in P1.2
 # filebrowser_namespace migrated to FastAPI in P1.2

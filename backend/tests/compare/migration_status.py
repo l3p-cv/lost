@@ -18,6 +18,7 @@ MIGRATED: set[str] = {
     "instructions",
     "statistics",
     "config",
+    "data",
 }
 
 

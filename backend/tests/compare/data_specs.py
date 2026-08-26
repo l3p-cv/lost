@@ -13,6 +13,9 @@ from __future__ import annotations
 
 from tests.helpers.recorder import RequestSpec
 from tests.helpers.specs import RouteSpec
+from tests.compare.migration_status import target_for
+
+_TARGET = target_for("data")
 
 
 def _setup_data_context(dbm):
@@ -37,6 +40,7 @@ def get_data_specs() -> list[RouteSpec]:
             params={"type": "imageBased"},
             mode="exact",
         ),
+        target=_TARGET,
         setup=_setup_data_context,
     ))
 
@@ -48,6 +52,7 @@ def get_data_specs() -> list[RouteSpec]:
             path="/api/data/storeKeys",
             mode="exact",
         ),
+        target=_TARGET,
     ))
 
     # 3. GET /api/data/export/1 — skip (0 data exports in dev DB)

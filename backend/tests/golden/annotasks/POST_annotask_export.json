@@ -21,7 +21,6 @@
       "message": "Input payload validation failed"
     },
     "headers": {
-      "access-control-allow-origin": "*",
       "content-type": "application/json"
     },
     "status": 400

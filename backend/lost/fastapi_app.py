@@ -131,6 +131,7 @@ from lost.api.filebrowser.FileBrowserEndpoint import router as fb_router
 from lost.api.instructions.InstructionEndpoint import router as instruction_router
 from lost.api.statistics.StatisticsEndpoint import router as statistics_router
 from lost.api.config.ConfigEndpoint import router as config_router
+from lost.api.data.DataEndpoint import router as data_router
 
 app.include_router(system_router, prefix=API_PREFIX + "/system")
 app.include_router(worker_router, prefix=API_PREFIX + "/worker")
@@ -141,3 +142,4 @@ app.include_router(fb_router, prefix=API_PREFIX + "/fb")
 app.include_router(instruction_router, prefix=API_PREFIX + "/instructions")
 app.include_router(statistics_router, prefix=API_PREFIX + "/statistics")
 app.include_router(config_router, prefix=API_PREFIX + "/config")
+app.include_router(data_router, prefix=API_PREFIX + "/data")
