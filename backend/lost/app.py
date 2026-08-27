@@ -17,7 +17,7 @@ from lost.api.api import api
 
 # from lost.api.annotasks.endpoint import namespace as annotasks_namespace
 from lost.api.auth.OpenidEndpoint import namespace as openid_namespace
-from lost.api.dataset.endpoint import namespace as dataset_namespace
+# dataset_namespace migrated to FastAPI in P1.2
 # filebrowser_namespace migrated to FastAPI in P1.2
 # group_namespace migrated to FastAPI in P1.2
 from lost.api.inference_model.endpoint import namespace as inference_model_namespace
@@ -89,7 +89,7 @@ api.add_namespace(mia_namespace)
 api.add_namespace(pipeline_namespace)
 # api.add_namespace(annotask_namespace)
 api.add_namespace(annotasks_namespace)
-api.add_namespace(dataset_namespace)
+# dataset_namespace migrated to FastAPI in P1.2
 # data_namespace migrated to FastAPI in P1.2
 # label_namespace migrated to FastAPI in P1.2
 # worker_namespace migrated to FastAPI in P1.2

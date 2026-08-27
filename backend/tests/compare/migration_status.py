@@ -19,6 +19,7 @@ MIGRATED: set[str] = {
     "statistics",
     "config",
     "data",
+    "datasets",
 }
 
 

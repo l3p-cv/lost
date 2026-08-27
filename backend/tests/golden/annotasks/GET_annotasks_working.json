@@ -10,7 +10,6 @@
   "response": {
     "body": "Current working annotation task not found",
     "headers": {
-      "access-control-allow-origin": "*",
       "content-type": "application/json"
     },
     "status": 412

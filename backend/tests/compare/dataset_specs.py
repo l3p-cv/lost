@@ -16,6 +16,9 @@ from typing import Callable, Optional
 from tests.helpers.recorder import RequestSpec
 from tests.helpers.seed import unique_suffix, TEST_PREFIX
 from tests.helpers.specs import RouteSpec
+from tests.compare.migration_status import target_for
+
+_TARGET = target_for("datasets")
 
 # ---------------------------------------------------------------------------
 # Setup: look up test dataset + export IDs by name
@@ -127,7 +130,7 @@ def _setup_delete_export(dbm):
         progress=100,
     )
     dbm.save_obj(exp)
-    return {"export_id": exp.idx, "skip": False}
+    return {"export_id": exp.idx,"dataset_id": ds_id, "skip": False}
 
 
 # ---------------------------------------------------------------------------
@@ -166,6 +169,7 @@ def get_dataset_specs() -> list[RouteSpec]:
             path="/api/datasets",
             mode="structural",
         ),
+        target=_TARGET,
     ))
 
     # 2. GET /api/datasets/paged/0/5 — paginated list
@@ -176,6 +180,7 @@ def get_dataset_specs() -> list[RouteSpec]:
             path="/api/datasets/paged/0/5",
             mode="structural",
         ),
+        target=_TARGET,
     ))
 
     # 3. GET /api/datasets/flat — skip (flat dict with DB-ID keys, non-deterministic across runs)
@@ -194,6 +199,7 @@ def get_dataset_specs() -> list[RouteSpec]:
             path="/api/datasets/{dataset_id}/review/images",
             mode="structural",
         ),
+        target=_TARGET,
         setup=_setup_dataset_context,
     ))
 
@@ -205,6 +211,7 @@ def get_dataset_specs() -> list[RouteSpec]:
             path="/api/datasets/{dataset_id}/review/possibleLabels",
             mode="structural",
         ),
+        target=_TARGET,
         setup=_setup_dataset_context,
     ))
 
@@ -216,6 +223,7 @@ def get_dataset_specs() -> list[RouteSpec]:
             path="/api/datasets/{dataset_id}/ds_exports",
             mode="structural",
         ),
+        target=_TARGET,
         setup=_setup_dataset_context,
     ))
 
@@ -258,6 +266,7 @@ def get_dataset_specs() -> list[RouteSpec]:
             mode="structural",
             label="POST_dataset_create__then_GET",
         ),
+        target=_TARGET,
         setup=lambda dbm: {},  # no setup needed
         cleanup=_cleanup_created_dataset,
     ))
@@ -284,6 +293,7 @@ def get_dataset_specs() -> list[RouteSpec]:
             mode="structural",
             label="PATCH_dataset_update__then_GET",
         ),
+        target=_TARGET,
         setup=_save_dataset_name,
         cleanup=_revert_dataset_name,
     ))
@@ -298,6 +308,7 @@ def get_dataset_specs() -> list[RouteSpec]:
             method="GET", path="/api/datasets/{dataset_id}", mode="structural",
             label="DELETE_dataset__then_GET",
         ),
+        target=_TARGET,
         setup=_setup_delete_dataset,
     ))
 
@@ -312,6 +323,7 @@ def get_dataset_specs() -> list[RouteSpec]:
             method="GET", path="/api/datasets/{dataset_id}/ds_exports", mode="structural",
             label="POST_dataset_parquet_export__then_GET",
         ),
+        target=_TARGET,
         setup=_setup_dataset_context,
         cleanup=_cleanup_created_export,
     ))
@@ -324,6 +336,8 @@ def get_dataset_specs() -> list[RouteSpec]:
             method="GET", path="/api/datasets/{dataset_id}/ds_exports", mode="structural",
             label="DELETE_dataset_export__then_GET",
         ),
+        skip=True,
+        skip_reason="Deletes a DatasetExport file from disk — risky, irreversible. Verified manually in P1.2.",
         setup=_setup_delete_export,
     ))
 

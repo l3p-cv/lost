@@ -19,6 +19,9 @@ from starlette.middleware.sessions import SessionMiddleware
 from lost import settings
 from lost.logic import dask_session
 
+from fastapi.exceptions import HTTPException as FastAPIHTTPException
+from starlette.exceptions import HTTPException as StarletteHTTPException
+
 logger = logging.getLogger("lost")
 
 # Attach Graylog handler once at module load (replaces app.py:38-45)
@@ -106,6 +109,12 @@ async def handle_500(request: Request, exc: Exception):
 
     return JSONResponse(status_code=500, content=response)
 
+@app.exception_handler(StarletteHTTPException)
+async def handle_exception_handler(request: Request, exc: StarletteHTTPException):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"message": exc.detail},
+    )
 
 # Dask background thread (mirrors Flask app.py:156)
 
@@ -132,6 +141,7 @@ from lost.api.instructions.InstructionEndpoint import router as instruction_rout
 from lost.api.statistics.StatisticsEndpoint import router as statistics_router
 from lost.api.config.ConfigEndpoint import router as config_router
 from lost.api.data.DataEndpoint import router as data_router
+from lost.api.dataset.DatasetEndpoint import router as dataset_router
 
 app.include_router(system_router, prefix=API_PREFIX + "/system")
 app.include_router(worker_router, prefix=API_PREFIX + "/worker")
@@ -143,3 +153,4 @@ app.include_router(instruction_router, prefix=API_PREFIX + "/instructions")
 app.include_router(statistics_router, prefix=API_PREFIX + "/statistics")
 app.include_router(config_router, prefix=API_PREFIX + "/config")
 app.include_router(data_router, prefix=API_PREFIX + "/data")
+app.include_router(dataset_router, prefix=API_PREFIX + "/datasets")
