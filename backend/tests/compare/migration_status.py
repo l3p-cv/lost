@@ -20,6 +20,7 @@ MIGRATED: set[str] = {
     "config",
     "data",
     "datasets",
+    "sia",
 }
 
 

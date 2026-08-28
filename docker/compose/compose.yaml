@@ -112,6 +112,11 @@ services:
       - traefik.http.routers.fastapi-datasets.entrypoints=web
       - traefik.http.routers.fastapi-datasets.priority=100
       - traefik.http.routers.fastapi-datasets.service=backend-fastapi
+      # FastAPI — sia namespace (twelfth migrated in P1.2)
+      - traefik.http.routers.fastapi-sia.rule=PathPrefix(`/api/sia`)
+      - traefik.http.routers.fastapi-sia.entrypoints=web
+      - traefik.http.routers.fastapi-sia.priority=100
+      - traefik.http.routers.fastapi-sia.service=backend-fastapi
       # Example: fastapi-user.rule=PathPrefix(`/api/user`) + priority=100 + service=backend-fastapi
       - traefik.http.services.backend-fastapi.loadbalancer.server.port=8000
     depends_on:

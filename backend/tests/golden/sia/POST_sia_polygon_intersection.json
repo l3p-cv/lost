@@ -40,7 +40,6 @@
       "type": "bbox"
     },
     "headers": {
-      "access-control-allow-origin": "*",
       "content-type": "application/json"
     },
     "status": 200

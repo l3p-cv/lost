@@ -26,7 +26,7 @@ from lost.api.instructionmedia.endpoint import namespace as media_namespace
 # label_namespace migrated to FastAPI in P1.2
 from lost.api.mia.endpoint import namespace as mia_namespace
 from lost.api.pipeline.endpoint import namespace as pipeline_namespace
-from lost.api.sia.endpoint import namespace as sia_namespace
+# sia_namespace migrated to FastAPI in P1.2
 # statistics_namespace migrated to FastAPI in P1.2
 # system_namespace migrated to FastAPI in P1.2
 from lost.api.triton.endpoint import namespace as triton_namespace
@@ -84,7 +84,7 @@ api.init_app(blueprint)
 # user_namespace migrated to FastAPI in P1.2
 api.add_namespace(openid_namespace)
 # group_namespace migrated to FastAPI in P1.2
-api.add_namespace(sia_namespace)
+# sia_namespace migrated to FastAPI in P1.2
 api.add_namespace(mia_namespace)
 api.add_namespace(pipeline_namespace)
 # api.add_namespace(annotask_namespace)

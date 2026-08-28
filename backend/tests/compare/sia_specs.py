@@ -17,6 +17,9 @@ import pytest
 
 from tests.helpers.recorder import RequestSpec
 from tests.helpers.specs import RouteSpec
+from tests.compare.migration_status import target_for
+
+_TARGET = target_for("sia")
 
 
 # ---------------------------------------------------------------------------
@@ -200,6 +203,7 @@ def get_sia_specs() -> list[RouteSpec]:
             params={"direction": "first", "lastImgId": "0"},
             mode="structural",
         ),
+        target=_TARGET,
         setup=_setup_choose_sia,
         cleanup=_cleanup_revert_choice,
     ))
@@ -212,6 +216,7 @@ def get_sia_specs() -> list[RouteSpec]:
             params={"direction": "next", "lastImgId": "{image_id}"},
             mode="structural",
         ),
+        target=_TARGET,
         setup=_setup_choose_sia,
         cleanup=_cleanup_revert_choice,
     ))
@@ -220,6 +225,7 @@ def get_sia_specs() -> list[RouteSpec]:
     specs.append(RouteSpec(
         name="GET_sia_images",
         request=RequestSpec(method="GET", path="/api/sia/images", mode="structural"),
+        target=_TARGET,
         setup=_setup_choose_sia,
         cleanup=_cleanup_revert_choice,
     ))
@@ -228,6 +234,7 @@ def get_sia_specs() -> list[RouteSpec]:
     specs.append(RouteSpec(
         name="GET_sia_label",
         request=RequestSpec(method="GET", path="/api/sia/label", mode="structural"),
+        target=_TARGET,
         setup=_setup_choose_sia,
         cleanup=_cleanup_revert_choice,
     ))
@@ -236,6 +243,7 @@ def get_sia_specs() -> list[RouteSpec]:
     specs.append(RouteSpec(
         name="GET_sia_configuration",
         request=RequestSpec(method="GET", path="/api/sia/configuration", mode="structural"),
+        target=_TARGET,
         setup=_setup_choose_sia,
         cleanup=_cleanup_revert_choice,
     ))
@@ -244,6 +252,7 @@ def get_sia_specs() -> list[RouteSpec]:
     specs.append(RouteSpec(
         name="GET_sia_nextAnnoId",
         request=RequestSpec(method="GET", path="/api/sia/nextAnnoId", mode="structural"),
+        target=_TARGET,
         setup=_setup_choose_sia,
         cleanup=_cleanup_revert_choice,
     ))
@@ -252,6 +261,7 @@ def get_sia_specs() -> list[RouteSpec]:
     specs.append(RouteSpec(
         name="GET_sia_allowedExampler",
         request=RequestSpec(method="GET", path="/api/sia/allowedExampler", mode="structural"),
+        target=_TARGET,
         setup=_setup_choose_sia,
         cleanup=_cleanup_revert_choice,
     ))
@@ -262,6 +272,7 @@ def get_sia_specs() -> list[RouteSpec]:
     specs.append(RouteSpec(
         name="GET_sia_image",
         request=RequestSpec(method="GET", path="/api/sia/image/{image_id}", mode="exact"),
+        target=_TARGET,
         setup=_setup_choose_sia,
         cleanup=_cleanup_revert_choice,
     ))
@@ -270,6 +281,7 @@ def get_sia_specs() -> list[RouteSpec]:
     specs.append(RouteSpec(
         name="GET_sia_image_name",
         request=RequestSpec(method="GET", path="/api/sia/image/{image_id}/name", mode="structural"),
+        target=_TARGET,
         setup=_setup_choose_sia,
         cleanup=_cleanup_revert_choice,
     ))
@@ -278,6 +290,7 @@ def get_sia_specs() -> list[RouteSpec]:
     specs.append(RouteSpec(
         name="GET_sia_image_thumbnail",
         request=RequestSpec(method="GET", path="/api/sia/image/{image_id}/thumbnail", mode="exact"),
+        target=_TARGET,
         setup=_setup_choose_sia,
         cleanup=_cleanup_revert_choice,
     ))
@@ -291,6 +304,7 @@ def get_sia_specs() -> list[RouteSpec]:
             method="POST", path="/api/sia/image/{image_id}/filters",
             json=IMAGE_FILTERS_PAYLOAD, mode="exact",
         ),
+        target=_TARGET,
         setup=_setup_choose_sia,
         cleanup=_cleanup_revert_choice,
     ))
@@ -304,6 +318,7 @@ def get_sia_specs() -> list[RouteSpec]:
             method="POST", path="/api/sia/polygonOperations/union",
             json=UNION_PAYLOAD, mode="exact",
         ),
+        target=_TARGET,
     ))
 
     # 13. POST /api/sia/polygonOperations/intersection
@@ -313,6 +328,7 @@ def get_sia_specs() -> list[RouteSpec]:
             method="POST", path="/api/sia/polygonOperations/intersection",
             json=INTERSECTION_PAYLOAD, mode="exact",
         ),
+        target=_TARGET,
     ))
 
     # 14. POST /api/sia/polygonOperations/difference
@@ -322,6 +338,7 @@ def get_sia_specs() -> list[RouteSpec]:
             method="POST", path="/api/sia/polygonOperations/difference",
             json=DIFFERENCE_PAYLOAD, mode="exact",
         ),
+        target=_TARGET,
     ))
 
     # 15. POST /api/sia/bboxFromPoints
@@ -331,6 +348,7 @@ def get_sia_specs() -> list[RouteSpec]:
             method="POST", path="/api/sia/bboxFromPoints",
             json=BBOX_FROM_POINTS_PAYLOAD, mode="exact",
         ),
+        target=_TARGET,
     ))
 
     # --- Skipped: mutations (destructive to dev DB annotask state) ---

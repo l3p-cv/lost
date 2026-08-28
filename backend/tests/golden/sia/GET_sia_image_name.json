@@ -12,7 +12,6 @@
       "img_name": "2007_008547.jpg"
     },
     "headers": {
-      "access-control-allow-origin": "*",
       "content-type": "application/json"
     },
     "status": 200
