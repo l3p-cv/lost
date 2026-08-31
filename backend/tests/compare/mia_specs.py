@@ -16,6 +16,9 @@ import pytest
 
 from tests.helpers.recorder import RequestSpec
 from tests.helpers.specs import RouteSpec
+from tests.compare.migration_status import target_for
+
+_TARGET = target_for("mia")
 
 
 def _get_test_mia_annotask_id(dbm):
@@ -78,6 +81,7 @@ def get_mia_specs() -> list[RouteSpec]:
         request=RequestSpec(method="GET", path="/api/mia/first", mode="structural"),
         setup=_setup_choose_mia,
         cleanup=_cleanup_revert_choice,
+        target=_TARGET,
     ))
 
     # 2. GET /api/mia/latest — get latest MIA anno
@@ -86,6 +90,7 @@ def get_mia_specs() -> list[RouteSpec]:
         request=RequestSpec(method="GET", path="/api/mia/latest", mode="structural"),
         setup=_setup_choose_mia,
         cleanup=_cleanup_revert_choice,
+        target=_TARGET,
     ))
 
     # 3. GET /api/mia/next/10 — get next 10 MIA annos
@@ -94,6 +99,7 @@ def get_mia_specs() -> list[RouteSpec]:
         request=RequestSpec(method="GET", path="/api/mia/next/10", mode="structural"),
         setup=_setup_choose_mia,
         cleanup=_cleanup_revert_choice,
+        target=_TARGET,
     ))
 
     # 4. GET /api/mia/label — get MIA label trees
@@ -102,6 +108,7 @@ def get_mia_specs() -> list[RouteSpec]:
         request=RequestSpec(method="GET", path="/api/mia/label", mode="structural"),
         setup=_setup_choose_mia,
         cleanup=_cleanup_revert_choice,
+        target=_TARGET,
     ))
 
     # 5. GET /api/mia/prev?currentChunkId=-1 — chunkId=-1 calls get_latest
@@ -114,6 +121,7 @@ def get_mia_specs() -> list[RouteSpec]:
         ),
         setup=_setup_choose_mia,
         cleanup=_cleanup_revert_choice,
+        target=_TARGET,
     ))
 
     # --- Skipped: mutations ---

@@ -24,7 +24,7 @@ from lost.api.inference_model.endpoint import namespace as inference_model_names
 from lost.api.instructionmedia.endpoint import namespace as media_namespace
 # instructions_namespace migrated to FastAPI in P1.2
 # label_namespace migrated to FastAPI in P1.2
-from lost.api.mia.endpoint import namespace as mia_namespace
+# mia_namespace migrated to FastAPI in P1.2
 from lost.api.pipeline.endpoint import namespace as pipeline_namespace
 # sia_namespace migrated to FastAPI in P1.2
 # statistics_namespace migrated to FastAPI in P1.2
@@ -85,7 +85,7 @@ api.init_app(blueprint)
 api.add_namespace(openid_namespace)
 # group_namespace migrated to FastAPI in P1.2
 # sia_namespace migrated to FastAPI in P1.2
-api.add_namespace(mia_namespace)
+# mia_namespace migrated to FastAPI in P1.2
 api.add_namespace(pipeline_namespace)
 # api.add_namespace(annotask_namespace)
 api.add_namespace(annotasks_namespace)

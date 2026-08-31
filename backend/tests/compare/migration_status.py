@@ -21,6 +21,7 @@ MIGRATED: set[str] = {
     "data",
     "datasets",
     "sia",
+    "mia",
 }
 
 
