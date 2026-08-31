@@ -10,6 +10,9 @@ from __future__ import annotations
 
 from tests.helpers.recorder import RequestSpec
 from tests.helpers.specs import RouteSpec
+from tests.compare.migration_status import target_for
+
+_TARGET = target_for("pipeline")
 
 
 def _setup_pipe_context(dbm):
@@ -40,30 +43,35 @@ def get_pipeline_specs() -> list[RouteSpec]:
     specs.append(RouteSpec(
         name="GET_pipeline_templates_all",
         request=RequestSpec(method="GET", path="/api/pipeline/template/all", mode="structural"),
+        target=_TARGET
     ))
 
     # 2. GET /api/pipeline/template/global — list global templates
     specs.append(RouteSpec(
         name="GET_pipeline_templates_global",
         request=RequestSpec(method="GET", path="/api/pipeline/template/global", mode="structural"),
+        target=_TARGET
     ))
 
     # 3. GET /api/pipeline — list all pipelines
     specs.append(RouteSpec(
         name="GET_pipeline_list",
         request=RequestSpec(method="GET", path="/api/pipeline", mode="structural"),
+        target=_TARGET
     ))
 
     # 4. GET /api/pipeline/0/10 — paginated list
     specs.append(RouteSpec(
         name="GET_pipeline_paged",
         request=RequestSpec(method="GET", path="/api/pipeline/0/10", mode="structural"),
+        target=_TARGET
     ))
 
     # 5. GET /api/pipeline/project/all — list all projects
     specs.append(RouteSpec(
         name="GET_pipeline_projects_all",
         request=RequestSpec(method="GET", path="/api/pipeline/project/all", mode="structural"),
+        target=_TARGET
     ))
 
     # --- GETs needing ID lookup ---
@@ -72,6 +80,7 @@ def get_pipeline_specs() -> list[RouteSpec]:
     specs.append(RouteSpec(
         name="GET_pipeline_by_id",
         request=RequestSpec(method="GET", path="/api/pipeline/{pipe_id}", mode="structural"),
+        target=_TARGET,
         setup=_setup_pipe_context,
     ))
 
@@ -81,6 +90,7 @@ def get_pipeline_specs() -> list[RouteSpec]:
         request=RequestSpec(
             method="GET", path="/api/pipeline/element/{pipe_element_id}/logs", mode="structural",
         ),
+        target=_TARGET,
         setup=_setup_pipe_context,
     ))
 
@@ -90,6 +100,7 @@ def get_pipeline_specs() -> list[RouteSpec]:
         request=RequestSpec(
             method="GET", path="/api/pipeline/element/{annotask_id}/review/options", mode="structural",
         ),
+        target=_TARGET,
         setup=_setup_pipe_context,
     ))
 
@@ -103,6 +114,7 @@ def get_pipeline_specs() -> list[RouteSpec]:
             json={"direction": "first"},
             mode="structural",
         ),
+        target=_TARGET,
         setup=_setup_pipe_context,
     ))
 
