@@ -10,30 +10,6 @@
   "response": {
     "body": {
       "annotatedImgCount": 2,
-      "configuration": {
-        "annos": {
-          "actions": {
-            "draw": null,
-            "edit": null,
-            "label": null
-          },
-          "minArea": null,
-          "multilabels": null
-        },
-        "img": {
-          "actions": {
-            "label": null
-          },
-          "multilabels": null
-        },
-        "tools": {
-          "bbox": null,
-          "junk": null,
-          "line": null,
-          "point": null,
-          "polygon": null
-        }
-      },
       "createdAt": "<TS>",
       "finished": 2,
       "group": "compare_test_group",
@@ -42,17 +18,8 @@
       "instructionId": null,
       "labelLeaves": [
         {
-          "abbreviation": null,
           "color": "#ffffff",
-          "description": null,
-          "group": {
-            "idx": "<ID>",
-            "name": null
-          },
           "id": "<ID>",
-          "is_root": null,
-          "label": null,
-          "leaf_id": null,
           "name": "VOC2012"
         }
       ],
@@ -62,7 +29,7 @@
       "name": "compare_test_sia",
       "pipelineCreator": "admin",
       "pipelineName": "compare_test_sia_pipe",
-      "progress": null,
+      "progress": "<REDACTED>",
       "size": 3,
       "statistic": {
         "amountPerLabel": [],
@@ -73,7 +40,6 @@
       "userName": "compare_test_group"
     },
     "headers": {
-      "access-control-allow-origin": "*",
       "content-type": "application/json"
     },
     "status": 200

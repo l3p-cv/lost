@@ -13,7 +13,6 @@
   "response": {
     "body": null,
     "headers": {
-      "access-control-allow-origin": "*",
       "content-type": "application/json"
     },
     "status": 200

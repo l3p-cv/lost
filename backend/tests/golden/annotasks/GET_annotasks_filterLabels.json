@@ -9,10 +9,12 @@
   },
   "response": {
     "body": {
-      "export": null
+      "export": [
+        0,
+        1
+      ]
     },
     "headers": {
-      "access-control-allow-origin": "*",
       "content-type": "application/json"
     },
     "status": 200

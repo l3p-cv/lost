@@ -45,17 +45,8 @@
       "instructionId": null,
       "labelLeaves": [
         {
-          "abbreviation": null,
           "color": "#ffffff",
-          "description": null,
-          "group": {
-            "idx": "<ID>",
-            "name": null
-          },
           "id": "<ID>",
-          "is_root": null,
-          "label": null,
-          "leaf_id": null,
           "name": "VOC2012"
         }
       ],
@@ -65,7 +56,7 @@
       "name": "compare_test_sia",
       "pipelineCreator": "admin",
       "pipelineName": "compare_test_sia_pipe",
-      "progress": null,
+      "progress": "<REDACTED>",
       "size": 3,
       "statistic": {
         "amountPerLabel": [],
@@ -76,7 +67,6 @@
       "userName": "admin"
     },
     "headers": {
-      "access-control-allow-origin": "*",
       "content-type": "application/json"
     },
     "status": 200

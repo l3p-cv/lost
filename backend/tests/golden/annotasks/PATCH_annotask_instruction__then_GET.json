@@ -9,10 +9,9 @@
   },
   "response": {
     "body": {
-      "instruction_id": 1
+      "instructionId": 1
     },
     "headers": {
-      "access-control-allow-origin": "*",
       "content-type": "application/json"
     },
     "status": 200

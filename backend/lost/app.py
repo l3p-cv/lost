@@ -10,7 +10,7 @@ from flaskapp import app, blacklist
 
 from lost import settings
 from lost.api.anno_example.endpoint import namespace as anno_example_namespace
-from lost.api.annotasks.endpoint import namespace as annotasks_namespace
+# annotasks_namespace migrated to FastAPI in P1.2
 from lost.api.api import api
 # config_namespace migrated to FastAPI in P1.2
 # data_namespace migrated to FastAPI in P1.2
@@ -88,7 +88,7 @@ api.add_namespace(openid_namespace)
 # mia_namespace migrated to FastAPI in P1.2
 # pipeline_namespace migrated to FastAPI in P1.2
 # api.add_namespace(annotask_namespace)
-api.add_namespace(annotasks_namespace)
+# annotasks_namespace migrated to FastAPI in P1.2
 # dataset_namespace migrated to FastAPI in P1.2
 # data_namespace migrated to FastAPI in P1.2
 # label_namespace migrated to FastAPI in P1.2

@@ -15,14 +15,26 @@
   },
   "response": {
     "body": {
-      "errors": {
-        "randomSplits": "Dataset ID Missing required parameter in the JSON body or the post body or the query string"
-      },
-      "message": "Input payload validation failed"
+      "detail": [
+        {
+          "input": {
+            "annotatedOnly": true,
+            "exportName": "compare_test_export",
+            "exportType": "parquet",
+            "includeImages": false
+          },
+          "loc": [
+            "body",
+            "randomSplits"
+          ],
+          "msg": "Field required",
+          "type": "missing"
+        }
+      ]
     },
     "headers": {
       "content-type": "application/json"
     },
-    "status": 400
+    "status": 422
   }
 }

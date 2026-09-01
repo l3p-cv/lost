@@ -8,7 +8,9 @@
     "path": "/api/annotasks/working"
   },
   "response": {
-    "body": "Current working annotation task not found",
+    "body": {
+      "message": "Current working annotation task not found"
+    },
     "headers": {
       "content-type": "application/json"
     },

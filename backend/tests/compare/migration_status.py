@@ -23,6 +23,7 @@ MIGRATED: set[str] = {
     "sia",
     "mia",
     "pipeline",
+    "annotasks",
 }
 
 

@@ -8,9 +8,10 @@
     "path": "/api/annotasks/working"
   },
   "response": {
-    "body": "Current working annotation task not found",
+    "body": {
+      "message": "Current working annotation task not found"
+    },
     "headers": {
-      "access-control-allow-origin": "*",
       "content-type": "application/json"
     },
     "status": 412

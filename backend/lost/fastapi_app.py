@@ -145,6 +145,7 @@ from lost.api.dataset.DatasetEndpoint import router as dataset_router
 from lost.api.sia.SiaEndpoint import router as sia_router
 from lost.api.mia.MiaEndpoint import router as mia_router
 from lost.api.pipeline.PipelineEndpoint import router as pipeline_router
+from lost.api.annotasks.AnnotasksEndpoint import router as annotasks_router
 
 app.include_router(system_router, prefix=API_PREFIX + "/system")
 app.include_router(worker_router, prefix=API_PREFIX + "/worker")
@@ -160,3 +161,4 @@ app.include_router(dataset_router, prefix=API_PREFIX + "/datasets")
 app.include_router(sia_router, prefix=API_PREFIX + "/sia")
 app.include_router(mia_router, prefix=API_PREFIX + "/mia")
 app.include_router(pipeline_router, prefix=API_PREFIX + "/pipeline")
+app.include_router(annotasks_router, prefix=API_PREFIX + "/annotasks")

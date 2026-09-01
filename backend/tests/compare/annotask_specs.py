@@ -16,6 +16,10 @@ from __future__ import annotations
 from tests.helpers.recorder import RequestSpec
 from tests.helpers.seed import unique_suffix, TEST_PREFIX
 from tests.helpers.specs import RouteSpec
+from tests.compare.migration_status import target_for
+
+
+_TARGET = target_for("annotasks")
 
 
 # ---------------------------------------------------------------------------
@@ -261,6 +265,7 @@ def get_annotask_specs() -> list[RouteSpec]:
     specs.append(RouteSpec(
         name="GET_annotasks",
         request=RequestSpec(method="GET", path="/api/annotasks", mode="structural"),
+        target=_TARGET,
     ))
 
     # 2. GET /api/annotasks?page=1&pageSize=5 — paginated list
@@ -270,12 +275,14 @@ def get_annotask_specs() -> list[RouteSpec]:
             method="GET", path="/api/annotasks",
             params={"page": "1", "pageSize": "5"}, mode="structural",
         ),
+        target=_TARGET,
     ))
 
     # 3. GET /api/annotasks/working — current active annotask
     specs.append(RouteSpec(
         name="GET_annotasks_working",
         request=RequestSpec(method="GET", path="/api/annotasks/working", mode="structural"),
+        target=_TARGET,
     ))
 
     # 4. GET /api/annotasks/{id}?config=true — full details (statistics=true crashes with minimal data)
@@ -285,6 +292,7 @@ def get_annotask_specs() -> list[RouteSpec]:
             method="GET", path="/api/annotasks/{annotask_id}",
             params={"config": "true"}, mode="structural",
         ),
+        target=_TARGET,
         setup=_setup_annotask_context,
     ))
 
@@ -294,6 +302,7 @@ def get_annotask_specs() -> list[RouteSpec]:
         request=RequestSpec(
             method="GET", path="/api/annotasks/{annotask_id}/storage_settings", mode="structural",
         ),
+        target=_TARGET,
         setup=_setup_annotask_context,
     ))
 
@@ -303,6 +312,7 @@ def get_annotask_specs() -> list[RouteSpec]:
         request=RequestSpec(
             method="GET", path="/api/annotasks/{annotask_id}/exports", mode="structural",
         ),
+        target=_TARGET,
         setup=_setup_annotask_context,
     ))
 
@@ -312,6 +322,7 @@ def get_annotask_specs() -> list[RouteSpec]:
         request=RequestSpec(
             method="GET", path="/api/annotasks/{annotask_id}/instruction", mode="structural",
         ),
+        target=_TARGET,
         setup=_setup_annotask_context,
     ))
 
@@ -319,6 +330,7 @@ def get_annotask_specs() -> list[RouteSpec]:
     specs.append(RouteSpec(
         name="GET_annotasks_filterLabels",
         request=RequestSpec(method="GET", path="/api/annotasks/filterLabels", mode="structural"),
+        target=_TARGET,
     ))
 
     # 9. GET /api/annotasks/{id}/review/images — review image search
@@ -327,6 +339,7 @@ def get_annotask_specs() -> list[RouteSpec]:
         request=RequestSpec(
             method="GET", path="/api/annotasks/{annotask_id}/review/images", mode="structural",
         ),
+        target=_TARGET,
         setup=_setup_annotask_context,
     ))
 
@@ -336,6 +349,7 @@ def get_annotask_specs() -> list[RouteSpec]:
         request=RequestSpec(
             method="GET", path="/api/annotasks/{annotask_id}/review/labels", mode="structural",
         ),
+        target=_TARGET,
         setup=_setup_annotask_context,
     ))
 
@@ -345,6 +359,7 @@ def get_annotask_specs() -> list[RouteSpec]:
         request=RequestSpec(
             method="GET", path="/api/annotasks/{annotask_id}/review/options", mode="structural",
         ),
+        target=_TARGET,
         setup=_setup_annotask_context,
     ))
 
@@ -387,6 +402,7 @@ def get_annotask_specs() -> list[RouteSpec]:
             method="GET", path="/api/annotasks/working", mode="structural",
             label="POST_annotasks_choose__then_GET_working",
         ),
+        target=_TARGET,
         setup=_setup_annotask_context,
     ))
 
@@ -403,6 +419,7 @@ def get_annotask_specs() -> list[RouteSpec]:
             method="GET", path="/api/annotasks/{annotask_id}", mode="structural",
             label="PATCH_annotask_group__then_GET",
         ),
+        target=_TARGET,
         setup=_save_group_id,
         cleanup=_revert_group_id,
     ))
@@ -421,6 +438,7 @@ def get_annotask_specs() -> list[RouteSpec]:
         ),
         setup=_save_config,
         cleanup=_revert_config,
+        target=_TARGET,
     ))
 
     # 17. PATCH /api/annotasks/{id}/storage_settings (storage change) + GET verify
@@ -436,6 +454,7 @@ def get_annotask_specs() -> list[RouteSpec]:
         ),
         setup=_save_dataset_id,
         cleanup=_revert_dataset_id,
+        target=_TARGET,
     ))
 
     # --- Skipped: irreversible / risky mutations ---
@@ -463,6 +482,7 @@ def get_annotask_specs() -> list[RouteSpec]:
         ),
         setup=_setup_annotask_context,
         cleanup=_cleanup_created_annotask_export,
+        target=_TARGET,
     ))
 
     # DELETE /api/annotasks/exports/{id} — create throwaway → DELETE via API → GET verify
@@ -474,6 +494,7 @@ def get_annotask_specs() -> list[RouteSpec]:
             label="DELETE_annotask_export__then_GET",
         ),
         setup=_setup_delete_annotask_export,
+        target=_TARGET,
     ))
 
     # PATCH /api/annotasks/{id}/instruction — reversible: save → set to 1 → GET → revert
@@ -490,6 +511,7 @@ def get_annotask_specs() -> list[RouteSpec]:
         ),
         setup=_save_instruction_id,
         cleanup=_revert_instruction_id,
+        target=_TARGET,
     ))
 
     specs.append(RouteSpec(

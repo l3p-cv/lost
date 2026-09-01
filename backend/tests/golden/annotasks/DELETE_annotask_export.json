@@ -5,12 +5,11 @@
       "Authorization": "<AUTH>"
     },
     "method": "DELETE",
-    "path": "/api/annotasks/exports/142"
+    "path": "/api/annotasks/exports/195"
   },
   "response": {
     "body": "Success",
     "headers": {
-      "access-control-allow-origin": "*",
       "content-type": "application/json"
     },
     "status": 200

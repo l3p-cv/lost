@@ -8,11 +8,22 @@
     "path": "/api/annotasks/{annotask_id}/exports"
   },
   "response": {
-    "body": "404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.",
-    "headers": {
-      "access-control-allow-origin": "*",
-      "content-type": "text/html; charset=utf-8"
+    "body": {
+      "detail": [
+        {
+          "input": "{annotask_id}",
+          "loc": [
+            "path",
+            "annotask_id"
+          ],
+          "msg": "Input should be a valid integer, unable to parse string as an integer",
+          "type": "int_parsing"
+        }
+      ]
     },
-    "status": 404
+    "headers": {
+      "content-type": "application/json"
+    },
+    "status": 422
   }
 }

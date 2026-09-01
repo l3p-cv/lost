@@ -10,291 +10,190 @@
   "response": {
     "body": {
       "max_iteration": 0,
-      "possibleLabels": [
+      "possible_labels": [
         {
-          "abbreviation": null,
           "color": "#46aed7",
           "description": "Includes gliders but not hang gliders or helicopters",
-          "group": {
-            "idx": "<ID>",
-            "name": null
-          },
+          "externalId": "6",
           "id": "<ID>",
-          "is_root": null,
           "label": "Aeroplane",
-          "leaf_id": null,
-          "name": "Aeroplane"
+          "name": "Aeroplane",
+          "nameAndClass": "Aeroplane (VOC2012)"
         },
         {
-          "abbreviation": null,
           "color": "#e28f81",
           "description": "Includes tricycles, unicycles",
-          "group": {
-            "idx": "<ID>",
-            "name": null
-          },
+          "externalId": "2",
           "id": "<ID>",
-          "is_root": null,
           "label": "Bicycle",
-          "leaf_id": null,
-          "name": "Bicycle"
+          "name": "Bicycle",
+          "nameAndClass": "Bicycle (VOC2012)"
         },
         {
-          "abbreviation": null,
           "color": "#50b897",
           "description": "All birds",
-          "group": {
-            "idx": "<ID>",
-            "name": null
-          },
+          "externalId": "13",
           "id": "<ID>",
-          "is_root": null,
           "label": "Bird",
-          "leaf_id": null,
-          "name": "Bird"
+          "name": "Bird",
+          "nameAndClass": "Bird (VOC2012)"
         },
         {
-          "abbreviation": null,
           "color": "#88712f",
           "description": "Ships, rowing boats, pedaloes but not jet skis",
-          "group": {
-            "idx": "<ID>",
-            "name": null
-          },
+          "externalId": "19",
           "id": "<ID>",
-          "is_root": null,
           "label": "Boat",
-          "leaf_id": null,
-          "name": "Boat"
+          "name": "Boat",
+          "nameAndClass": "Boat (VOC2012)"
         },
         {
-          "abbreviation": null,
           "color": "#9cb067",
           "description": "Plastic, glass or feeding bottles",
-          "group": {
-            "idx": "<ID>",
-            "name": null
-          },
+          "externalId": "8",
           "id": "<ID>",
-          "is_root": null,
           "label": "Bottle",
-          "leaf_id": null,
-          "name": "Bottle"
+          "name": "Bottle",
+          "nameAndClass": "Bottle (VOC2012)"
         },
         {
-          "abbreviation": null,
           "color": "#a4527d",
           "description": "Includes minibus but not trams",
-          "group": {
-            "idx": "<ID>",
-            "name": null
-          },
+          "externalId": "3",
           "id": "<ID>",
-          "is_root": null,
           "label": "Bus",
-          "leaf_id": null,
-          "name": "Bus"
+          "name": "Bus",
+          "nameAndClass": "Bus (VOC2012)"
         },
         {
-          "abbreviation": null,
           "color": "#a55046",
           "description": "Includes cars, vans, large family cars for 6-8 people etc.\nExcludes go-carts, tractors, emergency vehicles, lorries/trucks etc.\nDo not label where only the vehicle interior is shown.\nInclude toys that look just like real cars, but not 'cartoony' toys.",
-          "group": {
-            "idx": "<ID>",
-            "name": null
-          },
+          "externalId": "1",
           "id": "<ID>",
-          "is_root": null,
           "label": "Car",
-          "leaf_id": null,
-          "name": "Car"
+          "name": "Car",
+          "nameAndClass": "Car (VOC2012)"
         },
         {
-          "abbreviation": null,
           "color": "#6e90da",
           "description": "Domestic cats (not lions etc.)",
-          "group": {
-            "idx": "<ID>",
-            "name": null
-          },
+          "externalId": "14",
           "id": "<ID>",
-          "is_root": null,
           "label": "Cat",
-          "leaf_id": null,
-          "name": "Cat"
+          "name": "Cat",
+          "nameAndClass": "Cat (VOC2012)"
         },
         {
-          "abbreviation": null,
           "color": "#487b3b",
           "description": "Includes armchairs, deckchairs but not stools or benches.\nExcludes seats in buses, cars etc.\nExcludes wheelchairs.",
-          "group": {
-            "idx": "<ID>",
-            "name": null
-          },
+          "externalId": "7",
           "id": "<ID>",
-          "is_root": null,
           "label": "Chair",
-          "leaf_id": null,
-          "name": "Chair"
+          "name": "Chair",
+          "nameAndClass": "Chair (VOC2012)"
         },
         {
-          "abbreviation": null,
           "color": "#6360a7",
           "description": "All cows",
-          "group": {
-            "idx": "<ID>",
-            "name": null
-          },
+          "externalId": "15",
           "id": "<ID>",
-          "is_root": null,
           "label": "Cow",
-          "leaf_id": null,
-          "name": "Cow"
+          "name": "Cow",
+          "nameAndClass": "Cow (VOC2012)"
         },
         {
-          "abbreviation": null,
           "color": "#cd8fd3",
           "description": "Only tables for eating at.\nNot coffee tables, desks, side tables or picnic benches",
-          "group": {
-            "idx": "<ID>",
-            "name": null
-          },
+          "externalId": "9",
           "id": "<ID>",
-          "is_root": null,
           "label": "Dining table",
-          "leaf_id": null,
-          "name": "Dining table"
+          "name": "Dining table",
+          "nameAndClass": "Dining table (VOC2012)"
         },
         {
-          "abbreviation": null,
           "color": "#d5a442",
           "description": "Domestic dogs (not wolves etc.)",
-          "group": {
-            "idx": "<ID>",
-            "name": null
-          },
+          "externalId": "16",
           "id": "<ID>",
-          "is_root": null,
           "label": "Dog",
-          "leaf_id": null,
-          "name": "Dog"
+          "name": "Dog",
+          "nameAndClass": "Dog (VOC2012)"
         },
         {
-          "abbreviation": null,
           "color": "#cf7635",
           "description": "Includes ponies, donkeys, mules etc.",
-          "group": {
-            "idx": "<ID>",
-            "name": null
-          },
+          "externalId": "17",
           "id": "<ID>",
-          "is_root": null,
           "label": "Horse",
-          "leaf_id": null,
-          "name": "Horse"
+          "name": "Horse",
+          "nameAndClass": "Horse (VOC2012)"
         },
         {
-          "abbreviation": null,
           "color": "#da4971",
           "description": "Includes mopeds, scooters, sidecars",
-          "group": {
-            "idx": "<ID>",
-            "name": null
-          },
+          "externalId": "4",
           "id": "<ID>",
-          "is_root": null,
           "label": "Motorbike",
-          "leaf_id": null,
-          "name": "Motorbike"
+          "name": "Motorbike",
+          "nameAndClass": "Motorbike (VOC2012)"
         },
         {
-          "abbreviation": null,
           "color": "#a4b137",
           "description": "Includes babies, faces (i.e. truncated people)",
-          "group": {
-            "idx": "<ID>",
-            "name": null
-          },
+          "externalId": "0",
           "id": "<ID>",
-          "is_root": null,
           "label": "Person",
-          "leaf_id": null,
-          "name": "Person"
+          "name": "Person",
+          "nameAndClass": "Person (VOC2012)"
         },
         {
-          "abbreviation": null,
           "color": "#d44da4",
           "description": "Indoor plants excluding flowers in vases, or outdoor plants clearly in a pot. ",
-          "group": {
-            "idx": "<ID>",
-            "name": null
-          },
+          "externalId": "10",
           "id": "<ID>",
-          "is_root": null,
           "label": "Potted plant",
-          "leaf_id": null,
-          "name": "Potted plant"
+          "name": "Potted plant",
+          "nameAndClass": "Potted plant (VOC2012)"
         },
         {
-          "abbreviation": null,
           "color": "#aa54be",
           "description": "Sheep, not goats",
-          "group": {
-            "idx": "<ID>",
-            "name": null
-          },
+          "externalId": "18",
           "id": "<ID>",
-          "is_root": null,
           "label": "Sheep",
-          "leaf_id": null,
-          "name": "Sheep"
+          "name": "Sheep",
+          "nameAndClass": "Sheep (VOC2012)"
         },
         {
-          "abbreviation": null,
           "color": "#5ab74d",
           "description": "Excludes sofas made up as sofa-beds",
-          "group": {
-            "idx": "<ID>",
-            "name": null
-          },
+          "externalId": "12",
           "id": "<ID>",
-          "is_root": null,
           "label": "Sofa",
-          "leaf_id": null,
-          "name": "Sofa"
+          "name": "Sofa",
+          "nameAndClass": "Sofa (VOC2012)"
         },
         {
-          "abbreviation": null,
           "color": "#7166d9",
           "description": "Includes train carriages, excludes trams",
-          "group": {
-            "idx": "<ID>",
-            "name": null
-          },
+          "externalId": "5",
           "id": "<ID>",
-          "is_root": null,
           "label": "Train",
-          "leaf_id": null,
-          "name": "Train"
+          "name": "Train",
+          "nameAndClass": "Train (VOC2012)"
         },
         {
-          "abbreviation": null,
           "color": "#d14734",
           "description": "Standalone screens (not laptops), not advertising displays",
-          "group": {
-            "idx": "<ID>",
-            "name": null
-          },
+          "externalId": "11",
           "id": "<ID>",
-          "is_root": null,
           "label": "TV/monitor",
-          "leaf_id": null,
-          "name": "TV/monitor"
+          "name": "TV/monitor",
+          "nameAndClass": "TV/monitor (VOC2012)"
         }
       ]
     },
     "headers": {
-      "access-control-allow-origin": "*",
       "content-type": "application/json"
     },
     "status": 200
