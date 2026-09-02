@@ -121,16 +121,19 @@ def get_template_or_templates(
         if visibility == VisLevel.USER:
             if not user.has_role(roles.DESIGNER):
                 return f"You need to be {roles.DESIGNER} in order to perform this request.", 403
-            return template_service.get_templates(dbm, group_id=default_group.idx)
-        if visibility == VisLevel.GLOBAL:
+            result = template_service.get_templates(dbm, group_id=default_group.idx)
+        elif visibility == VisLevel.GLOBAL:
             if not user.has_role(roles.ADMINISTRATOR):
                 return f"You need to be {roles.DESIGNER} in order to perform this request.", 403
-            return template_service.get_templates(dbm)
-        if visibility == VisLevel.ALL:
+            result = template_service.get_templates(dbm)
+        elif visibility == VisLevel.ALL:
             if not user.has_role(roles.DESIGNER):
                 return f"You need to be {roles.DESIGNER} in order to perform this request.", 403
-            return template_service.get_templates(dbm, group_id=default_group.idx, add_global=True)
-        return TemplatesSchema()
+            result = template_service.get_templates(dbm, group_id=default_group.idx, add_global=True)
+        else:
+            return TemplatesSchema()
+        # Validate through TemplatesSchema to match Flask's marshal_with(templates) — fills missing keys with null, strips extra keys
+        return TemplatesSchema.model_validate(result)
 
 @router.get("/project/{visibility}", response_model=TemplatesSchema)
 def get_projects(

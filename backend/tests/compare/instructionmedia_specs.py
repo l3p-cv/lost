@@ -9,6 +9,9 @@ from __future__ import annotations
 
 from tests.helpers.recorder import RequestSpec
 from tests.helpers.specs import RouteSpec
+from tests.compare.migration_status import target_for
+
+_TARGET = target_for("instructionmedia")
 
 
 def get_instructionmedia_specs() -> list[RouteSpec]:
@@ -23,16 +26,18 @@ def get_instructionmedia_specs() -> list[RouteSpec]:
             params={"path": "/invalid"},
             mode="structural",
         ),
+        target=_TARGET,
         skip=True,
-        skip_reason="Endpoint returns Flask Response object (not JSON) for 403 — pre-existing bug. Verified manually in P1.2.",
+        skip_reason="Tested manually"
     ))
 
     # 2. POST /api/media/get-image-markdown — skip (needs real media file)
     specs.append(RouteSpec(
         name="POST_image_markdown",
         request=RequestSpec(method="POST", path="/api/media/get-image-markdown"),
+        target=_TARGET,
         skip=True,
-        skip_reason="Needs a real instruction media file path — would 404. Verified manually in P1.2.",
+        skip_reason="Tested manually"
     ))
 
     return specs

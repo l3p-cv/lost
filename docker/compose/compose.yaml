@@ -132,6 +132,11 @@ services:
       - traefik.http.routers.fastapi-annotasks.entrypoints=web
       - traefik.http.routers.fastapi-annotasks.priority=100
       - traefik.http.routers.fastapi-annotasks.service=backend-fastapi
+      # FastAPI — instructionmedia namespace (sixteenth migrated in P1.2)
+      - traefik.http.routers.fastapi-instructionmedia.rule=PathPrefix(`/api/media`)
+      - traefik.http.routers.fastapi-instructionmedia.entrypoints=web
+      - traefik.http.routers.fastapi-instructionmedia.priority=100
+      - traefik.http.routers.fastapi-instructionmedia.service=backend-fastapi
       # Example: fastapi-user.rule=PathPrefix(`/api/user`) + priority=100 + service=backend-fastapi
       - traefik.http.services.backend-fastapi.loadbalancer.server.port=8000
     depends_on:

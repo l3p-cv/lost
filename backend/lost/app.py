@@ -21,7 +21,7 @@ from lost.api.auth.OpenidEndpoint import namespace as openid_namespace
 # filebrowser_namespace migrated to FastAPI in P1.2
 # group_namespace migrated to FastAPI in P1.2
 from lost.api.inference_model.endpoint import namespace as inference_model_namespace
-from lost.api.instructionmedia.endpoint import namespace as media_namespace
+# media_namespace migrated to FastAPI in P1.2
 # instructions_namespace migrated to FastAPI in P1.2
 # label_namespace migrated to FastAPI in P1.2
 # mia_namespace migrated to FastAPI in P1.2
@@ -99,7 +99,7 @@ api.add_namespace(openid_namespace)
 # config_namespace migrated to FastAPI in P1.2
 api.add_namespace(anno_example_namespace)
 # instructions_namespace migrated to FastAPI in P1.2
-api.add_namespace(media_namespace)
+# media_namespace migrated to FastAPI in P1.2
 api.add_namespace(inference_model_namespace)
 api.add_namespace(triton_namespace)
 app.register_blueprint(blueprint)

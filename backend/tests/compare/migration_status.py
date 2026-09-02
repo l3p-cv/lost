@@ -24,6 +24,7 @@ MIGRATED: set[str] = {
     "mia",
     "pipeline",
     "annotasks",
+    "instructionmedia",
 }
 
 
