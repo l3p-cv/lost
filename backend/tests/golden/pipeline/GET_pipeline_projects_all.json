@@ -22,12 +22,11 @@
           "name": "found.mia_request_again",
           "namespace": null,
           "pipeProject": "found",
-          "pipelineCount": 77
+          "pipelineCount": 87
         }
       ]
     },
     "headers": {
-      "access-control-allow-origin": "*",
       "content-type": "application/json"
     },
     "status": 200

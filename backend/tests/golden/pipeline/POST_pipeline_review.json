@@ -8,7 +8,7 @@
       "direction": "first"
     },
     "method": "POST",
-    "path": "/api/pipeline/element/127/review"
+    "path": "/api/pipeline/element/139/review"
   },
   "response": {
     "body": {
@@ -16,7 +16,6 @@
       "type": "KeyError"
     },
     "headers": {
-      "access-control-allow-origin": "*",
       "content-type": "application/json"
     },
     "status": 500

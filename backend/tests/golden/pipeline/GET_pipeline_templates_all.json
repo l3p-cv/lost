@@ -78,7 +78,7 @@
           "name": "found.sia",
           "namespace": null,
           "pipeProject": "found",
-          "pipelineCount": 72
+          "pipelineCount": 80
         },
         {
           "author": "Joerg Gross",
@@ -120,12 +120,11 @@
           "name": "found.mia",
           "namespace": null,
           "pipeProject": "found",
-          "pipelineCount": 4
+          "pipelineCount": 6
         }
       ]
     },
     "headers": {
-      "access-control-allow-origin": "*",
       "content-type": "application/json"
     },
     "status": 200

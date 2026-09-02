@@ -5,15 +5,14 @@
       "Authorization": "<AUTH>"
     },
     "method": "GET",
-    "path": "/api/pipeline/127"
+    "path": "/api/pipeline/139"
   },
   "response": {
     "body": {
-      "error": "'NoneType' object has no attribute 'strftime'",
-      "type": "AttributeError"
+      "error": "the JSON object must be str, bytes or bytearray, not NoneType",
+      "type": "TypeError"
     },
     "headers": {
-      "access-control-allow-origin": "*",
       "content-type": "application/json"
     },
     "status": 500

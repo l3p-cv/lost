@@ -21,6 +21,7 @@ from __future__ import annotations
 import json
 import logging
 
+from datetime import datetime, timezone
 from lost.db import access, dtype, state, model
 from lost.settings import LOST_CONFIG
 
@@ -72,6 +73,7 @@ def _create_sia_test_data(dbm) -> None:
             description="Test pipe for golden snapshots",
             is_debug_mode=False,
             is_locked=False,
+            timestamp=datetime.now(timezone.utc),
         )
         dbm.save_obj(pipe)
 
@@ -137,6 +139,7 @@ def _create_mia_test_data(dbm) -> None:
             description="Test pipe for golden snapshots (MIA)",
             is_debug_mode=False,
             is_locked=False,
+            timestamp=datetime.now(timezone.utc),
         )
         dbm.save_obj(pipe)
 

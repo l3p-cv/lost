@@ -5,7 +5,7 @@
       "Authorization": "<AUTH>"
     },
     "method": "GET",
-    "path": "/api/pipeline/element/127/review/options"
+    "path": "/api/pipeline/element/139/review/options"
   },
   "response": {
     "body": {
@@ -13,7 +13,6 @@
       "possible_labels": []
     },
     "headers": {
-      "access-control-allow-origin": "*",
       "content-type": "application/json"
     },
     "status": 200

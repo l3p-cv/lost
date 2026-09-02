@@ -89,7 +89,7 @@ class UpdateInstructionRequest(BaseModel):
 
 class ReviewRequest(BaseModel):
     direction: str
-    imageAnnoId: int
+    imageAnnoId: int | None = None
     iteration: int | None = None
     annotaskIdx: int | None = None
 
