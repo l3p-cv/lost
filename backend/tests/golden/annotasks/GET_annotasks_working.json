@@ -9,11 +9,35 @@
   },
   "response": {
     "body": {
-      "message": "Current working annotation task not found"
+      "createdAt": "<TS>",
+      "finished": 17,
+      "group": "admin",
+      "id": "<ID>",
+      "instructionId": null,
+      "lastActivity": "<TS>",
+      "lastAnnotator": "admin",
+      "lockedImgCount": 0,
+      "name": "Single Image Annotation Task",
+      "pipelineCreator": "admin",
+      "pipelineName": "pipeline 1 test",
+      "progress": "<REDACTED>",
+      "size": 35,
+      "statistic": {
+        "amountPerLabel": [
+          {
+            "amount": 1,
+            "color": "#50b897",
+            "label": "Bird"
+          }
+        ],
+        "secondsPerAnno": "23.91"
+      },
+      "status": "inProgress",
+      "type": "SIA"
     },
     "headers": {
       "content-type": "application/json"
     },
-    "status": 412
+    "status": 200
   }
 }

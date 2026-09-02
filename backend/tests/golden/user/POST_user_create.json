@@ -5,11 +5,11 @@
       "Authorization": "<AUTH>"
     },
     "json": {
-      "email": "compare_test_93012b51@test.local",
+      "email": "compare_test_8e13787a@test.local",
       "groups": [],
       "password": "test",
       "roles": [],
-      "user_name": "compare_test_93012b51"
+      "user_name": "compare_test_8e13787a"
     },
     "method": "POST",
     "path": "/api/user"
@@ -19,7 +19,6 @@
       "message": "success"
     },
     "headers": {
-      "access-control-allow-origin": "*",
       "content-type": "application/json"
     },
     "status": 200

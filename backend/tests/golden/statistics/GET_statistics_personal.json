@@ -10,18 +10,24 @@
   "response": {
     "body": {
       "annos": {
-        "allTime": 2455.0,
-        "avg": 1.0,
+        "allTime": 2473.0,
+        "avg": 5.33,
         "history": {
           "month": [
             1.0,
-            1.0
+            1.0,
+            3.0,
+            7.0,
+            6.0,
+            3.0
           ],
           "week": [
-            1.0
+            7.0,
+            6.0,
+            3.0
           ]
         },
-        "today": 0.0
+        "today": 3.0
       },
       "annosPerHour": {
         "amountPerHour": null,
@@ -30,37 +36,51 @@
         "totalTimePerHour": null
       },
       "annotasks": {
-        "allTime": 42.0,
-        "avg": 2.0,
+        "allTime": 52.0,
+        "avg": 2.5,
         "history": {
           "month": [
             1.0,
-            2.0
+            1.0,
+            2.0,
+            6.0,
+            1.0,
+            3.0,
+            5.0
           ],
           "week": [
-            2.0
+            1.0,
+            1.0,
+            3.0,
+            5.0
           ]
         },
-        "today": 0.0
+        "today": 1.0
       },
       "annotime": {
-        "allTime": 0.41,
-        "avg": 0.0,
+        "allTime": 0.67,
+        "avg": 37.94,
         "history": {
           "month": [
             2.12,
-            0.0
+            0.0,
+            0.0,
+            16.71,
+            73.19,
+            23.91
           ],
           "week": [
-            0.0
+            16.71,
+            73.19,
+            23.91
           ]
         },
-        "today": 0.0
+        "today": 23.91
       },
       "labels": {
         "Aeroplane": {
           "color": "#46aed7",
-          "value": 2
+          "value": 1
         },
         "Bicycle": {
           "color": "#3399ff",
@@ -200,7 +220,7 @@
         },
         "Potted plant": {
           "color": "#d44da4",
-          "value": 4
+          "value": 6
         },
         "Rucksack": {
           "color": "#3aa421",
@@ -230,6 +250,10 @@
           "color": "#009c97",
           "value": 6
         },
+        "birds": {
+          "color": "#50b897",
+          "value": 1
+        },
         "mammals": {
           "color": "#46aed7",
           "value": 5
@@ -240,28 +264,31 @@
         }
       },
       "processedImages": {
-        "allTime": 699.0,
-        "avg": 36.0,
+        "allTime": 865.0,
+        "avg": 26.75,
         "history": {
           "month": [
-            37.0
+            147.0,
+            3.0
           ],
           "week": [
-            36.0
+            60.0,
+            1.0,
+            43.0,
+            3.0
           ]
         },
-        "today": 0.0
+        "today": 3.0
       },
       "types": {
-        "bbox": 59,
+        "bbox": 61,
         "image": null,
-        "line": 6,
-        "point": 2246,
-        "polygon": 144
+        "line": 8,
+        "point": 2250,
+        "polygon": 154
       }
     },
     "headers": {
-      "access-control-allow-origin": "*",
       "content-type": "application/json"
     },
     "status": 200

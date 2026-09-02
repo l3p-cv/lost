@@ -9,31 +9,9 @@
   },
   "response": {
     "body": {
-      "pages": 8,
+      "pages": 7,
       "pipelines": {
         "pipes": [
-          {
-            "creatorName": "admin",
-            "date": "<TS>",
-            "description": "Test pipe for golden snapshots (MIA)",
-            "id": "<ID>",
-            "isDebug": false,
-            "logfilePath": null,
-            "name": "compare_test_mia_pipe",
-            "progress": "<REDACTED>",
-            "templateName": null
-          },
-          {
-            "creatorName": "admin",
-            "date": "<TS>",
-            "description": "Test pipe for golden snapshots",
-            "id": "<ID>",
-            "isDebug": false,
-            "logfilePath": null,
-            "name": "compare_test_sia_pipe",
-            "progress": "<REDACTED>",
-            "templateName": null
-          },
           {
             "creatorName": "admin",
             "date": "<TS>",
@@ -119,6 +97,28 @@
             "isDebug": false,
             "logfilePath": "/home/lost/data/1/logs/pipes/p-131.log",
             "name": "w",
+            "progress": "<REDACTED>",
+            "templateName": "found.sia"
+          },
+          {
+            "creatorName": "admin",
+            "date": "<TS>",
+            "description": "test",
+            "id": "<ID>",
+            "isDebug": false,
+            "logfilePath": "/home/lost/data/1/logs/pipes/p-130.log",
+            "name": "testconfigchange",
+            "progress": "<REDACTED>",
+            "templateName": "found.sia"
+          },
+          {
+            "creatorName": "admin",
+            "date": "<TS>",
+            "description": "test",
+            "id": "<ID>",
+            "isDebug": false,
+            "logfilePath": "/home/lost/data/1/logs/pipes/p-129.log",
+            "name": "newtest",
             "progress": "<REDACTED>",
             "templateName": "found.sia"
           }
