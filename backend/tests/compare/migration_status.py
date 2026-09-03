@@ -25,6 +25,7 @@ MIGRATED: set[str] = {
     "pipeline",
     "annotasks",
     "instructionmedia",
+    "auth",
 }
 
 

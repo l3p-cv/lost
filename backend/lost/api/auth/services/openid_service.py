@@ -20,8 +20,6 @@ from urllib.parse import urlencode
 import jwt
 from jwt import PyJWKClient, ExpiredSignatureError, InvalidTokenError
 import requests
-from flask import redirect
-from werkzeug.exceptions import Forbidden
 
 from lostconfig import LOSTConfig
 from lost.db import roles
@@ -412,7 +410,7 @@ def get_user_roles_from_claims(claims: dict) -> list:
 
     # no role = no access
     if len(user_roles) < 1:
-        raise Forbidden("User does not have required groups at IDP")
+        raise ValueError("Forbidden: User does not have required groups at IDP")
 
     return user_roles
 
@@ -505,7 +503,7 @@ def build_token_redirect(user: DBUser):
     # we already authenticated the user and just want to create the JWT
     dbm = DBMan(_CONFIG)
     lm = LoginManager(dbm, "", "")
-    access_token, refresh_token = lm.create_jwt(user.idx, user.user_name, user.roles)
+    access_token, refresh_token = lm.create_jwt_pyjwt(user.idx, user.user_name, user.roles)
 
     temp_code = secrets.token_urlsafe(32)
     now = datetime.datetime.now(datetime.UTC)
@@ -523,7 +521,7 @@ def build_token_redirect(user: DBUser):
     redirect_url = f"{frontend_url}/auth/callback?code={temp_code}"
 
     logger.debug("Redirecting authenticated user id=%s to frontend", user.idx)
-    return redirect(redirect_url, code=302)
+    return redirect_url
 
 
 # ---------------------------------------------------------------------------

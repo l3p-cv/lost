@@ -16,7 +16,7 @@ from lost.api.api import api
 # data_namespace migrated to FastAPI in P1.2
 
 # from lost.api.annotasks.endpoint import namespace as annotasks_namespace
-from lost.api.auth.OpenidEndpoint import namespace as openid_namespace
+# openid_namespace migrated to FastAPI in P1.2
 # dataset_namespace migrated to FastAPI in P1.2
 # filebrowser_namespace migrated to FastAPI in P1.2
 # group_namespace migrated to FastAPI in P1.2
@@ -82,7 +82,7 @@ blueprint = Blueprint("api", __name__, url_prefix="/api")
 api.init_app(blueprint)
 # register endpoints here
 # user_namespace migrated to FastAPI in P1.2
-api.add_namespace(openid_namespace)
+# openid_namespace migrated to FastAPI in P1.2
 # group_namespace migrated to FastAPI in P1.2
 # sia_namespace migrated to FastAPI in P1.2
 # mia_namespace migrated to FastAPI in P1.2
