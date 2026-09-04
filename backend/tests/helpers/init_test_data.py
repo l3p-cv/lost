@@ -253,6 +253,32 @@ def _create_annotask_export_test_data(dbm) -> None:
     log.info("Created AnnoTaskExport '%s' (idx=%s)", export_name, exp.idx)
 
 
+def _create_inference_model_test_data(dbm) -> None:
+    """Create a test inference model (idempotent).
+
+    Idempotency is by display_name (the unique column), not name.
+    """
+    display_name = f"{TEST_PREFIX}Dummy YOLO"
+
+    existing = dbm.session.query(model.InferenceModel).filter_by(
+        display_name=display_name
+    ).first()
+    if existing:
+        log.info("Test inference model already exists (idx=%s)", existing.idx)
+        return
+
+    im = model.InferenceModel(
+        name=f"{TEST_PREFIX}inference_model",
+        display_name=display_name,
+        server_url="localhost:8001",
+        task_type=0,
+        model_type="YOLO",
+        description="Test model for golden snapshots",
+    )
+    dbm.save_obj(im)
+    log.info("Created test inference model '%s' (idx=%s)", display_name, im.idx)
+
+
 def _create_dataset_export_test_data(dbm) -> None:
     """Create a DatasetExport entry for compare_test_dataset (idempotent).
 
@@ -393,6 +419,7 @@ def init_test_data() -> None:
         _enrich_sia_test_data(dbm)
         _create_annotask_export_test_data(dbm)
         _create_dataset_export_test_data(dbm)
+        _create_inference_model_test_data(dbm)
         dbm.close_session()
         print("init_test_data: complete (all test entities created or already exist)")
     except Exception:
@@ -409,6 +436,15 @@ def cleanup_test_data() -> int:
     dbm = access.DBMan(LOST_CONFIG)
     count = 0
     try:
+        # Delete InferenceModels (no dependents — safe to delete first)
+        test_models = dbm.session.query(model.InferenceModel).filter(
+            model.InferenceModel.display_name.like(f"{TEST_PREFIX}%")
+        ).all()
+        for im in test_models:
+            dbm.session.delete(im)
+            count += 1
+        dbm.session.commit()
+
         # Delete AnnoTaskExports for test annotasks
         test_annotasks = dbm.session.query(model.AnnoTask).filter(
             model.AnnoTask.name.like(f"{TEST_PREFIX}%")

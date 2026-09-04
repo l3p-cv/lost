@@ -86,7 +86,7 @@ def _user_to_dict(user):
                 "groups": [], "roles": [], "is_external": None}
     default_group_id = None
     for ug in user.groups:
-        if ug.group.is_user_default:
+        if ug.group and ug.group.is_user_default:
             default_group_id = ug.group.idx
             break
     return {
@@ -121,7 +121,7 @@ def get_users(
     users = dbm.get_users()
     for us in users:
         for g in us.groups:
-            if g.group.is_user_default:
+            if g.group and g.group.is_user_default:
                 us.groups.remove(g)
     return {"users": [_user_to_dict(us) for us in users]}
 
@@ -253,7 +253,7 @@ def delete_user(
     if not requested:
         return f"User with ID '{user_id}' not found."
     for g in requested.groups:
-        if g.group.is_user_default:
+        if g.group and g.group.is_user_default:
             dbm.delete(g.group)
             dbm.commit()
             dbm.delete(g)

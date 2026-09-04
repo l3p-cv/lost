@@ -65,6 +65,8 @@ _REDACTED_KEYS = {
     "register_timestamp",
     "registered_at",
     "progress",
+    "lastUpdated",
+    "last_updated",
 }
 
 

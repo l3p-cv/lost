@@ -1,0 +1,26 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/models/36"
+  },
+  "response": {
+    "body": {
+      "description": "Test model for golden snapshots",
+      "displayName": "compare_test_Dummy YOLO",
+      "id": "<ID>",
+      "lastUpdated": "<TS>",
+      "modelType": "YOLO",
+      "name": "compare_test_inference_model",
+      "serverUrl": "localhost:8001",
+      "taskType": 0
+    },
+    "headers": {
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

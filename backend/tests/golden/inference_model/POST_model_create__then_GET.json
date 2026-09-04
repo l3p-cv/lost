@@ -1,0 +1,40 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/models"
+  },
+  "response": {
+    "body": {
+      "models": [
+        {
+          "description": "created via API",
+          "displayName": "compare_test_Dummy ba675045",
+          "id": "<ID>",
+          "lastUpdated": "<TS>",
+          "modelType": "YOLO",
+          "name": "compare_test_model_ba675045",
+          "serverUrl": "localhost:8001",
+          "taskType": 0
+        },
+        {
+          "description": "Test model for golden snapshots",
+          "displayName": "compare_test_Dummy YOLO",
+          "id": "<ID>",
+          "lastUpdated": "<TS>",
+          "modelType": "YOLO",
+          "name": "compare_test_inference_model",
+          "serverUrl": "localhost:8001",
+          "taskType": 0
+        }
+      ]
+    },
+    "headers": {
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}
