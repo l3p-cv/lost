@@ -148,6 +148,7 @@ from lost.api.pipeline.PipelineEndpoint import router as pipeline_router
 from lost.api.annotasks.AnnotasksEndpoint import router as annotasks_router
 from lost.api.instructionmedia.InstructionMediaEndpoint import router as instructionmedia_router
 from lost.api.auth.OpenidEndpoint import router as auth_router
+from lost.api.inference_model.InferenceModelEndpoint import router as inference_model_router
 
 app.include_router(system_router, prefix=API_PREFIX + "/system")
 app.include_router(worker_router, prefix=API_PREFIX + "/worker")
@@ -166,3 +167,4 @@ app.include_router(pipeline_router, prefix=API_PREFIX + "/pipeline")
 app.include_router(annotasks_router, prefix=API_PREFIX + "/annotasks")
 app.include_router(instructionmedia_router, prefix=API_PREFIX + "/media")
 app.include_router(auth_router, prefix=API_PREFIX + "/auth/openid")
+app.include_router(inference_model_router, prefix=API_PREFIX + "/models")

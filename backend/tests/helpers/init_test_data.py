@@ -54,6 +54,21 @@ def _entity_exists(dbm, model_cls, name: str) -> bool:
     return dbm.session.query(model_cls).filter_by(name=name).first() is not None
 
 
+def _get_test_template_id(dbm) -> int | None:
+    """Return the idx of an existing PipeTemplate, or None.
+
+    Real pipes always reference a PipeTemplate; without one the pipeline list
+    serializes ``templateName: null`` which crashes the frontend pipeline table
+    (``templateName.split('.')`` in RunningPipelines.jsx).
+    """
+    tpl = dbm.session.query(model.PipeTemplate).filter(
+        model.PipeTemplate.json_template.isnot(None)
+    ).order_by(model.PipeTemplate.idx).first()
+    if tpl is None:
+        log.warning("No PipeTemplate found — compare_test pipes serialize templateName=null")
+    return tpl.idx if tpl else None
+
+
 def _create_sia_test_data(dbm) -> None:
     """Create SIA test pipe + annotask + images (idempotent).
 
@@ -73,6 +88,7 @@ def _create_sia_test_data(dbm) -> None:
             description="Test pipe for golden snapshots",
             is_debug_mode=False,
             is_locked=False,
+            pipe_template_id=_get_test_template_id(dbm),
             timestamp=datetime.now(timezone.utc),
         )
         dbm.save_obj(pipe)
@@ -98,6 +114,24 @@ def _create_sia_test_data(dbm) -> None:
         log.info("Created SIA test annotask '%s' (idx=%s)", at_name, at.idx)
     else:
         log.info("SIA test annotask already exists (idx=%s)", at.idx)
+
+    # Backfill: make pre-existing test pipes look like real pipes
+    # (template + logfile path — both serialize into the pipeline list;
+    # null values break the frontend table and structural comparison)
+    tpl_id = _get_test_template_id(dbm)
+    pipe = dbm.session.query(model.Pipe).filter_by(name=pipe_name).first()
+    if pipe is not None:
+        changed = False
+        if pipe.pipe_template_id is None and tpl_id is not None:
+            pipe.pipe_template_id = tpl_id
+            changed = True
+            log.info("Attached pipe template %s to '%s'", tpl_id, pipe_name)
+        if pipe.logfile_path is None:
+            pipe.logfile_path = f"/home/lost/data/1/logs/pipes/p-{pipe.idx}.log"
+            changed = True
+            log.info("Set logfile path for '%s'", pipe_name)
+        if changed:
+            dbm.save_obj(pipe)
 
     # ImageAnnos (UNLOCKED — so sia endpoints return them for annotation)
     # Create missing images only (idempotent per-image by path)
@@ -139,6 +173,7 @@ def _create_mia_test_data(dbm) -> None:
             description="Test pipe for golden snapshots (MIA)",
             is_debug_mode=False,
             is_locked=False,
+            pipe_template_id=_get_test_template_id(dbm),
             timestamp=datetime.now(timezone.utc),
         )
         dbm.save_obj(pipe)
@@ -164,6 +199,24 @@ def _create_mia_test_data(dbm) -> None:
         log.info("Created MIA test annotask '%s' (idx=%s)", at_name, at.idx)
     else:
         log.info("MIA test annotask already exists (idx=%s)", at.idx)
+
+    # Backfill: make pre-existing test pipes look like real pipes
+    # (template + logfile path — both serialize into the pipeline list;
+    # null values break the frontend table and structural comparison)
+    tpl_id = _get_test_template_id(dbm)
+    pipe = dbm.session.query(model.Pipe).filter_by(name=pipe_name).first()
+    if pipe is not None:
+        changed = False
+        if pipe.pipe_template_id is None and tpl_id is not None:
+            pipe.pipe_template_id = tpl_id
+            changed = True
+            log.info("Attached pipe template %s to '%s'", tpl_id, pipe_name)
+        if pipe.logfile_path is None:
+            pipe.logfile_path = f"/home/lost/data/1/logs/pipes/p-{pipe.idx}.log"
+            changed = True
+            log.info("Set logfile path for '%s'", pipe_name)
+        if changed:
+            dbm.save_obj(pipe)
 
     # ImageAnnos (LABELED — MIA's get_first/get_latest need labeled images for chunks)
     # chunk_id=1 so get_whole_chunk(chunk_id=1) finds them (MIA queries by chunk)

@@ -142,6 +142,11 @@ services:
       - traefik.http.routers.fastapi-auth.entrypoints=web
       - traefik.http.routers.fastapi-auth.priority=100
       - traefik.http.routers.fastapi-auth.service=backend-fastapi
+      # FastAPI — models namespace (eighteenth migrated in P1.2)
+      - traefik.http.routers.fastapi-models.rule=PathPrefix(`/api/models`)
+      - traefik.http.routers.fastapi-models.entrypoints=web
+      - traefik.http.routers.fastapi-models.priority=100
+      - traefik.http.routers.fastapi-models.service=backend-fastapi
       # Example: fastapi-user.rule=PathPrefix(`/api/user`) + priority=100 + service=backend-fastapi
       - traefik.http.services.backend-fastapi.loadbalancer.server.port=8000
     depends_on:

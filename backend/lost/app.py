@@ -20,7 +20,7 @@ from lost.api.api import api
 # dataset_namespace migrated to FastAPI in P1.2
 # filebrowser_namespace migrated to FastAPI in P1.2
 # group_namespace migrated to FastAPI in P1.2
-from lost.api.inference_model.endpoint import namespace as inference_model_namespace
+# inference_model_namespace to FastAPI in P1.2
 # media_namespace migrated to FastAPI in P1.2
 # instructions_namespace migrated to FastAPI in P1.2
 # label_namespace migrated to FastAPI in P1.2
@@ -100,7 +100,7 @@ api.init_app(blueprint)
 api.add_namespace(anno_example_namespace)
 # instructions_namespace migrated to FastAPI in P1.2
 # media_namespace migrated to FastAPI in P1.2
-api.add_namespace(inference_model_namespace)
+# inference_model_namespace migrated to FastAPI in P1.2
 api.add_namespace(triton_namespace)
 app.register_blueprint(blueprint)
 CORS(app)

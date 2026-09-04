@@ -26,6 +26,7 @@ MIGRATED: set[str] = {
     "annotasks",
     "instructionmedia",
     "auth",
+    "inference_model",
 }
 
 
