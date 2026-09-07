@@ -178,8 +178,8 @@ def get_working_annotask(
     working_task = annotask_service.get_current_annotask(dbm, user)
     logger.info(f"Working Task {working_task}")
     if working_task is None:
-        return JSONResponse(status_code=412, content={"message": "Current working annotation task not found"})
-    return _to_camel_dict(working_task)
+        return JSONResponse(status_code=412, content="Current working annotation task not found")
+    return working_task
 
 
 @router.get("/filterLabels")
@@ -201,7 +201,7 @@ def get_annotask_statistics(
     dbm: DBMan = Depends(get_db),
 ):
     """Get statistics for an annotation task."""
-    return annotask_service.get_annotask_statistics(dbm, annotask_id)
+    return _to_camel_dict(annotask_service.get_annotask_statistics(dbm, annotask_id))
 
 
 @router.get("/exports/{annotask_export_id}")
