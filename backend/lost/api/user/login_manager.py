@@ -2,7 +2,7 @@ import datetime
 import uuid
 
 import jwt as pyjwt
-from flask_jwt_extended import create_access_token, create_refresh_token
+# from flask_jwt_extended import create_access_token, create_refresh_token
 
 from lost.db import roles
 from lost.db.model import Group, Role, UserGroups, UserRoles
@@ -31,25 +31,25 @@ class LoginManager:
             return {"token": access_token, "refresh_token": refresh_token}, 200
         return {"message": "Invalid credentials"}, 401
 
-    def create_jwt(self, user_id: int, user_name: str, roles: list[Role], expires=None):
-        if not expires:
-            expires = datetime.timedelta(minutes=LOST_CONFIG.session_timeout)
-        expires_refresh = datetime.timedelta(minutes=LOST_CONFIG.session_timeout + 5)
+    # def create_jwt(self, user_id: int, user_name: str, roles: list[Role], expires=None):
+    #     if not expires:
+    #         expires = datetime.timedelta(minutes=LOST_CONFIG.session_timeout)
+    #     expires_refresh = datetime.timedelta(minutes=LOST_CONFIG.session_timeout + 5)
 
-        # get all roles of user as str
-        user_role_names: list[str] = []
-        for user_role in roles:
-            user_role_names.append(user_role.role.name)
+    #     # get all roles of user as str
+    #     user_role_names: list[str] = []
+    #     for user_role in roles:
+    #         user_role_names.append(user_role.role.name)
 
-        # add roles of user to the jwt token
-        additional_claims = {"roles": user_role_names, "username": user_name}
+    #     # add roles of user to the jwt token
+    #     additional_claims = {"roles": user_role_names, "username": user_name}
 
-        access_token = create_access_token(
-            identity=str(user_id), fresh=True, expires_delta=expires, additional_claims=additional_claims
-        )
-        refresh_token = create_refresh_token(str(user_id), expires_delta=expires_refresh)
+    #     access_token = create_access_token(
+    #         identity=str(user_id), fresh=True, expires_delta=expires, additional_claims=additional_claims
+    #     )
+    #     refresh_token = create_refresh_token(str(user_id), expires_delta=expires_refresh)
 
-        return access_token, refresh_token
+    #     return access_token, refresh_token
 
     def create_jwt_pyjwt(self, user_id: int, user_name: str, roles: list[Role], expires=None):
         """Create access + refresh tokens using PyJWT (for FastAPI endpoints).

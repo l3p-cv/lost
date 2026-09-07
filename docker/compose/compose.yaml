@@ -48,106 +48,10 @@ services:
     restart: always
     labels:
       - traefik.enable=true
-      # Flask → :5000 | FastAPI docs → :8000 (priority=100) | per-namespace routers added in P1.2 (priority=100)
-      - traefik.http.routers.backend.rule=PathPrefix(`/api`)||PathPrefix(`/swaggerui`)
+      - traefik.http.routers.backend.rule=PathPrefix(`/api`)||PathPrefix(`/docs`)||PathPrefix(`/openapi.json`)||PathPrefix(`/redoc`)
       - traefik.http.routers.backend.entrypoints=web
-      - traefik.http.routers.backend.service=backend-flask
-      - traefik.http.services.backend-flask.loadbalancer.server.port=5000
-      - traefik.http.routers.fastapi-docs.rule=PathPrefix(`/docs`)||PathPrefix(`/openapi.json`)||PathPrefix(`/redoc`)
-      - traefik.http.routers.fastapi-docs.entrypoints=web
-      - traefik.http.routers.fastapi-docs.priority=100
-      - traefik.http.routers.fastapi-docs.service=backend-fastapi
-      # FastAPI — system namespace (first migrated in P1.2)
-      - traefik.http.routers.fastapi-system.rule=PathPrefix(`/api/system`)
-      - traefik.http.routers.fastapi-system.entrypoints=web
-      - traefik.http.routers.fastapi-system.priority=100
-      - traefik.http.routers.fastapi-system.service=backend-fastapi
-      # FastAPI — worker namespace (second migrated in P1.2)
-      - traefik.http.routers.fastapi-worker.rule=PathPrefix(`/api/worker`)
-      - traefik.http.routers.fastapi-worker.entrypoints=web
-      - traefik.http.routers.fastapi-worker.priority=100
-      - traefik.http.routers.fastapi-worker.service=backend-fastapi
-      # FastAPI — label namespace (third migrated in P1.2)
-      - traefik.http.routers.fastapi-label.rule=PathPrefix(`/api/label`)
-      - traefik.http.routers.fastapi-label.entrypoints=web
-      - traefik.http.routers.fastapi-label.priority=100
-      - traefik.http.routers.fastapi-label.service=backend-fastapi
-      # FastAPI — group namespace (fourth migrated in P1.2)
-      - traefik.http.routers.fastapi-group.rule=PathPrefix(`/api/group`)
-      - traefik.http.routers.fastapi-group.entrypoints=web
-      - traefik.http.routers.fastapi-group.priority=100
-      - traefik.http.routers.fastapi-group.service=backend-fastapi
-      # FastAPI — user namespace (fifth migrated in P1.2)
-      - traefik.http.routers.fastapi-user.rule=PathPrefix(`/api/user`)
-      - traefik.http.routers.fastapi-user.entrypoints=web
-      - traefik.http.routers.fastapi-user.priority=100
-      - traefik.http.routers.fastapi-user.service=backend-fastapi
-      # FastAPI — fb namespace or filebrowser namespace (sixth migrated in P1.2)
-      - traefik.http.routers.fastapi-fb.rule=PathPrefix(`/api/fb`)
-      - traefik.http.routers.fastapi-fb.entrypoints=web
-      - traefik.http.routers.fastapi-fb.priority=100
-      - traefik.http.routers.fastapi-fb.service=backend-fastapi
-      # FastAPI — instruction namespace (seventh migrated in P1.2)
-      - traefik.http.routers.fastapi-instructions.rule=PathPrefix(`/api/instructions`)
-      - traefik.http.routers.fastapi-instructions.entrypoints=web
-      - traefik.http.routers.fastapi-instructions.priority=100
-      - traefik.http.routers.fastapi-instructions.service=backend-fastapi
-      # FastAPI — statistics namespace (eighth migrated in P1.2)
-      - traefik.http.routers.fastapi-statistics.rule=PathPrefix(`/api/statistics`)
-      - traefik.http.routers.fastapi-statistics.entrypoints=web
-      - traefik.http.routers.fastapi-statistics.priority=100
-      - traefik.http.routers.fastapi-statistics.service=backend-fastapi
-      # FastAPI — config namespace (ninth migrated in P1.2)
-      - traefik.http.routers.fastapi-config.rule=PathPrefix(`/api/config`)
-      - traefik.http.routers.fastapi-config.entrypoints=web
-      - traefik.http.routers.fastapi-config.priority=100
-      - traefik.http.routers.fastapi-config.service=backend-fastapi
-      # FastAPI — data namespace (tenth migrated in P1.2)
-      - traefik.http.routers.fastapi-data.rule=PathPrefix(`/api/data`)
-      - traefik.http.routers.fastapi-data.entrypoints=web
-      - traefik.http.routers.fastapi-data.priority=100
-      - traefik.http.routers.fastapi-data.service=backend-fastapi
-      # FastAPI — dataset namespace (eleventh migrated in P1.2)
-      - traefik.http.routers.fastapi-datasets.rule=PathPrefix(`/api/datasets`)
-      - traefik.http.routers.fastapi-datasets.entrypoints=web
-      - traefik.http.routers.fastapi-datasets.priority=100
-      - traefik.http.routers.fastapi-datasets.service=backend-fastapi
-      # FastAPI — sia namespace (twelfth migrated in P1.2)
-      - traefik.http.routers.fastapi-sia.rule=PathPrefix(`/api/sia`)
-      - traefik.http.routers.fastapi-sia.entrypoints=web
-      - traefik.http.routers.fastapi-sia.priority=100
-      - traefik.http.routers.fastapi-sia.service=backend-fastapi
-      # FastAPI — mia namespace (thirteenth migrated in P1.2)
-      - traefik.http.routers.fastapi-mia.rule=PathPrefix(`/api/mia`)
-      - traefik.http.routers.fastapi-mia.entrypoints=web
-      - traefik.http.routers.fastapi-mia.priority=100
-      - traefik.http.routers.fastapi-mia.service=backend-fastapi
-      # FastAPI — pipeline namespace (fourteenth migrated in P1.2)
-      - traefik.http.routers.fastapi-pipeline.rule=PathPrefix(`/api/pipeline`)
-      - traefik.http.routers.fastapi-pipeline.entrypoints=web
-      - traefik.http.routers.fastapi-pipeline.priority=100
-      - traefik.http.routers.fastapi-pipeline.service=backend-fastapi
-      # FastAPI — annotasks namespace (fifteenth migrated in P1.2)
-      - traefik.http.routers.fastapi-annotasks.rule=PathPrefix(`/api/annotasks`)
-      - traefik.http.routers.fastapi-annotasks.entrypoints=web
-      - traefik.http.routers.fastapi-annotasks.priority=100
-      - traefik.http.routers.fastapi-annotasks.service=backend-fastapi
-      # FastAPI — instructionmedia namespace (sixteenth migrated in P1.2)
-      - traefik.http.routers.fastapi-instructionmedia.rule=PathPrefix(`/api/media`)
-      - traefik.http.routers.fastapi-instructionmedia.entrypoints=web
-      - traefik.http.routers.fastapi-instructionmedia.priority=100
-      - traefik.http.routers.fastapi-instructionmedia.service=backend-fastapi
-      # FastAPI — auth namespace (seventeenth migrated in P1.2)
-      - traefik.http.routers.fastapi-auth.rule=PathPrefix(`/api/auth/openid`)
-      - traefik.http.routers.fastapi-auth.entrypoints=web
-      - traefik.http.routers.fastapi-auth.priority=100
-      - traefik.http.routers.fastapi-auth.service=backend-fastapi
-      # FastAPI — models namespace (eighteenth migrated in P1.2)
-      - traefik.http.routers.fastapi-models.rule=PathPrefix(`/api/models`)
-      - traefik.http.routers.fastapi-models.entrypoints=web
-      - traefik.http.routers.fastapi-models.priority=100
-      - traefik.http.routers.fastapi-models.service=backend-fastapi
-      # Example: fastapi-user.rule=PathPrefix(`/api/user`) + priority=100 + service=backend-fastapi
+      - traefik.http.routers.backend.priority=100
+      - traefik.http.routers.backend.service=backend-fastapi
       - traefik.http.services.backend-fastapi.loadbalancer.server.port=8000
     depends_on:
       db:
@@ -165,7 +69,9 @@ services:
       MYSQL_USER: ${LOST_DB_USER}
       MYSQL_PASSWORD: ${LOST_DB_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${LOST_DB_ROOT_PASSWORD}
-
+  redis:
+    image: redis:8-alpine
+    restart: always
   # For easy db access while dev.
   phpmyadmin:
     image: phpmyadmin

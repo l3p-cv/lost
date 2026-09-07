@@ -53,15 +53,5 @@ else
   chmod 600 /root/.git-credentials
 fi
 
-# FastAPI on :8000 (1 worker — blacklist not shared yet); routers added per-namespace in P1.2
-uvicorn lost.fastapi_app:app --host 0.0.0.0 --port 8000 --workers 1 &
-
-# Flask webserver (primary until P1.3)
-if [ ${LOST_DEBUG_MODE} = "True" ]; then
-  # start flask dev server
-  python3 /code/lost/app.py
-else
-  # start uswgi production server
-  cd /code/lost
-  uwsgi --ini wsgi.ini
-fi
+# FastAPI on :8000
+exec uvicorn lost.fastapi_app:app --host 0.0.0.0 --port 8000 --workers 1

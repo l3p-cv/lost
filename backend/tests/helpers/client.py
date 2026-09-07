@@ -12,33 +12,33 @@ from pathlib import Path
 from typing import Iterator
 
 
-def _ensure_lost_on_path() -> None:
-    """Add the lost package directory to sys.path so `from flaskapp import app` works.
+# def _ensure_lost_on_path() -> None:
+#     """Add the lost package directory to sys.path so `from flaskapp import app` works.
 
-    `lost/app.py` line 9 imports `from flaskapp import app, blacklist` — a top-level
-    import that relies on `/code/lost/` being on sys.path (as it is when entrypoint.sh
-    runs `python3 /code/lost/app.py`). When pytest imports `lost.app` as a module,
-    this path isn't set, so we add it explicitly.
-    """
-    lost_dir = str(Path(__file__).resolve().parents[2] / "lost")
-    if lost_dir not in sys.path:
-        sys.path.insert(0, lost_dir)
+#     `lost/app.py` line 9 imports `from flaskapp import app, blacklist` — a top-level
+#     import that relies on `/code/lost/` being on sys.path (as it is when entrypoint.sh
+#     runs `python3 /code/lost/app.py`). When pytest imports `lost.app` as a module,
+#     this path isn't set, so we add it explicitly.
+#     """
+#     lost_dir = str(Path(__file__).resolve().parents[2] / "lost")
+#     if lost_dir not in sys.path:
+#         sys.path.insert(0, lost_dir)
 
 
-@contextmanager
-def flask_client():
-    """Yield a Flask test client with TESTING enabled.
+# @contextmanager
+# def flask_client():
+#     """Yield a Flask test client with TESTING enabled.
 
-    Usage::
-        with flask_client() as c:
-            resp = c.get("/api/user/self", headers={"Authorization": "Bearer <token>"})
-    """
-    _ensure_lost_on_path()
-    from lost.app import app
+#     Usage::
+#         with flask_client() as c:
+#             resp = c.get("/api/user/self", headers={"Authorization": "Bearer <token>"})
+#     """
+#     _ensure_lost_on_path()
+#     from lost.app import app
 
-    app.config["TESTING"] = True
-    with app.test_client() as client:
-        yield client
+#     app.config["TESTING"] = True
+#     with app.test_client() as client:
+#         yield client
 
 
 @contextmanager
@@ -55,14 +55,15 @@ def fastapi_client():
         yield client
 
 
-def get_client(target: str = "flask"):
+def get_client(target: str = "fastapi"):
     """Return a context manager yielding the appropriate test client.
 
     Args:
-        target: "flask" (default) or "fastapi".
+        target: "flask" (default) or "fastapi". 
+        removed flask completely
     """
-    if target == "flask":
-        return flask_client()
+    # if target == "flask":
+    #     return flask_client()
     if target == "fastapi":
         return fastapi_client()
     raise ValueError(f"Unknown target: {target!r} (expected 'flask' or 'fastapi')")

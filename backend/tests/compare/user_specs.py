@@ -49,13 +49,12 @@ def _setup_fresh_token(dbm):
     The fresh token is stored in context['fresh_token']. The test runner
     uses it as the Authorization header instead of the shared auth_headers.
     """
-    from lost.app import app
+    # from lost.app import app
     from lost.api.user.login_manager import LoginManager
 
-    with app.app_context():
-        user = dbm.find_user_by_user_name("admin")
-        lm = LoginManager(dbm, "admin", "admin")
-        token, _ = lm.create_jwt(user.idx, user.user_name, user.roles)
+    user = dbm.find_user_by_user_name("admin")
+    lm = LoginManager(dbm, "admin", "admin")
+    token, _ = lm.create_jwt_pyjwt(user.idx, user.user_name, user.roles)
     return {"fresh_token": token, "skip": False}
 
 

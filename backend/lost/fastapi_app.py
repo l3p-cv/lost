@@ -39,7 +39,7 @@ API_PREFIX = "/api"
 # Pins the grouping/order of route sections in the Swagger UI.
 _OPENAPI_TAGS = [
     {"name": "user"},
-    {"name": "auth"},
+    {"name": "auth/openid"},
     {"name": "group"},
     {"name": "sia"},
     {"name": "mia"},

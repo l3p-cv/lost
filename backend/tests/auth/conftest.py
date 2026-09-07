@@ -84,34 +84,34 @@ def reset_jwks_cache():
 # ---------------------------------------------------------------------------
 # Function-scoped fixtures
 # ---------------------------------------------------------------------------
-@pytest.fixture
-def minimal_flask_app():
-    """Create a minimal Flask app with only the openid namespace.
-    Creates a FRESH Api instance (not the global lost.api.api singleton)
-    to avoid 'setup already finished' errors from the production app.
-    """
-    from flask import Flask, Blueprint
-    from flask_jwt_extended import JWTManager
-    from flask_restx import Api
-    from lost.api.auth.OpenidEndpoint import namespace as openid_namespace
-    from lost.settings import LOST_CONFIG
-    app = Flask(__name__)
-    app.config["SECRET_KEY"] = LOST_CONFIG.secret_key
-    app.config["TESTING"] = True
-    JWTManager(app)
-    # Fresh Api instance — NOT the global singleton
-    test_api = Api(
-        title="LOST Test API",
-        version="test",
-        description="Minimal API for OpenID tests",
-        authorizations={"apikey": {"type": "apiKey", "in": "header", "name": "Authorization"}},
-    )
-    test_api.add_namespace(openid_namespace)
-    blueprint = Blueprint("api", __name__, url_prefix="/api")
-    test_api.init_app(blueprint)
-    app.register_blueprint(blueprint)
-    with app.test_client() as client:
-        yield app, client
+# @pytest.fixture
+# def minimal_flask_app():
+#     """Create a minimal Flask app with only the openid namespace.
+#     Creates a FRESH Api instance (not the global lost.api.api singleton)
+#     to avoid 'setup already finished' errors from the production app.
+#     """
+#     from flask import Flask, Blueprint
+#     from flask_jwt_extended import JWTManager
+#     from flask_restx import Api
+#     from lost.api.auth.OpenidEndpoint import namespace as openid_namespace
+#     from lost.settings import LOST_CONFIG
+#     app = Flask(__name__)
+#     app.config["SECRET_KEY"] = LOST_CONFIG.secret_key
+#     app.config["TESTING"] = True
+#     JWTManager(app)
+#     # Fresh Api instance — NOT the global singleton
+#     test_api = Api(
+#         title="LOST Test API",
+#         version="test",
+#         description="Minimal API for OpenID tests",
+#         authorizations={"apikey": {"type": "apiKey", "in": "header", "name": "Authorization"}},
+#     )
+#     test_api.add_namespace(openid_namespace)
+#     blueprint = Blueprint("api", __name__, url_prefix="/api")
+#     test_api.init_app(blueprint)
+#     app.register_blueprint(blueprint)
+#     with app.test_client() as client:
+#         yield app, client
 
 
 @pytest.fixture

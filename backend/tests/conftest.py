@@ -42,9 +42,9 @@ def _load_env(env_path: Path) -> None:
 _load_env(_COMPOSE_ENV)
 
 # Ensure /code/lost is on sys.path so `from flaskapp import app` resolves
-_LOST_DIR = str(Path(__file__).resolve().parents[1] / "lost")
-if _LOST_DIR not in sys.path:
-    sys.path.insert(0, _LOST_DIR)
+# _LOST_DIR = str(Path(__file__).resolve().parents[1] / "lost")
+# if _LOST_DIR not in sys.path:
+#     sys.path.insert(0, _LOST_DIR)
 
 
 # ---------------------------------------------------------------------------
@@ -62,8 +62,8 @@ def pytest_addoption(parser):
     parser.addoption(
         "--target",
         action="store",
-        default="flask",
-        choices=["flask", "fastapi"],
+        default="fastapi",
+        choices=["fastapi"], #deleted flask from here
         help="Which app to test: 'flask' (default) or 'fastapi' (P1.2+).",
     )
     parser.addoption(
@@ -91,13 +91,13 @@ def target(request) -> str:
 # ---------------------------------------------------------------------------
 
 
-@pytest.fixture(scope="session")
-def flask_app():
-    """The Flask app instance (session-scoped)."""
-    from lost.app import app
+# @pytest.fixture(scope="session")
+# def flask_app():
+#     """The Flask app instance (session-scoped)."""
+#     from lost.app import app
 
-    app.config["TESTING"] = True
-    return app
+#     app.config["TESTING"] = True
+#     return app
 
 
 @pytest.fixture(scope="session")
@@ -112,7 +112,7 @@ def dbm():
 
 
 @pytest.fixture(scope="session")
-def auth_token(flask_app):
+def auth_token(dbm):
     """A JWT access token for the admin user, minted directly via LoginManager.
 
     The admin user (admin/admin) is seeded by initlost.py and has all three roles
@@ -121,17 +121,11 @@ def auth_token(flask_app):
     the fixture to the login endpoint, which itself migrates in P1.2.
     """
     from lost.api.user.login_manager import LoginManager
-    from lost.db import access
-    from lost.settings import LOST_CONFIG
-
-    with flask_app.app_context():
-        db = access.DBMan(LOST_CONFIG)
-        user = db.find_user_by_user_name("admin")
-        if user is None:
-            pytest.fail("admin user not found — run initlost.py to seed the DB")
-        lm = LoginManager(db, "admin", "admin")
-        access_token, _ = lm.create_jwt(user.idx, user.user_name, user.roles)
-        db.close_session()
+    user = dbm.find_user_by_user_name("admin")
+    if user is None:
+        pytest.fail("admin user not found — run initlost.py to seed the DB")
+    lm = LoginManager(dbm, "admin", "admin")
+    access_token, _ = lm.create_jwt_pyjwt(user.idx, user.user_name, user.roles)
     return access_token
 
 
@@ -158,12 +152,12 @@ def client(request):
     else:
         target = request.config.getoption("--target")
 
-    if target == "flask":
-        from tests.helpers.client import flask_client
+    # if target == "flask":
+    #     from tests.helpers.client import flask_client
 
-        with flask_client() as c:
-            yield c
-    elif target == "fastapi":
+    #     with flask_client() as c:
+    #         yield c
+    if target == "fastapi":
         from tests.helpers.client import fastapi_client
 
         with fastapi_client() as c:

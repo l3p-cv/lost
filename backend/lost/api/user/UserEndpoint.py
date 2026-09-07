@@ -24,12 +24,13 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials
 from pydantic import BaseModel
 
-from lost.api.auth.dependencies import get_current_user, oauth2_scheme, require_role, blacklist
+from lost.api.auth.dependencies import get_current_user, oauth2_scheme, require_role
 from lost.api.base import ProfilingRoute
 from lost.api.user.login_manager import LoginManager
 from lost.db import access, roles
 from lost.db.model import Group, UserGroups, UserRoles
 from lost.db.model import User as DBUser
+from lost.db.redis import revoke_token
 from lost.db.session import get_db
 from lost.logic import dask_session, email
 from lost.logic.file_access import UserFileAccess, create_user_default_fs
@@ -337,7 +338,11 @@ def logout(
     """Logout — revoke current JWT."""
     payload = pyjwt.decode(credentials.credentials, LOST_CONFIG.secret_key, algorithms=["HS256"])
     jti = payload.get("jti")
-    blacklist.add(jti)
+    expires_at = payload.get("exp")
+
+    if jti and expires_at:
+        revoke_token(jti, expires_at)
+
     release_user_annos(dbm, user.idx)
     if LOST_CONFIG.worker_management == "dynamic":
         dask_session.ds_man.shutdown_cluster(user)

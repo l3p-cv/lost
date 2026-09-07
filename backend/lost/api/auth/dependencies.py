@@ -39,7 +39,7 @@ from lost.settings import LOST_CONFIG
 
 # Blacklist: imported from flaskapp during transition (both in same container)
 # At P1.3: replaced by Redis/DB-backed revocation store
-from lost.flaskapp import blacklist
+from lost.db.redis import is_token_revoked
 
 # Bearer token scheme for Swagger UI "Authorize" button
 oauth2_scheme = HTTPBearer()
@@ -75,7 +75,7 @@ def get_current_user(
         raise credentials_exception
 
     # Check blacklist (revoked tokens)
-    if jti in blacklist:
+    if is_token_revoked(jti):
         raise HTTPException(status_code=401, detail="Token has been revoked")
 
     # Load user from DB
