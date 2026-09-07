@@ -273,7 +273,7 @@ def get_annotask_specs() -> list[RouteSpec]:
         name="GET_annotasks_paged",
         request=RequestSpec(
             method="GET", path="/api/annotasks",
-            params={"page": "1", "pageSize": "5"}, mode="structural",
+            params={"page": "1", "pageSize": "10"}, mode="structural",
         ),
         target=_TARGET,
     ))

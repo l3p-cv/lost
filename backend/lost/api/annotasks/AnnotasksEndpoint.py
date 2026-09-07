@@ -123,10 +123,10 @@ def _to_camel_dict(d):
 
 @router.get("")
 def get_annotasks(
-    page_size: int | None = Query(None, description="Page size"),
-    page: int | None = Query(None, description="Page number"),
-    filtered_name: str | None = Query(None, description="Name filter"),
-    filtered_states: str | None = Query(None, description="State filter"),
+    page_size: int | None = Query(None, alias="pageSize", description="Page size"),
+    page: int | None = Query(None, alias="page", description="Page number"),
+    filtered_name: str | None = Query(None, alias="filteredName", description="Name filter"),
+    filtered_states: str | None = Query(None, alias="filteredStates", description="State filter"),
     user: DBUser = Depends(require_role(roles.ANNOTATOR)),
     dbm: DBMan = Depends(get_db),
 ):
