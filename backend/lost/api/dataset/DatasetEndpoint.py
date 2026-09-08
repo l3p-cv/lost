@@ -198,7 +198,7 @@ def _review(dbm, dataset_id, user_id, data):
     first_annotask_key = annotask_keys[0]
     first_annotask = dbm.get_sia_review_first(first_annotask_key, iteration)
     if not first_annotask:
-        return "no annotation found", 400
+        return JSONResponse(status_code=400, content="no annotation found")
     last_annotask_key = annotask_keys[-1]
     last_annotask_image = dbm.get_sia_review_last(last_annotask_key, iteration)
     current_idx = data.get("imageAnnoId", None)
@@ -234,7 +234,7 @@ def _review(dbm, dataset_id, user_id, data):
         image_anno = dbm.get_image_anno(current_idx)
         current_annotask_idx = image_anno.anno_task_id
     if not image_anno:
-        return "no annotation found", 400
+        return JSONResponse(status_code=400,content="no annotation found")
     anno_current_image_number, anno_total_image_amount = get_image_progress(
         dbm, annotasks[current_annotask_idx], image_anno.idx, iteration
     )
