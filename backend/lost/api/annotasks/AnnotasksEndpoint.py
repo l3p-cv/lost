@@ -518,7 +518,7 @@ def get_review_images(
         else:
             img_with_label_db_result = dbm.get_all_images_with_labels(found_image_ids, search_labels)
             img_ids_with_label = [entry.img_anno_id for entry in img_with_label_db_result]
-            found_images = [img for img in found_images if img["image_id"] in img_ids_with_label]
+            found_images = [img for img in found_images if img["imageId"] in img_ids_with_label]
     return {"images": found_images}
 
 
