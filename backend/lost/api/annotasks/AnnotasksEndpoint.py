@@ -213,7 +213,8 @@ def download_annotask_export(
     """Download an annotation task export."""
     identity = user.idx
     udb = UserDbAccess(dbm, user)
-    anno_task_export = dbm.get_anno_task_export(annotask_export_id=annotask_export_id)
+    # get_anno_task_export uses anno_task_export_id not annotask_export_id
+    anno_task_export = dbm.get_anno_task_export(anno_task_export_id=annotask_export_id)
     anno_task = dbm.get_anno_task(anno_task_export.anno_task_id)
     if not udb.may_access_pe(anno_task.pipe_element):
         return JSONResponse(status_code=403, content={"message": "You are not authorized."})
@@ -437,6 +438,9 @@ def get_annotask_exports(
     ret_json = []
     for export in d_exports:
         export_json = export.to_dict()
+        # changed to match Flask marshal_with output
+        export_json["id"] = export_json.pop("idx")
+        export_json["annotaskProgress"] = export_json.pop("anno_task_progress")
         if export.file_path:
             file_type = export.file_path.split(".")[-1]
             export_json["file_type"] = file_type
