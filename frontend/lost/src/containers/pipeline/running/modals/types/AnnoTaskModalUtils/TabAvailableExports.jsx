@@ -86,12 +86,12 @@ const TabAvailableExports = (props) => {
         )
       },
     }),
-    columnHelper.accessor('annoTaskProgress', {
+    columnHelper.accessor('annotaskProgress', {
       header: 'Annotask Progress',
       cell: (props) => {
         return (
           <InfoText
-            text={`${props.row.original.annoTaskProgress} %`}
+            text={`${props.row.original.annotaskProgress} %`}
             subText={`${props.row.original.imgCount} Images`}
           />
         )
