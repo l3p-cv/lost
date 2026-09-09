@@ -109,7 +109,7 @@ def get_template_or_templates(
         template_id = int(template_id_or_visibility)
         # It's a template ID — require designer
         if not user.has_role(roles.DESIGNER):
-            return f"You need to be {roles.DESIGNER} in order to perform this request.", 403
+            return JSONResponse(status_code=403, content=f"You need to be {roles.DESIGNER} in order to perform this request.")
         result = template_service.get_template(dbm, template_id, user)
         if isinstance(result, str) or result is None:
             return JSONResponse(status_code=404, content={"message": result or "Template not found."})
@@ -120,15 +120,15 @@ def get_template_or_templates(
         default_group = dbm.get_group_by_name(user.user_name)
         if visibility == VisLevel.USER:
             if not user.has_role(roles.DESIGNER):
-                return f"You need to be {roles.DESIGNER} in order to perform this request.", 403
+                return JSONResponse(status_code=403, content=f"You need to be {roles.DESIGNER} in order to perform this request.")
             result = template_service.get_templates(dbm, group_id=default_group.idx)
         elif visibility == VisLevel.GLOBAL:
             if not user.has_role(roles.ADMINISTRATOR):
-                return f"You need to be {roles.DESIGNER} in order to perform this request.", 403
+                return JSONResponse(status_code=403, content=f"You need to be {roles.DESIGNER} in order to perform this request.")
             result = template_service.get_templates(dbm)
         elif visibility == VisLevel.ALL:
             if not user.has_role(roles.DESIGNER):
-                return f"You need to be {roles.DESIGNER} in order to perform this request.", 403
+                return JSONResponse(status_code=403, content=f"You need to be {roles.DESIGNER} in order to perform this request.")
             result = template_service.get_templates(dbm, group_id=default_group.idx, add_global=True)
         else:
             return TemplatesSchema()
@@ -162,18 +162,17 @@ def get_projects(
     default_group = dbm.get_group_by_name(user.user_name)
     if visibility == VisLevel.USER:
         if not user.has_role(roles.DESIGNER):
-            return f"You need to be {roles.DESIGNER} in order to perform this request.", 403
+            return JSONResponse(status_code=403, content=f"You need to be {roles.DESIGNER} in order to perform this request.")
         re = template_service.get_templates(dbm, group_id=default_group.idx)
     if visibility == VisLevel.GLOBAL:
         if not user.has_role(roles.ADMINISTRATOR):
-            return f"You need to be {roles.DESIGNER} in order to perform this request.", 403
+            return JSONResponse(status_code=403, content=f"You need to be {roles.DESIGNER} in order to perform this request.")
         re = template_service.get_templates(dbm)
     if visibility == VisLevel.ALL:
         if not user.has_role(roles.DESIGNER):
-            return f"You need to be {roles.DESIGNER} in order to perform this request.", 403
+            return JSONResponse(status_code=403, content=f"You need to be {roles.DESIGNER} in order to perform this request.")
         re = template_service.get_templates(dbm, group_id=default_group.idx, add_global=True)
-    else:
-        return TemplatesSchema()
+
     return filter_by_pipe_project(re)
 
 @router.get("/project/export/{pipe_project}")
@@ -348,7 +347,7 @@ def start_pipeline(
     if group_id:
         pipeline_service.start(dbm, data, user.idx, group_id)
         return "success"
-    return f"default group for user {user.idx} not found.", 400
+    return JSONResponse(status_code=400, content=f"default group for user {user.idx} not found.")
 
 
 @router.post("/updateArguments")

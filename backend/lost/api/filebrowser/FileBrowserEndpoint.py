@@ -23,6 +23,7 @@ import os
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, UploadFile, File, Form
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from lost.api.auth.dependencies import require_role
@@ -172,7 +173,7 @@ def ls_test(
     """Test an arbitrary filesystem connection."""
     if req.fs["fsType"] == "file":
         if not user.has_role(roles.ADMINISTRATOR):
-            return f"You need to be {roles.ADMINISTRATOR} in order to perform this request.", 403
+            return JSONResponse(status_code=403, content=f"You need to be {roles.ADMINISTRATOR} in order to perform this request.")
     connection_dict = ast.literal_eval(req.fs["connection"])
     db_fs = model.FileSystem(
         connection=json.dumps(connection_dict),
@@ -209,12 +210,13 @@ def delete_fs(
     dbm: DBMan = Depends(get_db),
 ):
     """Delete a filesystem entry."""
-    fs_db = dbm.get_fs(fs_id=req.fs["id"])
+    print(f"Deleting filesystem entry id: {req.fs['row']['original']['id']}")
+    fs_db = dbm.get_fs(fs_id=req.fs['row']['original']['id'])
     try:
         dbm.delete(fs_db)
         dbm.commit()
     except Exception:
-        fs_db = dbm.get_fs(fs_id=req.fs["id"])
+        fs_db = dbm.get_fs(fs_id=req.fs['row']['original']['id'])
         fs_db.deleted = True
         dbm.add(fs_db)
         dbm.commit()
@@ -241,7 +243,7 @@ def save_fs(
             group_id = None
         if req.fsType == "file":
             if not user.has_role(roles.ADMINISTRATOR):
-                return "Access to the local file system can only be performed by administrators.", 401
+                return JSONResponse(status_code=401, content="Access to the local file system can only be performed by administrators.")
         connection_str = json.dumps(ast.literal_eval(req.connection))
         new_fs_db = model.FileSystem(
             group_id=group_id,
@@ -313,7 +315,7 @@ async def upload(
             ufa.write_file(contents, dst_path)
         return "success"
     except file_access.WriteAccessNotPermitted:
-        return "Not allowed to upload to this filesystem", 403
+        return JSONResponse(status_code=403, content="Not allowed to upload to this filesystem")
 
 
 @router.post("/mkdirs")

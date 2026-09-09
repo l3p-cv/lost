@@ -61,9 +61,9 @@ def create_group(
     """Create a new group. Current user becomes the manager."""
     group_name = req.group_name
     if not group_name:
-        return "A group name is required.", 400
+        return JSONResponse(status_code=400, content="A group name is required.")
     if dbm.get_group_by_name(group_name):
-        return f"Group with name '{group_name}' already exists.", 409
+        return JSONResponse(status_code=409, content=f"Group with name '{group_name}' already exists.")
     group = model.Group(name=group_name, manager_id=user.idx)
     dbm.save_obj(group)
     dbm.commit()

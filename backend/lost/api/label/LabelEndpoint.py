@@ -17,7 +17,7 @@ from io import BytesIO
 
 import pandas as pd
 from fastapi import APIRouter, Depends, UploadFile
-from fastapi.responses import Response
+from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel, Field
 
 from lost.api.auth.dependencies import require_role
@@ -87,7 +87,7 @@ def get_label_trees(
         root_leaves = dbm.get_all_label_trees(group_id=default_group.idx)
     elif visibility == VisLevel.GLOBAL:
         if not user.has_role(roles.ADMINISTRATOR):
-            return {"message": "You are not authorized."}, 403
+            return JSONResponse(status_code=403, content={"message": "You are not authorized."})
         root_leaves = dbm.get_all_label_trees(global_only=True)
     elif visibility == VisLevel.ALL:
         root_leaves = dbm.get_all_label_trees(group_id=default_group.idx, add_global=True)
@@ -109,7 +109,7 @@ async def import_label_tree(
 ):
     """Import a label tree from CSV."""
     if not file.filename or not file.filename.endswith(".csv"):
-        return {"error": "Invalid file format. Please upload a CSV file."}, 400
+        return JSONResponse(status_code=400, content={"error": "Invalid file format. Please upload a CSV file."})
 
     default_group = dbm.get_group_by_name(user.user_name)
 
@@ -117,7 +117,7 @@ async def import_label_tree(
         tree = LabelTree(dbm, logger=logger, group_id=default_group.idx)
     elif visibility == VisLevel.GLOBAL:
         if not user.has_role(roles.ADMINISTRATOR):
-            return {"message": "You are not authorized."}, 403
+            return JSONResponse(status_code=403, content={"message": "You are not authorized."})
         tree = LabelTree(dbm, logger=logger)
     else:
         return {"message": "You are not authorized."}, 403
@@ -126,7 +126,7 @@ async def import_label_tree(
     df = pd.read_csv(BytesIO(contents))
     root = tree.import_df(df)
     if not root:
-        return {"error": "LabelTree already present in database!"}, 400
+        return JSONResponse(status_code=400, content={"error": "LabelTree already present in database!"})
     return {"message": "Tree imported successfully"}
 
 
@@ -233,7 +233,7 @@ def create_label(
         )
     elif visibility == VisLevel.GLOBAL:
         if not user.has_role(roles.ADMINISTRATOR):
-            return {"message": "You are not authorized."}, 403
+            return JSONResponse(status_code=403, content={"message": "You are not authorized."})
         label = model.LabelLeaf(
             name=req.name,
             abbreviation=req.abbreviation,
