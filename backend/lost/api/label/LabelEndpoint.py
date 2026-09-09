@@ -92,7 +92,7 @@ def get_label_trees(
     elif visibility == VisLevel.ALL:
         root_leaves = dbm.get_all_label_trees(group_id=default_group.idx, add_global=True)
     else:
-        return {"message": "You are not authorized."}, 403
+        return JSONResponse(status_code=403, content={"message": "You are not authorized."})
 
     trees = []
     for root_leaf in root_leaves:
@@ -120,7 +120,7 @@ async def import_label_tree(
             return JSONResponse(status_code=403, content={"message": "You are not authorized."})
         tree = LabelTree(dbm, logger=logger)
     else:
-        return {"message": "You are not authorized."}, 403
+        return JSONResponse(status_code=403, content={"message": "You are not authorized."})
 
     contents = await file.read()
     df = pd.read_csv(BytesIO(contents))
@@ -243,7 +243,7 @@ def create_label(
             color=req.color,
         )
     else:
-        return {"message": "You are not authorized."}, 403
+        return JSONResponse(status_code=403, content={"message": "You are not authorized."})
 
     if req.parent_leaf_id:
         label.parent_leaf_id = req.parent_leaf_id
