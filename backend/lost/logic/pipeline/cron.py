@@ -4,6 +4,7 @@ import os
 import subprocess
 import traceback
 from datetime import datetime
+import shlex
 
 from lost.db import dtype, state
 from lost.db.access import DBMan
@@ -68,7 +69,7 @@ class PipeEngine(pipe_model.PipeEngine):
         # script = self.dbm.get_script(pipe_e.script_id)
         script_path = os.path.join(self.lostconfig.app_path, pipe_e.script.path)
         cmd = self.lostconfig.py3_init + " && "
-        cmd += program + " " + script_path + " --idx " + str(pipe_e.idx)
+        cmd += program + " " + shlex.quote(script_path) + " --idx " + str(pipe_e.idx)
         return cmd
 
     def make_debug_session(self, pipe_e):
@@ -352,7 +353,7 @@ def gen_run_cmd(program, pipe_e, lostconfig):
     if conda_cmd is not None:
         cmd += conda_cmd + "\n"
     script_path = os.path.join(lostconfig.app_path, pipe_e.script.path)
-    cmd += program + " " + script_path + " --idx " + str(pipe_e.idx)
+    cmd += program + " " + shlex.quote(script_path) + " --idx " + str(pipe_e.idx)
     return cmd
 
 
