@@ -54,7 +54,7 @@ const WorkingOn = ({ annoTask }) => {
         </CCol>
       </CRow>
       <CRow>
-        <CCol>Started at: {new Date(annoTask.createdAt).toLocaleString()}</CCol>
+        <CCol>Started at: {new Date(annoTask.created_at).toLocaleString()}</CCol>
       </CRow>
       <CRow>
         <CCol>
