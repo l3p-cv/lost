@@ -48,7 +48,7 @@ from lost.logic import dask_session, sia
 from lost.logic.db_access import UserDbAccess
 from lost.logic.file_access import UserFileAccess
 from lost.logic.jobs.jobs import export_ds, force_anno_release, delete_ds_export
-from lost.logic.sia import SiaSerialize, SiaUpdateOneThing, get_image_progress
+from lost.logic.sia import SiaSerialize, SiaUpdateOneThing, get_review_image_progress
 from lost.settings import DATA_URL, LOST_CONFIG
 
 logger = logging.getLogger("lost.api.annotasks")
@@ -586,7 +586,7 @@ def _review(dbm, annotask_id, user_id, data):
     first_annotation = dbm.get_sia_review_first(annotask.idx, iteration)
     last_annotation = dbm.get_sia_review_last(annotask.idx, iteration)
     if not first_annotation:
-        return "no annotation found"
+        return JSONResponse(status_code=400, content="no annotation found")
     current_annotask_idx = data.get("annotaskIdx", annotask.idx)
     if direction == "first":
         image_anno = first_annotation
@@ -597,10 +597,11 @@ def _review(dbm, annotask_id, user_id, data):
     elif direction in ("specificImage", "current"):
         image_anno = dbm.get_sia_review_id(annotask_id, current_idx, iteration)
     else:
-        return "no annotation found"
+        return JSONResponse(status_code=400, content="no annotation found")
     if not image_anno:
-        return "no annotation found"
-    anno_current_image_number, anno_total_image_amount = get_image_progress(
+        return JSONResponse(status_code=400, content="no annotation found")
+    # review mode: progress must count only reviewable (LABELED/JUNK) images
+    anno_current_image_number, anno_total_image_amount = get_review_image_progress(
         dbm, annotask, image_anno.idx, iteration
     )
     is_first_image = first_annotation.idx == image_anno.idx

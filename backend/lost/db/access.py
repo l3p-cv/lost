@@ -2,7 +2,7 @@ import datetime
 from typing import Optional
 
 import sqlalchemy
-from sqlalchemy import and_, or_
+from sqlalchemy import and_, func, or_
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool
 from sqlalchemy.sql import text
@@ -1204,6 +1204,32 @@ class DBMan:
             model.PipeElement.state == state.PipeElement.SCRIPT_ERROR,
             model.PipeElement.error_reported == False,
         )
+
+    def get_count_review_image_annos(self, anno_task_id, max_idx=None, iteration=None):
+        """Count reviewable (LABELED or JUNK) image annotations of an anno_task.
+
+        Mirrors the state/iteration filters of the get_sia_review_* queries.
+
+        Args:
+            anno_task_id (int): Id of the annotation task
+            max_idx (int): If given, only images with idx <= max_idx are counted
+                (used to compute the position of an image in review order).
+            iteration (int): If given, only images of this iteration are counted.
+                If None, all iterations will be considered.
+
+        Returns:
+            int: Number of reviewable image annotations.
+        """
+        annotated_states = [state.Anno.LABELED, state.Anno.JUNK]
+        filters = [
+            model.ImageAnno.anno_task_id == anno_task_id,
+            model.ImageAnno.state.in_(annotated_states),
+        ]
+        if max_idx is not None:
+            filters.append(model.ImageAnno.idx <= max_idx)
+        if iteration is not None:
+            filters.append(model.ImageAnno.iteration == iteration)
+        return self.session.query(func.count(model.ImageAnno.idx)).filter(*filters).scalar()
 
     def get_sia_review_first(self, anno_task_id, iteration=None):
         """Get first annotated sia annotation of an anno_task"""

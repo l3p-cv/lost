@@ -42,8 +42,8 @@ from lost.logic.jobs.jobs import (
 )
 from lost.logic.sia import (
     SiaSerialize,
-    get_image_progress,
-    get_total_image_amount,
+    get_review_image_progress,
+    get_total_review_image_amount,
 )
 from lost.settings import DATA_URL, LOST_CONFIG
 
@@ -149,6 +149,63 @@ def _prev_annotask_index(annotask_keys, current_index):
     return annotask_keys[position]
 
 
+def _next_annotask_first_image(dbm, annotask_keys, current_annotask_idx, iteration):
+    """First reviewable image in the annotasks after the current one.
+
+    Annotasks without reviewable images are skipped. Returns None when no
+    following annotask contains a reviewable image.
+    """
+    next_idx = _next_annotask_index(annotask_keys, current_annotask_idx)
+    while next_idx is not None:
+        image_anno = dbm.get_sia_review_first(next_idx, iteration)
+        if image_anno is not None:
+            return image_anno
+        next_idx = _next_annotask_index(annotask_keys, next_idx)
+    return None
+
+
+def _prev_annotask_last_image(dbm, annotask_keys, current_annotask_idx, iteration):
+    """Last reviewable image in the annotasks before the current one.
+
+    Annotasks without reviewable images are skipped. Returns None when no
+    preceding annotask contains a reviewable image.
+    """
+    prev_idx = _prev_annotask_index(annotask_keys, current_annotask_idx)
+    while prev_idx is not None:
+        image_anno = dbm.get_sia_review_last(prev_idx, iteration)
+        if image_anno is not None:
+            return image_anno
+        prev_idx = _prev_annotask_index(annotask_keys, prev_idx)
+    return None
+
+
+def _first_review_image(dbm, annotask_keys, iteration):
+    """First reviewable image of a dataset review.
+
+    Scans annotasks in order, skipping those without reviewable images.
+    Returns None if no annotask of the dataset contains a reviewable image.
+    """
+    for key in annotask_keys:
+        image_anno = dbm.get_sia_review_first(key, iteration)
+        if image_anno is not None:
+            return image_anno
+    return None
+
+
+def _last_review_image(dbm, annotask_keys, iteration):
+    """Last reviewable image of a dataset review.
+
+    Scans annotasks in reverse order, skipping those without reviewable
+    images. Returns None if no annotask of the dataset contains a
+    reviewable image.
+    """
+    for key in reversed(annotask_keys):
+        image_anno = dbm.get_sia_review_last(key, iteration)
+        if image_anno is not None:
+            return image_anno
+    return None
+
+
 def _collect_annotask_ids(datasets):
     ids = []
     for ds in datasets:
@@ -187,20 +244,18 @@ def _review(dbm, dataset_id, user_id, data):
     annotask_keys = []
     annotasks = {}
     total_image_amount = 0
+    direction = data["direction"]
+    iteration = data.get("iteration", None)
     for annotask in annotasks_list:
         annotasks[annotask.idx] = annotask
         annotask_keys.append(annotask.idx)
-        annotask_length = get_total_image_amount(dbm, annotask)
+        annotask_length = get_total_review_image_amount(dbm, annotask, iteration)
         annotask_lengths[annotask.idx] = annotask_length
         total_image_amount += annotask_length
-    direction = data["direction"]
-    iteration = data.get("iteration", None)
-    first_annotask_key = annotask_keys[0]
-    first_annotask = dbm.get_sia_review_first(first_annotask_key, iteration)
+    first_annotask = _first_review_image(dbm, annotask_keys, iteration)
     if not first_annotask:
         return JSONResponse(status_code=400, content="no annotation found")
-    last_annotask_key = annotask_keys[-1]
-    last_annotask_image = dbm.get_sia_review_last(last_annotask_key, iteration)
+    last_annotask_image = _last_review_image(dbm, annotask_keys, iteration)
     current_idx = data.get("imageAnnoId", None)
     image_anno = dbm.get_image_anno(current_idx)
     if direction == "first":
@@ -209,33 +264,47 @@ def _review(dbm, dataset_id, user_id, data):
     elif direction == "next":
         current_annotask_idx = image_anno.anno_task_id
         current_annotask = annotasks[current_annotask_idx]
-        anno_current_image_number, anno_total_image_amount = get_image_progress(
+        # review-scoped progress: boundary matches the LABELED/JUNK walk,
+        # so the jump also fires for annotasks with trailing unlabeled images
+        anno_current_image_number, anno_total_image_amount = get_review_image_progress(
             dbm, current_annotask, current_idx, iteration
         )
-        if anno_current_image_number == anno_total_image_amount:
-            current_annotask_idx = _next_annotask_index(annotask_keys, current_annotask_idx)
-            current_annotask = annotasks[current_annotask_idx]
-            image_anno = dbm.get_sia_review_first(current_annotask.idx, iteration)
+        if anno_current_image_number >= anno_total_image_amount:
+            # last reviewable image of this annotask -> jump to the next annotask,
+            # skipping annotasks without reviewable images
+            next_image_anno = _next_annotask_first_image(
+                dbm, annotask_keys, current_annotask_idx, iteration
+            )
+            if next_image_anno is not None:
+                current_annotask_idx = next_image_anno.anno_task_id
+                image_anno = next_image_anno
+            # else: end of the dataset review -> stay on the current image
         else:
             image_anno = dbm.get_sia_review_next(current_annotask.idx, current_idx, iteration)
     elif direction == "prev":
         current_annotask_idx = image_anno.anno_task_id
         current_annotask = annotasks[current_annotask_idx]
-        anno_current_image_number, anno_total_image_amount = get_image_progress(
+        anno_current_image_number, anno_total_image_amount = get_review_image_progress(
             dbm, annotasks[current_annotask_idx], current_idx, iteration
         )
-        if anno_current_image_number == 1:
-            current_annotask_idx = _prev_annotask_index(annotask_keys, current_annotask_idx)
-            current_annotask = annotasks[current_annotask_idx]
-            image_anno = dbm.get_sia_review_last(current_annotask.idx, iteration)
+        if anno_current_image_number <= 1:
+            # first reviewable image of this annotask -> jump to the previous
+            # annotask, skipping annotasks without reviewable images
+            prev_image_anno = _prev_annotask_last_image(
+                dbm, annotask_keys, current_annotask_idx, iteration
+            )
+            if prev_image_anno is not None:
+                current_annotask_idx = prev_image_anno.anno_task_id
+                image_anno = prev_image_anno
+            # else: start of the dataset review -> stay on the current image
         else:
             image_anno = dbm.get_sia_review_prev(current_annotask.idx, current_idx, iteration)
     elif direction in ("specificImage", "current"):
         image_anno = dbm.get_image_anno(current_idx)
         current_annotask_idx = image_anno.anno_task_id
     if not image_anno:
-        return JSONResponse(status_code=400,content="no annotation found")
-    anno_current_image_number, anno_total_image_amount = get_image_progress(
+        return JSONResponse(status_code=400, content="no annotation found")
+    anno_current_image_number, anno_total_image_amount = get_review_image_progress(
         dbm, annotasks[current_annotask_idx], image_anno.idx, iteration
     )
     current_image_number = anno_current_image_number
