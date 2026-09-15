@@ -216,7 +216,7 @@ async def import_zip(
         try:
             template_import.unpack_pipe_project(upload_path, extract_path)
         except Exception:
-            return "No valid pipeline found."
+            return JSONResponse(status_code=400, content={"status": "error", "message": "No valid pipeline found."})
         shutil.copytree(extract_path, dst_path, dirs_exist_ok=True)
         dbm = __import__("lost.db.access", fromlist=["DBMan"]).DBMan(LOST_CONFIG)
         importer = template_import.PipeImporter(dst_path, dbm)
@@ -224,8 +224,8 @@ async def import_zip(
         fm.fs.rm(upload_path, recursive=True)
         fm.fs.rm(e_path, recursive=True)
         if error_message != "":
-            return error_message
-        return "success"
+            return JSONResponse(status_code=400, content={"status": "error", "message": error_message})
+        return {"status": "success", "created": importer.created, "updated": importer.updated}
     except template_import.JSONDecodeError:
         shutil.rmtree(upload_path, errors=True)
         return JSONResponse(status_code=500, content=traceback.format_exc())
@@ -263,8 +263,8 @@ def import_git(
         error_message = importer.start_import()
         shutil.rmtree(upload_path)
         if error_message != "":
-            return error_message
-        return "success"
+            return JSONResponse(status_code=400, content={"status": "error", "message": error_message})
+        return {"status": "success", "created": importer.created, "updated": importer.updated}
     except template_import.JSONDecodeError:
         shutil.rmtree(upload_path, errors=True)
         return JSONResponse(status_code=500, content=traceback.format_exc())
