@@ -24,9 +24,9 @@ export const Groups = () => {
     } else if (newGroup.length > 25) {
       Notification.showError('Maximum 25 character')
     } else {
-      createGroup({
-        group_name: newGroup,
-      })
+      createGroup(
+      { group_name: newGroup,},
+      { onSuccess: () => setNewGroup('') })
     }
   }
 
