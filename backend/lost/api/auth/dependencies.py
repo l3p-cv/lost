@@ -69,10 +69,15 @@ def get_current_user(
 
     try:
         payload = pyjwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id = int(payload.get("sub", 0))
-        jti = payload.get("jti")
     except pyjwt.PyJWTError:
         raise credentials_exception
+
+    # Match Flask's @jwt_required(): protected endpoints accept access tokens only.
+    if payload.get("type") != "access":
+        raise credentials_exception
+
+    user_id = int(payload.get("sub", 0))
+    jti = payload.get("jti")
 
     # Check blacklist (revoked tokens)
     if is_token_revoked(jti):
