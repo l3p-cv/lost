@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 ### Added
+
+## [4.0.0] - 2026-09-16
+### Added
 - `backend/tests/` : Added golden-snapshot API comparison harness for the Flask→FastAPI migration (P0). Records Flask's API responses as reference snapshots and replays them against FastAPI to verify behavioral equivalence. Includes `conftest.py` with JWT minting, `helpers/` (client, comparator, recorder, seed), and parametrized comparison tests for the `user` namespace.
 - `backend/run_snapshots.sh` : Added one-command wrapper script that ensures compose stack is up, runs idempotent DB seed (`initlost.py`), and executes the golden-snapshot pytest suite inside the backend container. Supports `--record` (re-capture snapshots), `--cleanup` (force-remove test data), and `--verbose` (show container logs after run).
 - `backend/.dockerignore` : Added `tests` so the golden-snapshot suite is not shipped in the production Docker image.
