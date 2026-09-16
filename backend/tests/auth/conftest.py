@@ -18,7 +18,7 @@ import pytest
 # LOST_SECRET_KEY must be set before importing anything from lost
 os.environ.setdefault("LOST_SECRET_KEY", "test-secret-key-for-oidc-tests")
 
-from lost.api.auth.services import openid_service
+from lost.controllers.auth.services import openid_service
 from lost.db import access
 from lost.db.model import User as DBUser
 from lost.settings import LOST_CONFIG
@@ -87,13 +87,13 @@ def reset_jwks_cache():
 # @pytest.fixture
 # def minimal_flask_app():
 #     """Create a minimal Flask app with only the openid namespace.
-#     Creates a FRESH Api instance (not the global lost.api.api singleton)
+#     Creates a FRESH Api instance (not the global lost.controllers.api singleton)
 #     to avoid 'setup already finished' errors from the production app.
 #     """
 #     from flask import Flask, Blueprint
 #     from flask_jwt_extended import JWTManager
 #     from flask_restx import Api
-#     from lost.api.auth.OpenidEndpoint import namespace as openid_namespace
+#     from lost.controllers.auth.OpenidEndpoint import namespace as openid_namespace
 #     from lost.settings import LOST_CONFIG
 #     app = Flask(__name__)
 #     app.config["SECRET_KEY"] = LOST_CONFIG.secret_key

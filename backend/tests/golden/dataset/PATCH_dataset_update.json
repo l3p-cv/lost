@@ -6,7 +6,7 @@
     },
     "json": {
       "description": "Temporarily renamed by golden snapshot test",
-      "id": 56,
+      "id": 228,
       "name": "compare_test_renamed",
       "parentDatasetId": -1
     },
@@ -16,8 +16,7 @@
   "response": {
     "body": null,
     "headers": {
-      "access-control-allow-origin": "*",
-      "content-type": "application/json"
+      "content-type": "text/plain; charset=utf-8"
     },
     "status": 204
   }

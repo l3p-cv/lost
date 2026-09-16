@@ -2,7 +2,7 @@
 
 Start: uvicorn lost.fastapi_app:app --reload
 Routes: flat /api/<namespace> (19 namespaces, migrated from Flask in P1.2)
-Profiling: lost.api.base.ProfilingRoute (timing + Graylog)
+Profiling: lost.controllers.base.ProfilingRoute (timing + Graylog)
 """
 
 from __future__ import annotations
@@ -131,24 +131,24 @@ async def startup_event():
 
 
 # Routers (added per-namespace in P1.2)
-from lost.api.system.SystemEndpoint import router as system_router
-from lost.api.worker.WorkerEndpoint import router as worker_router
-from lost.api.label.LabelEndpoint import router as label_router
-from lost.api.group.GroupEndpoint import router as group_router
-from lost.api.user.UserEndpoint import router as user_router
-from lost.api.filebrowser.FileBrowserEndpoint import router as fb_router
-from lost.api.instructions.InstructionEndpoint import router as instruction_router
-from lost.api.statistics.StatisticsEndpoint import router as statistics_router
-from lost.api.config.ConfigEndpoint import router as config_router
-from lost.api.data.DataEndpoint import router as data_router
-from lost.api.dataset.DatasetEndpoint import router as dataset_router
-from lost.api.sia.SiaEndpoint import router as sia_router
-from lost.api.mia.MiaEndpoint import router as mia_router
-from lost.api.pipeline.PipelineEndpoint import router as pipeline_router
-from lost.api.annotasks.AnnotasksEndpoint import router as annotasks_router
-from lost.api.instructionmedia.InstructionMediaEndpoint import router as instructionmedia_router
-from lost.api.auth.OpenidEndpoint import router as auth_router
-from lost.api.inference_model.InferenceModelEndpoint import router as inference_model_router
+from lost.controllers.system.SystemEndpoint import router as system_router
+from lost.controllers.worker.WorkerEndpoint import router as worker_router
+from lost.controllers.label.LabelEndpoint import router as label_router
+from lost.controllers.group.GroupEndpoint import router as group_router
+from lost.controllers.user.UserEndpoint import router as user_router
+from lost.controllers.filebrowser.FileBrowserEndpoint import router as fb_router
+from lost.controllers.instructions.InstructionEndpoint import router as instruction_router
+from lost.controllers.statistics.StatisticsEndpoint import router as statistics_router
+from lost.controllers.config.ConfigEndpoint import router as config_router
+from lost.controllers.data.DataEndpoint import router as data_router
+from lost.controllers.dataset.DatasetEndpoint import router as dataset_router
+from lost.controllers.sia.SiaEndpoint import router as sia_router
+from lost.controllers.mia.MiaEndpoint import router as mia_router
+from lost.controllers.pipeline.PipelineEndpoint import router as pipeline_router
+from lost.controllers.annotasks.AnnotasksEndpoint import router as annotasks_router
+from lost.controllers.instructionmedia.InstructionMediaEndpoint import router as instructionmedia_router
+from lost.controllers.auth.OpenidEndpoint import router as auth_router
+from lost.controllers.inference_model.InferenceModelEndpoint import router as inference_model_router
 
 app.include_router(system_router, prefix=API_PREFIX + "/system")
 app.include_router(worker_router, prefix=API_PREFIX + "/worker")

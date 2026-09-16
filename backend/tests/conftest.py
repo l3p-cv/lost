@@ -120,7 +120,7 @@ def auth_token(dbm):
     route. Minting directly (rather than hitting /api/user/login) avoids coupling
     the fixture to the login endpoint, which itself migrates in P1.2.
     """
-    from lost.api.user.login_manager import LoginManager
+    from lost.controllers.user.login_manager import LoginManager
     user = dbm.find_user_by_user_name("admin")
     if user is None:
         pytest.fail("admin user not found — run initlost.py to seed the DB")

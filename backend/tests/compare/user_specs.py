@@ -6,7 +6,7 @@ Enumerates all 10 user routes as TestSpec objects, describing:
 - For mutations: a follow-up GET to verify the state change
 - Setup/cleanup hooks for mutate-then-GET tests
 
-Routes (from lost/api/user/endpoint.py):
+Routes (from lost/controllers/user/endpoint.py):
     GET  /api/user                   - list users (admin)           → structural
     GET  /api/user/anno_task_user    - list anno task users (designer) → structural
     GET  /api/user/<id>              - get single user (admin)      → structural
@@ -50,7 +50,7 @@ def _setup_fresh_token(dbm):
     uses it as the Authorization header instead of the shared auth_headers.
     """
     # from lost.app import app
-    from lost.api.user.login_manager import LoginManager
+    from lost.controllers.user.login_manager import LoginManager
 
     user = dbm.find_user_by_user_name("admin")
     lm = LoginManager(dbm, "admin", "admin")

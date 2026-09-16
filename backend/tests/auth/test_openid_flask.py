@@ -20,7 +20,7 @@ import jwt
 import pytest
 pytestmark = pytest.mark.skip(reason="Flask removed at P1.3 so check out test_openid_fastapi.py for FastAPI version of these tests")
 
-from lost.api.auth.services import openid_service
+from lost.controllers.auth.services import openid_service
 from lost.settings import LOST_CONFIG
 from tests.auth.mocks import (
     fake_post_factory,

@@ -85,7 +85,7 @@ def create_test_user(dbm, suffix: str | None = None) -> User:
 def cleanup_test_user(dbm, user: User | int | str) -> bool:
     """Delete a test user and all associated entities (groups, roles, filesystem).
 
-    Mirrors the delete logic in ``lost/api/user/endpoint.py:166`` (the DELETE endpoint).
+    Mirrors the delete logic in ``lost/controllers/user/endpoint.py:166`` (the DELETE endpoint).
     Handles already-deleted entities gracefully (the DELETE endpoint may have partially
     or fully deleted the user before raising an exception).
 

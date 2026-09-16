@@ -6,7 +6,7 @@
     },
     "json": {
       "description": "Test dataset for golden snapshots",
-      "name": "compare_test_680187ef",
+      "name": "compare_test_9348da4b",
       "parentDatasetId": -1
     },
     "method": "POST",
@@ -14,10 +14,9 @@
   },
   "response": {
     "body": {
-      "datasetId": 87
+      "datasetId": 251
     },
     "headers": {
-      "access-control-allow-origin": "*",
       "content-type": "application/json"
     },
     "status": 201

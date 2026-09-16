@@ -11,7 +11,7 @@ from urllib.parse import urlparse, parse_qs
 import jwt
 import pytest
 
-from lost.api.auth.services import openid_service
+from lost.controllers.auth.services import openid_service
 from lost.settings import LOST_CONFIG
 from tests.auth.mocks import (
     fake_post_factory,
@@ -26,7 +26,7 @@ def minimal_fastapi_app():
     from fastapi import FastAPI
     from fastapi.testclient import TestClient
     from starlette.middleware.sessions import SessionMiddleware
-    from lost.api.auth.OpenidEndpoint import router as auth_router
+    from lost.controllers.auth.OpenidEndpoint import router as auth_router
     from lost.settings import LOST_CONFIG
     app = FastAPI()
     app.add_middleware(SessionMiddleware, secret_key=LOST_CONFIG.secret_key)

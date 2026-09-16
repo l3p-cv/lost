@@ -7,7 +7,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool
 from sqlalchemy.sql import text
 
-# from lost.api.inference_model.api_definition import InferenceModelRequest
+# from lost.controllers.inference_model.api_definition import InferenceModelRequest
 from lost.db import dtype, model, state
 
 

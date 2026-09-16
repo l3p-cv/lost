@@ -10,24 +10,25 @@
   "response": {
     "body": {
       "annos": {
-        "allTime": 2473.0,
-        "avg": 5.33,
+        "allTime": 2538.0,
+        "avg": 1.0,
         "history": {
           "month": [
-            1.0,
             1.0,
             3.0,
             7.0,
             6.0,
-            3.0
+            46.0,
+            19.0,
+            1.0,
+            1.0
           ],
           "week": [
-            7.0,
-            6.0,
-            3.0
+            1.0,
+            1.0
           ]
         },
-        "today": 3.0
+        "today": 1.0
       },
       "annosPerHour": {
         "amountPerHour": null,
@@ -36,10 +37,13 @@
         "totalTimePerHour": null
       },
       "annotasks": {
-        "allTime": 52.0,
-        "avg": 2.5,
+        "allTime": 61.0,
+        "avg": 1.0,
         "history": {
           "month": [
+            1.0,
+            6.0,
+            5.0,
             1.0,
             1.0,
             2.0,
@@ -50,37 +54,36 @@
           ],
           "week": [
             1.0,
-            1.0,
-            3.0,
-            5.0
+            1.0
           ]
         },
         "today": 1.0
       },
       "annotime": {
-        "allTime": 0.67,
-        "avg": 37.94,
+        "allTime": 1.24,
+        "avg": 0.0,
         "history": {
           "month": [
-            2.12,
             0.0,
             0.0,
             16.71,
             73.19,
-            23.91
+            32.95,
+            1.36,
+            0.0,
+            0.0
           ],
           "week": [
-            16.71,
-            73.19,
-            23.91
+            0.0,
+            0.0
           ]
         },
-        "today": 23.91
+        "today": 0.0
       },
       "labels": {
         "Aeroplane": {
           "color": "#46aed7",
-          "value": 1
+          "value": 3
         },
         "Bicycle": {
           "color": "#3399ff",
@@ -95,15 +98,23 @@
           "value": 25
         },
         "Bottle": {
-          "color": null,
-          "value": 66
+          "color": "#9cb067",
+          "value": 1
         },
         "Bus": {
-          "color": null,
-          "value": 47
+          "color": "#a4527d",
+          "value": 4
         },
         "Car": {
           "color": "#a55046",
+          "value": 5
+        },
+        "Cat": {
+          "color": "#6e90da",
+          "value": 1
+        },
+        "Chair": {
+          "color": "#487b3b",
           "value": 1
         },
         "Citizen": {
@@ -128,7 +139,7 @@
         },
         "Horse": {
           "color": "#cf7635",
-          "value": 2
+          "value": 6
         },
         "Loveseat": {
           "color": "#00e1a9",
@@ -140,7 +151,7 @@
         },
         "Motorbike": {
           "color": "#da4971",
-          "value": 1
+          "value": 4
         },
         "New Lab": {
           "color": "#e311c8",
@@ -180,7 +191,7 @@
         },
         "New Label (6)": {
           "color": "#862bdd",
-          "value": 11
+          "value": 12
         },
         "New Label (60)": {
           "color": "#7155ea",
@@ -210,6 +221,10 @@
           "color": "#1fb5b2",
           "value": 2
         },
+        "Person": {
+          "color": "#a4b137",
+          "value": 2
+        },
         "Plane": {
           "color": "#46aed7",
           "value": 4
@@ -220,7 +235,7 @@
         },
         "Potted plant": {
           "color": "#d44da4",
-          "value": 6
+          "value": 24
         },
         "Rucksack": {
           "color": "#3aa421",
@@ -236,7 +251,7 @@
         },
         "Sofa": {
           "color": "#5ab74d",
-          "value": 1
+          "value": 5
         },
         "Solstice": {
           "color": "#06c386",
@@ -245,6 +260,10 @@
         "Sparrow": {
           "color": "#00e2ff",
           "value": 2
+        },
+        "Train": {
+          "color": "#7166d9",
+          "value": 1
         },
         "Vessel": {
           "color": "#009c97",
@@ -256,36 +275,34 @@
         },
         "mammals": {
           "color": "#46aed7",
-          "value": 5
+          "value": 9
         },
         "plant": {
           "color": "#e28f81",
-          "value": 2
+          "value": 6
         }
       },
       "processedImages": {
-        "allTime": 865.0,
-        "avg": 26.75,
+        "allTime": 1050.0,
+        "avg": 1.0,
         "history": {
           "month": [
-            147.0,
-            3.0
+            146.0,
+            127.0
           ],
           "week": [
-            60.0,
             1.0,
-            43.0,
-            3.0
+            1.0
           ]
         },
-        "today": 3.0
+        "today": 1.0
       },
       "types": {
-        "bbox": 61,
+        "bbox": 75,
         "image": null,
-        "line": 8,
-        "point": 2250,
-        "polygon": 154
+        "line": 11,
+        "point": 2270,
+        "polygon": 182
       }
     },
     "headers": {
