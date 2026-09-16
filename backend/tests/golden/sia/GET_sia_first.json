@@ -14,22 +14,22 @@
   "response": {
     "body": {
       "annotations": {
-        "bBoxes": null,
-        "lines": null,
-        "points": null,
-        "polygons": null
+        "bBoxes": [],
+        "lines": [],
+        "points": [],
+        "polygons": []
       },
       "image": {
-        "amount": null,
+        "amount": 3,
         "annoTime": null,
         "description": null,
         "id": "<ID>",
-        "imgActions": null,
-        "isFirst": null,
+        "imgActions": [],
+        "isFirst": true,
         "isJunk": null,
-        "isLast": null,
-        "labelIds": null,
-        "number": null
+        "isLast": true,
+        "labelIds": [],
+        "number": 2
       }
     },
     "headers": {
