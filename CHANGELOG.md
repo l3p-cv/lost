@@ -66,6 +66,7 @@ Added `create_jwt_pyjwt()` to LoginManager, PyJWT-based token creation.Same stru
 - `backend/lost/api/auth/OpenidEndpoint.py` : migrated OpenID login/callback/token endpoints to FastAPI, verified with the mocked-IDP test suite.
 - `backend/lost/logic/email.py` : untangled from Flask — replaced `from lost.flaskapp import app, mail` with jinja2 + smtplib (not yet tested with a real SMTP server).
 - `backend/lost/api/group/GroupEndpoint.py`, `backend/lost/api/label/LabelEndpoint.py`, `backend/lost/api/pipeline/PipelineEndpoint.py` : responses updated to `JSONResponse` format matching Flask.
+- `backend/lost/` : renamed package from `lost/api` to `lost/controllers/` as prep for th phase 2 CCB split (only rename , no functional changes).Refactored and updated the imports from `lost.api` to `lost.controllers`.
 ### Removed
 - `backend/` : removed all Flask-dependent code at P1.3 cutover — deleted `lost/app.py`, `lost/flaskapp.py`, `lost/wsgi.py`, `lost/wsgi.ini`, `lost/api/api.py` and dropped Flask deps (`flask`, `flask-cors`, `flask-jwt-extended`, `flask-mail`, `flask-pydantic`, `flask-restx`, `flask-sqlalchemy`, `uwsgi`) from `pyproject.toml`, added `redis`, `itsdangerous`, `pyjwt`.
 
