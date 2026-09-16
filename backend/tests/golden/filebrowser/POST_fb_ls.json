@@ -1,0 +1,161 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "json": {
+      "fs": {
+        "id": 1
+      },
+      "path": "/home/lost/data"
+    },
+    "method": "POST",
+    "path": "/api/fb/ls"
+  },
+  "response": {
+    "body": {
+      "files": [
+        {
+          "childrenCount": null,
+          "id": "<ID>",
+          "isDir": true,
+          "name": "18"
+        },
+        {
+          "childrenCount": null,
+          "id": "<ID>",
+          "isDir": true,
+          "name": "14"
+        },
+        {
+          "childrenCount": null,
+          "id": "<ID>",
+          "isDir": true,
+          "name": "1"
+        },
+        {
+          "childrenCount": null,
+          "id": "<ID>",
+          "isDir": true,
+          "name": "9"
+        },
+        {
+          "childrenCount": null,
+          "id": "<ID>",
+          "isDir": true,
+          "name": "8"
+        },
+        {
+          "childrenCount": null,
+          "id": "<ID>",
+          "isDir": true,
+          "name": "instance"
+        },
+        {
+          "childrenCount": null,
+          "id": "<ID>",
+          "isDir": true,
+          "name": "3"
+        },
+        {
+          "childrenCount": null,
+          "id": "<ID>",
+          "isDir": true,
+          "name": "test"
+        },
+        {
+          "childrenCount": null,
+          "id": "<ID>",
+          "isDir": true,
+          "name": "4"
+        },
+        {
+          "childrenCount": null,
+          "id": "<ID>",
+          "isDir": true,
+          "name": "sia_history"
+        },
+        {
+          "childrenCount": null,
+          "id": "<ID>",
+          "isDir": true,
+          "name": "10"
+        },
+        {
+          "childrenCount": null,
+          "id": "<ID>",
+          "isDir": true,
+          "name": "logs"
+        },
+        {
+          "childrenCount": null,
+          "id": "<ID>",
+          "isDir": true,
+          "name": "7"
+        },
+        {
+          "childrenCount": null,
+          "id": "<ID>",
+          "isDir": true,
+          "name": "11"
+        },
+        {
+          "childrenCount": null,
+          "id": "<ID>",
+          "isDir": true,
+          "name": "5"
+        },
+        {
+          "childrenCount": null,
+          "id": "<ID>",
+          "isDir": true,
+          "name": "20"
+        },
+        {
+          "childrenCount": null,
+          "id": "<ID>",
+          "isDir": true,
+          "name": "19"
+        },
+        {
+          "childrenCount": null,
+          "id": "<ID>",
+          "isDir": true,
+          "name": "6"
+        },
+        {
+          "childrenCount": null,
+          "id": "<ID>",
+          "isDir": true,
+          "name": "16"
+        },
+        {
+          "childrenCount": null,
+          "id": "<ID>",
+          "isDir": true,
+          "name": "2"
+        }
+      ],
+      "folderChain": [
+        {
+          "id": "<ID>",
+          "name": "home"
+        },
+        {
+          "id": "<ID>",
+          "name": "lost"
+        },
+        {
+          "id": "<ID>",
+          "name": "data"
+        }
+      ]
+    },
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

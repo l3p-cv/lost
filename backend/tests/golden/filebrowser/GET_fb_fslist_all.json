@@ -1,0 +1,37 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/fb/fslist/all"
+  },
+  "response": {
+    "body": [
+      {
+        "fsType": "file",
+        "groupId": 1,
+        "id": "<ID>",
+        "name": "default",
+        "permission": "rw",
+        "rootPath": "/home/lost/data",
+        "timestamp": "<TS>"
+      },
+      {
+        "fsType": "file",
+        "groupId": 1,
+        "id": "<ID>",
+        "name": "admin",
+        "permission": "rw",
+        "rootPath": "/home/lost/data/1",
+        "timestamp": "<TS>"
+      }
+    ],
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

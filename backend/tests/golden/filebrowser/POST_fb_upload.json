@@ -1,0 +1,17 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "POST",
+    "path": "/api/fb/upload"
+  },
+  "response": {
+    "body": "success",
+    "headers": {
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

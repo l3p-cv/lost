@@ -1,0 +1,23 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "json": {
+      "email": "updated_186fbba7@test.local",
+      "first_name": "Updated",
+      "last_name": "Name"
+    },
+    "method": "PATCH",
+    "path": "/api/user/233"
+  },
+  "response": {
+    "body": "success",
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

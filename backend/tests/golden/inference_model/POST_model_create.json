@@ -1,0 +1,34 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "json": {
+      "description": "created via API",
+      "displayName": "compare_test_Dummy ba675045",
+      "modelType": "YOLO",
+      "name": "compare_test_model_ba675045",
+      "serverUrl": "localhost:8001",
+      "taskType": 0
+    },
+    "method": "POST",
+    "path": "/api/models"
+  },
+  "response": {
+    "body": {
+      "description": "created via API",
+      "displayName": "compare_test_Dummy ba675045",
+      "id": "<ID>",
+      "lastUpdated": "<TS>",
+      "modelType": "YOLO",
+      "name": "compare_test_model_ba675045",
+      "serverUrl": "localhost:8001",
+      "taskType": 0
+    },
+    "headers": {
+      "content-type": "application/json"
+    },
+    "status": 201
+  }
+}

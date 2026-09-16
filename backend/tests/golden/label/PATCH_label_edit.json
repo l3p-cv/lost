@@ -1,0 +1,26 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "json": {
+      "abbreviation": "edt",
+      "color": "#00FF00",
+      "description": "Edited by golden snapshot test",
+      "external_id": "",
+      "id": "1095",
+      "name": "compare_test_edited"
+    },
+    "method": "PATCH",
+    "path": "/api/label/all"
+  },
+  "response": {
+    "body": "success",
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "json": {
+      "description": "Temporarily renamed by golden snapshot test",
+      "id": 56,
+      "name": "compare_test_renamed",
+      "parentDatasetId": -1
+    },
+    "method": "PATCH",
+    "path": "/api/datasets"
+  },
+  "response": {
+    "body": null,
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 204
+  }
+}

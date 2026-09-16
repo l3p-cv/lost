@@ -1,0 +1,19 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/annotasks/143/exports"
+  },
+  "response": {
+    "body": {
+      "annoTasksExports": []
+    },
+    "headers": {
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

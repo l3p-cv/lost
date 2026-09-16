@@ -1,0 +1,17 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/sia/nextAnnoId"
+  },
+  "response": {
+    "body": 9597,
+    "headers": {
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

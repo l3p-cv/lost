@@ -1,0 +1,156 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/datasets/paged/0/5"
+  },
+  "response": {
+    "body": {
+      "datasets": [
+        {
+          "children": [
+            {
+              "children": [],
+              "createdAt": "<TS>",
+              "datastoreId": null,
+              "description": "sdc",
+              "idx": "<ID>",
+              "isReviewable": false,
+              "name": "Dataset 3",
+              "nr_images": 0,
+              "parentId": 1
+            },
+            {
+              "children": [],
+              "createdAt": "<TS>",
+              "datastoreId": null,
+              "description": "fg",
+              "idx": "<ID>",
+              "isReviewable": false,
+              "name": "sub 2",
+              "nr_images": 0,
+              "parentId": 1
+            },
+            {
+              "children": [],
+              "createdAt": "<TS>",
+              "datastoreId": null,
+              "description": "dc",
+              "idx": "<ID>",
+              "isReviewable": false,
+              "name": "dataset sub 2",
+              "nr_images": 0,
+              "parentId": 1
+            },
+            {
+              "children": [],
+              "createdAt": "<TS>",
+              "datastoreId": null,
+              "description": "cdcds",
+              "idx": "<ID>",
+              "isReviewable": false,
+              "name": "Dataset 2.2",
+              "nr_images": 0,
+              "parentId": 1
+            },
+            {
+              "created_at": "<TS>",
+              "datasetId": 1,
+              "datastoreId": null,
+              "description": "Progress: 0%",
+              "dtype": 2,
+              "group_id": "<ID>",
+              "idx": "<ID>",
+              "instruction_id": 1,
+              "isAnnotask": true,
+              "manager_id": null,
+              "name": "Single Image Annotation Task",
+              "nr_images": 15,
+              "pipe_element_id": "<ID>",
+              "progress": 0.0,
+              "state": 2
+            },
+            {
+              "created_at": "<TS>",
+              "datasetId": 1,
+              "datastoreId": null,
+              "description": "Progress: 3%",
+              "dtype": 2,
+              "group_id": "<ID>",
+              "idx": "<ID>",
+              "instruction_id": null,
+              "isAnnotask": true,
+              "manager_id": null,
+              "name": "Single Image Annotation Task",
+              "nr_images": 35,
+              "pipe_element_id": "<ID>",
+              "progress": 2.85714,
+              "state": 2
+            }
+          ],
+          "createdAt": "<TS>",
+          "datastoreId": null,
+          "description": null,
+          "idx": "<ID>",
+          "isReviewable": true,
+          "name": "Dataset 2",
+          "nr_images": 50,
+          "parentId": null
+        },
+        {
+          "children": [],
+          "createdAt": "<TS>",
+          "datastoreId": null,
+          "description": "s",
+          "idx": "<ID>",
+          "isReviewable": false,
+          "name": "sd",
+          "nr_images": 0,
+          "parentId": null
+        },
+        {
+          "children": [],
+          "createdAt": "<TS>",
+          "datastoreId": null,
+          "description": "n",
+          "idx": "<ID>",
+          "isReviewable": false,
+          "name": "a",
+          "nr_images": 0,
+          "parentId": null
+        },
+        {
+          "children": [],
+          "createdAt": "<TS>",
+          "datastoreId": null,
+          "description": "test",
+          "idx": "<ID>",
+          "isReviewable": false,
+          "name": "testimport",
+          "nr_images": 0,
+          "parentId": null
+        },
+        {
+          "children": [],
+          "createdAt": "<TS>",
+          "datastoreId": null,
+          "description": "test",
+          "idx": "<ID>",
+          "isReviewable": false,
+          "name": "test import",
+          "nr_images": 0,
+          "parentId": null
+        }
+      ],
+      "pages": 5
+    },
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

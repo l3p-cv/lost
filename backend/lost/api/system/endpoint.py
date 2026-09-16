@@ -13,6 +13,8 @@ from lost.api.system.api_definiton import config
 from lost.db import access, roles
 from lost.settings import LOST_CONFIG
 
+logger = logging.getLogger("lost.api.system")
+
 namespace = api.namespace("system", description="System information and control.")
 
 
@@ -80,4 +82,4 @@ class FrontendLogs(Resource):
                 },
             )
         else:
-            flask.current_app.logger.error(data["error"])
+            logger.error(data["error"])

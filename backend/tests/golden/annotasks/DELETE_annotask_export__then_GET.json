@@ -1,0 +1,29 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/annotasks/{annotask_id}/exports"
+  },
+  "response": {
+    "body": {
+      "detail": [
+        {
+          "input": "{annotask_id}",
+          "loc": [
+            "path",
+            "annotask_id"
+          ],
+          "msg": "Input should be a valid integer, unable to parse string as an integer",
+          "type": "int_parsing"
+        }
+      ]
+    },
+    "headers": {
+      "content-type": "application/json"
+    },
+    "status": 422
+  }
+}

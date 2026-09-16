@@ -1,0 +1,24 @@
+{
+  "mode": "exact",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/data/storeKeys"
+  },
+  "response": {
+    "body": {
+      "1": "Datastore 1",
+      "2": "Datastore 2",
+      "3": "Datastore 3",
+      "4": "Datastore 4",
+      "5": "Datastore 5"
+    },
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

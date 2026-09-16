@@ -48,10 +48,11 @@ services:
     restart: always
     labels:
       - traefik.enable=true
-      - traefik.http.routers.backend.rule=PathPrefix(`/api`)||PathPrefix(`/swaggerui`)
+      - traefik.http.routers.backend.rule=PathPrefix(`/api`)||PathPrefix(`/docs`)||PathPrefix(`/openapi.json`)||PathPrefix(`/redoc`)
       - traefik.http.routers.backend.entrypoints=web
-      - traefik.http.routers.backend.service=backend
-      - traefik.http.services.backend.loadbalancer.server.port=5000
+      - traefik.http.routers.backend.priority=100
+      - traefik.http.routers.backend.service=backend-fastapi
+      - traefik.http.services.backend-fastapi.loadbalancer.server.port=8000
     depends_on:
       db:
         condition: service_started
@@ -68,7 +69,9 @@ services:
       MYSQL_USER: ${LOST_DB_USER}
       MYSQL_PASSWORD: ${LOST_DB_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${LOST_DB_ROOT_PASSWORD}
-
+  redis:
+    image: redis:8-alpine
+    restart: always
   # For easy db access while dev.
   phpmyadmin:
     image: phpmyadmin

@@ -1,0 +1,38 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/mia/latest"
+  },
+  "response": {
+    "body": {
+      "chunk": {
+        "hasPrev": false,
+        "id": "<ID>"
+      },
+      "images": [
+        {
+          "id": "<ID>",
+          "imgActions": [],
+          "type": "imageBased",
+          "updateId": -1
+        },
+        {
+          "id": "<ID>",
+          "imgActions": [],
+          "type": "imageBased",
+          "updateId": -1
+        }
+      ],
+      "proposedLabel": null
+    },
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

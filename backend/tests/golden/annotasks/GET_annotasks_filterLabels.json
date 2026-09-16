@@ -1,0 +1,22 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/annotasks/filterLabels"
+  },
+  "response": {
+    "body": {
+      "export": [
+        0,
+        1
+      ]
+    },
+    "headers": {
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

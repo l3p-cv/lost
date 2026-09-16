@@ -1,0 +1,36 @@
+{
+  "mode": "exact",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "json": {
+      "expectedType": "imageFolder",
+      "fsId": 1,
+      "path": "/home/lost/data/1/media/images/10_voc2012",
+      "recursive": true,
+      "validExtensions": [
+        "jpg",
+        "jpeg",
+        "png",
+        "bmp",
+        "tif",
+        "tiff"
+      ]
+    },
+    "method": "POST",
+    "path": "/api/fb/validate-datasource"
+  },
+  "response": {
+    "body": {
+      "isDir": true,
+      "reason": "Folder contains valid images",
+      "valid": true
+    },
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

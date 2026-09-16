@@ -1,0 +1,18 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "DELETE",
+    "path": "/api/label/1096"
+  },
+  "response": {
+    "body": "success",
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

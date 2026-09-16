@@ -1,0 +1,30 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "json": {
+      "abbreviation": "test",
+      "color": "#FF0000",
+      "description": "Test label for golden snapshots",
+      "external_id": "",
+      "is_root": false,
+      "name": "compare_test_aa58ccc9",
+      "parent_leaf_id": 1
+    },
+    "method": "POST",
+    "path": "/api/label/all"
+  },
+  "response": {
+    "body": {
+      "labelId": 1094,
+      "message": "Label added successfully"
+    },
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

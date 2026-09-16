@@ -367,7 +367,7 @@ def __serialize_pipes(db_man, debug_mode, pipes):
             "id": pipe.idx,
             "name": pipe.name,
             "description": pipe.description,
-            "date": pipe.timestamp.strftime(settings.STRF_TIME),
+            "date": pipe.timestamp.strftime(settings.STRF_TIME) if pipe.timestamp else None,
             "progress": progress,
             "creatorName": creator_name,
             "isDebug": pipe.is_debug_mode,
@@ -380,6 +380,8 @@ def __serialize_pipes(db_man, debug_mode, pipes):
 
 def __get_template_name(db_man, template_id):
     template = db_man.get_pipe_template(template_id)
+    if template is None or not template.json_template:
+        return None
     return json.loads(template.json_template)["name"]
 
 

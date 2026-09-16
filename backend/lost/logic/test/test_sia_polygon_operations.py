@@ -1,13 +1,8 @@
 import logging
-from unittest.mock import MagicMock
 
 import pytest
 
 from lost.logic import sia
-
-# Mock flask.current_app.logger to avoid Flask context errors
-sia.flask = MagicMock()
-sia.flask.current_app.logger = logging.getLogger("test_sia")
 
 # Test data for polygon union operation
 UNION_PAYLOAD = {

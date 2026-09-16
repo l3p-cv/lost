@@ -1,12 +1,14 @@
 import json
+import logging
 import math
 from datetime import datetime
 
 import cv2
-import flask
 from shapely.errors import ShapelyError, TopologicalError
 from shapely.geometry import Polygon
 from shapely.ops import unary_union
+
+logger = logging.getLogger("lost.logic.sia")
 
 from lost.db import dtype, model, state
 from lost.db.access import DBMan
@@ -369,7 +371,7 @@ class SiaUpdateOneThing:
             self.anno = data["anno"]
         else:
             self.anno = None
-        self.logger = flask.current_app.logger
+        self.logger = logger
         self.sia_type = sia_type
         self.timestamp = datetime.now()
         self.db_man = db_man
@@ -577,7 +579,7 @@ class SiaUpdate:
         """
         :type db_man: lost.db.access.DBMan
         """
-        self.logger = flask.current_app.logger
+        self.logger = logger
         self.sia_type = sia_type
         self.timestamp = datetime.now()
         self.db_man = db_man
@@ -1100,56 +1102,56 @@ def intersect_bboxes(bbox1, bbox2):
 
 def perform_polygon_union(data):
     if "annotations" not in data or not isinstance(data["annotations"], list):
-        flask.current_app.logger.info("Missing or invalid 'annotations' field")
+        logger.info("Missing or invalid 'annotations' field")
         raise PolygonOperationError("Missing or invalid 'annotations' field")
 
     polygons = [ann["polygonCoordinates"] for ann in data["annotations"] if "polygonCoordinates" in ann]
 
     if len(polygons) < 2:
-        flask.current_app.logger.info("At least 2 polygons required for union")
+        logger.info("At least 2 polygons required for union")
         raise PolygonOperationError("At least 2 polygons required for union")
     shapely_polygons = []
     for poly in polygons:
         if len(poly) < 3:
-            flask.current_app.logger.info("Insufficient vertices")
+            logger.info("Insufficient vertices")
             raise PolygonOperationError("Each polygon must have at least 3 vertices")
         coords = []
         for p in poly:
             if not (isinstance(p.get("x"), (int, float)) and isinstance(p.get("y"), (int, float))):
-                flask.current_app.logger.info("Non-numeric coordinates detected")
+                logger.info("Non-numeric coordinates detected")
                 raise PolygonOperationError("All coordinates must be numeric")
             if math.isnan(p["x"]) or math.isinf(p["x"]) or math.isnan(p["y"]) or math.isinf(p["y"]):
-                flask.current_app.logger.info("Invalid coordinates (NaN or inf)")
+                logger.info("Invalid coordinates (NaN or inf)")
                 raise PolygonOperationError("Coordinates cannot be NaN or infinite")
             coords.append((p["x"], p["y"]))
         try:
             shapely_poly = Polygon(coords)
             if not shapely_poly.is_valid:
-                flask.current_app.logger.info("Self-intersecting polygon detected")
+                logger.info("Self-intersecting polygon detected")
                 raise PolygonOperationError("Invalid polygon geometry: Self-intersection")
             shapely_polygons.append(shapely_poly)
         except (ShapelyError, TopologicalError) as e:
-            flask.current_app.logger.error(f"Invalid geometry: {e!s}")
+            logger.error(f"Invalid geometry: {e!s}")
             raise PolygonOperationError(f"Invalid polygon geometry: {e!s}")
 
     try:
         result_poly = unary_union(shapely_polygons)
     except (ShapelyError, TopologicalError) as e:
-        flask.current_app.logger.error(f"Topology error in union: {e!s}")
+        logger.error(f"Topology error in union: {e!s}")
         raise PolygonOperationError(f"Topology error during union: {e!s}")
 
     if result_poly.is_empty:
-        flask.current_app.logger.info("Empty result polygon")
+        logger.info("Empty result polygon")
         raise PolygonOperationError("Union resulted in an empty polygon")
 
     if result_poly.geom_type != "Polygon":
-        flask.current_app.logger.info(f"Unexpected geometry type: {result_poly.geom_type}")
+        logger.info(f"Unexpected geometry type: {result_poly.geom_type}")
         raise PolygonOperationError(f"Unexpected geometry type: {result_poly.geom_type}")
 
     result_coords = [{"x": float(x), "y": float(y)} for x, y in result_poly.exterior.coords[:-1]]
 
     response = {"type": "polygon", "resultantPolygon": result_coords}
-    flask.current_app.logger.info(f"Returning success response: {response}")
+    logger.info(f"Returning success response: {response}")
     return response
 
 
@@ -1236,12 +1238,12 @@ def perform_polygon_difference(data):
     shapely_polygons = []
     for poly in polygons:
         if len(poly) < 3:
-            flask.current_app.logger.info("Insufficient vertices")
+            logger.info("Insufficient vertices")
             raise PolygonOperationError("Each polygon must have at least 3 vertices")
         coords = []
         for p in poly:
             if not (isinstance(p.get("x"), (int, float)) and isinstance(p.get("y"), (int, float))):
-                flask.current_app.logger.info("Non-numeric coordinates detected")
+                logger.info("Non-numeric coordinates detected")
                 raise PolygonOperationError("All coordinates must be numeric")
             if math.isnan(p["x"]) or math.isinf(p["x"]) or math.isnan(p["y"]) or math.isinf(p["y"]):
                 raise PolygonOperationError("Coordinates cannot be NaN or infinite")
@@ -1364,7 +1366,7 @@ def apply_filters(image, filters):
 
 def compute_bboxes_from_points(data):
     if not isinstance(data, dict) or "data" not in data:
-        flask.current_app.logger.info("Input must be a dictionary with a 'data' key")
+        logger.info("Input must be a dictionary with a 'data' key")
         raise PolygonOperationError("Input must be a dictionary with a 'data' key")
 
     all_point_sets = data["data"]
@@ -1405,6 +1407,6 @@ def compute_bboxes_from_points(data):
             "y": round(float(yc), 8),
         }
         results.append(bbox)
-        flask.current_app.logger.info(f"Computed bbox: {bbox}")
+        logger.info(f"Computed bbox: {bbox}")
 
     return results
