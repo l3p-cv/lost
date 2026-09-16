@@ -27,7 +27,11 @@ export const DSTable = ({ visLevel, headline = 'Datasources' }) => {
   const defaultDsName = 'default'
   const [browseOpen, setBrowseOpen] = useState(false)
   // const [fs, setFs] = useState()
-  const { data: fsList, isLoading: fsListIsLoading } = fbAPI.useFSListQuery(visLevel)
+  const {
+    mutate: getFSListNew,
+    data: fsList,
+    isLoading: fsListIsLoading,
+  } = fbAPI.useGetFSList()
   const { mutate: getFullFs, data: fullFs } = fbAPI.useGetFullFs()
   const { mutate: getPossibleFsTypes, data: possibleFsTypes } =
     fbAPI.useGetPossibleFsTypes()
@@ -39,6 +43,7 @@ export const DSTable = ({ visLevel, headline = 'Datasources' }) => {
 
   function fetchData() {
     // setFSList(await getFSList(visLevel))
+    getFSListNew(visLevel)
     // setPossibleFsTypes(await getPossibleFsTypes())
     getPossibleFsTypes()
   }
@@ -149,13 +154,13 @@ export const DSTable = ({ visLevel, headline = 'Datasources' }) => {
     setBrowseOpen(true)
   }
   const checkEditable = (row) => {
-    if (row.original.name === userName) {
+    if (row.name === userName) {
       return true
     }
-    if (row.original.name === defaultDsName) {
+    if (row.name === defaultDsName) {
       return true
     }
-    if (row.original.groupId === null) {
+    if (row.groupId === null) {
       if (visLevel !== 'global') {
         return true
       }
@@ -198,7 +203,7 @@ export const DSTable = ({ visLevel, headline = 'Datasources' }) => {
       columnHelper.accessor('groupId', {
         header: 'Global',
         cell: (d) => {
-          if (d.row.original.groupId) {
+          if (d.groupId) {
             return <CBadge color="success">User</CBadge>
           }
           return <CBadge color="primary">Global</CBadge>
@@ -222,7 +227,7 @@ export const DSTable = ({ visLevel, headline = 'Datasources' }) => {
                 style={{ marginRight: '5px' }}
                 icon={faEdit}
                 color="warning"
-                onClick={() => onEditDs(props.row.original)}
+                onClick={() => onEditDs(props.row)}
                 disabled={checkEditable(props.row)}
                 toolTip="Edit Datasource"
                 // isOutline={false}
@@ -231,8 +236,8 @@ export const DSTable = ({ visLevel, headline = 'Datasources' }) => {
                 style={{ marginRight: '5px' }}
                 icon={faTrash}
                 color="danger"
-                onClick={() => onDeleteDs(props.row.original)}
-                disabled={checkEditable(props.row)}
+                onClick={() => onDeleteDs(props)}
+                disabled={checkEditable(props)}
                 toolTip="Delete Datasource"
               />
             </>

@@ -1,4 +1,4 @@
-import { CAlert, CCol, CRow, CTable, CTableHead, CTableBody, CTooltip } from '@coreui/react'
+import { CCol, CRow, CTable, CTableHead, CTableBody, CTooltip } from '@coreui/react'
 import { faTimes, faUpload, faTrash, faCloudArrowUp } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -17,10 +17,9 @@ import * as Notification from '../Notification'
 import * as fb_api from '../../api/file_browser'
 import CoreIconButton from '../CoreIconButton'
 
-const LostFileBrowser = ({ fs, onPathSelected, onPathsSelected, onSelectionChange, multiselect = false, mode = undefined, initPath, restrictToPath, allowedExtensions, onLsSuccess, onLsError }) => {
+const LostFileBrowser = ({ fs, onPathSelected, onPathsSelected, onSelectionChange, multiselect = false, mode = undefined, initPath, restrictToPath, allowedExtensions }) => {
   const [files, setFiles] = useState([])
   const [folderChain, setFolderChain] = useState([])
-  const [lsError, setLsError] = useState(null)
   const [size, setSize] = useState(0)
   const [selectedPath, setSelectedPath] = useState('/')
   const [selectedDir, setSelectedDir] = useState('/')
@@ -164,28 +163,16 @@ const LostFileBrowser = ({ fs, onPathSelected, onPathsSelected, onSelectionChang
 
   const ls = async (fs, path) => {
     let res_data
-    setLsError(null)
-    try {
-      if (mode) {
-        if (mode === 'lsTest') {
-          res_data = await fb_api.lsTest(fs, path)
-        } else {
-          res_data = await fb_api.ls(fs, path)
-        }
+    if (mode) {
+      if (mode === 'lsTest') {
+        res_data = await fb_api.lsTest(fs, path)
       } else {
         res_data = await fb_api.ls(fs, path)
       }
-    } catch (err) {
-      const msg = err?.response?.data?.message || 'Failed to list path'
-      setLsError(msg)
-      onLsError?.(msg)
-      Notification.showError(msg)
-      setFiles([])
-      setFolderChain([])
-      return
+    } else {
+      res_data = await fb_api.ls(fs, path)
     }
-    onLsSuccess?.()
-
+    
     let files = res_data['files']
     
     // Hide non-allowed files when allowedExtensions is specified (folders always shown)
@@ -456,11 +443,6 @@ const LostFileBrowser = ({ fs, onPathSelected, onPathsSelected, onSelectionChang
 
   return (
     <>
-      {lsError && (
-        <CAlert color="danger" className="mt-2 mb-2">
-          {lsError}
-        </CAlert>
-      )}
       <div style={{ height: 400, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         <FileBrowser
           defaultFileViewActionId={ChonkyActions.EnableListView.id}

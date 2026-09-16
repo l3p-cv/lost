@@ -89,7 +89,7 @@ class DeleteFsRequest(BaseModel):
 
 class SaveFsRequest(BaseModel):
     id: int | None = None
-    visLevel: str | None = None
+    visLevel: str
     fsType: str
     connection: str
     rootPath: str
@@ -174,34 +174,15 @@ def ls_test(
     if req.fs["fsType"] == "file":
         if not user.has_role(roles.ADMINISTRATOR):
             return JSONResponse(status_code=403, content=f"You need to be {roles.ADMINISTRATOR} in order to perform this request.")
-        if not os.path.isabs(req.path) or not os.path.isabs(req.fs["rootPath"]):
-            return JSONResponse(
-                status_code=400,
-                content={
-                    "message": (
-                        f"Paths must be absolute for file datasources "
-                        f"(path: '{req.path}', root: '{req.fs['rootPath']}') — "
-                        "relative paths resolve against the server's working directory."
-                    )
-                },
-            )
-    try:
-        connection_dict = ast.literal_eval(req.fs["connection"])
-    except (ValueError, SyntaxError):
-        return JSONResponse(status_code=400, content={"message": "Invalid connection string."})
-    try:
-        db_fs = model.FileSystem(
-            connection=json.dumps(connection_dict),
-            root_path=req.fs["rootPath"],
-            fs_type=req.fs["fsType"],
-        )
-        fm = FileMan(fs_db=db_fs, decrypt=False)
-        path = req.path
-        res = fm.ls(path, detail=True)
-    except (FileNotFoundError, NotADirectoryError):
-        return JSONResponse(status_code=404, content={"message": f"Path not found: '{req.path}'"})
-    except Exception as e:
-        return JSONResponse(status_code=400, content={"message": f"Cannot access '{req.path}': {e}"})
+    connection_dict = ast.literal_eval(req.fs["connection"])
+    db_fs = model.FileSystem(
+        connection=json.dumps(connection_dict),
+        root_path=req.fs["rootPath"],
+        fs_type=req.fs["fsType"],
+    )
+    fm = FileMan(fs_db=db_fs, decrypt=False)
+    path = req.path
+    res = fm.ls(path, detail=True)
     return chonkyfy(res, path, fm)
 
 
@@ -229,12 +210,13 @@ def delete_fs(
     dbm: DBMan = Depends(get_db),
 ):
     """Delete a filesystem entry."""
-    fs_db = dbm.get_fs(fs_id=req.fs["id"])
+    print(f"Deleting filesystem entry id: {req.fs['row']['original']['id']}")
+    fs_db = dbm.get_fs(fs_id=req.fs['row']['original']['id'])
     try:
         dbm.delete(fs_db)
         dbm.commit()
     except Exception:
-        fs_db = dbm.get_fs(fs_id=req.fs["id"])
+        fs_db = dbm.get_fs(fs_id=req.fs['row']['original']['id'])
         fs_db.deleted = True
         dbm.add(fs_db)
         dbm.commit()
