@@ -26,15 +26,12 @@ import pytest
 
 CONTROLLERS = Path(__file__).resolve().parents[2] / "lost" / "controllers"
 
-# Business-layer files that don't follow the *Business.py naming (kept per
-# migration plan) but must still obey the business rules:
-EXTRA_BUSINESS_FILES = ("auth/services/OpenidBusiness.py",)
 
 # Modules that completed their 3-layer split -- grow one entry per Pass 2
 # module commit. Mirrors the migration_status.py registry pattern.
 SPLIT_MODULES: dict[str, tuple[str, str, str]] = {
     # module dir: (endpoint file, coordination file, business file)
-    "auth": ("OpenidEndpoint.py", "OpenidCoordination.py", "services/OpenidBusiness.py"),
+    "auth": ("OpenidEndpoint.py", "OpenidCoordination.py", "OpenidBusiness.py"),
 }
 
 _BUSINESS_SUFFIX_BAN = ("Endpoint", "Coordination")
@@ -42,9 +39,7 @@ _COORDINATION_SUFFIX_BAN = ("Endpoint",)
 
 
 def _business_files() -> list[Path]:
-    files = sorted(CONTROLLERS.rglob("*Business.py"))
-    files += [CONTROLLERS / rel for rel in EXTRA_BUSINESS_FILES if (CONTROLLERS / rel).is_file()]
-    return files
+    return sorted(CONTROLLERS.rglob("*Business.py"))
 
 
 def _coordination_files() -> list[Path]:

@@ -86,6 +86,7 @@ Added `create_jwt_pyjwt()` to LoginManager, PyJWT-based token creation.Same stru
 - `DatasourceModal.tsx` : Added datasource validation on path selection with toast feedback and `verified` flag on node, info `CAlert` showing expected data type, and auto-validation of existing path when modal opens.
 - `LostFileBrowser.jsx` : Added Max file per selection cap upto 200 files.
 - `DatasourceModal.tsx` : Added acceptable file types to be uploaded even for the pipeline in family-1 (those which expect the types .jpg, .jpeg, .png, .bmp)
+- `tests/architecture/test_layering.py` : Added layering guard test (to test the CCB split)
 ### Fixed
 - `EditInstruction.jsx` : Fixed the instruction_media creation when it doesnt exist.
 - `LostFileBrowser.jsx` : Fixed `restrictToPath` boundary check, duplicate shake using composite `name-size` key, and double-click during tour now selects instead of inserting.
