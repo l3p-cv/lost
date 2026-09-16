@@ -14,7 +14,7 @@ from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import BaseModel
 
 from lost.controllers.auth.OpenidCoordination import exchange_temp_code, handle_callback
-from lost.controllers.auth.services import openid_service
+from lost.controllers.auth import OpenidBusiness
 from lost.controllers.base import ProfilingRoute
 
 logger = logging.getLogger("lost.controllers.auth")
@@ -28,7 +28,7 @@ class TokenExchangeRequest(BaseModel):
 def openid_login(request: Request):
     """Redirect to the IDP authorization URL."""
     try:
-        authorization_url, state, nonce = openid_service.get_authorization_url()
+        authorization_url, state, nonce = OpenidBusiness.get_authorization_url()
         request.session["openid_state"] = state
         request.session["openid_nonce"] = nonce
         return RedirectResponse(authorization_url, status_code=302)

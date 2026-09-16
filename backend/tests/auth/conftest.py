@@ -2,7 +2,7 @@
 
 Sets up:
 - Real RSA-2048 keypair (session-scoped)
-- Config mock on openid_service._CONFIG (autouse, 12 attributes)
+- Config mock on OpenidBusiness._CONFIG (autouse, 12 attributes)
 - JWKS client mock (autouse)
 - JWKS cache reset (autouse, before each test)
 - Minimal Flask app with only the openid namespace (no dask/triton/AppFileMan)
@@ -18,7 +18,7 @@ import pytest
 # LOST_SECRET_KEY must be set before importing anything from lost
 os.environ.setdefault("LOST_SECRET_KEY", "test-secret-key-for-oidc-tests")
 
-from lost.controllers.auth.services import openid_service
+from lost.controllers.auth import OpenidBusiness
 from lost.db import access
 from lost.db.model import User as DBUser
 from lost.settings import LOST_CONFIG
@@ -37,8 +37,8 @@ def rsa_keypair():
 
 @pytest.fixture(autouse=True, scope="session")
 def patch_openid_config():
-    """Patch openid_service._CONFIG with test values (session-scoped)."""
-    cfg = openid_service._CONFIG
+    """Patch OpenidBusiness._CONFIG with test values (session-scoped)."""
+    cfg = OpenidBusiness._CONFIG
     original = {}
     attrs = {
         "openid_auth_endpoint": "https://fake-idp.test/auth",
@@ -65,20 +65,20 @@ def patch_openid_config():
 
 @pytest.fixture(autouse=True, scope="session")
 def patch_jwks_client(rsa_keypair):
-    """Patch openid_service._get_jwks_client to return a _FakeJwksClient."""
+    """Patch OpenidBusiness._get_jwks_client to return a _FakeJwksClient."""
     _, public_key = rsa_keypair
-    original = openid_service._get_jwks_client
+    original = OpenidBusiness._get_jwks_client
     def fake_get_jwks_client():
         return _FakeJwksClient(public_key)
-    openid_service._get_jwks_client = fake_get_jwks_client
+    OpenidBusiness._get_jwks_client = fake_get_jwks_client
     yield
-    openid_service._get_jwks_client = original
+    OpenidBusiness._get_jwks_client = original
 
 
 @pytest.fixture(autouse=True)
 def reset_jwks_cache():
     """Reset the JWKS client cache before each test so the patched factory is called fresh."""
-    openid_service._jwks_client = None
+    OpenidBusiness._jwks_client = None
 
 
 # ---------------------------------------------------------------------------

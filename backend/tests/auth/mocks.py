@@ -1,8 +1,8 @@
 """Mock helpers for OpenID Connect endpoint tests.
 
 Mocks the IDP at the HTTP boundary:
-- Token endpoint: patches openid_service.requests.post
-- JWKS endpoint: patches openid_service._get_jwks_client
+- Token endpoint: patches OpenidBusiness.requests.post
+- JWKS endpoint: patches OpenidBusiness._get_jwks_client
 
 """
 
@@ -37,7 +37,7 @@ def public_key_to_pem(public_key: rsa.RSAPublicKey) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Fake requests.Response — mimics the subset of requests.Response used by openid_service
+# Fake requests.Response — mimics the subset of requests.Response used by OpenidBusiness
 # ---------------------------------------------------------------------------
 class _FakeResponse:
     """Mimics requests.Response: .status_code, .json(), .text."""
@@ -57,12 +57,12 @@ class _FakeJwksClient:
     def __init__(self, public_key: rsa.RSAPublicKey):
         self._key = public_key
     def get_signing_key_from_jwt(self, id_token: str) -> SimpleNamespace:
-        # openid_service.verify_id_token accesses .key on the result
+        # OpenidBusiness.verify_id_token accesses .key on the result
         return SimpleNamespace(key=self._key)
 
 
 # ---------------------------------------------------------------------------
-# fake_post factory — patches openid_service.requests.post
+# fake_post factory — patches OpenidBusiness.requests.post
 # ---------------------------------------------------------------------------
 def fake_post_factory(
     id_token: str,
@@ -76,7 +76,7 @@ def fake_post_factory(
         token_response: Override the full response payload (defaults to
                         {"id_token": id_token, "access_token": "fake-access"}).
     Returns:
-        A function suitable for monkeypatch.setattr(openid_service.requests, "post", ...)
+        A function suitable for monkeypatch.setattr(OpenidBusiness.requests, "post", ...)
     """
     calls: list[dict] = []
     def fake_post(url: str, data=None, timeout=None, **kwargs) -> _FakeResponse:

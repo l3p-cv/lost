@@ -11,7 +11,7 @@ from urllib.parse import urlparse, parse_qs
 import jwt
 import pytest
 
-from lost.controllers.auth.services import openid_service
+from lost.controllers.auth import OpenidBusiness
 from lost.settings import LOST_CONFIG
 from tests.auth.mocks import (
     fake_post_factory,
@@ -73,7 +73,7 @@ def test_callback_happy_path(minimal_fastapi_app, rsa_keypair, cleanup_oidc_user
     id_token = create_id_token(private_key, claims)
     # Step 3: Mock the token endpoint
     fake_post = fake_post_factory(id_token=id_token)
-    monkeypatch.setattr(openid_service.requests, "post", fake_post)
+    monkeypatch.setattr(OpenidBusiness.requests, "post", fake_post)
     # Step 4: GET /callback with the state from login + a test code
     resp = client.get(f"/api/auth/openid/callback?code=test-auth-code&state={state}", follow_redirects=False)
     assert resp.status_code == 302
@@ -154,7 +154,7 @@ def test_token_exchange_happy_path(minimal_fastapi_app, rsa_keypair, cleanup_oid
     claims = default_claims(nonce=nonce, groups=["lost-annotators"])
     id_token = create_id_token(private_key, claims)
     fake_post = fake_post_factory(id_token=id_token)
-    monkeypatch.setattr(openid_service.requests, "post", fake_post)
+    monkeypatch.setattr(OpenidBusiness.requests, "post", fake_post)
     # Step 3: Callback
     resp = client.get(f"/api/auth/openid/callback?code=test-code&state={state}", follow_redirects=False)
     assert resp.status_code == 302

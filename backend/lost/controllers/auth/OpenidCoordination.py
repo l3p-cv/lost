@@ -2,16 +2,16 @@
 OpenID Connect coordination layer.
 
 Orchestrates the full OAuth2 callback flow by sequencing calls to
-:mod:`lost.logic.services.openid_service`.
+:mod:`lost.logic.services.OpenidBusiness`.
 
 Flow
 ----
-OpenidEndpoint  →  OpenidCoordination  →  openid_service
+OpenidEndpoint  →  OpenidCoordination  →  OpenidBusiness
 """
 
 import logging
 
-from lost.controllers.auth.services import openid_service
+from lost.controllers.auth import OpenidBusiness
 
 
 logger = logging.getLogger(__name__)
@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 def exchange_temp_code(code: str) -> dict:
     """Validate and consume a one-time temp *code*, returning the JWT pair.
 
-    Delegates to :func:`openid_service.exchange_temp_code`.
+    Delegates to :func:`OpenidBusiness.exchange_temp_code`.
 
     Args:
         code: The opaque temp code received from the frontend.
@@ -31,7 +31,7 @@ def exchange_temp_code(code: str) -> dict:
     Raises:
         ValueError: If the code is missing, expired, or has already been used.
     """
-    return openid_service.exchange_temp_code(code)
+    return OpenidBusiness.exchange_temp_code(code)
 
 
 def handle_callback(code: str, nonce: str):
@@ -59,8 +59,8 @@ def handle_callback(code: str, nonce: str):
         ValueError: If any validation step fails (token exchange error,
                     invalid token, nonce mismatch, missing claims, etc.).
     """
-    token_data = openid_service.exchange_code_for_tokens(code)
-    claims = openid_service.verify_id_token(token_data["id_token"], nonce)
-    roles = openid_service.get_user_roles_from_claims(claims)
-    user = openid_service.get_or_create_user(claims, roles)
-    return openid_service.build_token_redirect(user)
+    token_data = OpenidBusiness.exchange_code_for_tokens(code)
+    claims = OpenidBusiness.verify_id_token(token_data["id_token"], nonce)
+    roles = OpenidBusiness.get_user_roles_from_claims(claims)
+    user = OpenidBusiness.get_or_create_user(claims, roles)
+    return OpenidBusiness.build_token_redirect(user)
