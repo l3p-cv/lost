@@ -1,0 +1,26 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/models/41"
+  },
+  "response": {
+    "body": {
+      "description": "updated via API",
+      "displayName": "compare_test_Dummy 7d5b7e43_updated",
+      "id": "<ID>",
+      "lastUpdated": "<TS>",
+      "modelType": "YOLO",
+      "name": "compare_test_model_7d5b7e43",
+      "serverUrl": "localhost:8001",
+      "taskType": 0
+    },
+    "headers": {
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

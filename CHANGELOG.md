@@ -6,6 +6,68 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 ### Added
+- `backend/tests/` : Added golden-snapshot API comparison harness for the Flask→FastAPI migration (P0). Records Flask's API responses as reference snapshots and replays them against FastAPI to verify behavioral equivalence. Includes `conftest.py` with JWT minting, `helpers/` (client, comparator, recorder, seed), and parametrized comparison tests for the `user` namespace.
+- `backend/run_snapshots.sh` : Added one-command wrapper script that ensures compose stack is up, runs idempotent DB seed (`initlost.py`), and executes the golden-snapshot pytest suite inside the backend container. Supports `--record` (re-capture snapshots), `--cleanup` (force-remove test data), and `--verbose` (show container logs after run).
+- `backend/.dockerignore` : Added `tests` so the golden-snapshot suite is not shipped in the production Docker image.
+- `compare/{sia,annotask,dataset,system,worker,config,statistics}_specs.py` : Added namespace request specs, reversible mutation helpers.
+- `compare/{group,instructions,data,instructionmedia}_specs.py` : Added new namespace request specs, reversible mutation helpers.
+- `backend/tests/compare/` : Added parametrized comparison tests for following covered namespaces (`test_{user,sia,annotask,dataset,system,worker,config,statistics,group,instruction,data,instructionmedia}_compare.py`). More namespaces to the harness added mia,label,filebrowser, pipeline.
+- `init_test_data.py` : Added as test data seeder for the golden-snapshot harness.
+- `lookups.py` : has shared lookup helpers for test specs.
+- `backend/tests/helpers/recorder.py` : Added binary response handling — stores content_type + SHA256 + size as JSON-serializable metadata instead of raw bytes; `comparator.py` compares the metadata dict. Unlocks CSV export and binary download specs.
+- `backend/tests/helpers/recorder.py` : Added multipart file upload handling — merges form data + file objects with `content_type=multipart/form-data`. Unlocks label CSV import and filebrowser upload specs with cleanup.
+- `backend/tests/` : Un-skipped 7 mutation specs (logout, PATCH instruction, 3 DELETEs, 2 POST exports) using reversible-mutation and create-then-DELETE patterns with cleanup; un-skipped label CSV export and 2 upload specs. Coverage now 96 active tests across 16 namespaces.
+- `backend/` : added FastAPI deps to `pyproject.toml`, created `lost/db/session.py` (shared engine + `get_db()` dependency)
+- Added  stdlib `logging.getLogger` instead of `flask.current_app.logger` from `logic/sia.py` + 3 endpoint files.
+- `backend/` : added Traefik routing for FastAPI docs (`/docs` → port 8000, priority=100), updated `entrypoint.sh` to start uvicorn alongside Flask (1 worker)
+Added `create_jwt_pyjwt()` to LoginManager, PyJWT-based token creation.Same structure as flask-jwt-extended.
+- Added new `api/auth/dependencies.py` : Added `get_current_user` function which decodes the jwt via PyJWT (can decode both create_jwt(flask-jwt-extended) and creat_jwt_pyjwt in login_manager.py ) and checks blacklist,loads User and `required_role` that checks roles for the current user and raises exception.
+- `backend/` : P1.2: migrated `system` namespace to FastAPI.
+- Added `SystemEndpoint.py` which uses FastAPI.
+- added per-spec target field with central `migration_status.py` registry.
+- `backend/` : P1.2 namespace migrations — each namespace cut over atomically: new `<Name>Endpoint.py` FastAPI router (restx `fields` models → Pydantic schemas, `@jwt_required()` → `Depends(get_current_user)` / `Depends(require_role(...))`, `api.abort()` → `HTTPException`), router registered in `fastapi_app.py`, Traefik label added in `compose.yaml` (namespace `PathPrefix` + priority=100 → FastAPI), namespace removed from Flask's `app.py`, namespace added to the `migration_status.py` MIGRATED registry so its golden-snapshot specs replay against FastAPI.
+- `backend/lost/api/worker/` : migrated `worker` namespace to FastAPI (`WorkerEndpoint.py`).
+- `backend/lost/api/label/` : migrated `label` namespace to FastAPI (`LabelEndpoint.py` — label tree CRUD + CSV export/import).
+- `backend/lost/api/group/` : migrated `group` namespace to FastAPI (`GroupEndpoint.py`).
+- `backend/lost/api/user/` : migrated `user` namespace to FastAPI (`UserEndpoint.py`).
+- `backend/lost/api/filebrowser/` : migrated `filebrowser` namespace to FastAPI (`FileBrowserEndpoint.py` — file I/O, multipart uploads; upload endpoint snapshot re-recorded because Flask's upload tests were broken).
+- `backend/lost/api/instructions/` : migrated `instructions` namespace (4 endpoints) to FastAPI (`InstructionEndpoint.py`).
+- `backend/lost/api/statistics/`, `backend/lost/api/config/` : migrated `statistics` and `config` namespaces to FastAPI (`StatisticsEndpoint.py`, `ConfigEndpoint.py`).
+- `backend/lost/api/data/` : migrated `data` namespace to FastAPI (`DataEndpoint.py` — base64 image responses).
+- `backend/lost/api/dataset/` : migrated `datasets` namespace to FastAPI (`DatasetEndpoint.py` — parquet exports, review flows).
+- `backend/lost/api/sia/` : migrated `sia` namespace to FastAPI (`SiaEndpoint.py` — polygon ops, thumbnails, most logic-heavy).
+- `backend/lost/api/mia/` : migrated `mia` namespace to FastAPI (`MiaEndpoint.py` — multi-image annotation).
+- `backend/lost/api/pipeline/` : migrated `pipeline` namespace to FastAPI (`PipelineEndpoint.py`).
+- `backend/lost/api/annotasks/` : migrated `annotasks` namespace to FastAPI (`AnnotasksEndpoint.py` — largest business surface).
+- `backend/lost/api/instructionmedia/` : migrated `instructionmedia` `/media` namespace to FastAPI (`InstructionMediaEndpoint.py`).
+- `backend/lost/api/inference_model/` : migrated `inference_models` namespace to FastAPI (`InferenceModelEndpoint.py`) and fixed seed test script issues.
+- `backend/lost/db/redis.py` : added Redis-backed JWT blacklist/revocation store replacing Flask's in-memory blacklist, used by `login_manager.py` and `UserEndpoint.py` to revoke or check JWT validity (P1.3).
+- `backend/tests/auth/` : added OpenID mock-test harness — Phase 1: all 7 Flask OpenID mock tests pass (`conftest.py`, `mocks.py`, `test_openid_flask.py`); Phase 2: `OpenidEndpoint.py` migrated to FastAPI and the same 7 test cases pass via `test_openid_fastapi.py` (minimal FastAPI app + fully mocked IDP: fake token endpoint, fake JWKS client, RSA-2048-signed id_tokens).
+- `backend/tests/compare/inference_model_specs.py`, `test_inference_model_compare.py` : added inference_model comparison specs/tests and 8 golden snapshots recorded from pre-migration Flask; seeded test inference model (`compare_test Dummy YOLO`) via `init_test_data.py`.
+- `backend/tests/` : harness coverage now 100 active comparison specs across 17 namespaces plus 7 active OpenID mock tests; 40 specs intentionally skipped with documented reasons (non-deterministic, destructive or manually verified).
+- `backend/tests/README.md` : added test-suite documentation (harness flow, how to run, comparison modes, adding new coverage).
+### Fixed
+- `backend/tests/helpers/recorder.py` : Fixed empty-body handling for 204 No Content responses.
+- fixed recorder for FastAPI TestClient compatibility.
+- `backend/lost/api/user/UserEndpoint.py` : fixed null `group_id` crash by guarding `ug.group and ug.group.is_user_default` in `_user_to_dict`, `get_users` and `delete_user`.
+- `backend/lost/api/annotasks/AnnotasksEndpoint.py` : fixed `get_annotasks` query param aliases to match Flask's params and re-recorded the `GET_annotasks_paged.json` golden snapshot.
+- `backend/lost/api/annotasks/AnnotasksEndpoint.py` : fixed `/working` endpoint to use snake_case keys similar to the Flask implementation — the "Working On" annotask card and statistics chart show proper pipeline details again.
+- `backend/lost/api/annotasks/AnnotasksEndpoint.py` : fixed the annotask review search endpoint.
+- `backend/lost/api/annotasks/AnnotasksEndpoint.py` : fixed annotask export download (`get_anno_task_export(anno_task_export_id=...)` keyword) and exports list marshaling to emit Flask-style `id` / `annotaskProgress` keys — fixes `undefined%` Annotask Progress in the exports table.
+- `backend/lost/api/dataset/DatasetEndpoint.py` : fixed dataset review response parity with Flask.
+- `backend/lost/api/pipeline/PipelineEndpoint.py` : fixed parity issue in project pipelines data fetch.
+- `backend/lost/api/filebrowser/FileBrowserEndpoint.py` : fixed the delete endpoint.
+- `backend/lost/api/label/LabelEndpoint.py` : fixed responses to `JSONResponse` format similar to Flask.
+- `backend/lost/logic/pipeline/service.py` : fixed serialization errors surfaced during pipeline migration testing; re-recorded pipeline, statistics, user and annotasks golden snapshots for resolved error cases.
+### Changed
+- `dependencies.py` :auth scheme changed to `HTTPBearer` credentials extraction in auth dependencies from `OAuth2PasswordBearer`
+- placed the `RouteSpec` in `specs.py` from user_specs.py
+- `backend/` : P1.3 cutover — removed all Flask dependencies and imports from live code, FastAPI is now the only server: `entrypoint.sh` no longer starts Flask (uvicorn only), `docker/compose/compose.yaml` simplified (per-namespace Traefik labels replaced), `lostconfig.py` updated.
+- `backend/lost/api/auth/OpenidEndpoint.py` : migrated OpenID login/callback/token endpoints to FastAPI, verified with the mocked-IDP test suite.
+- `backend/lost/logic/email.py` : untangled from Flask — replaced `from lost.flaskapp import app, mail` with jinja2 + smtplib (not yet tested with a real SMTP server).
+- `backend/lost/api/group/GroupEndpoint.py`, `backend/lost/api/label/LabelEndpoint.py`, `backend/lost/api/pipeline/PipelineEndpoint.py` : responses updated to `JSONResponse` format matching Flask.
+### Removed
+- `backend/` : removed all Flask-dependent code at P1.3 cutover — deleted `lost/app.py`, `lost/flaskapp.py`, `lost/wsgi.py`, `lost/wsgi.ini`, `lost/api/api.py` and dropped Flask deps (`flask`, `flask-cors`, `flask-jwt-extended`, `flask-mail`, `flask-pydantic`, `flask-restx`, `flask-sqlalchemy`, `uwsgi`) from `pyproject.toml`, added `redis`, `itsdangerous`, `pyjwt`.
 
 ## [4.0.0-alpha] - 2026-08-18
 ### Added

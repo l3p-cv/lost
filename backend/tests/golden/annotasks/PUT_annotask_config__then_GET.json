@@ -1,0 +1,53 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "params": {
+      "config": "true"
+    },
+    "path": "/api/annotasks/127"
+  },
+  "response": {
+    "body": {
+      "annotatedImgCount": 2,
+      "configuration": {
+        "test": true
+      },
+      "createdAt": "<TS>",
+      "finished": 2,
+      "group": "admin",
+      "id": "<ID>",
+      "imgCount": 3,
+      "instructionId": null,
+      "labelLeaves": [
+        {
+          "color": "#ffffff",
+          "id": "<ID>",
+          "name": "VOC2012"
+        }
+      ],
+      "lastActivity": "<TS>",
+      "lastAnnotator": "N/A",
+      "lockedImgCount": 0,
+      "name": "compare_test_sia",
+      "pipelineCreator": "admin",
+      "pipelineName": "compare_test_sia_pipe",
+      "progress": "<REDACTED>",
+      "size": 3,
+      "statistic": {
+        "amountPerLabel": [],
+        "secondsPerAnno": null
+      },
+      "status": "pending",
+      "type": "sia",
+      "userName": "admin"
+    },
+    "headers": {
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

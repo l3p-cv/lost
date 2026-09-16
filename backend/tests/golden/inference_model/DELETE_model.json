@@ -1,0 +1,17 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "DELETE",
+    "path": "/api/models/42"
+  },
+  "response": {
+    "body": null,
+    "headers": {
+      "content-type": "application/json"
+    },
+    "status": 204
+  }
+}

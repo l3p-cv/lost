@@ -81,6 +81,11 @@ class LOSTConfig(object):
         self.lost_db_ip = str(ge('LOST_DB_IP',"db"))
         self.db_connector = ge('LOST_DB_CONNECTOR',"mysql+mysqldb")
 
+        # Redis
+        self.redis_host = ge('LOST_REDIS_HOST','redis')
+        self.redis_port = int(ge('LOST_REDIS_PORT',6379))
+        self.redis_db = int(ge('LOST_REDIS_DB',0))
+
         # Worker management
         # Unique name for this container worker
         self.worker_name = ge('LOST_WORKER_NAME','lost')

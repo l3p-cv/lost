@@ -1,0 +1,17 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/sia/allowedExampler"
+  },
+  "response": {
+    "body": true,
+    "headers": {
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

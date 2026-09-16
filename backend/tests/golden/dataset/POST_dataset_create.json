@@ -1,0 +1,25 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "json": {
+      "description": "Test dataset for golden snapshots",
+      "name": "compare_test_680187ef",
+      "parentDatasetId": -1
+    },
+    "method": "POST",
+    "path": "/api/datasets"
+  },
+  "response": {
+    "body": {
+      "datasetId": 87
+    },
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 201
+  }
+}

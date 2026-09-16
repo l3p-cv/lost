@@ -1,0 +1,19 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/annotasks/working"
+  },
+  "response": {
+    "body": {
+      "message": "Current working annotation task not found"
+    },
+    "headers": {
+      "content-type": "application/json"
+    },
+    "status": 412
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/sia/image/1747/name"
+  },
+  "response": {
+    "body": {
+      "img_name": "2007_008547.jpg"
+    },
+    "headers": {
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

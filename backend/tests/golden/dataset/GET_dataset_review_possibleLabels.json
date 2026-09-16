@@ -1,0 +1,119 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/datasets/56/review/possibleLabels"
+  },
+  "response": {
+    "body": [
+      {
+        "color": "#46aed7",
+        "id": "<ID>",
+        "name": "Aeroplane"
+      },
+      {
+        "color": "#e28f81",
+        "id": "<ID>",
+        "name": "Bicycle"
+      },
+      {
+        "color": "#50b897",
+        "id": "<ID>",
+        "name": "Bird"
+      },
+      {
+        "color": "#88712f",
+        "id": "<ID>",
+        "name": "Boat"
+      },
+      {
+        "color": "#9cb067",
+        "id": "<ID>",
+        "name": "Bottle"
+      },
+      {
+        "color": "#a4527d",
+        "id": "<ID>",
+        "name": "Bus"
+      },
+      {
+        "color": "#a55046",
+        "id": "<ID>",
+        "name": "Car"
+      },
+      {
+        "color": "#6e90da",
+        "id": "<ID>",
+        "name": "Cat"
+      },
+      {
+        "color": "#487b3b",
+        "id": "<ID>",
+        "name": "Chair"
+      },
+      {
+        "color": "#6360a7",
+        "id": "<ID>",
+        "name": "Cow"
+      },
+      {
+        "color": "#cd8fd3",
+        "id": "<ID>",
+        "name": "Dining table"
+      },
+      {
+        "color": "#d5a442",
+        "id": "<ID>",
+        "name": "Dog"
+      },
+      {
+        "color": "#cf7635",
+        "id": "<ID>",
+        "name": "Horse"
+      },
+      {
+        "color": "#da4971",
+        "id": "<ID>",
+        "name": "Motorbike"
+      },
+      {
+        "color": "#a4b137",
+        "id": "<ID>",
+        "name": "Person"
+      },
+      {
+        "color": "#d44da4",
+        "id": "<ID>",
+        "name": "Potted plant"
+      },
+      {
+        "color": "#aa54be",
+        "id": "<ID>",
+        "name": "Sheep"
+      },
+      {
+        "color": "#5ab74d",
+        "id": "<ID>",
+        "name": "Sofa"
+      },
+      {
+        "color": "#7166d9",
+        "id": "<ID>",
+        "name": "Train"
+      },
+      {
+        "color": "#d14734",
+        "id": "<ID>",
+        "name": "TV/monitor"
+      }
+    ],
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "POST",
+    "path": "/api/label/tree/all"
+  },
+  "response": {
+    "body": {
+      "error": "Object of type Response is not JSON serializable",
+      "type": "TypeError"
+    },
+    "headers": {
+      "access-control-allow-origin": "*",
+      "content-type": "application/json"
+    },
+    "status": 500
+  }
+}

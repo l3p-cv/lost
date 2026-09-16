@@ -7,7 +7,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool
 from sqlalchemy.sql import text
 
-from lost.api.inference_model.api_definition import InferenceModelRequest
+# from lost.api.inference_model.api_definition import InferenceModelRequest
 from lost.db import dtype, model, state
 
 
@@ -1859,18 +1859,18 @@ class DBMan:
     def get_all_inference_models(self) -> list[model.InferenceModel]:
         return self.session.query(model.InferenceModel).order_by(model.InferenceModel.last_updated.desc()).all()
 
-    def create_inference_model(self, data: InferenceModelRequest) -> model.InferenceModel:
-        new_entry = model.InferenceModel(
-            name=data.name,
-            display_name=data.display_name,
-            server_url=data.server_url,
-            model_type=data.model_type,
-            task_type=data.task_type,
-            description=data.description,
-        )
-        self.session.add(new_entry)
-        self.session.commit()
-        return new_entry
+    # def create_inference_model(self, data: InferenceModelRequest) -> model.InferenceModel:
+    #     new_entry = model.InferenceModel(
+    #         name=data.name,
+    #         display_name=data.display_name,
+    #         server_url=data.server_url,
+    #         model_type=data.model_type,
+    #         task_type=data.task_type,
+    #         description=data.description,
+    #     )
+    #     self.session.add(new_entry)
+    #     self.session.commit()
+    #     return new_entry
 
     def update_inference_model(self, idx: int, data) -> Optional[model.InferenceModel]:
         entry = self.session.query(model.InferenceModel).filter_by(idx=idx).first()
