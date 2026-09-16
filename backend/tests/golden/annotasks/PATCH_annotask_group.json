@@ -5,10 +5,10 @@
       "Authorization": "<AUTH>"
     },
     "json": {
-      "groupId": 298
+      "groupId": 670
     },
     "method": "PATCH",
-    "path": "/api/annotasks/127/group"
+    "path": "/api/annotasks/143/group"
   },
   "response": {
     "body": "Success",

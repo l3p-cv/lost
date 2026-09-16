@@ -5,11 +5,11 @@
       "Authorization": "<AUTH>"
     },
     "json": {
-      "annotaskId": 127,
+      "annotaskId": 143,
       "instructionId": 1
     },
     "method": "PATCH",
-    "path": "/api/annotasks/127/instruction"
+    "path": "/api/annotasks/143/instruction"
   },
   "response": {
     "body": {

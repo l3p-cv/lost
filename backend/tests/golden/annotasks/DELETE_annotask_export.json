@@ -5,7 +5,7 @@
       "Authorization": "<AUTH>"
     },
     "method": "DELETE",
-    "path": "/api/annotasks/exports/195"
+    "path": "/api/annotasks/exports/251"
   },
   "response": {
     "body": "Success",

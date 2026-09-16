@@ -8,7 +8,7 @@
     "params": {
       "config": "true"
     },
-    "path": "/api/annotasks/127"
+    "path": "/api/annotasks/143"
   },
   "response": {
     "body": {
@@ -62,7 +62,7 @@
         "amountPerLabel": [],
         "secondsPerAnno": null
       },
-      "status": "pending",
+      "status": "inProgress",
       "type": "sia",
       "userName": "admin"
     },

@@ -5,7 +5,7 @@
       "Authorization": "<AUTH>"
     },
     "method": "GET",
-    "path": "/api/annotasks/127/instruction"
+    "path": "/api/annotasks/143/instruction"
   },
   "response": {
     "body": {
