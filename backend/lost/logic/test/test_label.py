@@ -2,7 +2,7 @@ import pytest
 
 import lostconfig as config
 from lost.db.access import DBMan
-from lost.logic.label import LabelTree
+from lost.controllers.label.LabelBusiness import LabelTree
 
 ROOT_NAME = "first tree"
 ROOT_EXTERNAL_ID = "0"
@@ -28,7 +28,7 @@ def tree_plus_childs():
     root_leaf = tree.create_root(ROOT_NAME, external_id=ROOT_EXTERNAL_ID)
     horse = tree.create_child(tree.root.idx, CHILD_HORSE_NAME, external_id=CHILD_HORSE_EXTERNAL_ID)
     cow = tree.create_child(tree.root.idx, CHILD_COW_NAME, external_id=CHILD_COW_EXTERNAL_ID)
-    yield tree  # type: lost.logic.label.LabelTree
+    yield tree  # type: lost.controllers.label.LabelBusiness.LabelTree
     tree.delete_tree()
 
 

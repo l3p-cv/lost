@@ -202,6 +202,7 @@ def _cleanup_created_label_by_name(dbm, context):
 
     name = context.get("label_name")
     if name:
+        dbm.session.rollback()  # ensure no pending transactions
         leaf = dbm.session.query(model.LabelLeaf).filter_by(name=name).first()
         if leaf:
             dbm.delete(leaf)

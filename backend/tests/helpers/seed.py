@@ -174,7 +174,16 @@ def cleanup_all_test_users(dbm) -> int:
                 count += 1
     return count
 
-
+def cleanup_all_test_label_leaves(dbm) -> int:
+    """Remove leftover compare_test_* label leaves (e.g. strays inside OOTB trees)."""
+    from lost.db import model
+    strays = dbm.session.query(model.LabelLeaf).filter(
+        model.LabelLeaf.name.like(f"{TEST_PREFIX}%")
+    ).all()
+    for leaf in strays:
+        dbm.delete(leaf)
+    dbm.commit()
+    return len(strays)
 # ---------------------------------------------------------------------------
 # Helper for tests: build the JSON body for creating a user via the API
 # ---------------------------------------------------------------------------

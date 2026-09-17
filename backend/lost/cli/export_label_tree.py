@@ -5,7 +5,7 @@ import logging
 
 import lostconfig as config
 from lost.db import access
-from lost.logic.label import LabelTree
+from lost.controllers.label.LabelBusiness import LabelTree
 
 logging.basicConfig(level=logging.INFO, format="(%(levelname)s): %(message)s")
 

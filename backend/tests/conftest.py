@@ -194,8 +194,9 @@ def seed(dbm, request):
     # If --cleanup flag is set, force-remove all leftover test data first
     if request.config.getoption("--cleanup"):
         n = seed_module.cleanup_all_test_users(dbm)
-        if n:
-            print(f"\n[cleanup] removed {n} leftover test users")
+        m = seed_module.cleanup_all_test_label_leaves(dbm)
+        if n or m:
+            print(f"\n[cleanup] removed {n} leftover test users and {m} leftover test label leaves")
 
     yield seed_module
 

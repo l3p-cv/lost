@@ -15,7 +15,7 @@ from lost.db import access, dtype, state
 from lost.logic import log
 from lost.logic.db_access import UserDbAccess
 from lost.logic.file_access import UserFileAccess
-from lost.logic.label import LabelTree
+from lost.controllers.label.LabelBusiness import LabelTree
 from lost.pyapi import inout, pe_base, pipe_elements
 from lostconfig import LOSTConfig
 
@@ -135,7 +135,7 @@ class Script(pe_base.Element):
             name (str): Name of the desired LabelTree.
 
         Retruns:
-            :class:`lost.logic.label.LabelTree` or None:
+            :class:`lost.controllers.label.LabelBusiness.LabelTree` or None:
                 If a label tree with the given name exists
                 it will be returned. Otherwise None
                 will be returned"""
@@ -155,7 +155,7 @@ class Script(pe_base.Element):
             external_id (str): An external id for the root leaf.
 
         Returns:
-            :class:`lost.logic.label.LabelTree`:
+            :class:`lost.controllers.label.LabelBusiness.LabelTree`:
                 The created LabelTree.
         """
         tree = LabelTree(self._dbm)

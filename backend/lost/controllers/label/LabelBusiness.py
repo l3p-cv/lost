@@ -1,3 +1,4 @@
+"""Label business layer — LabelTree domain logic (moved from lost/logic/label.py in Pass 2)."""
 import pandas as pd
 
 from lost.db import model

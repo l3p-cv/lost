@@ -1,39 +1,37 @@
 """Label namespace — FastAPI endpoints for label info and control.
 
-Routes:
-    GET    /api/label/tree/{visibility}      — list label trees (designer/admin)
-    POST   /api/label/tree/{visibility}      — import label tree from CSV (designer/admin)
-    GET    /api/label/{label_leaf_id}         — get label leaf by ID (designer)
-    PATCH  /api/label/{visibility}            — update label (designer)
-    POST   /api/label/{visibility}            — create label (designer/admin)
-    DELETE /api/label/{label_leaf_id}        — delete label (designer)
-    GET    /api/label/{label_leaf_id}/export — export label tree as CSV (designer)
-"""
+Pass 2 CCB split: routes, schemas and error mapping only.
+Orchestration: LabelCoordination -> LabelBusiness (LabelTree).
 
+Routes:
+    GET    /api/label/tree/{visibility}       — list label trees (designer/admin)
+    POST   /api/label/tree/{visibility}       — import label tree from CSV (designer/admin)
+    GET    /api/label/{label_leaf_id}         — get label leaf by ID (designer)
+    PATCH  /api/label/{visibility}           — update label (designer)
+    POST   /api/label/{visibility}           — create label (designer/admin)
+    DELETE /api/label/{label_leaf_id}         — delete label (designer)
+    GET    /api/label/{label_leaf_id}/export  — export label tree as CSV (designer)
+"""
 from __future__ import annotations
 
 import logging
-from io import BytesIO
 
-import pandas as pd
 from fastapi import APIRouter, Depends, UploadFile
 from fastapi.responses import JSONResponse, Response
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from lost.controllers.auth.dependencies import require_role
 from lost.controllers.base import ProfilingRoute
-from lost.db import model, roles
+from lost.controllers.label import LabelCoordination
+from lost.db import roles
 from lost.db.access import DBMan
 from lost.db.session import get_db
-from lost.db.vis_level import VisLevel
-from lost.logic.label import LabelTree
 
 logger = logging.getLogger("lost.controllers.label")
 router = APIRouter(tags=["label"], route_class=ProfilingRoute)
 
 
 # --- Schemas ---
-
 
 class Group(BaseModel):
     idx: int | None = None
@@ -71,64 +69,7 @@ class UpdateLabelRequest(BaseModel):
     color: str | None = None
 
 
-# --- Routes ---
-
-
-@router.get("/tree/{visibility}")
-def get_label_trees(
-    visibility: str,
-    user=Depends(require_role(roles.DESIGNER)),
-    dbm: DBMan = Depends(get_db),
-):
-    """Get all label trees for the given visibility level."""
-    default_group = dbm.get_group_by_name(user.user_name)
-
-    if visibility == VisLevel.USER:
-        root_leaves = dbm.get_all_label_trees(group_id=default_group.idx)
-    elif visibility == VisLevel.GLOBAL:
-        if not user.has_role(roles.ADMINISTRATOR):
-            return JSONResponse(status_code=403, content={"message": "You are not authorized."})
-        root_leaves = dbm.get_all_label_trees(global_only=True)
-    elif visibility == VisLevel.ALL:
-        root_leaves = dbm.get_all_label_trees(group_id=default_group.idx, add_global=True)
-    else:
-        return JSONResponse(status_code=403, content={"message": "You are not authorized."})
-
-    trees = []
-    for root_leaf in root_leaves:
-        trees.append(LabelTree(dbm, root_leaf.idx).to_hierarchical_dict())
-    return trees
-
-
-@router.post("/tree/{visibility}")
-async def import_label_tree(
-    visibility: str,
-    file: UploadFile,
-    user=Depends(require_role(roles.DESIGNER)),
-    dbm: DBMan = Depends(get_db),
-):
-    """Import a label tree from CSV."""
-    if not file.filename or not file.filename.endswith(".csv"):
-        return JSONResponse(status_code=400, content={"error": "Invalid file format. Please upload a CSV file."})
-
-    default_group = dbm.get_group_by_name(user.user_name)
-
-    if visibility == VisLevel.ALL:
-        tree = LabelTree(dbm, logger=logger, group_id=default_group.idx)
-    elif visibility == VisLevel.GLOBAL:
-        if not user.has_role(roles.ADMINISTRATOR):
-            return JSONResponse(status_code=403, content={"message": "You are not authorized."})
-        tree = LabelTree(dbm, logger=logger)
-    else:
-        return JSONResponse(status_code=403, content={"message": "You are not authorized."})
-
-    contents = await file.read()
-    df = pd.read_csv(BytesIO(contents))
-    root = tree.import_df(df)
-    if not root:
-        return JSONResponse(status_code=400, content={"error": "LabelTree already present in database!"})
-    return {"message": "Tree imported successfully"}
-
+# --- Serializers (Flask restx marshal parity) ---
 
 def _label_leaf_to_dict(leaf):
     """Convert a LabelLeaf ORM object to a dict matching Flask restx marshal_with output.
@@ -153,6 +94,41 @@ def _label_leaf_to_dict(leaf):
     }
 
 
+# --- Routes ---
+
+@router.get("/tree/{visibility}")
+def get_label_trees(
+    visibility: str,
+    user=Depends(require_role(roles.DESIGNER)),
+    dbm: DBMan = Depends(get_db),
+):
+    """Get all label trees for the given visibility level."""
+    try:
+        return LabelCoordination.get_label_trees(dbm, user, visibility)
+    except PermissionError:
+        return JSONResponse(status_code=403, content={"message": "You are not authorized."})
+
+
+@router.post("/tree/{visibility}")
+async def import_label_tree(
+    visibility: str,
+    file: UploadFile,
+    user=Depends(require_role(roles.DESIGNER)),
+    dbm: DBMan = Depends(get_db),
+):
+    """Import a label tree from CSV."""
+    if not file.filename or not file.filename.endswith(".csv"):
+        return JSONResponse(status_code=400, content={"error": "Invalid file format. Please upload a CSV file."})
+    csv_bytes = await file.read()
+    try:
+        root = LabelCoordination.import_label_tree(dbm, user, visibility, csv_bytes)
+    except PermissionError:
+        return JSONResponse(status_code=403, content={"message": "You are not authorized."})
+    if root is None:
+        return JSONResponse(status_code=400, content={"error": "LabelTree already present in database!"})
+    return {"message": "Tree imported successfully"}
+
+
 @router.get("/{label_leaf_id}")
 def get_label_leaf(
     label_leaf_id: int,
@@ -160,7 +136,8 @@ def get_label_leaf(
     dbm: DBMan = Depends(get_db),
 ):
     """Get a label leaf by ID."""
-    return _label_leaf_to_dict(dbm.get_label_leaf(label_leaf_id))
+    return _label_leaf_to_dict(LabelCoordination.get_label_leaf(dbm, label_leaf_id))
+
 
 @router.delete("/{label_leaf_id}")
 def delete_label(
@@ -169,9 +146,7 @@ def delete_label(
     dbm: DBMan = Depends(get_db),
 ):
     """Delete a label leaf by ID."""
-    label = dbm.get_label_leaf(label_leaf_id)
-    dbm.delete(label)
-    dbm.commit()
+    LabelCoordination.delete_label(dbm, label_leaf_id)
     return "success"
 
 
@@ -182,16 +157,13 @@ def export_label_tree(
     dbm: DBMan = Depends(get_db),
 ):
     """Export a label tree as CSV."""
-    label_tree = LabelTree(dbm, root_id=label_leaf_id)
-    ldf = label_tree.to_df()
-    f = BytesIO()
-    ldf.to_csv(f)
-    f.seek(0)
+    csv_bytes, root_name = LabelCoordination.export_label_tree(dbm, label_leaf_id)
     return Response(
-        content=f.read(),
+        content=csv_bytes,
         media_type="blob",
-        headers={"Content-Disposition": f"attachment; filename={label_tree.root.name}.csv"},
+        headers={"Content-Disposition": f"attachment; filename={root_name}.csv"},
     )
+
 
 @router.patch("/{visibility}")
 def update_label(
@@ -201,13 +173,9 @@ def update_label(
     dbm: DBMan = Depends(get_db),
 ):
     """Update an existing label leaf."""
-    label = dbm.get_label_leaf(req.id)
-    label.name = req.name
-    label.description = req.description
-    label.abbreviation = req.abbreviation
-    label.external_id = req.external_id
-    label.color = req.color
-    dbm.save_obj(label)
+    LabelCoordination.update_label(
+        dbm, req.id, req.name, req.description, req.abbreviation, req.external_id, req.color
+    )
     return "success"
 
 
@@ -219,33 +187,8 @@ def create_label(
     dbm: DBMan = Depends(get_db),
 ):
     """Create a new label leaf."""
-    default_group = dbm.get_group_by_name(user.user_name)
-
-    if visibility == VisLevel.ALL:
-        label = model.LabelLeaf(
-            name=req.name,
-            abbreviation=req.abbreviation,
-            description=req.description,
-            external_id=req.external_id,
-            is_root=req.is_root,
-            color=req.color,
-            group_id=default_group.idx,
-        )
-    elif visibility == VisLevel.GLOBAL:
-        if not user.has_role(roles.ADMINISTRATOR):
-            return JSONResponse(status_code=403, content={"message": "You are not authorized."})
-        label = model.LabelLeaf(
-            name=req.name,
-            abbreviation=req.abbreviation,
-            description=req.description,
-            external_id=req.external_id,
-            is_root=req.is_root,
-            color=req.color,
-        )
-    else:
+    try:
+        label_id = LabelCoordination.create_label(dbm, user, visibility, req)
+    except PermissionError:
         return JSONResponse(status_code=403, content={"message": "You are not authorized."})
-
-    if req.parent_leaf_id:
-        label.parent_leaf_id = req.parent_leaf_id
-    dbm.save_obj(label)
-    return {"message": "Label added successfully", "labelId": label.idx}
+    return {"message": "Label added successfully", "labelId": label_id}

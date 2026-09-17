@@ -32,6 +32,7 @@ CONTROLLERS = Path(__file__).resolve().parents[2] / "lost" / "controllers"
 SPLIT_MODULES: dict[str, tuple[str, str, str]] = {
     # module dir: (endpoint file, coordination file, business file)
     "auth": ("OpenidEndpoint.py", "OpenidCoordination.py", "OpenidBusiness.py"),
+    "label": ("LabelEndpoint.py", "LabelCoordination.py", "LabelBusiness.py")
 }
 
 _BUSINESS_SUFFIX_BAN = ("Endpoint", "Coordination")

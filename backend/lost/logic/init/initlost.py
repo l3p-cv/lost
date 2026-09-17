@@ -15,7 +15,7 @@ from lost.db.db_patches.patches import patch_dict
 from lost.db.model import Group, Role, User, UserGroups, UserRoles
 from lost.logic.file_access import UserFileAccess, create_user_default_fs
 from lost.logic.file_man import AppFileMan
-from lost.logic.label import LabelTree
+from lost.controllers.label.LabelBusiness import LabelTree
 from lost.logic.pipeline import template_import
 from lost.settings import LOST_CONFIG
 
