@@ -1,22 +1,22 @@
 """Config namespace — FastAPI endpoints for project config management.
 
-Routes:
-    GET   /api/config   — get all config entries (admin)
-    PATCH /api/config   — update config entries (admin)
-"""
+Pass 2 CCB split: routes, schemas, response construction only.
+Flow: ConfigEndpoint -> ConfigCoordination -> ConfigBusiness (ProjectConfigMan util).
 
+Routes:
+    GET   /api/config — get all config entries (admin)
+    PATCH /api/config — update config entries (admin)
+"""
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
-from lost.controllers.Dependencies import require_role
-from lost.controllers.base import ProfilingRoute
-from lost.db import roles
-from lost.db.access import DBMan
-from lost.db.model import User as DBUser
-from lost.db.session import get_db
-from lost.logic.project_config import ProjectConfigMan
 
+from lost.controllers.Dependencies import get_config_coordination, require_role
+from lost.controllers.base import ProfilingRoute
+from lost.controllers.config.ConfigCoordination import ConfigCoordination
+from lost.db import roles
+from lost.db.model import User as DBUser
 
 router = APIRouter(tags=["config"], route_class=ProfilingRoute)
 
@@ -29,21 +29,18 @@ class ConfigEntry(BaseModel):
 @router.get("")
 def get_config(
     user: DBUser = Depends(require_role(roles.ADMINISTRATOR)),
-    dbm: DBMan = Depends(get_db),
+    coord: ConfigCoordination = Depends(get_config_coordination),
 ):
     """Get all config entries (admin only)."""
-    project_config = ProjectConfigMan(dbm)
-    return project_config.get_all()
+    return coord.get_config()
 
 
 @router.patch("")
 def update_config(
     entries: list[ConfigEntry],
     user: DBUser = Depends(require_role(roles.ADMINISTRATOR)),
-    dbm: DBMan = Depends(get_db),
+    coord: ConfigCoordination = Depends(get_config_coordination),
 ):
     """Update config entries (admin only)."""
-    project_config = ProjectConfigMan(dbm)
-    for element in entries:
-        project_config.update_entry(element.key, value=element.value)
+    coord.update_config(entries)
     return "success"
