@@ -11,6 +11,10 @@ import jwt as pyjwt
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
+from lost.controllers.AuthorizationService import AuthorizationService
+from lost.controllers.label.LabelBusiness import LabelBusiness
+from lost.controllers.label.LabelCoordination import LabelCoordination
+
 from lost.db.model import User as DBUser
 from lost.db.access import DBMan
 from lost.db.session import get_db
@@ -61,3 +65,7 @@ def require_role(*allowed_roles: str):
         return user
 
     return dependency
+
+def get_label_coordination(dbm: DBMan = Depends(get_db)) -> LabelCoordination:
+    """Wire the label coordination service with its collaborators."""
+    return LabelCoordination(LabelBusiness(dbm, AuthorizationService()))

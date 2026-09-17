@@ -1,109 +1,50 @@
-"""Label coordination layer - orchestration for label namespace
+"""Label coordination layer — thin routing of endpoint calls to business.
 
 Flow
----
-LabelEndpoint -> LabelCoordination -> LabelBusiness (LabelTree)
+----
+LabelEndpoint  ->  LabelCoordination  ->  LabelBusiness (LabelTree)
 
-Framework-free: unauthorized operations raise PermissionError
-the endpoint maps it to 403 response.
-A duplicate-tree import returns None
+Mirrors OpenidCoordination: coordination only maps each route to a business
+function (and sequences them for multi-step flows). Visibility scoping and
+authorization live in the business layer, which calls the shared
+AuthorizationService utility. Domain exceptions propagate to fastapi_app's
+global handlers.
 """
 from __future__ import annotations
 
-import logging
-from io import BytesIO
-
-import pandas as pd
-
-from lost.controllers.label.LabelBusiness import LabelTree
-from lost.db import model, roles
-from lost.db.vis_level import VisLevel
-
-logger = logging.getLogger("lost.controllers.label")
+from lost.controllers.label.LabelBusiness import LabelBusiness
 
 
-def get_label_trees(dbm, user, visibility: str) -> list[dict]:
-    """Return hierarchical label-tree dicts for the given visibility level."""
-    default_group = dbm.get_group_by_name(user.user_name)
-    if visibility == VisLevel.USER:
-        root_leaves = dbm.get_all_label_trees(group_id=default_group.idx)
-    elif visibility == VisLevel.GLOBAL:
-        if not user.has_role(roles.ADMINISTRATOR):
-            raise PermissionError("You are not authorized.")
-        root_leaves = dbm.get_all_label_trees(global_only=True)
-    elif visibility == VisLevel.ALL:
-        root_leaves = dbm.get_all_label_trees(group_id=default_group.idx, add_global=True)
-    else:
-        raise PermissionError("You are not authorized.")
-    return [LabelTree(dbm, root_leaf.idx).to_hierarchical_dict() for root_leaf in root_leaves]
+class LabelCoordination:
+    """Coordination service for the label namespace — thin delegation."""
 
+    def __init__(self, business: LabelBusiness) -> None:
+        self._business = business
 
-def import_label_tree(dbm, user, visibility: str, csv_bytes: bytes):
-    """Import a label tree from CSV. Return the new root leaf, or None if a
-    tree with the same name already exists in the database."""
-    default_group = dbm.get_group_by_name(user.user_name)
-    if visibility == VisLevel.ALL:
-        tree = LabelTree(dbm, logger=logger, group_id=default_group.idx)
-    elif visibility == VisLevel.GLOBAL:
-        if not user.has_role(roles.ADMINISTRATOR):
-            raise PermissionError("You are not authorized.")
-        tree = LabelTree(dbm, logger=logger)
-    else:
-        raise PermissionError("You are not authorized.")
-    df = pd.read_csv(BytesIO(csv_bytes))
-    return tree.import_df(df)
+    def get_label_trees(self, user, visibility: str) -> list[dict]:
+        """List label trees for a visibility level. Delegates to LabelBusiness.list_trees."""
+        return self._business.list_trees(user, visibility)
 
+    def import_label_tree(self, user, visibility: str, filename: str | None, csv_bytes: bytes):
+        """Import a label tree from CSV. Delegates to LabelBusiness.import_tree."""
+        self._business.import_tree(user, visibility, filename, csv_bytes)
 
-def get_label_leaf(dbm, label_leaf_id: int):
-    return dbm.get_label_leaf(label_leaf_id)
+    def get_label_leaf(self, label_leaf_id: int) -> dict:
+        """Get one label leaf. Delegates to LabelBusiness.get_leaf_dict."""
+        return self._business.get_leaf_dict(label_leaf_id)
 
+    def delete_label(self, label_leaf_id: int) -> None:
+        """Delete a label leaf. Delegates to LabelBusiness.delete_leaf."""
+        self._business.delete_leaf(label_leaf_id)
 
-def delete_label(dbm, label_leaf_id: int) -> None:
-    label = dbm.get_label_leaf(label_leaf_id)
-    dbm.delete(label)
-    dbm.commit()
+    def export_label_tree(self, label_leaf_id: int) -> tuple[bytes, str]:
+        """Export a tree as CSV. Delegates to LabelBusiness.export_csv."""
+        return self._business.export_csv(label_leaf_id)
 
+    def update_label(self, req) -> None:
+        """Update a label leaf. Delegates to LabelBusiness.update_leaf."""
+        self._business.update_leaf(req.id, req.name, req.description, req.abbreviation, req.external_id, req.color)
 
-def export_label_tree(dbm, label_leaf_id: int) -> tuple[bytes, str]:
-    """Return (csv_bytes, root_name) for the tree rooted at *label_leaf_id*."""
-    label_tree = LabelTree(dbm, root_id=label_leaf_id)
-    ldf = label_tree.to_df()
-    f = BytesIO()
-    ldf.to_csv(f)
-    f.seek(0)
-    return f.read(), label_tree.root.name
-
-
-def update_label(dbm, label_id: int, name: str, description: str, abbreviation: str,
-                 external_id: str | None, color: str | None) -> None:
-    label = dbm.get_label_leaf(label_id)
-    label.name = name
-    label.description = description
-    label.abbreviation = abbreviation
-    label.external_id = external_id
-    label.color = color
-    dbm.save_obj(label)
-
-
-def create_label(dbm, user, visibility: str, req) -> int:
-    """Create a label leaf. Return the idx of the created label."""
-    default_group = dbm.get_group_by_name(user.user_name)
-    if visibility == VisLevel.ALL:
-        label = model.LabelLeaf(
-            name=req.name, abbreviation=req.abbreviation, description=req.description,
-            external_id=req.external_id, is_root=req.is_root, color=req.color,
-            group_id=default_group.idx,
-        )
-    elif visibility == VisLevel.GLOBAL:
-        if not user.has_role(roles.ADMINISTRATOR):
-            raise PermissionError("You are not authorized.")
-        label = model.LabelLeaf(
-            name=req.name, abbreviation=req.abbreviation, description=req.description,
-            external_id=req.external_id, is_root=req.is_root, color=req.color,
-        )
-    else:
-        raise PermissionError("You are not authorized.")
-    if req.parent_leaf_id:
-        label.parent_leaf_id = req.parent_leaf_id
-    dbm.save_obj(label)
-    return label.idx
+    def create_label(self, user, visibility: str, req) -> int:
+        """Create a label leaf; returns its idx. Delegates to LabelBusiness.create_leaf."""
+        return self._business.create_leaf(user, visibility, req)

@@ -19,6 +19,9 @@ from starlette.middleware.sessions import SessionMiddleware
 from lost import settings
 from lost.logic import dask_session
 
+from lost.controllers.Exceptions import DomainError
+from lost.controllers.label.LabelBusiness import DuplicateLabelTreeError, InvalidLabelUploadError
+
 from fastapi.exceptions import HTTPException as FastAPIHTTPException
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
@@ -118,6 +121,12 @@ async def handle_exception_handler(request: Request, exc: StarletteHTTPException
 
 # Dask background thread (mirrors Flask app.py:156)
 
+# --- Domain-error handler (self-describing exceptions carry their legacy bodies) ---
+
+@app.exception_handler(DomainError)
+async def handle_domain_error(request: Request, exc: DomainError):
+    logger.warning("Domain error: %s: %s", type(exc).__name__, exc)
+    return JSONResponse(status_code=exc.http_status, content=exc.http_body)
 
 @app.on_event("startup")
 async def startup_event():

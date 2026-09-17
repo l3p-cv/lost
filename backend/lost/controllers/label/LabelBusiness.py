@@ -6,6 +6,16 @@ import numpy as np
 import hashlib
 from skimage import color as skcolor
 
+import logging
+from io import BytesIO
+
+from lost.controllers.AuthorizationService import AuthorizationService
+from lost.controllers.Exceptions import NotAuthorizedError
+from lost.db.vis_level import VisLevel
+from lost.controllers.Exceptions import DomainError, NotAuthorizedError
+
+logger = logging.getLogger("lost.controllers.label")
+
 __author__ = "Jonas Jaeger"
 
 DEFAULT_LABEL_COLORS = [
@@ -369,3 +379,150 @@ class LabelTree:
                 self.logger.error("""At least the following columns 
                     need to be provided: *idx*, *name*, *parent_leaf_id*""")
                 raise
+
+class DuplicateLabelTreeError(DomainError):
+    """A label tree with the same root name already exists in the database."""
+
+    http_status = 400
+    http_body = {"error": "LabelTree already present in database!"}
+
+
+class InvalidLabelUploadError(DomainError):
+    """The uploaded file is not a CSV."""
+
+    http_status = 400
+    http_body = {"error": "Invalid file format. Please upload a CSV file."}
+
+
+class LabelBusiness:
+    """Label business service — specific label logic + shared utils.
+
+    Holds the module-specific logic (visibility scoping, CRUD, import/export,
+    API data mapping) and calls commonly-used utilities: the shared
+    AuthorizationService for resource-level checks and the LabelTree domain
+    object (also imported directly by pyapi / cli / initlost).
+    """
+
+    def __init__(self, dbm, authz: AuthorizationService) -> None:
+        self.dbm = dbm
+        self._authz = authz
+
+    # --- trees: listing / import / export ---
+
+    def list_trees(self, user, visibility: str) -> list[dict]:
+        """Hierarchical label-tree dicts for a visibility level.
+
+        Raises:
+            NotAuthorizedError: unknown visibility, or non-admin global access.
+        """
+        default_group = self._authz.default_group(self.dbm, user)
+        if visibility == VisLevel.USER:
+            root_leaves = self.dbm.get_all_label_trees(group_id=default_group.idx)
+        elif visibility == VisLevel.GLOBAL:
+            self._authz.assert_global_manage(user)
+            root_leaves = self.dbm.get_all_label_trees(global_only=True)
+        elif visibility == VisLevel.ALL:
+            root_leaves = self.dbm.get_all_label_trees(group_id=default_group.idx, add_global=True)
+        else:
+            raise NotAuthorizedError(f"unknown visibility level: {visibility}")
+        return [LabelTree(self.dbm, root_leaf.idx).to_hierarchical_dict() for root_leaf in root_leaves]
+
+    def import_tree(self, user, visibility: str, filename: str | None, csv_bytes: bytes):
+        """Import a label tree from CSV.
+
+        Raises:
+            InvalidLabelUploadError: the file is not a .csv.
+            NotAuthorizedError: unknown visibility, or non-admin global access.
+            DuplicateLabelTreeError: a tree with the same root name exists.
+        """
+        if not filename or not filename.endswith(".csv"):
+            raise InvalidLabelUploadError("not a CSV file")
+        default_group = self._authz.default_group(self.dbm, user)
+        if visibility == VisLevel.ALL:
+            group_id = default_group.idx
+        elif visibility == VisLevel.GLOBAL:
+            self._authz.assert_global_manage(user)
+            group_id = None
+        else:
+            raise NotAuthorizedError(f"unknown visibility level: {visibility}")
+        df = pd.read_csv(BytesIO(csv_bytes))
+        root = LabelTree(self.dbm, logger=logger, group_id=group_id).import_df(df)
+        if root is None:
+            raise DuplicateLabelTreeError("tree already present")
+        return root
+
+    def export_csv(self, root_id: int) -> tuple[bytes, str]:
+        """Export the tree rooted at *root_id* as ``(csv_bytes, root_name)``."""
+        label_tree = LabelTree(self.dbm, root_id=root_id)
+        ldf = label_tree.to_df()
+        f = BytesIO()
+        ldf.to_csv(f)
+        f.seek(0)
+        return f.read(), label_tree.root.name
+
+    # --- leaf CRUD ---
+
+    def get_leaf_dict(self, label_leaf_id: int) -> dict:
+        """API dict for one label leaf (Flask restx marshal parity)."""
+        return self.leaf_to_api_dict(self.dbm.get_label_leaf(label_leaf_id))
+
+    def delete_leaf(self, label_leaf_id: int) -> None:
+        label = self.dbm.get_label_leaf(label_leaf_id)
+        self.dbm.delete(label)
+        self.dbm.commit()
+
+    def update_leaf(self, label_id, name, description, abbreviation, external_id, color) -> None:
+        label = self.dbm.get_label_leaf(label_id)
+        label.name = name
+        label.description = description
+        label.abbreviation = abbreviation
+        label.external_id = external_id
+        label.color = color
+        self.dbm.save_obj(label)
+
+    def create_leaf(self, user, visibility: str, req) -> int:
+        """Create a label leaf and return its idx.
+
+        Raises:
+            NotAuthorizedError: unknown visibility, or non-admin global access.
+        """
+        default_group = self._authz.default_group(self.dbm, user)
+        if visibility == VisLevel.ALL:
+            group_id = default_group.idx
+        elif visibility == VisLevel.GLOBAL:
+            self._authz.assert_global_manage(user)
+            group_id = None
+        else:
+            raise NotAuthorizedError(f"unknown visibility level: {visibility}")
+        label = model.LabelLeaf(
+            name=req.name, abbreviation=req.abbreviation, description=req.description,
+            external_id=req.external_id, is_root=req.is_root, color=req.color,
+            group_id=group_id,
+        )
+        if req.parent_leaf_id:
+            label.parent_leaf_id = req.parent_leaf_id
+        self.dbm.save_obj(label)
+        return label.idx
+
+    @staticmethod
+    def leaf_to_api_dict(leaf) -> dict:
+        """LabelLeaf ORM -> dict matching Flask restx marshal_with output.
+
+        LabelLeaf has group_id but no 'group' relationship — Flask restx
+        outputs {"idx": null, "name": null} for the missing nested model.
+        """
+        if leaf is None:
+            return {"id": None, "name": None, "description": None, "abbreviation": None,
+                    "leaf_id": None, "group": {"idx": None, "name": None},
+                    "is_root": None, "color": None, "label": None}
+        return {
+            "id": leaf.idx,
+            "name": leaf.name,
+            "description": leaf.description,
+            "abbreviation": leaf.abbreviation,
+            "leaf_id": leaf.external_id if leaf.external_id else None,
+            "group": {"idx": None, "name": None},
+            "is_root": leaf.is_root,
+            "color": leaf.color,
+            "label": None,
+        }
