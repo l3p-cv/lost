@@ -37,6 +37,7 @@ SPLIT_MODULES: dict[str, tuple[str, str, str]] = {
     "worker": ("WorkerEndpoint.py", "WorkerCoordination.py", "WorkerBusiness.py"),
     "system": ("SystemEndpoint.py", "SystemCoordination.py", "SystemBusiness.py"),
     "config": ("ConfigEndpoint.py", "ConfigCoordination.py", "ConfigBusiness.py"),
+    "statistics": ("StatisticsEndpoint.py", "StatisticsCoordination.py", "StatisticsBusiness.py", "PersonalStats.py", "DesignerStats.py"),
 }
 
 SHARED_FRAMEWORK_FREE = (
@@ -50,7 +51,13 @@ _COORDINATION_SUFFIX_BAN = ("Endpoint",)
 
 
 def _business_files() -> list[Path]:
-    return sorted(CONTROLLERS.rglob("*Business.py"))
+    files = {p for p in CONTROLLERS.rglob("*Business.py")}
+    for module_dir, layer_files in SPLIT_MODULES.items():
+        for fname in layer_files[2:]:
+            full = CONTROLLERS / module_dir / fname
+            if full.is_file():
+                files.add(full)
+    return sorted(files)
 
 
 def _coordination_files() -> list[Path]:

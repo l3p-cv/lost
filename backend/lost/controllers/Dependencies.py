@@ -22,6 +22,8 @@ from lost.controllers.system.SystemBusiness import SystemBusiness
 from lost.controllers.system.SystemCoordination import SystemCoordination
 from lost.controllers.config.ConfigBusiness import ConfigBusiness
 from lost.controllers.config.ConfigCoordination import ConfigCoordination
+from lost.controllers.statistics.StatisticsBusiness import StatisticsBusiness
+from lost.controllers.statistics.StatisticsCoordination import StatisticsCoordination
 
 from lost.db.model import User as DBUser
 from lost.db.access import DBMan
@@ -93,3 +95,7 @@ def get_system_coordination() -> SystemCoordination:
 def get_config_coordination(dbm: DBMan = Depends(get_db)) -> ConfigCoordination:
     """Wire the config coordination service with its collaborators."""
     return ConfigCoordination(ConfigBusiness(dbm))
+
+def get_statistics_coordination(dbm: DBMan = Depends(get_db)) -> StatisticsCoordination:
+    """Wire the statistics coordination service with its collaborators."""
+    return StatisticsCoordination(StatisticsBusiness(dbm))

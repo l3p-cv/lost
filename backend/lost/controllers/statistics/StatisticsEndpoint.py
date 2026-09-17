@@ -1,28 +1,28 @@
 """Statistics namespace — FastAPI endpoints for annotation statistics.
 
+Pass 2 CCB split: routes, schemas, response construction only.
+Flow: StatisticsEndpoint -> StatisticsCoordination -> StatisticsBusiness
+(PersonalStats / DesignerStats moved here from lost/logic/statistics/).
+
 Routes:
-    GET /api/statistics/personal  — personal annotation stats (annotator)
+    GET /api/statistics/personal — personal annotation stats (annotator)
     GET /api/statistics/designer  — designer annotation stats (designer)
 """
-
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
-from lost.controllers.Dependencies import require_role
-from lost.controllers.base import ProfilingRoute
-from lost.db import roles
-from lost.db.access import DBMan
-from lost.db.model import User as DBUser
-from lost.db.session import get_db
-from lost.logic.statistics import designer, personal
 
+from lost.controllers.Dependencies import get_statistics_coordination, require_role
+from lost.controllers.base import ProfilingRoute
+from lost.controllers.statistics.StatisticsCoordination import StatisticsCoordination
+from lost.db import roles
+from lost.db.model import User as DBUser
 
 router = APIRouter(tags=["statistics"], route_class=ProfilingRoute)
 
 
 # --- Schemas (match Flask restx anno_statistics model exactly) ---
-
 
 class HistorySchema(BaseModel):
     week: list[float] | None = None
@@ -63,37 +63,19 @@ class AnnoStatisticsSchema(BaseModel):
 
 # --- Routes ---
 
-
 @router.get("/personal", response_model=AnnoStatisticsSchema)
 def get_personal_stats(
     user: DBUser = Depends(require_role(roles.ANNOTATOR)),
-    dbm: DBMan = Depends(get_db),
+    coord: StatisticsCoordination = Depends(get_statistics_coordination),
 ):
     """Get personal annotation statistics."""
-    from lost.controllers.statistics.example_data import example_stats
-    personal_stats = personal.PersonalStats(dbm, user.idx)
-    example_stats["annos"] = personal_stats.get_annotation_stats()
-    example_stats["labels"] = personal_stats.get_annos_per_label()
-    example_stats["types"] = personal_stats.get_annos_per_type()
-    example_stats["annotime"] = personal_stats.get_anno_times()
-    example_stats["annotasks"] = personal_stats.get_annotasks()
-    example_stats["processedImages"] = personal_stats.get_processed_images()
-    return example_stats
+    return coord.get_personal_stats(user)
 
 
 @router.get("/designer", response_model=AnnoStatisticsSchema)
 def get_designer_stats(
     user: DBUser = Depends(require_role(roles.DESIGNER)),
-    dbm: DBMan = Depends(get_db),
+    coord: StatisticsCoordination = Depends(get_statistics_coordination),
 ):
     """Get designer annotation statistics."""
-    from lost.controllers.statistics.example_data import example_stats
-    designer_stats = designer.DesignerStats(dbm, user.idx)
-    example_stats["annos"] = designer_stats.get_annotation_stats()
-    example_stats["labels"] = designer_stats.get_annos_per_label()
-    example_stats["types"] = designer_stats.get_annos_per_type()
-    example_stats["annotime"] = designer_stats.get_anno_times()
-    example_stats["annotasks"] = designer_stats.get_annotasks()
-    example_stats["processedImages"] = designer_stats.get_processed_images()
-    example_stats["annosPerHour"] = designer_stats.get_annos_per_hour()
-    return example_stats
+    return coord.get_designer_stats(user)
