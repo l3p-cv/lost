@@ -46,6 +46,7 @@ def _cleanup_test_group_db(dbm, context):
 
 def _cleanup_created_group_by_name(dbm, context):
     """Delete a test group created via POST API, found by name."""
+    dbm.session.rollback()  # in case the POST failed and left a transaction open
     name = context.get("group_name")
     if name:
         g = dbm.get_group_by_name(name)

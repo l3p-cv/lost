@@ -184,6 +184,22 @@ def cleanup_all_test_label_leaves(dbm) -> int:
         dbm.delete(leaf)
     dbm.commit()
     return len(strays)
+
+def cleanup_all_test_groups(dbm) -> int:
+    """Remove leftover compare_test_* groups (FK-safe: deletes membership rows first).
+
+    Run after cleanup_all_test_users — user-default groups die with their users;
+    whatever remains here is test residue.
+    """
+    from lost.db import model
+    n = 0
+    for g in dbm.session.query(model.Group).filter(model.Group.name.like(f"{TEST_PREFIX}%")).all():
+        for ug in dbm.session.query(model.UserGroups).filter_by(group_id=g.idx).all():
+            dbm.delete(ug)
+        dbm.delete(g)
+        n += 1
+    dbm.commit()
+    return n
 # ---------------------------------------------------------------------------
 # Helper for tests: build the JSON body for creating a user via the API
 # ---------------------------------------------------------------------------

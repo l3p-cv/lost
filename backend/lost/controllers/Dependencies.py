@@ -14,6 +14,8 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from lost.controllers.AuthorizationService import AuthorizationService
 from lost.controllers.label.LabelBusiness import LabelBusiness
 from lost.controllers.label.LabelCoordination import LabelCoordination
+from lost.controllers.group.GroupBusiness import GroupBusiness
+from lost.controllers.group.GroupCoordination import GroupCoordination
 
 from lost.db.model import User as DBUser
 from lost.db.access import DBMan
@@ -69,3 +71,7 @@ def require_role(*allowed_roles: str):
 def get_label_coordination(dbm: DBMan = Depends(get_db)) -> LabelCoordination:
     """Wire the label coordination service with its collaborators."""
     return LabelCoordination(LabelBusiness(dbm, AuthorizationService()))
+
+def get_group_coordination(dbm: DBMan = Depends(get_db)) -> GroupCoordination:
+    """Wire the group coordination service with its collaborators."""
+    return GroupCoordination(GroupBusiness(dbm))

@@ -195,8 +195,9 @@ def seed(dbm, request):
     if request.config.getoption("--cleanup"):
         n = seed_module.cleanup_all_test_users(dbm)
         m = seed_module.cleanup_all_test_label_leaves(dbm)
-        if n or m:
-            print(f"\n[cleanup] removed {n} leftover test users and {m} leftover test label leaves")
+        k = seed_module.cleanup_all_test_groups(dbm)
+        if n or m or k:
+            print(f"\n[cleanup] removed {n} leftover test users, {m} leftover test label leaves, and {k} leftover test groups")
 
     yield seed_module
 

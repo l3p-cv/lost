@@ -32,8 +32,10 @@ CONTROLLERS = Path(__file__).resolve().parents[2] / "lost" / "controllers"
 SPLIT_MODULES: dict[str, tuple[str, str, str]] = {
     # module dir: (endpoint file, coordination file, business file)
     "auth": ("OpenidEndpoint.py", "OpenidCoordination.py", "OpenidBusiness.py"),
-    "label": ("LabelEndpoint.py", "LabelCoordination.py", "LabelBusiness.py")
+    "label": ("LabelEndpoint.py", "LabelCoordination.py", "LabelBusiness.py"),
+    "group": ("GroupEndpoint.py", "GroupCoordination.py", "GroupBusiness.py"),
 }
+
 SHARED_FRAMEWORK_FREE = (
     "AuthorizationService.py",
     "auth/login_manager.py",

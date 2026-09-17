@@ -1,29 +1,31 @@
 """Group namespace — FastAPI endpoints for group management.
 
+Pass 2 CCB split: routes, schemas, response construction only.
+Flow: GroupEndpoint -> GroupCoordination -> GroupBusiness.
+Domain errors are mapped to legacy HTTP bodies by the DomainError handler
+in fastapi_app.py.
+
 Routes:
     GET    /api/group              — list all groups (designer)
-    POST   /api/group              — create new group (jwt)
-    GET    /api/group/{group_id}   — get group by ID (jwt)
+    POST   /api/group              — create new group (any authenticated user)
+    GET    /api/group/{group_id}   — get group by ID (any authenticated user)
     DELETE /api/group/{group_id}   — delete group (designer)
 """
-
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, ConfigDict
-from fastapi.responses import JSONResponse
 
-from lost.controllers.Dependencies import get_current_user, require_role
+from lost.controllers.Dependencies import get_current_user, get_group_coordination, require_role
 from lost.controllers.base import ProfilingRoute
-from lost.db import model, roles
-from lost.db.access import DBMan
+from lost.controllers.group.GroupCoordination import GroupCoordination
+from lost.db import roles
 from lost.db.model import User as DBUser
-from lost.db.session import get_db
 
 router = APIRouter(tags=["group"], route_class=ProfilingRoute)
 
-# --- Schemas ---
 
+# --- Schemas ---
 
 class GroupSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -35,38 +37,29 @@ class GroupList(BaseModel):
     groups: list[GroupSchema] = []
 
 
-
 class CreateGroupRequest(BaseModel):
     group_name: str
 
 
 # --- Routes ---
 
-
 @router.get("", response_model=GroupList)
 def get_groups(
     user: DBUser = Depends(require_role(roles.DESIGNER)),
-    dbm: DBMan = Depends(get_db),
+    coord: GroupCoordination = Depends(get_group_coordination),
 ):
     """Get a list of all groups (excluding user defaults)."""
-    return {"groups": dbm.get_user_groups(user_defaults=False)}
+    return {"groups": coord.get_groups(user)}
 
 
 @router.post("")
 def create_group(
     req: CreateGroupRequest,
     user: DBUser = Depends(get_current_user),
-    dbm: DBMan = Depends(get_db),
+    coord: GroupCoordination = Depends(get_group_coordination),
 ):
     """Create a new group. Current user becomes the manager."""
-    group_name = req.group_name
-    if not group_name:
-        return JSONResponse(status_code=400, content="A group name is required.")
-    if dbm.get_group_by_name(group_name):
-        return JSONResponse(status_code=409, content=f"Group with name '{group_name}' already exists.")
-    group = model.Group(name=group_name, manager_id=user.idx)
-    dbm.save_obj(group)
-    dbm.commit()
+    coord.create_group(user, req.group_name)
     return "success"
 
 
@@ -74,10 +67,10 @@ def create_group(
 def get_group(
     group_id: int,
     user: DBUser = Depends(get_current_user),
-    dbm: DBMan = Depends(get_db),
+    coord: GroupCoordination = Depends(get_group_coordination),
 ):
     """Get a group by ID. No role check — just JWT required."""
-    group = dbm.get_group_by_id(group_id)
+    group = coord.get_group(group_id)
     if group:
         return group
     return GroupSchema()
@@ -87,12 +80,8 @@ def get_group(
 def delete_group(
     group_id: int,
     user: DBUser = Depends(require_role(roles.DESIGNER)),
-    dbm: DBMan = Depends(get_db),
+    coord: GroupCoordination = Depends(get_group_coordination),
 ):
     """Delete a group by ID (designer only)."""
-    group = dbm.get_group_by_id(group_id)
-    if group:
-        dbm.delete(group)
-        dbm.commit()
-        return "success"
-    return JSONResponse(status_code=400, content=f"Group with ID '{group_id}' not found.")
+    coord.delete_group(group_id)
+    return "success"
