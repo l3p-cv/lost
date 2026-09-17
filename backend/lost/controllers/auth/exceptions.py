@@ -1,2 +1,0 @@
-class MisconfiguredException(Exception):
-    pass

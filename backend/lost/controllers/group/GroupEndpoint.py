@@ -13,7 +13,7 @@ from fastapi import APIRouter, Depends
 from pydantic import BaseModel, ConfigDict
 from fastapi.responses import JSONResponse
 
-from lost.controllers.auth.dependencies import get_current_user, require_role
+from lost.controllers.Dependencies import get_current_user, require_role
 from lost.controllers.base import ProfilingRoute
 from lost.db import model, roles
 from lost.db.access import DBMan

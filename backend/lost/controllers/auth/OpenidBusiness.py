@@ -25,7 +25,6 @@ from lostconfig import LOSTConfig
 from lost.db import roles
 from lost.db.access import DBMan
 from lost.db.model import User as DBUser, UserRoles, Group, UserGroups, OidcTempCode
-from lost.controllers.auth.exceptions import MisconfiguredException
 from lost.controllers.user.login_manager import LoginManager
 
 logger = logging.getLogger(__name__)
@@ -43,6 +42,9 @@ _jwks_client: PyJWKClient | None = None
 _TEMP_CODE_PREFIX = "openid_temp:"
 _TEMP_CODE_TTL = 60  # seconds
 
+
+class MisconfiguredException(Exception):
+    pass
 
 # ---------------------------------------------------------------------------
 # Task 1 – Build the authorization redirect URL

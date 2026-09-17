@@ -34,7 +34,7 @@ from fastapi import APIRouter, Depends, UploadFile, File
 from fastapi.responses import Response, PlainTextResponse, JSONResponse
 from pydantic import BaseModel
 
-from lost.controllers.auth.dependencies import get_current_user, require_role
+from lost.controllers.Dependencies import get_current_user, require_role
 from lost.controllers.base import ProfilingRoute
 from lost.controllers.pipeline import tasks
 from lost.db import roles

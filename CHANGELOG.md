@@ -46,6 +46,8 @@ Added `create_jwt_pyjwt()` to LoginManager, PyJWT-based token creation.Same stru
 - `backend/tests/compare/inference_model_specs.py`, `test_inference_model_compare.py` : added inference_model comparison specs/tests and 8 golden snapshots recorded from pre-migration Flask; seeded test inference model (`compare_test Dummy YOLO`) via `init_test_data.py`.
 - `backend/tests/` : harness coverage now 100 active comparison specs across 17 namespaces plus 7 active OpenID mock tests; 40 specs intentionally skipped with documented reasons (non-deterministic, destructive or manually verified).
 - `backend/tests/README.md` : added test-suite documentation (harness flow, how to run, comparison modes, adding new coverage).
+- `controllers/Dependencies.py` : contains all changes that were previously in `controllers/auth/dependecies.py` (all endpoint layer wiring: `get_current_user`/`require_role`)
+- `controllers/AuthorizationService.py` : resource level authorization util
 ### Fixed
 - `backend/tests/helpers/recorder.py` : Fixed empty-body handling for 204 No Content responses.
 - fixed recorder for FastAPI TestClient compatibility.
@@ -71,6 +73,7 @@ Added `create_jwt_pyjwt()` to LoginManager, PyJWT-based token creation.Same stru
 ### Removed
 - `backend/` : removed all Flask-dependent code at P1.3 cutover — deleted `lost/app.py`, `lost/flaskapp.py`, `lost/wsgi.py`, `lost/wsgi.ini`, `lost/api/api.py` and dropped Flask deps (`flask`, `flask-cors`, `flask-jwt-extended`, `flask-mail`, `flask-pydantic`, `flask-restx`, `flask-sqlalchemy`, `uwsgi`) from `pyproject.toml`, added `redis`, `itsdangerous`, `pyjwt`.
 - `services/` directory removed.
+- `auth/exceptions.py` : moved MisconfiguredException to OpenidBusiness.py
 
 ## [4.0.0-alpha] - 2026-08-18
 ### Added

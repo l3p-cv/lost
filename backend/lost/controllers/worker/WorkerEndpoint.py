@@ -10,7 +10,7 @@ from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
 from lost.controllers.base import ProfilingRoute
-from lost.controllers.auth.dependencies import require_role
+from lost.controllers.Dependencies import require_role
 from lost.db.session import get_db
 from lost.db import roles
 

@@ -34,7 +34,7 @@ from fastapi.responses import PlainTextResponse, JSONResponse
 from pydantic import BaseModel
 
 from shapely.errors import TopologicalError
-from lost.controllers.auth.dependencies import get_current_user, require_role
+from lost.controllers.Dependencies import get_current_user, require_role
 from lost.controllers.base import ProfilingRoute
 from lost.db import roles, state
 from lost.db.access import DBMan

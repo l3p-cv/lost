@@ -26,7 +26,7 @@ from fastapi import APIRouter, Depends, UploadFile, File, Form
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-from lost.controllers.auth.dependencies import require_role
+from lost.controllers.Dependencies import require_role
 from lost.controllers.base import ProfilingRoute
 from lost.db import model, roles
 from lost.db.access import DBMan

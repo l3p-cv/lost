@@ -14,7 +14,7 @@ import lost_ds as lds
 from fastapi import APIRouter, Depends, Query
 from fastapi.responses import Response, PlainTextResponse, JSONResponse
 
-from lost.controllers.auth.dependencies import get_current_user, require_role
+from lost.controllers.Dependencies import get_current_user, require_role
 from lost.controllers.base import ProfilingRoute
 from lost.db import roles
 from lost.db.access import DBMan

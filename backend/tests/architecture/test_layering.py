@@ -34,7 +34,12 @@ SPLIT_MODULES: dict[str, tuple[str, str, str]] = {
     "auth": ("OpenidEndpoint.py", "OpenidCoordination.py", "OpenidBusiness.py"),
     "label": ("LabelEndpoint.py", "LabelCoordination.py", "LabelBusiness.py")
 }
+SHARED_FRAMEWORK_FREE = (
+    "AuthorizationService.py",
+    "auth/login_manager.py",
+)
 
+_INFRA_NAME_BAN = ("Dependencies", "base", "dependencies")
 _BUSINESS_SUFFIX_BAN = ("Endpoint", "Coordination")
 _COORDINATION_SUFFIX_BAN = ("Endpoint",)
 
@@ -138,3 +143,39 @@ def test_layers_are_registered() -> None:
             f"{_rel(path)} belongs to module {module_dir!r} which is not in "
             "SPLIT_MODULES -- finish the 3-layer split and register it"
         )
+
+def _shared_files() -> list[Path]:
+    return [CONTROLLERS / rel for rel in SHARED_FRAMEWORK_FREE if (CONTROLLERS / rel).is_file()]
+
+
+def _forbidden_infra(imports: list[tuple[str, int]]) -> str | None:
+    for module, _level in imports:
+        if module.rsplit(".", 1)[-1] in _INFRA_NAME_BAN:
+            return module
+    return None
+
+
+@pytest.mark.parametrize("path", _shared_files(), ids=_rel)
+def test_shared_infra_framework_free(path: Path) -> None:
+    bad = _forbidden_framework(_imports(path))
+    assert bad is None, (
+        f"{_rel(path)}: forbidden framework import {bad!r} -- "
+        "shared infra is imported by coordination/business; fastapi would leak transitively"
+    )
+
+
+@pytest.mark.parametrize("path", _shared_files(), ids=_rel)
+def test_shared_infra_no_endpoint_imports(path: Path) -> None:
+    bad = _forbidden_suffix(_imports(path), _COORDINATION_SUFFIX_BAN)
+    assert bad is None, f"{_rel(path)}: upward import {bad!r} -- shared infra must not import Endpoint modules"
+
+
+@pytest.mark.parametrize(
+    "path", _business_files() + _coordination_files() + _shared_files(), ids=_rel,
+)
+def test_no_endpoint_infra_imports(path: Path) -> None:
+    bad = _forbidden_infra(_imports(path))
+    assert bad is None, (
+        f"{_rel(path)}: endpoint-layer infra import {bad!r} -- "
+        "Dependencies/base/auth.dependencies import fastapi and belong to the endpoint layer"
+    )

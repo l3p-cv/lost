@@ -20,7 +20,7 @@ from fastapi import APIRouter, Depends, UploadFile
 from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel
 
-from lost.controllers.auth.dependencies import require_role
+from lost.controllers.Dependencies import require_role
 from lost.controllers.base import ProfilingRoute
 from lost.controllers.label import LabelCoordination
 from lost.db import roles

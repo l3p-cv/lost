@@ -17,7 +17,7 @@ from fastapi.responses import JSONResponse, PlainTextResponse
 from pydantic import BaseModel, field_validator
 from sqlalchemy.exc import IntegrityError
 
-from lost.controllers.auth.dependencies import get_current_user
+from lost.controllers.Dependencies import get_current_user
 from lost.controllers.base import ProfilingRoute
 from lost.db import model
 from lost.db.access import DBMan

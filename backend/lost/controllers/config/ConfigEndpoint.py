@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
-from lost.controllers.auth.dependencies import require_role
+from lost.controllers.Dependencies import require_role
 from lost.controllers.base import ProfilingRoute
 from lost.db import roles
 from lost.db.access import DBMan
