@@ -16,6 +16,8 @@ from lost.controllers.label.LabelBusiness import LabelBusiness
 from lost.controllers.label.LabelCoordination import LabelCoordination
 from lost.controllers.group.GroupBusiness import GroupBusiness
 from lost.controllers.group.GroupCoordination import GroupCoordination
+from lost.controllers.worker.WorkerBusiness import WorkerBusiness
+from lost.controllers.worker.WorkerCoordination import WorkerCoordination
 
 from lost.db.model import User as DBUser
 from lost.db.access import DBMan
@@ -75,3 +77,7 @@ def get_label_coordination(dbm: DBMan = Depends(get_db)) -> LabelCoordination:
 def get_group_coordination(dbm: DBMan = Depends(get_db)) -> GroupCoordination:
     """Wire the group coordination service with its collaborators."""
     return GroupCoordination(GroupBusiness(dbm))
+
+def get_worker_coordination(dbm: DBMan = Depends(get_db)) -> WorkerCoordination:
+    """Wire the worker coordination service with its collaborators."""
+    return WorkerCoordination(WorkerBusiness(dbm))

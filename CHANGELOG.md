@@ -75,6 +75,7 @@ Added `create_jwt_pyjwt()` to LoginManager, PyJWT-based token creation.Same stru
 - `LabelEndpoint` reduced to declarative one-liner handlers with coordination service injected via Dependencies.py
 - `Exceptions` changed to use a DomainError (base class for exceptions) and is mapped by global handlers registered in `fastapi_app.py`
 - `backend/lost/controllers/group/` :  split group module to the v3 CCB pattern: new `GroupBusiness.py` (group CRUD + self-describing `DomainError`s for name-required/duplicate/not-found, including the instance-level `http_body` override for interpolated legacy bodies), thin `GroupCoordination.py`, declarative `GroupEndpoint.py` wired via `get_group_coordination` in `Dependencies.py`.
+- `controllers/worker/` : split worker module to CCB pattern (`WorkerEndpoint.py`,`WorkerCoordination.py`,`WorkerBusiness.py`)
 ### Removed
 - `backend/` : removed all Flask-dependent code at P1.3 cutover — deleted `lost/app.py`, `lost/flaskapp.py`, `lost/wsgi.py`, `lost/wsgi.ini`, `lost/api/api.py` and dropped Flask deps (`flask`, `flask-cors`, `flask-jwt-extended`, `flask-mail`, `flask-pydantic`, `flask-restx`, `flask-sqlalchemy`, `uwsgi`) from `pyproject.toml`, added `redis`, `itsdangerous`, `pyjwt`.
 - `services/` directory removed.
