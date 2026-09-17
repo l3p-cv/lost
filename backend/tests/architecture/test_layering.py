@@ -35,6 +35,7 @@ SPLIT_MODULES: dict[str, tuple[str, str, str]] = {
     "label": ("LabelEndpoint.py", "LabelCoordination.py", "LabelBusiness.py"),
     "group": ("GroupEndpoint.py", "GroupCoordination.py", "GroupBusiness.py"),
     "worker": ("WorkerEndpoint.py", "WorkerCoordination.py", "WorkerBusiness.py"),
+    "system": ("SystemEndpoint.py", "SystemCoordination.py", "SystemBusiness.py"),
 }
 
 SHARED_FRAMEWORK_FREE = (
