@@ -96,6 +96,7 @@ def cleanup_test_user(dbm, user: User | int | str) -> bool:
     Returns:
         True if the user was found and deleted, False otherwise.
     """
+    dbm.session.rollback()
     # Resolve to a User object — use a fresh query to avoid stale session state
     if isinstance(user, User):
         db_user = dbm.get_user_by_id(user.idx)

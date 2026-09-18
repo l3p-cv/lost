@@ -42,6 +42,7 @@ SPLIT_MODULES: dict[str, tuple[str, str, str]] = {
     "instructionmedia": ("InstructionMediaEndpoint.py", "InstructionMediaCoordination.py", "InstructionMediaBusiness.py"),
     "data": ("DataEndpoint.py", "DataCoordination.py", "DataBusiness.py"),
     "inference_model": ("InferenceModelEndpoint.py", "InferenceModelCoordination.py", "InferenceModelBusiness.py"),
+    "user": ("UserEndpoint.py", "UserCoordination.py", "UserBusiness.py"),
 }
 
 SHARED_FRAMEWORK_FREE = (

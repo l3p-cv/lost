@@ -32,6 +32,8 @@ from lost.controllers.data.DataBusiness import DataBusiness
 from lost.controllers.data.DataCoordination import DataCoordination
 from lost.controllers.inference_model.InferenceModelBusiness import InferenceModelBusiness
 from lost.controllers.inference_model.InferenceModelCoordination import InferenceModelCoordination
+from lost.controllers.user.UserBusiness import UserBusiness
+from lost.controllers.user.UserCoordination import UserCoordination
 
 from lost.db.model import User as DBUser
 from lost.db.access import DBMan
@@ -127,3 +129,7 @@ def get_data_coordination(dbm: DBMan = Depends(get_db)) -> DataCoordination:
 def get_inference_model_coordination(dbm: DBMan = Depends(get_db)) -> InferenceModelCoordination:
     """Wire the inference model coordination service with its collaborators."""
     return InferenceModelCoordination(InferenceModelBusiness(dbm))
+
+def get_user_coordination(dbm: DBMan = Depends(get_db)) -> UserCoordination:
+    """Wire the user coordination service with its collaborators"""
+    return UserCoordination(UserBusiness(dbm))
