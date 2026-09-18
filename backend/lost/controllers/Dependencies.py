@@ -34,6 +34,8 @@ from lost.controllers.inference_model.InferenceModelBusiness import InferenceMod
 from lost.controllers.inference_model.InferenceModelCoordination import InferenceModelCoordination
 from lost.controllers.user.UserBusiness import UserBusiness
 from lost.controllers.user.UserCoordination import UserCoordination
+from lost.controllers.filebrowser.FileBrowserBusiness import FileBrowserBusiness
+from lost.controllers.filebrowser.FileBrowserCoordination import FileBrowserCoordination
 
 from lost.db.model import User as DBUser
 from lost.db.access import DBMan
@@ -133,3 +135,7 @@ def get_inference_model_coordination(dbm: DBMan = Depends(get_db)) -> InferenceM
 def get_user_coordination(dbm: DBMan = Depends(get_db)) -> UserCoordination:
     """Wire the user coordination service with its collaborators"""
     return UserCoordination(UserBusiness(dbm))
+
+def get_filebrowser_coordination(dbm: DBMan = Depends(get_db)) -> FileBrowserCoordination:
+    """Wire the filebrowser coordination service with its collaborators"""
+    return FileBrowserCoordination(FileBrowserBusiness(dbm))
