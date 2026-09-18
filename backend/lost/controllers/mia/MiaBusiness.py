@@ -1,3 +1,16 @@
+"""MIA business layer — multi-image annotation flows.
+
+Moved verbatim from ``lost/logic/mia.py`` in Pass 2 (no other importers
+existed). The module-level functions and serializers below hold the domain
+logic
+
+the :class:`MiaBusiness` service binds them to the
+request-scoped dbm. Method names intentionally mirror the module functions
+they delegate to — bare calls inside the methods resolve to the module
+globals, not the methods. ``logic/anno_task`` stays shared for now
+(repointed at the annotasks split).
+"""
+
 import json
 from datetime import datetime
 
@@ -620,3 +633,43 @@ def __get_special_image_annos(db_man, user_id, at, mia_ids):
         image_serialize = ImageSerialize(db_man, annos, user_id)
         image_serialize.serialize()
         return image_serialize.mia_json
+
+class MiaBusiness:
+    """MIA business service — binds the domain functions to a request-scoped dbm."""
+
+    def __init__(self, dbm) -> None:
+        self.dbm = dbm
+
+    def update(self, user_id, data):
+        """Update the user's MIA annotations."""
+        return update(self.dbm, user_id, data)
+
+    def get_next(self, user_id, max_amount: int):
+        """Next MIA annotations."""
+        return get_next(self.dbm, user_id, max_amount)
+
+    def get_label_trees(self, user_id):
+        """Possible MIA label trees."""
+        return get_label_trees(self.dbm, user_id)
+
+    def finish(self, user_id):
+        """Finish the user's MIA task."""
+        return finish(self.dbm, user_id)
+
+    def get_special(self, user_id, mia_ids: list[int]):
+        """Special MIA images by ID."""
+        return get_special(self.dbm, user_id, mia_ids)
+
+    def get_prev(self, user_id, chunk_id: int, update_ids: list[int]):
+        """Previous MIA annotations; chunk_id == -1 → latest (domain convention)."""
+        if chunk_id != -1:
+            return get_prev(self.dbm, user_id, chunk_id, update_ids)
+        return get_latest(self.dbm, user_id)
+
+    def get_first(self, user_id):
+        """First MIA annotation."""
+        return get_first(self.dbm, user_id)
+
+    def get_latest(self, user_id):
+        """Latest MIA annotation."""
+        return get_latest(self.dbm, user_id)
