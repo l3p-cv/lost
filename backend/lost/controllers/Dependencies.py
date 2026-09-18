@@ -24,6 +24,8 @@ from lost.controllers.config.ConfigBusiness import ConfigBusiness
 from lost.controllers.config.ConfigCoordination import ConfigCoordination
 from lost.controllers.statistics.StatisticsBusiness import StatisticsBusiness
 from lost.controllers.statistics.StatisticsCoordination import StatisticsCoordination
+from lost.controllers.instructions.InstructionBusiness import InstructionBusiness
+from lost.controllers.instructions.InstructionCoordination import InstructionCoordination
 
 from lost.db.model import User as DBUser
 from lost.db.access import DBMan
@@ -76,6 +78,10 @@ def require_role(*allowed_roles: str):
 
     return dependency
 
+# --- Coordination service factories ---
+# these are used in the endpoints to wire the coordination services with their dependencies. 
+# Each factory returns a new instance of the coordination service, which is then injected into the endpoint function.
+
 def get_label_coordination(dbm: DBMan = Depends(get_db)) -> LabelCoordination:
     """Wire the label coordination service with its collaborators."""
     return LabelCoordination(LabelBusiness(dbm, AuthorizationService()))
@@ -99,3 +105,7 @@ def get_config_coordination(dbm: DBMan = Depends(get_db)) -> ConfigCoordination:
 def get_statistics_coordination(dbm: DBMan = Depends(get_db)) -> StatisticsCoordination:
     """Wire the statistics coordination service with its collaborators."""
     return StatisticsCoordination(StatisticsBusiness(dbm))
+
+def get_instructions_coordination(dbm: DBMan = Depends(get_db)) -> InstructionCoordination:
+    """Wire the instructions coordination service with its collaborators."""
+    return InstructionCoordination(InstructionBusiness(dbm))
