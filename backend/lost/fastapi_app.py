@@ -13,7 +13,7 @@ import traceback
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, PlainTextResponse
 from starlette.middleware.sessions import SessionMiddleware
 
 from lost import settings
@@ -126,6 +126,8 @@ async def handle_exception_handler(request: Request, exc: StarletteHTTPException
 @app.exception_handler(DomainError)
 async def handle_domain_error(request: Request, exc: DomainError):
     logger.warning("Domain error: %s: %s", type(exc).__name__, exc)
+    if exc.http_media_type == "text/plain":
+        return PlainTextResponse(exc.http_body, status_code=exc.http_status)
     return JSONResponse(status_code=exc.http_status, content=exc.http_body)
 
 @app.on_event("startup")

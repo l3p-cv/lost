@@ -14,7 +14,8 @@ class DomainError(Exception):
     """Base for all domain exceptions — subclasses declare their legacy HTTP mapping."""
 
     http_status: int = 500
-    http_body: dict = {}
+    http_body: dict | str = {}
+    http_media_type: str | None = None
 
 
 class NotAuthorizedError(DomainError):

@@ -28,6 +28,8 @@ from lost.controllers.instructions.InstructionBusiness import InstructionBusines
 from lost.controllers.instructions.InstructionCoordination import InstructionCoordination
 from lost.controllers.instructionmedia.InstructionMediaBusiness import InstructionMediaBusiness
 from lost.controllers.instructionmedia.InstructionMediaCoordination import InstructionMediaCoordination
+from lost.controllers.data.DataBusiness import DataBusiness
+from lost.controllers.data.DataCoordination import DataCoordination
 
 from lost.db.model import User as DBUser
 from lost.db.access import DBMan
@@ -115,3 +117,7 @@ def get_instructions_coordination(dbm: DBMan = Depends(get_db)) -> InstructionCo
 def get_instructionmedia_coordination(dbm: DBMan = Depends(get_db)) -> InstructionMediaCoordination:
     """Wire the instruction media coordination service with its collaborators."""
     return InstructionMediaCoordination(InstructionMediaBusiness(dbm))
+
+def get_data_coordination(dbm: DBMan = Depends(get_db)) -> DataCoordination:
+    """Wire the data coordination service with its collaborators."""
+    return DataCoordination(DataBusiness(dbm))
