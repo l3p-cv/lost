@@ -80,6 +80,7 @@ Added `create_jwt_pyjwt()` to LoginManager, PyJWT-based token creation.Same stru
 - `controllers/instructions/` : split InstructionEndpoint into Endpoint, Coordination and Business pattern.
 - `controllers/instructionmedia/` : split into three layers Endpoint, Coordination and Business.
 - `controllers/data/` : split data into 3 layers endpoint, business and coordination.
+- `controllers/inference_model` : split data into 3 layers CCB pattern.
 ### Removed
 - `backend/` : removed all Flask-dependent code at P1.3 cutover — deleted `lost/app.py`, `lost/flaskapp.py`, `lost/wsgi.py`, `lost/wsgi.ini`, `lost/api/api.py` and dropped Flask deps (`flask`, `flask-cors`, `flask-jwt-extended`, `flask-mail`, `flask-pydantic`, `flask-restx`, `flask-sqlalchemy`, `uwsgi`) from `pyproject.toml`, added `redis`, `itsdangerous`, `pyjwt`.
 - `services/` directory removed.
