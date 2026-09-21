@@ -40,6 +40,8 @@ from lost.controllers.mia.MiaBusiness import MiaBusiness
 from lost.controllers.mia.MiaCoordination import MiaCoordination
 from lost.controllers.sia.SiaBusiness import SiaBusiness
 from lost.controllers.sia.SiaCoordination import SiaCoordination
+from lost.controllers.dataset.DatasetBusiness import DatasetBusiness
+from lost.controllers.dataset.DatasetCoordination import DatasetCoordination
 
 from lost.db.model import User as DBUser
 from lost.db.access import DBMan
@@ -151,3 +153,7 @@ def get_mia_coordination(dbm: DBMan = Depends(get_db)) -> MiaCoordination:
 def get_sia_coordination(dbm: DBMan = Depends(get_db)) -> SiaCoordination:
     """Wire the sia coordination service with its collaborators"""
     return SiaCoordination(SiaBusiness(dbm ,AuthorizationService()))
+
+def get_dataset_coordination(dbm: DBMan = Depends(get_db)) -> DatasetCoordination:
+    """Wire the dataset coordination service with its collaborators."""
+    return DatasetCoordination(DatasetBusiness(dbm))
