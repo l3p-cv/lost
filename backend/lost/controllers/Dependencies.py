@@ -42,6 +42,8 @@ from lost.controllers.sia.SiaBusiness import SiaBusiness
 from lost.controllers.sia.SiaCoordination import SiaCoordination
 from lost.controllers.dataset.DatasetBusiness import DatasetBusiness
 from lost.controllers.dataset.DatasetCoordination import DatasetCoordination
+from lost.controllers.pipeline.PipelineBusiness import PipelineBusiness
+from lost.controllers.pipeline.PipelineCoordination import PipelineCoordination
 
 from lost.db.model import User as DBUser
 from lost.db.access import DBMan
@@ -157,3 +159,7 @@ def get_sia_coordination(dbm: DBMan = Depends(get_db)) -> SiaCoordination:
 def get_dataset_coordination(dbm: DBMan = Depends(get_db)) -> DatasetCoordination:
     """Wire the dataset coordination service with its collaborators."""
     return DatasetCoordination(DatasetBusiness(dbm))
+
+def get_pipeline_coordination(dbm: DBMan = Depends(get_db)) -> PipelineCoordination:
+    """Wire the pipeline coordination service with its collaborators."""
+    return PipelineCoordination(PipelineBusiness(dbm))
