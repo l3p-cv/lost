@@ -45,6 +45,7 @@ SPLIT_MODULES: dict[str, tuple[str, str, str]] = {
     "user": ("UserEndpoint.py", "UserCoordination.py", "UserBusiness.py"),
     "filebrowser": ("FileBrowserEndpoint.py", "FileBrowserCoordination.py", "FileBrowserBusiness.py"),
     "mia": ("MiaEndpoint.py", "MiaCoordination.py", "MiaBusiness.py"),
+    "sia": ("SiaEndpoint.py", "SiaCoordination.py", "SiaBusiness.py"),
 }
 
 SHARED_FRAMEWORK_FREE = (

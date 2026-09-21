@@ -22,30 +22,15 @@ Routes:
 
 from __future__ import annotations
 
-import base64
-import json
-import logging
-import os
-import traceback
-import cv2
-
 from fastapi import APIRouter, Depends, Query
-from fastapi.responses import PlainTextResponse, JSONResponse
+from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel
 
-from shapely.errors import TopologicalError
-from lost.controllers.Dependencies import get_current_user, require_role
+from lost.controllers.Dependencies import get_current_user, get_sia_coordination, require_role
 from lost.controllers.base import ProfilingRoute
-from lost.db import roles, state
-from lost.db.access import DBMan
+from lost.controllers.sia.SiaCoordination import SiaCoordination
+from lost.db import roles
 from lost.db.model import User as DBUser
-from lost.db.session import get_db
-from lost.logic import sia
-from lost.logic.file_man import FileMan
-from lost.logic.permissions import UserPermissions
-from lost.settings import DATA_URL, LOST_CONFIG
-
-logger = logging.getLogger("lost.controllers.sia")
 
 router = APIRouter(tags=["sia"], route_class=ProfilingRoute)
 
@@ -60,10 +45,6 @@ class ImageFiltersRequest(BaseModel):
 class SiaAnnoUpdate(BaseModel):
     # Flexible model — the actual SIA annotation structure is complex
     # and validated by sia.update() / sia.update_one_thing()
-    pass
-
-
-class PolygonOperationError(Exception):
     pass
 
 class SiaAnnotationsSchema(BaseModel):
@@ -126,30 +107,16 @@ class SiaConfigSchema(BaseModel):
 
 # --- Routes ---
 
-
 @router.get("", response_model=SiaAnnoSchema)
 def get_sia_info(
     direction: str = Query(..., description='One of "next","prev","current","first","specificImage"'),
     lastImgId: int = Query(..., description="ID of the last image"),
     user: DBUser = Depends(require_role(roles.ANNOTATOR)),
-    dbm: DBMan = Depends(get_db),
+    coord: SiaCoordination = Depends(get_sia_coordination),
 ):
     """Get SIA annotation information."""
-    identity = user.idx
-    if direction == "first":
-        result = sia.get_first(dbm, identity, DATA_URL)
-    elif direction == "next":
-        result = sia.get_next(dbm, identity, lastImgId, DATA_URL)
-    elif direction == "prev":
-        result =  sia.get_previous(dbm, identity, lastImgId, DATA_URL)
-    elif direction == "current":
-        result = sia.get_current(dbm, identity, lastImgId, DATA_URL)
-    elif direction == "specificImage":
-        result = sia.get_current(dbm, identity, lastImgId, DATA_URL)
-    else:
-        return SiaAnnoSchema()
-
-    if isinstance(result, str):
+    result = coord.get_sia_info(user, direction, lastImgId)
+    if result is None:
         return SiaAnnoSchema()
     return result
 
@@ -158,33 +125,20 @@ def get_sia_info(
 def update_sia_anno(
     data: dict,
     user: DBUser = Depends(require_role(roles.ANNOTATOR)),
-    dbm: DBMan = Depends(get_db),
+    coord: SiaCoordination = Depends(get_sia_coordination),
 ):
     """Update whole SIA annotation."""
-    try:
-        return sia.update(dbm, data, user.idx)
-    except Exception:
-        msg = traceback.format_exc()
-        msg += f"\nuser.idx: {user.idx}, user.name: {user.user_name}\n"
-        msg += f"Received data:\n{json.dumps(data, indent=4)}\n"
-        logger.error(f"{msg}")
-        return JSONResponse(status_code=500, content="error updating sia anno")
+    return coord.update_sia_anno(user, data)
 
 
 @router.patch("")
 def update_partial_sia_anno(
     data: dict,
     user: DBUser = Depends(require_role(roles.ANNOTATOR)),
-    dbm: DBMan = Depends(get_db),
+    coord: SiaCoordination = Depends(get_sia_coordination),
 ):
     """Update partial SIA annotation."""
-    try:
-        if "anno" not in data:
-            if data["action"] not in ["imgAnnoTimeUpdate", "imgJunkUpdate", "imgLabelUpdate"]:
-                raise Exception("Expect either anno or img information!")
-        return sia.update_one_thing(dbm, data, user.idx)
-    except Exception:
-        raise
+    return coord.update_partial_sia_anno(user, data)
 
 
 @router.get("/image/{image_id}")
@@ -193,45 +147,20 @@ def get_sia_image(
     angle: int | None = Query(None, description="Angle to rotate: 0, 90, 180, -90"),
     clipLimit: int | None = Query(None, description="Clip limit for clahe filter"),
     user: DBUser = Depends(require_role(roles.ANNOTATOR)),
-    dbm: DBMan = Depends(get_db),
+    coord: SiaCoordination = Depends(get_sia_coordination),
 ):
     """Get SIA image with optional rotation/clahe filters."""
-    img = dbm.get_image_anno(image_id)
-    logger.info(f"img.img_path: {img.img_path}")
-    logger.info(f"img.fs.name: {img.fs.name}")
-    fs = FileMan(fs_db=img.fs)
-    if clipLimit is not None:
-        img_data = fs.load_img(img.img_path, color_type="gray")
-    else:
-        img_data = fs.load_img(img.img_path, color_type="color")
-    if angle is not None:
-        if angle == 90:
-            img_data = cv2.rotate(img_data, cv2.ROTATE_90_CLOCKWISE)
-        elif angle == -90:
-            img_data = cv2.rotate(img_data, cv2.ROTATE_90_COUNTERCLOCKWISE)
-        elif angle == 180:
-            img_data = cv2.rotate(img_data, cv2.ROTATE_180)
-    if clipLimit is not None:
-        clahe = cv2.createCLAHE(clipLimit)
-        img_data = clahe.apply(img_data)
-    _, data = cv2.imencode(".jpg", img_data)
-    data64 = base64.b64encode(data.tobytes())
-    return PlainTextResponse("data:image/jpeg;base64," + data64.decode("utf-8"))
+    return PlainTextResponse(coord.get_sia_image(image_id, angle, clipLimit))
 
 
 @router.get("/image/{image_id}/name")
 def get_sia_image_name(
     image_id: int,
     user: DBUser = Depends(require_role(roles.ANNOTATOR)),
-    dbm: DBMan = Depends(get_db),
+    coord: SiaCoordination = Depends(get_sia_coordination),
 ):
     """Get SIA image name."""
-    img = dbm.get_image_anno(image_id)
-    if img is None:
-        return JSONResponse(status_code=404, content={"error": "Not found"})
-    logger.info(f"img.img_path: {img.img_path}")
-    logger.info(f"img.fs.name: {img.fs.name}")
-    return {"img_name": os.path.basename(img.img_path)}
+    return coord.get_sia_image_name(image_id)
 
 
 @router.post("/image/{image_id}/filters")
@@ -239,229 +168,112 @@ def get_image_with_filters(
     image_id: int,
     req: ImageFiltersRequest,
     user: DBUser = Depends(require_role(roles.ANNOTATOR)),
-    dbm: DBMan = Depends(get_db),
+    coord: SiaCoordination = Depends(get_sia_coordination),
 ):
     """Get an image with applied filters."""
-    try:
-        filters = req.filters
-        img = dbm.get_image_anno(image_id)
-        logger.info(f"img.img_path: {img.img_path}")
-        logger.info(f"img.fs.name: {img.fs.name}")
-        fs = FileMan(fs_db=img.fs)
-        img_data = fs.load_img(
-            img.img_path, color_type="gray" if any(f["name"] == "cannyEdge" for f in filters) else "color"
-        )
-        img_data = sia.apply_filters(img_data, filters)
-        _, data = cv2.imencode(".jpg", img_data)
-        data64 = base64.b64encode(data.tobytes())
-        return PlainTextResponse("data:image/jpeg;base64," + data64.decode("utf-8"))
-    except ValueError as ve:
-        logger.warning(f"ValueError applying filters: {ve!s}")
-        return JSONResponse(status_code=400, content={"error": str(ve)})
-    except Exception as e:
-        logger.error(f"Error applying filters: {e!s}")
-        return JSONResponse(status_code=500, content={"error": str(e)})
+    return PlainTextResponse(coord.get_image_with_filters(image_id, req.filters))
 
 
 @router.get("/images")
 def get_sia_image_list(
     currentImgId: int | None = Query(None, description="Current image ID"),
     user: DBUser = Depends(require_role(roles.ANNOTATOR)),
-    dbm: DBMan = Depends(get_db),
+    coord: SiaCoordination = Depends(get_sia_coordination),
 ):
     """Get all image IDs and numbers for the current annotator's active annotask."""
-    identity = user.idx
-    at = sia.get_sia_anno_task(dbm, identity)
-    if at is None:
-        return {"images": []}
-    all_annos = dbm.get_all_image_annos(at.idx)
-    visited_states = {state.Anno.LABELED, state.Anno.LABELED_LOCKED, state.Anno.JUNK}
-    user_annos = [
-        a
-        for a in all_annos
-        if a.user_id == identity
-        and (
-            a.state in visited_states
-            or a.idx == currentImgId
-            or (a.state == state.Anno.LOCKED and a.timestamp_lock is not None)
-        )
-    ]
-    total = len(user_annos)
-    images = [{"imageId": a.idx, "number": i + 1, "total": total} for i, a in enumerate(user_annos)]
-    return {"images": images}
+    return coord.get_sia_image_list(user, currentImgId)
 
 
 @router.get("/image/{image_id}/thumbnail")
 def get_sia_thumbnail(
     image_id: int,
     user: DBUser = Depends(get_current_user),
-    dbm: DBMan = Depends(get_db),
+    coord: SiaCoordination = Depends(get_sia_coordination),
 ):
     """Get a small thumbnail for the given image annotation ID."""
-    identity = user.idx
-    if not user.has_role(roles.ANNOTATOR) and not user.has_role(roles.DESIGNER):
-        return JSONResponse(
-            status_code=403,
-            content={"message": f"You need to be {roles.ANNOTATOR} or {roles.DESIGNER} in order to perform this request."},
-        )
-    try:
-        img = dbm.get_image_anno(image_id)
-        if img is None:
-            return JSONResponse(status_code=404, content={"error": "Not found"})
-        if not user.has_role(roles.DESIGNER):
-            at = dbm.get_anno_task(img.anno_task_id)
-            at_group = dbm.get_group_by_id(at.group_id)
-            if at_group is None:
-                return JSONResponse(status_code=404, content={"error": "Group not found"})
-            is_anno_group = at_group.is_user_default == 0
-            is_owner = img.user_id == identity
-            if not (is_owner or is_anno_group):
-                return JSONResponse(status_code=403, content={"error": "Forbidden"})
-        fs = FileMan(fs_db=img.fs)
-        img_data = fs.load_img(img.img_path, color_type="color")
-        h, w = img_data.shape[:2]
-        scale = 120 / max(h, w)
-        thumb = cv2.resize(img_data, (int(w * scale), int(h * scale)))
-        _, encoded = cv2.imencode(".jpg", thumb, [cv2.IMWRITE_JPEG_QUALITY, 70])
-        data64 = base64.b64encode(encoded.tobytes())
-        return PlainTextResponse("data:image/jpeg;base64," + data64.decode("utf-8"))
-    except Exception as e:
-        logger.error(f"Error generating thumbnail: {e!s}")
-        return JSONResponse(status_code=500, content={"error": str(e)})
+    return PlainTextResponse(coord.get_sia_thumbnail(user, image_id))
 
 
 @router.get("/allowedExampler")
 def get_allowed_exampler(
     user: DBUser = Depends(require_role(roles.ANNOTATOR)),
-    dbm: DBMan = Depends(get_db),
+    coord: SiaCoordination = Depends(get_sia_coordination),
 ):
     """Check if user is allowed to mark images as examples."""
-    up = UserPermissions(dbm, user)
-    return up.allowed_to_mark_example()
+    return coord.get_allowed_exampler(user)
 
 
 @router.get("/nextAnnoId")
 def get_next_anno_id(
     user: DBUser = Depends(require_role(roles.ANNOTATOR)),
-    dbm: DBMan = Depends(get_db),
+    coord: SiaCoordination = Depends(get_sia_coordination),
 ):
     """Get the ID of the next annotation."""
-    return sia.get_next_anno_id(dbm)
+    return coord.get_next_anno_id()
 
 
 @router.post("/finish")
 def finish_sia_task(
     user: DBUser = Depends(require_role(roles.ANNOTATOR)),
-    dbm: DBMan = Depends(get_db),
+    coord: SiaCoordination = Depends(get_sia_coordination),
 ):
     """Finish the current SIA task."""
-    return sia.finish(dbm, user.idx)
+    return coord.finish_sia_task(user)
 
 
 @router.get("/label")
 def get_sia_labels(
     user: DBUser = Depends(require_role(roles.ANNOTATOR)),
-    dbm: DBMan = Depends(get_db),
+    coord: SiaCoordination = Depends(get_sia_coordination),
 ):
     """Get label trees for the SIA task."""
-    return sia.get_label_trees(dbm, user.idx)
+    return coord.get_sia_labels(user)
 
 
 @router.get("/configuration", response_model=SiaConfigSchema)
 def get_sia_configuration(
     user: DBUser = Depends(require_role(roles.ANNOTATOR)),
-    dbm: DBMan = Depends(get_db),
+    coord: SiaCoordination = Depends(get_sia_coordination),
 ):
     """Get config for the current SIA task."""
-    return sia.get_configuration(dbm, user.idx)
+    return coord.get_sia_configuration(user)
 
 
 @router.post("/polygonOperations/union")
 def polygon_union(
     data: dict,
     user: DBUser = Depends(require_role(roles.ANNOTATOR)),
-    dbm: DBMan = Depends(get_db),
+    coord: SiaCoordination = Depends(get_sia_coordination),
 ):
     """Perform union operation on a list of at least 2 polygons."""
-    try:
-        data = sia.normalize_annotations(data)
-        logger.info(f"Normalized payload for union: {data}")
-        response = sia.perform_polygon_union(data)
-        return response
-    except sia.PolygonOperationError as e:
-        logger.error(f"Validation error in polygon union: {e!s}")
-        return JSONResponse(status_code=400, content={"error": str(e)})
-    except TopologicalError as e:
-        logger.error(f"Topology error in polygon union: {e!s}")
-        return JSONResponse(status_code=400, content={"error": str(e)})
-    except Exception as e:
-        logger.error(f"Unexpected error in polygon union: {e!s}")
-        return JSONResponse(status_code=500, content={"error": str(e)})
+    return coord.polygon_union(data)
 
 
 @router.post("/polygonOperations/intersection")
 def polygon_intersection(
     data: dict,
     user: DBUser = Depends(require_role(roles.ANNOTATOR)),
-    dbm: DBMan = Depends(get_db),
+    coord: SiaCoordination = Depends(get_sia_coordination),
 ):
     """Perform intersection operation on exactly 2 polygons."""
-    try:
-        data = sia.normalize_annotations(data)
-        response = sia.perform_polygon_intersection(data)
-        return response
-    except sia.PolygonOperationError as e:
-        logger.error(f"Validation error in polygon intersection: {e!s}")
-        return JSONResponse(status_code=400, content={"error": str(e)})
-    except TopologicalError as e:
-        logger.error(f"Topology error in polygon intersection: {e!s}")
-        return JSONResponse(status_code=400, content={"error": str(e)})
-    except Exception as e:
-        logger.error(f"Unexpected error in polygon intersection: {e!s}")
-        return JSONResponse(status_code=500, content={"error": str(e)})
+    return coord.polygon_intersection(data)
 
 
 @router.post("/polygonOperations/difference")
 def polygon_difference(
     data: dict,
     user: DBUser = Depends(require_role(roles.ANNOTATOR)),
-    dbm: DBMan = Depends(get_db),
+    coord: SiaCoordination = Depends(get_sia_coordination),
 ):
     """Perform difference operation on a selected polygon and a list of modifier polygons."""
-    try:
-        logger.info(f"Received payload for difference: {data}")
-        data = sia.normalize_annotations({
-            "annotations": [data["selectedPolygon"]] + data.get("polygonModifiers", [])
-        })
-        data["selectedPolygon"] = data["annotations"][0]["polygonCoordinates"]
-        data["polygonModifiers"] = [ann["polygonCoordinates"] for ann in data["annotations"][1:]]
-        response = sia.perform_polygon_difference(data)
-        return response
-    except sia.PolygonOperationError as e:
-        logger.error(f"Validation error in polygon difference: {e!s}")
-        return JSONResponse(status_code=400, content={"error": str(e)})
-    except TopologicalError as e:
-        logger.error(f"Topology error in polygon difference: {e!s}")
-        return JSONResponse(status_code=400, content={"error": str(e)})
-    except Exception as e:
-        logger.error(f"Unexpected error in polygon difference: {e!s}")
-        return JSONResponse(status_code=500, content={"error": str(e)})
+    return coord.polygon_difference(data)
 
 
 @router.post("/bboxFromPoints")
 def bbox_from_points(
     data: dict,
     user: DBUser = Depends(require_role(roles.ANNOTATOR)),
-    dbm: DBMan = Depends(get_db),
+    coord: SiaCoordination = Depends(get_sia_coordination),
 ):
     """Compute tightest bounding boxes from multiple point sets."""
-    try:
-        logger.info(f"Received payload for bounding box computation: {data}")
-        response = sia.compute_bboxes_from_points(data)
-        return {"data": response}
-    except sia.PolygonOperationError as e:
-        logger.error(f"Validation error in bounding box computation: {e!s}")
-        return JSONResponse(status_code=400, content={"error": str(e)})
-    except Exception as e:
-        logger.error(f"Unexpected error in bounding box computation: {e!s}")
-        return JSONResponse(status_code=500, content={"error": str(e)})
+    return {"data": coord.bbox_from_points(data)}

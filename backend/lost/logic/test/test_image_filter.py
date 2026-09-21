@@ -4,7 +4,7 @@ import cv2
 import pytest
 from skimage.metrics import structural_similarity as ssim
 
-from lost.logic import sia
+import lost.controllers.sia.SiaBusiness as sia
 
 
 @pytest.fixture

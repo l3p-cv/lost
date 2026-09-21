@@ -40,7 +40,7 @@ from lost.logic.jobs.jobs import (
     export_dataset_parquet,
     get_all_annotask_ids_for_ds,
 )
-from lost.logic.sia import (
+from lost.controllers.sia.SiaBusiness import (
     SiaSerialize,
     get_image_progress,
     get_total_image_amount,

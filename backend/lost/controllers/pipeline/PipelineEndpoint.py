@@ -42,13 +42,13 @@ from lost.db.access import DBMan
 from lost.db.model import User as DBUser
 from lost.db.session import get_db
 from lost.db.vis_level import VisLevel
-from lost.logic import sia
 from lost.logic import template as template_service
 from lost.logic.file_access import UserFileAccess
 from lost.logic.file_man import AppFileMan
 from lost.logic.pipeline import service as pipeline_service
 from lost.logic.pipeline import template_import
 from lost.settings import DATA_URL, LOST_CONFIG
+import lost.controllers.sia.SiaBusiness as sia
 
 router = APIRouter(tags=["pipeline"], route_class=ProfilingRoute)
 

@@ -1,6 +1,20 @@
+"""SIA business layer — single-image annotation flows.
+
+Moved verbatim from ``lost/logic/sia.py`` in Pass 2. 
+Module-level functions and classes hold the domain logic (also consumed 
+temporarily by the pipeline/dataset/annotasks endpoints and the logic unit tests via
+``import … SiaBusiness as sia``); 
+the :class:`SiaBusiness` service at the bind them to the request-scoped dbm. Method names mirror the module
+functions they delegate to bare calls inside methods resolve to module
+globals. ``logic/anno_task`` stays shared until the annotasks split.
+"""
+
+import base64
 import json
 import logging
 import math
+import os
+import traceback
 from datetime import datetime
 
 import cv2
@@ -10,9 +24,14 @@ from shapely.ops import unary_union
 
 logger = logging.getLogger("lost.logic.sia")
 
-from lost.db import dtype, model, state
+from lost.db import dtype, model, state, roles
 from lost.db.access import DBMan
 from lost.logic.anno_task import set_finished, update_anno_task
+from lost.controllers.Exceptions import DomainError
+from lost.controllers.AuthorizationService import AuthorizationService
+from lost.settings import DATA_URL
+from lost.logic.file_man import FileMan
+
 
 __author__ = "Gereon Reus"
 
@@ -1027,12 +1046,15 @@ def reviewoptions_annotask(dbm, at_id, user_id):
     return options
 
 
-class PolygonOperationError(Exception):
-    """Custom exception for polygon operation errors."""
+class PolygonOperationError(DomainError):
+    """A polygon-operation payload failed validation."""
+
+    http_status = 400
 
     def __init__(self, message):
         super().__init__(message)
         self.message = message
+        self.http_body = {"error": str(message)}
 
 
 def bbox_to_polygon(bbox):
@@ -1410,3 +1432,289 @@ def compute_bboxes_from_points(data):
         logger.info(f"Computed bbox: {bbox}")
 
     return results
+
+class SiaUpdateError(DomainError):
+    http_status = 500
+    http_body = "error updating sia anno"
+
+
+class SiaImageNotFoundError(DomainError):
+    http_status = 404
+    http_body = {"error": "Not found"}
+
+
+class SiaFilterValueError(DomainError):
+    http_status = 400
+
+    def __init__(self, exc: Exception) -> None:
+        super().__init__(exc)
+        self.http_body = {"error": str(exc)}
+
+
+class SiaFilterError(DomainError):
+    http_status = 500
+
+    def __init__(self, exc: Exception) -> None:
+        super().__init__(exc)
+        self.http_body = {"error": str(exc)}
+
+
+class ThumbnailRoleError(DomainError):
+    http_status = 403
+    http_body = {"message": f"You need to be {roles.ANNOTATOR} or {roles.DESIGNER} in order to perform this request."}
+
+
+class ThumbnailGroupNotFoundError(DomainError):
+    http_status = 404
+    http_body = {"error": "Group not found"}
+
+
+class ThumbnailForbiddenError(DomainError):
+    http_status = 403
+    http_body = {"error": "Forbidden"}
+
+
+class ThumbnailError(DomainError):
+    http_status = 500
+
+    def __init__(self, exc: Exception) -> None:
+        super().__init__(exc)
+        self.http_body = {"error": str(exc)}
+
+
+class PolygonTopologyError(DomainError):
+    http_status = 400
+
+    def __init__(self, exc: Exception) -> None:
+        super().__init__(exc)
+        self.http_body = {"error": str(exc)}
+
+
+class PolygonOperationFailedError(DomainError):
+    http_status = 500
+
+    def __init__(self, exc: Exception) -> None:
+        super().__init__(exc)
+        self.http_body = {"error": str(exc)}
+
+
+class SiaBusiness:
+    """SIA business service — binds the domain functions to a request-scoped dbm."""
+
+    def __init__(self, dbm, authz: AuthorizationService) -> None:
+        self.dbm = dbm
+        self._authz = authz
+
+    # --- navigation ---
+
+    def get_sia_info(self, user, direction: str, last_img_id: int):
+            """Annotation info by direction; None → empty response (legacy contract).
+
+            The legacy endpoint converted string results (e.g. 'nothing available')
+            to an empty SiaAnnoSchema — preserved here by returning None.
+            """
+            if direction == "first":
+                result = get_first(self.dbm, user.idx, DATA_URL)
+            elif direction == "next":
+                result = get_next(self.dbm, user.idx, last_img_id, DATA_URL)
+            elif direction == "prev":
+                result = get_previous(self.dbm, user.idx, last_img_id, DATA_URL)
+            elif direction in ("current", "specificImage"):
+                result = get_current(self.dbm, user.idx, last_img_id, DATA_URL)
+            else:
+                return None
+            if isinstance(result, str):
+                return None
+            return result
+
+    # --- updates (rich legacy error logging preserved) ---
+
+    def update(self, user, data):
+        try:
+            return update(self.dbm, data, user.idx)
+        except Exception as e:
+            msg = traceback.format_exc()
+            msg += f"\nuser.idx: {user.idx}, user.name: {user.user_name}\n"
+            msg += f"Received data:\n{json.dumps(data, indent=4)}\n"
+            logger.error(f"{msg}")
+            raise SiaUpdateError(e) from e
+
+    def update_one_thing(self, user, data):
+        if "anno" not in data:
+            if data["action"] not in ["imgAnnoTimeUpdate", "imgJunkUpdate", "imgLabelUpdate"]:
+                raise Exception("Expect either anno or img information!")
+        return update_one_thing(self.dbm, data, user.idx)
+
+    # --- images ---
+
+    def get_image(self, image_id: int, angle: int | None, clip_limit: int | None) -> str:
+        img = self.dbm.get_image_anno(image_id)
+        logger.info(f"img.img_path: {img.img_path}")
+        logger.info(f"img.fs.name: {img.fs.name}")
+        fs = FileMan(fs_db=img.fs)
+        if clip_limit is not None:
+            img_data = fs.load_img(img.img_path, color_type="gray")
+        else:
+            img_data = fs.load_img(img.img_path, color_type="color")
+        if angle is not None:
+            if angle == 90:
+                img_data = cv2.rotate(img_data, cv2.ROTATE_90_CLOCKWISE)
+            elif angle == -90:
+                img_data = cv2.rotate(img_data, cv2.ROTATE_90_COUNTERCLOCKWISE)
+            elif angle == 180:
+                img_data = cv2.rotate(img_data, cv2.ROTATE_180)
+        if clip_limit is not None:
+            clahe = cv2.createCLAHE(clip_limit)
+            img_data = clahe.apply(img_data)
+        _, data = cv2.imencode(".jpg", img_data)
+        data64 = base64.b64encode(data.tobytes())
+        return "data:image/jpeg;base64," + data64.decode("utf-8")
+
+    def get_image_name(self, image_id: int) -> dict:
+        img = self.dbm.get_image_anno(image_id)
+        if img is None:
+            raise SiaImageNotFoundError(image_id)
+        logger.info(f"img.img_path: {img.img_path}")
+        logger.info(f"img.fs.name: {img.fs.name}")
+        return {"img_name": os.path.basename(img.img_path)}
+
+    def get_image_with_filters(self, image_id: int, filters: list[dict]) -> str:
+        try:
+            img = self.dbm.get_image_anno(image_id)
+            logger.info(f"img.img_path: {img.img_path}")
+            logger.info(f"img.fs.name: {img.fs.name}")
+            fs = FileMan(fs_db=img.fs)
+            img_data = fs.load_img(
+                img.img_path, color_type="gray" if any(f["name"] == "cannyEdge" for f in filters) else "color"
+            )
+            img_data = apply_filters(img_data, filters)
+            _, data = cv2.imencode(".jpg", img_data)
+            data64 = base64.b64encode(data.tobytes())
+            return "data:image/jpeg;base64," + data64.decode("utf-8")
+        except ValueError as ve:
+            logger.warning(f"ValueError applying filters: {ve!s}")
+            raise SiaFilterValueError(ve) from ve
+        except Exception as e:
+            logger.error(f"Error applying filters: {e!s}")
+            raise SiaFilterError(e) from e
+
+    def get_image_list(self, user, current_img_id: int | None) -> dict:
+        at = get_sia_anno_task(self.dbm, user.idx)
+        if at is None:
+            return {"images": []}
+        all_annos = self.dbm.get_all_image_annos(at.idx)
+        visited_states = {state.Anno.LABELED, state.Anno.LABELED_LOCKED, state.Anno.JUNK}
+        user_annos = [
+            a for a in all_annos
+            if a.user_id == user.idx
+            and (a.state in visited_states
+                 or a.idx == current_img_id
+                 or (a.state == state.Anno.LOCKED and a.timestamp_lock is not None))
+        ]
+        total = len(user_annos)
+        return {"images": [{"imageId": a.idx, "number": i + 1, "total": total} for i, a in enumerate(user_annos)]}
+
+    def get_thumbnail(self, user, image_id: int) -> str:
+        if not user.has_role(roles.ANNOTATOR) and not user.has_role(roles.DESIGNER):
+            raise ThumbnailRoleError(user)
+        try:
+            img = self.dbm.get_image_anno(image_id)
+            if img is None:
+                raise SiaImageNotFoundError(image_id)
+            if not user.has_role(roles.DESIGNER):
+                at = self.dbm.get_anno_task(img.anno_task_id)
+                at_group = self.dbm.get_group_by_id(at.group_id)
+                if at_group is None:
+                    raise ThumbnailGroupNotFoundError(image_id)
+                is_anno_group = at_group.is_user_default == 0
+                is_owner = img.user_id == user.idx
+                if not (is_owner or is_anno_group):
+                    raise ThumbnailForbiddenError(image_id)
+            fs = FileMan(fs_db=img.fs)
+            img_data = fs.load_img(img.img_path, color_type="color")
+            h, w = img_data.shape[:2]
+            scale = 120 / max(h, w)
+            thumb = cv2.resize(img_data, (int(w * scale), int(h * scale)))
+            _, encoded = cv2.imencode(".jpg", thumb, [cv2.IMWRITE_JPEG_QUALITY, 70])
+            data64 = base64.b64encode(encoded.tobytes())
+            return "data:image/jpeg;base64," + data64.decode("utf-8")
+        except DomainError:
+            raise
+        except Exception as e:
+            logger.error(f"Error generating thumbnail: {e!s}")
+            raise ThumbnailError(e) from e
+
+    # --- misc ---
+
+    def get_allowed_exampler(self, user) -> bool:
+        return self._authz.allowed_to_mark_example(user)
+
+    def get_next_anno_id(self):
+        return get_next_anno_id(self.dbm)
+
+    def finish(self, user):
+        return finish(self.dbm, user.idx)
+
+    def get_label_trees(self, user):
+        return get_label_trees(self.dbm, user.idx)
+
+    def get_configuration(self, user):
+        return get_configuration(self.dbm, user.idx)
+
+    # --- polygon operations ---
+
+    def polygon_union(self, data: dict):
+        try:
+            data = normalize_annotations(data)
+            logger.info(f"Normalized payload for union: {data}")
+            return perform_polygon_union(data)
+        except DomainError:
+            raise
+        except TopologicalError as e:
+            logger.error(f"Topology error in polygon union: {e!s}")
+            raise PolygonTopologyError(e) from e
+        except Exception as e:
+            logger.error(f"Unexpected error in polygon union: {e!s}")
+            raise PolygonOperationFailedError(e) from e
+
+    def polygon_intersection(self, data: dict):
+        try:
+            data = normalize_annotations(data)
+            return perform_polygon_intersection(data)
+        except DomainError:
+            raise
+        except TopologicalError as e:
+            logger.error(f"Topology error in polygon intersection: {e!s}")
+            raise PolygonTopologyError(e) from e
+        except Exception as e:
+            logger.error(f"Unexpected error in polygon intersection: {e!s}")
+            raise PolygonOperationFailedError(e) from e
+
+    def polygon_difference(self, data: dict):
+        try:
+            logger.info(f"Received payload for difference: {data}")
+            data = normalize_annotations({
+                "annotations": [data["selectedPolygon"]] + data.get("polygonModifiers", [])
+            })
+            data["selectedPolygon"] = data["annotations"][0]["polygonCoordinates"]
+            data["polygonModifiers"] = [ann["polygonCoordinates"] for ann in data["annotations"][1:]]
+            return perform_polygon_difference(data)
+        except DomainError:
+            raise
+        except TopologicalError as e:
+            logger.error(f"Topology error in polygon difference: {e!s}")
+            raise PolygonTopologyError(e) from e
+        except Exception as e:
+            logger.error(f"Unexpected error in polygon difference: {e!s}")
+            raise PolygonOperationFailedError(e) from e
+
+    def bbox_from_points(self, data: dict):
+        try:
+            logger.info(f"Received payload for bounding box computation: {data}")
+            return compute_bboxes_from_points(data)
+        except DomainError:
+            raise
+        except Exception as e:
+            logger.error(f"Unexpected error in bounding box computation: {e!s}")
+            raise PolygonOperationFailedError(e) from e
+

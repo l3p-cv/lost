@@ -8,7 +8,7 @@
     "path": "/api/sia/nextAnnoId"
   },
   "response": {
-    "body": 9912,
+    "body": 10052,
     "headers": {
       "content-type": "application/json"
     },

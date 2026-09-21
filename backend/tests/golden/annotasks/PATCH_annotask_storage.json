@@ -8,7 +8,7 @@
       "datasetId": 228
     },
     "method": "PATCH",
-    "path": "/api/annotasks/143/storage_settings"
+    "path": "/api/annotasks/175/storage_settings"
   },
   "response": {
     "body": null,

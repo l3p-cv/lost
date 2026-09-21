@@ -25,27 +25,6 @@
           "lockedImgCount": 0,
           "name": "MultiImageAnnoation",
           "pipelineCreator": "admin",
-          "pipelineName": "mia task for ui test mozilla",
-          "progress": "<REDACTED>",
-          "size": 35,
-          "statistic": {
-            "amountPerLabel": [],
-            "secondsPerAnno": null
-          },
-          "status": "finished",
-          "type": "MIA"
-        },
-        {
-          "createdAt": "<TS>",
-          "finished": 35,
-          "group": "admin",
-          "id": "<ID>",
-          "instructionId": null,
-          "lastActivity": "<TS>",
-          "lastAnnotator": "admin",
-          "lockedImgCount": 0,
-          "name": "MultiImageAnnoation",
-          "pipelineCreator": "admin",
           "pipelineName": "test mia chrome ui ",
           "progress": "<REDACTED>",
           "size": 35,
@@ -97,27 +76,6 @@
           },
           "status": "finished",
           "type": "SIA"
-        },
-        {
-          "createdAt": "<TS>",
-          "finished": 2,
-          "group": "admin",
-          "id": "<ID>",
-          "instructionId": null,
-          "lastActivity": "<TS>",
-          "lastAnnotator": "N/A",
-          "lockedImgCount": 0,
-          "name": "compare_test_mia",
-          "pipelineCreator": "admin",
-          "pipelineName": "compare_test_mia_pipe",
-          "progress": "<REDACTED>",
-          "size": 2,
-          "statistic": {
-            "amountPerLabel": [],
-            "secondsPerAnno": null
-          },
-          "status": "inProgress",
-          "type": "MIA"
         },
         {
           "createdAt": "<TS>",
@@ -205,7 +163,7 @@
         },
         {
           "createdAt": "<TS>",
-          "finished": 34,
+          "finished": 35,
           "group": "admin",
           "id": "<ID>",
           "instructionId": null,
@@ -221,7 +179,49 @@
             "amountPerLabel": [],
             "secondsPerAnno": null
           },
-          "status": "inProgress",
+          "status": "finished",
+          "type": "MIA"
+        },
+        {
+          "createdAt": "<TS>",
+          "finished": 1,
+          "group": "admin",
+          "id": "<ID>",
+          "instructionId": null,
+          "lastActivity": "<TS>",
+          "lastAnnotator": "admin",
+          "lockedImgCount": 0,
+          "name": "Single Image Annotation Task",
+          "pipelineCreator": "admin",
+          "pipelineName": "pop",
+          "progress": "<REDACTED>",
+          "size": 1,
+          "statistic": {
+            "amountPerLabel": [],
+            "secondsPerAnno": null
+          },
+          "status": "finished",
+          "type": "SIA"
+        },
+        {
+          "createdAt": "<TS>",
+          "finished": 35,
+          "group": "admin",
+          "id": "<ID>",
+          "instructionId": null,
+          "lastActivity": "<TS>",
+          "lastAnnotator": "admin",
+          "lockedImgCount": 0,
+          "name": "MultiImageAnnoation",
+          "pipelineCreator": "admin",
+          "pipelineName": "c",
+          "progress": "<REDACTED>",
+          "size": 35,
+          "statistic": {
+            "amountPerLabel": [],
+            "secondsPerAnno": null
+          },
+          "status": "finished",
           "type": "MIA"
         }
       ],

@@ -2,7 +2,7 @@ import logging
 
 import pytest
 
-from lost.logic import sia
+import lost.controllers.sia.SiaBusiness as sia
 
 # Test data for polygon union operation
 UNION_PAYLOAD = {

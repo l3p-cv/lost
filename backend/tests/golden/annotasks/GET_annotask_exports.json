@@ -5,13 +5,13 @@
       "Authorization": "<AUTH>"
     },
     "method": "GET",
-    "path": "/api/annotasks/143/exports"
+    "path": "/api/annotasks/175/exports"
   },
   "response": {
     "body": {
       "annoTasksExports": [
         {
-          "annoTaskId": 143,
+          "annoTaskId": 175,
           "annotaskProgress": 100,
           "filePath": "/home/lost/data/1/ds_export/test/compare_test_sia_export.zip",
           "fileSize": 0,

@@ -5,27 +5,27 @@
       "Authorization": "<AUTH>"
     },
     "method": "GET",
-    "path": "/api/annotasks/143/review/images"
+    "path": "/api/annotasks/175/review/images"
   },
   "response": {
     "body": {
       "images": [
         {
-          "annotationId": 143,
+          "annotationId": 175,
           "annotationName": "compare_test_sia",
-          "imageId": 2078,
+          "imageId": 2541,
           "imageName": "/home/lost/data/1/media/images/10_voc2012/2007_008547.jpg"
         },
         {
-          "annotationId": 143,
+          "annotationId": 175,
           "annotationName": "compare_test_sia",
-          "imageId": 2079,
+          "imageId": 2542,
           "imageName": "/home/lost/data/1/media/images/10_voc2012/2008_002123.jpg"
         },
         {
-          "annotationId": 143,
+          "annotationId": 175,
           "annotationName": "compare_test_sia",
-          "imageId": 2082,
+          "imageId": 2545,
           "imageName": "/home/lost/data/1/media/images/10_voc2012/2008_002597.jpg"
         }
       ]

@@ -12,7 +12,28 @@
       "annoTasks": [
         {
           "createdAt": "<TS>",
-          "finished": 0,
+          "finished": 2,
+          "group": "admin",
+          "id": "<ID>",
+          "instructionId": null,
+          "lastActivity": "<TS>",
+          "lastAnnotator": "N/A",
+          "lockedImgCount": 0,
+          "name": "compare_test_mia",
+          "pipelineCreator": "admin",
+          "pipelineName": "compare_test_mia_pipe",
+          "progress": "<REDACTED>",
+          "size": 2,
+          "statistic": {
+            "amountPerLabel": [],
+            "secondsPerAnno": null
+          },
+          "status": "inProgress",
+          "type": "MIA"
+        },
+        {
+          "createdAt": "<TS>",
+          "finished": 2,
           "group": "admin",
           "id": "<ID>",
           "instructionId": 1,
@@ -285,48 +306,6 @@
         },
         {
           "createdAt": "<TS>",
-          "finished": 2,
-          "group": "admin",
-          "id": "<ID>",
-          "instructionId": null,
-          "lastActivity": "<TS>",
-          "lastAnnotator": "N/A",
-          "lockedImgCount": 0,
-          "name": "compare_test_mia",
-          "pipelineCreator": "admin",
-          "pipelineName": "compare_test_mia_pipe",
-          "progress": "<REDACTED>",
-          "size": 2,
-          "statistic": {
-            "amountPerLabel": [],
-            "secondsPerAnno": null
-          },
-          "status": "inProgress",
-          "type": "MIA"
-        },
-        {
-          "createdAt": "<TS>",
-          "finished": 2,
-          "group": "admin",
-          "id": "<ID>",
-          "instructionId": null,
-          "lastActivity": "<TS>",
-          "lastAnnotator": "N/A",
-          "lockedImgCount": 0,
-          "name": "compare_test_sia",
-          "pipelineCreator": "admin",
-          "pipelineName": "compare_test_sia_pipe",
-          "progress": "<REDACTED>",
-          "size": 3,
-          "statistic": {
-            "amountPerLabel": [],
-            "secondsPerAnno": null
-          },
-          "status": "inProgress",
-          "type": "SIA"
-        },
-        {
-          "createdAt": "<TS>",
           "finished": 35,
           "group": "admin",
           "id": "<ID>",
@@ -411,7 +390,7 @@
         },
         {
           "createdAt": "<TS>",
-          "finished": 34,
+          "finished": 35,
           "group": "admin",
           "id": "<ID>",
           "instructionId": null,
@@ -427,7 +406,7 @@
             "amountPerLabel": [],
             "secondsPerAnno": null
           },
-          "status": "inProgress",
+          "status": "finished",
           "type": "MIA"
         },
         {

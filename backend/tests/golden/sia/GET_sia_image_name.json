@@ -5,7 +5,7 @@
       "Authorization": "<AUTH>"
     },
     "method": "GET",
-    "path": "/api/sia/image/2078/name"
+    "path": "/api/sia/image/2541/name"
   },
   "response": {
     "body": {

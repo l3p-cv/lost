@@ -38,6 +38,8 @@ from lost.controllers.filebrowser.FileBrowserBusiness import FileBrowserBusiness
 from lost.controllers.filebrowser.FileBrowserCoordination import FileBrowserCoordination
 from lost.controllers.mia.MiaBusiness import MiaBusiness
 from lost.controllers.mia.MiaCoordination import MiaCoordination
+from lost.controllers.sia.SiaBusiness import SiaBusiness
+from lost.controllers.sia.SiaCoordination import SiaCoordination
 
 from lost.db.model import User as DBUser
 from lost.db.access import DBMan
@@ -145,3 +147,7 @@ def get_filebrowser_coordination(dbm: DBMan = Depends(get_db)) -> FileBrowserCoo
 def get_mia_coordination(dbm: DBMan = Depends(get_db)) -> MiaCoordination:
     """Wire the mia coordination service with its collaborators"""
     return MiaCoordination(MiaBusiness(dbm))
+
+def get_sia_coordination(dbm: DBMan = Depends(get_db)) -> SiaCoordination:
+    """Wire the sia coordination service with its collaborators"""
+    return SiaCoordination(SiaBusiness(dbm ,AuthorizationService()))

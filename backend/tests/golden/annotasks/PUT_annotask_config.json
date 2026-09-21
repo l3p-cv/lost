@@ -8,10 +8,10 @@
       "configuration": {
         "test": true
       },
-      "id": 143
+      "id": 175
     },
     "method": "PUT",
-    "path": "/api/annotasks/143/config"
+    "path": "/api/annotasks/175/config"
   },
   "response": {
     "body": "Success",
