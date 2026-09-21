@@ -24,6 +24,23 @@
               "isAnnotask": true,
               "manager_id": null,
               "name": "Single Image Annotation Task",
+              "nr_images": 25,
+              "pipe_element_id": "<ID>",
+              "progress": "<REDACTED>",
+              "state": 3
+            },
+            {
+              "created_at": "<TS>",
+              "datasetId": 1,
+              "datastoreId": null,
+              "description": "Progress: 100%",
+              "dtype": 2,
+              "group_id": "<ID>",
+              "idx": "<ID>",
+              "instruction_id": 1,
+              "isAnnotask": true,
+              "manager_id": null,
+              "name": "Single Image Annotation Task",
               "nr_images": 15,
               "pipe_element_id": "<ID>",
               "progress": "<REDACTED>",
@@ -84,7 +101,7 @@
               "created_at": "<TS>",
               "datasetId": 1,
               "datastoreId": null,
-              "description": "Progress: 97%",
+              "description": "Progress: 100%",
               "dtype": 1,
               "group_id": "<ID>",
               "idx": "<ID>",
@@ -95,7 +112,7 @@
               "nr_images": 35,
               "pipe_element_id": "<ID>",
               "progress": "<REDACTED>",
-              "state": 2
+              "state": 3
             },
             {
               "created_at": "<TS>",
@@ -271,14 +288,31 @@
               "created_at": "<TS>",
               "datasetId": 1,
               "datastoreId": null,
+              "description": "Progress: 17%",
+              "dtype": 2,
+              "group_id": "<ID>",
+              "idx": "<ID>",
+              "instruction_id": null,
+              "isAnnotask": true,
+              "manager_id": null,
+              "name": "SIA test",
+              "nr_images": 35,
+              "pipe_element_id": "<ID>",
+              "progress": "<REDACTED>",
+              "state": 2
+            },
+            {
+              "created_at": "<TS>",
+              "datasetId": 1,
+              "datastoreId": null,
               "description": "Progress: 0%",
               "dtype": 2,
               "group_id": "<ID>",
               "idx": "<ID>",
-              "instruction_id": 1,
+              "instruction_id": null,
               "isAnnotask": true,
               "manager_id": null,
-              "name": "SIA test",
+              "name": "sia new",
               "nr_images": 35,
               "pipe_element_id": "<ID>",
               "progress": "<REDACTED>",
@@ -287,11 +321,11 @@
           ],
           "createdAt": "<TS>",
           "datastoreId": null,
-          "description": null,
+          "description": "dataset 2",
           "idx": "<ID>",
           "isReviewable": true,
           "name": "Dataset 2",
-          "nr_images": 401,
+          "nr_images": 461,
           "parentId": null
         },
         {
@@ -339,7 +373,7 @@
           "parentId": null
         }
       ],
-      "pages": 4
+      "pages": 17
     },
     "headers": {
       "content-type": "application/json"

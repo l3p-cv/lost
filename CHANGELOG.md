@@ -61,6 +61,7 @@ Added `create_jwt_pyjwt()` to LoginManager, PyJWT-based token creation.Same stru
 - `backend/lost/api/filebrowser/FileBrowserEndpoint.py` : fixed the delete endpoint.
 - `backend/lost/api/label/LabelEndpoint.py` : fixed responses to `JSONResponse` format similar to Flask.
 - `backend/lost/logic/pipeline/service.py` : fixed serialization errors surfaced during pipeline migration testing; re-recorded pipeline, statistics, user and annotasks golden snapshots for resolved error cases.
+- `controllers/PipelineEndpoint.py` : Fixed updateArguments/ endpoint which wasn't working in FastAPI to use Request instead of bytes.
 ### Changed
 - `dependencies.py` :auth scheme changed to `HTTPBearer` credentials extraction in auth dependencies from `OAuth2PasswordBearer`
 - placed the `RouteSpec` in `specs.py` from user_specs.py

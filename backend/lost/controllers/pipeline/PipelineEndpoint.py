@@ -23,7 +23,7 @@ Routes:
 """
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, UploadFile, File
+from fastapi import APIRouter, Depends, UploadFile, File, Request
 from fastapi.responses import Response
 from pydantic import BaseModel
 
@@ -208,12 +208,13 @@ def start_pipeline(
 
 
 @router.post("/updateArguments")
-def update_arguments(
-    data: bytes,
+async def update_arguments(
+    request: Request,
     user: DBUser = Depends(require_role(roles.DESIGNER)),
     coord: PipelineCoordination = Depends(get_pipeline_coordination),
 ):
     """Update pipeline arguments. Accepts raw bytes (same as Flask)."""
+    data = await request.body()
     return coord.update_arguments(data)
 
 

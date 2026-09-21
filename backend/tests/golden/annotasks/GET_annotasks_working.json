@@ -10,27 +10,32 @@
   "response": {
     "body": {
       "created_at": "<TS>",
-      "finished": 2,
+      "finished": 6,
       "group": "admin",
       "id": "<ID>",
       "instruction_id": null,
-      "last_activity": null,
-      "last_annotator": "N/A",
-      "locked_img_count": 0,
-      "name": "compare_test_sia",
+      "last_activity": "2026-09-21T10:27:40.000Z",
+      "last_annotator": "admin",
+      "locked_img_count": 1,
+      "name": "SIA test",
       "pipeline_creator": "admin",
-      "pipeline_name": "compare_test_sia_pipe",
+      "pipeline_name": "newpprecreate",
       "progress": "<REDACTED>",
-      "size": 3,
+      "size": 35,
       "statistic": {
         "amount_per_label": [
           {
             "amount": 1,
             "color": "#46aed7",
-            "label": "Aeroplane"
+            "label": "Plane"
+          },
+          {
+            "amount": 1,
+            "color": "#a55046",
+            "label": "Car"
           }
         ],
-        "seconds_per_anno": null
+        "seconds_per_anno": "0.00"
       },
       "status": "inProgress",
       "type": "SIA"
