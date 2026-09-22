@@ -24,13 +24,12 @@ from shapely.ops import unary_union
 
 logger = logging.getLogger("lost.logic.sia")
 
-from lost.db import dtype, model, state, roles
-from lost.db.access import DBMan
-from lost.controllers.Exceptions import DomainError
 from lost.controllers.AuthorizationService import AuthorizationService
-from lost.settings import DATA_URL
+from lost.controllers.Exceptions import DomainError
+from lost.db import dtype, model, roles, state
+from lost.db.access import DBMan
 from lost.logic.file_man import FileMan
-
+from lost.settings import DATA_URL
 
 __author__ = "Gereon Reus"
 

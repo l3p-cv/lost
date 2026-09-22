@@ -13,9 +13,9 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends, Query
 from fastapi.responses import PlainTextResponse, Response
 
-from lost.controllers.Dependencies import get_current_user, get_data_coordination, require_role
 from lost.controllers.base import ProfilingRoute
 from lost.controllers.data.DataCoordination import DataCoordination
+from lost.controllers.Dependencies import get_current_user, get_data_coordination, require_role
 from lost.db import roles
 from lost.db.model import User as DBUser
 

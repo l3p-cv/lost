@@ -8,16 +8,17 @@ from __future__ import annotations
 
 from lost.controllers.dataset.DatasetBusiness import DatasetBusiness
 
+
 class DatasetCoordination:
   """Coordination service for the dataset namespace — thin delegation."""
 
   def __init__(self, business: DatasetBusiness) -> None:
     self._business = business
-  
+
   def get_datasets(self) -> list[dict]:
         """List datasets + meta dataset. Delegates to DatasetBusiness.list_datasets."""
         return self._business.list_datasets()
-  
+
   def create_dataset(self, req) -> dict:
     """Add dataset. Delegates to DatasetBusiness.create_dataset."""
     return self._business.create_dataset(req)
@@ -65,4 +66,3 @@ class DatasetCoordination:
   def download_dataset_export(self, user, export_id: int) -> tuple[bytes, str]:
     """Download Dataset export. Delegates to DatasetBusiness.read_export."""
     return self._business.read_export(user,export_id)
-  

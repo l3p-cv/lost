@@ -16,8 +16,8 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, ConfigDict
 
-from lost.controllers.Dependencies import get_current_user, get_group_coordination, require_role
 from lost.controllers.base import ProfilingRoute
+from lost.controllers.Dependencies import get_current_user, get_group_coordination, require_role
 from lost.controllers.group.GroupCoordination import GroupCoordination
 from lost.db import roles
 from lost.db.model import User as DBUser

@@ -13,8 +13,8 @@ from datetime import datetime
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
-from lost.controllers.Dependencies import get_worker_coordination, require_role
 from lost.controllers.base import ProfilingRoute
+from lost.controllers.Dependencies import get_worker_coordination, require_role
 from lost.controllers.worker.WorkerCoordination import WorkerCoordination
 from lost.db import roles
 

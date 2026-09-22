@@ -12,14 +12,10 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
-from lost.controllers.Dependencies import get_current_user, require_role, get_instructions_coordination
 from lost.controllers.base import ProfilingRoute
-from lost.db import model, roles
-from lost.db.access import DBMan
-from lost.db.model import User as DBUser
-from lost.db.session import get_db
-from lost.db.vis_level import VisLevel
+from lost.controllers.Dependencies import get_current_user, get_instructions_coordination
 from lost.controllers.instructions.InstructionCoordination import InstructionCoordination
+from lost.db.model import User as DBUser
 
 router = APIRouter(tags=["instructions"], route_class=ProfilingRoute)
 

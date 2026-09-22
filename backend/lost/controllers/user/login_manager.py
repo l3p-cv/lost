@@ -2,8 +2,8 @@ import datetime
 import uuid
 
 import jwt as pyjwt
-# from flask_jwt_extended import create_access_token, create_refresh_token
 
+# from flask_jwt_extended import create_access_token, create_refresh_token
 from lost.db import roles
 from lost.db.model import Group, Role, UserGroups, UserRoles
 from lost.db.model import User as DBUser

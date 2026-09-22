@@ -1,18 +1,16 @@
 """Label business layer — LabelTree domain logic (moved from lost/logic/label.py in Pass 2)."""
-import pandas as pd
-
-from lost.db import model
-import numpy as np
 import hashlib
-from skimage import color as skcolor
-
 import logging
 from io import BytesIO
 
+import numpy as np
+import pandas as pd
+from skimage import color as skcolor
+
 from lost.controllers.AuthorizationService import AuthorizationService
-from lost.controllers.Exceptions import NotAuthorizedError
-from lost.db.vis_level import VisLevel
 from lost.controllers.Exceptions import DomainError, NotAuthorizedError
+from lost.db import model
+from lost.db.vis_level import VisLevel
 
 logger = logging.getLogger("lost.controllers.label")
 

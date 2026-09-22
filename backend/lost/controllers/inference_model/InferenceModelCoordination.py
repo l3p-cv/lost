@@ -7,6 +7,7 @@ InferenceModelEndpoint  ->  InferenceModelCoordination  ->  InferenceModelBusine
 
 from lost.controllers.inference_model.InferenceModelBusiness import InferenceModelBusiness
 
+
 class InferenceModelCoordination:
     """Coordination service for the inference model namespace — thin delegation."""
 

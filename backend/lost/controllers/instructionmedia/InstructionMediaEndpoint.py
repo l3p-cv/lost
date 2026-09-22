@@ -7,24 +7,15 @@ Routes:
 
 from __future__ import annotations
 
-import os
-import urllib.parse
-
 from fastapi import APIRouter, Depends, Query, Request
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
-from lost.controllers.Dependencies import require_role , get_instructionmedia_coordination
-from lost.controllers.instructionmedia.InstructionMediaCoordination import InstructionMediaCoordination
 from lost.controllers.base import ProfilingRoute
+from lost.controllers.Dependencies import get_instructionmedia_coordination, require_role
+from lost.controllers.instructionmedia.InstructionMediaCoordination import InstructionMediaCoordination
 from lost.db import roles
-from lost.db.access import DBMan
 from lost.db.model import User as DBUser
-from lost.db.session import get_db
-from lost.logic.file_access import UserFileAccess
-from lost.logic.file_man import INSTRUCTION_MEDIA_PATH
-from lost.settings import LOST_CONFIG
-
 
 router = APIRouter(tags=["instructionmedia"], route_class=ProfilingRoute)
 

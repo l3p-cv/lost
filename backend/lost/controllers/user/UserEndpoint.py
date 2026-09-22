@@ -23,8 +23,8 @@ from fastapi import APIRouter, Depends
 from fastapi.security import HTTPAuthorizationCredentials
 from pydantic import BaseModel
 
-from lost.controllers.Dependencies import get_current_user, get_user_coordination, oauth2_scheme, require_role
 from lost.controllers.base import ProfilingRoute
+from lost.controllers.Dependencies import get_current_user, get_user_coordination, oauth2_scheme, require_role
 from lost.controllers.user.UserCoordination import UserCoordination
 from lost.db import roles
 from lost.db.model import User as DBUser

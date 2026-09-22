@@ -26,8 +26,8 @@ from fastapi import APIRouter, Depends, Query
 from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel
 
-from lost.controllers.Dependencies import get_current_user, get_sia_coordination, require_role
 from lost.controllers.base import ProfilingRoute
+from lost.controllers.Dependencies import get_current_user, get_sia_coordination, require_role
 from lost.controllers.sia.SiaCoordination import SiaCoordination
 from lost.db import roles
 from lost.db.model import User as DBUser

@@ -13,7 +13,6 @@ import logging
 
 from lost.controllers.auth import OpenidBusiness
 
-
 logger = logging.getLogger(__name__)
 
 

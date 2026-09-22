@@ -1,9 +1,9 @@
 import json
 
 from lost import settings
+from lost.controllers.label.LabelBusiness import LabelTree
 from lost.logic.file_access import UserFileAccess
 from lost.logic.file_man import FileMan
-from lost.controllers.label.LabelBusiness import LabelTree
 
 __author__ = "Gereon Reus"
 

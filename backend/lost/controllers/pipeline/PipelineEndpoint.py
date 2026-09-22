@@ -23,15 +23,15 @@ Routes:
 """
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, UploadFile, File, Request
+from fastapi import APIRouter, Depends, File, Request, UploadFile
 from fastapi.responses import Response
 from pydantic import BaseModel
 
-from lost.controllers.Dependencies import get_current_user, require_role, get_pipeline_coordination
 from lost.controllers.base import ProfilingRoute
+from lost.controllers.Dependencies import get_current_user, get_pipeline_coordination, require_role
+from lost.controllers.pipeline.PipelineCoordination import PipelineCoordination
 from lost.db import roles
 from lost.db.model import User as DBUser
-from lost.controllers.pipeline.PipelineCoordination import PipelineCoordination
 
 router = APIRouter(tags=["pipeline"], route_class=ProfilingRoute)
 

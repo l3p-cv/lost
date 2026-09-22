@@ -7,6 +7,7 @@ UserEndpoint  ->  UserCoordination  ->  UserBusiness
 
 from lost.controllers.user.UserBusiness import UserBusiness
 
+
 class UserCoordination:
     """Coordination service for the user namespace — thin delegation."""
 
@@ -20,7 +21,7 @@ class UserCoordination:
     def get_anno_task_users(self) -> dict:
         """List users with annotation tasks. Delegates to UserBusiness.list_anno_task_users."""
         return self._business.anno_task_users()
-    
+
     def get_user(self, user_id: int) -> dict:
         """Get one user. Delegates to UserBusiness.get_user."""
         return self._business.get_user_dict(user_id)

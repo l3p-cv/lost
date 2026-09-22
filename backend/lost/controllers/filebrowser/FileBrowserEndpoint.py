@@ -17,15 +17,14 @@ Routes:
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, UploadFile, File, Form
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, Depends, File, Form, UploadFile
 from pydantic import BaseModel
 
-from lost.controllers.Dependencies import require_role, get_filebrowser_coordination
 from lost.controllers.base import ProfilingRoute
+from lost.controllers.Dependencies import get_filebrowser_coordination, require_role
+from lost.controllers.filebrowser.FileBrowserCoordination import FileBrowserCoordination
 from lost.db import roles
 from lost.db.model import User as DBUser
-from lost.controllers.filebrowser.FileBrowserCoordination import FileBrowserCoordination
 
 router = APIRouter(tags=["fb"], route_class=ProfilingRoute)
 

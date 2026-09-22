@@ -18,8 +18,8 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel
 
-from lost.controllers.Dependencies import get_mia_coordination, require_role
 from lost.controllers.base import ProfilingRoute
+from lost.controllers.Dependencies import get_mia_coordination, require_role
 from lost.controllers.mia.MiaCoordination import MiaCoordination
 from lost.db import roles
 from lost.db.model import User as DBUser

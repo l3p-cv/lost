@@ -11,16 +11,11 @@ calls inside methods resolve to module globals.
 """
 
 import json
-from datetime import datetime
-import os
 import logging
+import os
+from datetime import datetime
 
 from lost import settings
-from lost.db import access, dtype, model, state
-from lost.logic import email
-from lost.pyapi import pipe_elements
-
-
 from lost.controllers.Exceptions import DomainError, NotAuthorizedError
 from lost.controllers.sia.SiaBusiness import (
     SiaSerialize,
@@ -29,10 +24,12 @@ from lost.controllers.sia.SiaBusiness import (
     get_label_trees_by_anno_task_id,
     reviewoptions_annotask,
 )
-from lost.logic import dask_session
+from lost.db import access, dtype, model, state
+from lost.logic import dask_session, email
 from lost.logic.db_access import UserDbAccess
 from lost.logic.file_access import UserFileAccess
 from lost.logic.jobs.jobs import delete_ds_export, export_ds, force_anno_release
+from lost.pyapi import pipe_elements
 from lost.settings import DATA_URL, LOST_CONFIG
 
 logger = logging.getLogger("lost.controllers.annotasks")

@@ -9,47 +9,47 @@ from __future__ import annotations
 
 import jwt as pyjwt
 from fastapi import Depends, HTTPException
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
-from lost.controllers.AuthorizationService import AuthorizationService
-from lost.controllers.label.LabelBusiness import LabelBusiness
-from lost.controllers.label.LabelCoordination import LabelCoordination
-from lost.controllers.group.GroupBusiness import GroupBusiness
-from lost.controllers.group.GroupCoordination import GroupCoordination
-from lost.controllers.worker.WorkerBusiness import WorkerBusiness
-from lost.controllers.worker.WorkerCoordination import WorkerCoordination
-from lost.controllers.system.SystemBusiness import SystemBusiness
-from lost.controllers.system.SystemCoordination import SystemCoordination
-from lost.controllers.config.ConfigBusiness import ConfigBusiness
-from lost.controllers.config.ConfigCoordination import ConfigCoordination
-from lost.controllers.statistics.StatisticsBusiness import StatisticsBusiness
-from lost.controllers.statistics.StatisticsCoordination import StatisticsCoordination
-from lost.controllers.instructions.InstructionBusiness import InstructionBusiness
-from lost.controllers.instructions.InstructionCoordination import InstructionCoordination
-from lost.controllers.instructionmedia.InstructionMediaBusiness import InstructionMediaBusiness
-from lost.controllers.instructionmedia.InstructionMediaCoordination import InstructionMediaCoordination
-from lost.controllers.data.DataBusiness import DataBusiness
-from lost.controllers.data.DataCoordination import DataCoordination
-from lost.controllers.inference_model.InferenceModelBusiness import InferenceModelBusiness
-from lost.controllers.inference_model.InferenceModelCoordination import InferenceModelCoordination
-from lost.controllers.user.UserBusiness import UserBusiness
-from lost.controllers.user.UserCoordination import UserCoordination
-from lost.controllers.filebrowser.FileBrowserBusiness import FileBrowserBusiness
-from lost.controllers.filebrowser.FileBrowserCoordination import FileBrowserCoordination
-from lost.controllers.mia.MiaBusiness import MiaBusiness
-from lost.controllers.mia.MiaCoordination import MiaCoordination
-from lost.controllers.sia.SiaBusiness import SiaBusiness
-from lost.controllers.sia.SiaCoordination import SiaCoordination
-from lost.controllers.dataset.DatasetBusiness import DatasetBusiness
-from lost.controllers.dataset.DatasetCoordination import DatasetCoordination
-from lost.controllers.pipeline.PipelineBusiness import PipelineBusiness
-from lost.controllers.pipeline.PipelineCoordination import PipelineCoordination
 from lost.controllers.annotasks.AnnotasksBusiness import AnnotasksBusiness
 from lost.controllers.annotasks.AnnotasksCoordination import AnnotasksCoordination
-from lost.db.model import User as DBUser
+from lost.controllers.AuthorizationService import AuthorizationService
+from lost.controllers.config.ConfigBusiness import ConfigBusiness
+from lost.controllers.config.ConfigCoordination import ConfigCoordination
+from lost.controllers.data.DataBusiness import DataBusiness
+from lost.controllers.data.DataCoordination import DataCoordination
+from lost.controllers.dataset.DatasetBusiness import DatasetBusiness
+from lost.controllers.dataset.DatasetCoordination import DatasetCoordination
+from lost.controllers.filebrowser.FileBrowserBusiness import FileBrowserBusiness
+from lost.controllers.filebrowser.FileBrowserCoordination import FileBrowserCoordination
+from lost.controllers.group.GroupBusiness import GroupBusiness
+from lost.controllers.group.GroupCoordination import GroupCoordination
+from lost.controllers.inference_model.InferenceModelBusiness import InferenceModelBusiness
+from lost.controllers.inference_model.InferenceModelCoordination import InferenceModelCoordination
+from lost.controllers.instructionmedia.InstructionMediaBusiness import InstructionMediaBusiness
+from lost.controllers.instructionmedia.InstructionMediaCoordination import InstructionMediaCoordination
+from lost.controllers.instructions.InstructionBusiness import InstructionBusiness
+from lost.controllers.instructions.InstructionCoordination import InstructionCoordination
+from lost.controllers.label.LabelBusiness import LabelBusiness
+from lost.controllers.label.LabelCoordination import LabelCoordination
+from lost.controllers.mia.MiaBusiness import MiaBusiness
+from lost.controllers.mia.MiaCoordination import MiaCoordination
+from lost.controllers.pipeline.PipelineBusiness import PipelineBusiness
+from lost.controllers.pipeline.PipelineCoordination import PipelineCoordination
+from lost.controllers.sia.SiaBusiness import SiaBusiness
+from lost.controllers.sia.SiaCoordination import SiaCoordination
+from lost.controllers.statistics.StatisticsBusiness import StatisticsBusiness
+from lost.controllers.statistics.StatisticsCoordination import StatisticsCoordination
+from lost.controllers.system.SystemBusiness import SystemBusiness
+from lost.controllers.system.SystemCoordination import SystemCoordination
+from lost.controllers.user.UserBusiness import UserBusiness
+from lost.controllers.user.UserCoordination import UserCoordination
+from lost.controllers.worker.WorkerBusiness import WorkerBusiness
+from lost.controllers.worker.WorkerCoordination import WorkerCoordination
 from lost.db.access import DBMan
-from lost.db.session import get_db
+from lost.db.model import User as DBUser
 from lost.db.redis import is_token_revoked
+from lost.db.session import get_db
 from lost.settings import LOST_CONFIG
 
 # Bearer token scheme for Swagger UI "Authorize" button
@@ -98,7 +98,7 @@ def require_role(*allowed_roles: str):
     return dependency
 
 # --- Coordination service factories ---
-# these are used in the endpoints to wire the coordination services with their dependencies. 
+# these are used in the endpoints to wire the coordination services with their dependencies.
 # Each factory returns a new instance of the coordination service, which is then injected into the endpoint function.
 
 def get_label_coordination(dbm: DBMan = Depends(get_db)) -> LabelCoordination:

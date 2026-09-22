@@ -14,16 +14,12 @@ import traceback
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, PlainTextResponse
+from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.sessions import SessionMiddleware
 
 from lost import settings
-from lost.logic import dask_session
-
 from lost.controllers.Exceptions import DomainError
-from lost.controllers.label.LabelBusiness import DuplicateLabelTreeError, InvalidLabelUploadError
-
-from fastapi.exceptions import HTTPException as FastAPIHTTPException
-from starlette.exceptions import HTTPException as StarletteHTTPException
+from lost.logic import dask_session
 
 logger = logging.getLogger("lost")
 
@@ -141,24 +137,24 @@ async def startup_event():
 
 
 # Routers (added per-namespace in P1.2)
-from lost.controllers.system.SystemEndpoint import router as system_router
-from lost.controllers.worker.WorkerEndpoint import router as worker_router
-from lost.controllers.label.LabelEndpoint import router as label_router
-from lost.controllers.group.GroupEndpoint import router as group_router
-from lost.controllers.user.UserEndpoint import router as user_router
-from lost.controllers.filebrowser.FileBrowserEndpoint import router as fb_router
-from lost.controllers.instructions.InstructionEndpoint import router as instruction_router
-from lost.controllers.statistics.StatisticsEndpoint import router as statistics_router
+from lost.controllers.annotasks.AnnotasksEndpoint import router as annotasks_router
+from lost.controllers.auth.OpenidEndpoint import router as auth_router
 from lost.controllers.config.ConfigEndpoint import router as config_router
 from lost.controllers.data.DataEndpoint import router as data_router
 from lost.controllers.dataset.DatasetEndpoint import router as dataset_router
-from lost.controllers.sia.SiaEndpoint import router as sia_router
+from lost.controllers.filebrowser.FileBrowserEndpoint import router as fb_router
+from lost.controllers.group.GroupEndpoint import router as group_router
+from lost.controllers.inference_model.InferenceModelEndpoint import router as inference_model_router
+from lost.controllers.instructionmedia.InstructionMediaEndpoint import router as instructionmedia_router
+from lost.controllers.instructions.InstructionEndpoint import router as instruction_router
+from lost.controllers.label.LabelEndpoint import router as label_router
 from lost.controllers.mia.MiaEndpoint import router as mia_router
 from lost.controllers.pipeline.PipelineEndpoint import router as pipeline_router
-from lost.controllers.annotasks.AnnotasksEndpoint import router as annotasks_router
-from lost.controllers.instructionmedia.InstructionMediaEndpoint import router as instructionmedia_router
-from lost.controllers.auth.OpenidEndpoint import router as auth_router
-from lost.controllers.inference_model.InferenceModelEndpoint import router as inference_model_router
+from lost.controllers.sia.SiaEndpoint import router as sia_router
+from lost.controllers.statistics.StatisticsEndpoint import router as statistics_router
+from lost.controllers.system.SystemEndpoint import router as system_router
+from lost.controllers.user.UserEndpoint import router as user_router
+from lost.controllers.worker.WorkerEndpoint import router as worker_router
 
 app.include_router(system_router, prefix=API_PREFIX + "/system")
 app.include_router(worker_router, prefix=API_PREFIX + "/worker")

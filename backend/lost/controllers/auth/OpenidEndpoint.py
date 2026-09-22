@@ -9,12 +9,12 @@ from __future__ import annotations
 
 import logging
 
-from fastapi import APIRouter, Depends, Query, Request
+from fastapi import APIRouter, Query, Request
 from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import BaseModel
 
-from lost.controllers.auth.OpenidCoordination import exchange_temp_code, handle_callback
 from lost.controllers.auth import OpenidBusiness
+from lost.controllers.auth.OpenidCoordination import exchange_temp_code, handle_callback
 from lost.controllers.base import ProfilingRoute
 
 logger = logging.getLogger("lost.controllers.auth")

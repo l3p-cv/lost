@@ -11,11 +11,11 @@ import json
 import os
 import traceback
 
+from lost.controllers.label.LabelBusiness import LabelTree
 from lost.db import access, dtype, state
 from lost.logic import log
 from lost.logic.db_access import UserDbAccess
 from lost.logic.file_access import UserFileAccess
-from lost.controllers.label.LabelBusiness import LabelTree
 from lost.pyapi import inout, pe_base, pipe_elements
 from lostconfig import LOSTConfig
 

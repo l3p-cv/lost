@@ -18,14 +18,15 @@ import secrets
 from urllib.parse import urlencode
 
 import jwt
-from jwt import PyJWKClient, ExpiredSignatureError, InvalidTokenError
 import requests
+from jwt import ExpiredSignatureError, InvalidTokenError, PyJWKClient
 
-from lostconfig import LOSTConfig
+from lost.controllers.user.login_manager import LoginManager
 from lost.db import roles
 from lost.db.access import DBMan
-from lost.db.model import User as DBUser, UserRoles, Group, UserGroups, OidcTempCode
-from lost.controllers.user.login_manager import LoginManager
+from lost.db.model import Group, OidcTempCode, UserGroups, UserRoles
+from lost.db.model import User as DBUser
+from lostconfig import LOSTConfig
 
 logger = logging.getLogger(__name__)
 

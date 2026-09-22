@@ -15,22 +15,26 @@ import subprocess
 import traceback
 from io import BytesIO
 
-from lostconfig import LOSTConfig
 from lost.controllers.Exceptions import DomainError
 from lost.controllers.sia.SiaBusiness import (
     review as sia_review,
+)
+from lost.controllers.sia.SiaBusiness import (
     review_update as sia_review_update,
+)
+from lost.controllers.sia.SiaBusiness import (
     reviewoptions as sia_reviewoptions,
 )
 from lost.db import roles
 from lost.db.access import DBMan
 from lost.db.vis_level import VisLevel
+from lost.logic import template as template_service
 from lost.logic.file_access import UserFileAccess
 from lost.logic.file_man import AppFileMan
 from lost.logic.pipeline import service as pipeline_service
 from lost.logic.pipeline import template_import
-from lost.logic import template as template_service
 from lost.settings import DATA_URL, LOST_CONFIG
+from lostconfig import LOSTConfig
 
 
 class TemplateRoleError(DomainError):

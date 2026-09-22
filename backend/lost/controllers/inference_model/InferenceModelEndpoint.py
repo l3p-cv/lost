@@ -15,16 +15,13 @@ import datetime
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse, PlainTextResponse
 from pydantic import BaseModel, field_validator
-from sqlalchemy.exc import IntegrityError
 
-from lost.controllers.Dependencies import get_current_user , get_inference_model_coordination
 from lost.controllers.base import ProfilingRoute
-from lost.db import model
-from lost.db.access import DBMan
-from lost.db.model import User as DBUser
-from lost.db.session import get_db
-from lost.utils.validators import is_valid_grpc_url
+from lost.controllers.Dependencies import get_current_user, get_inference_model_coordination
 from lost.controllers.inference_model.InferenceModelCoordination import InferenceModelCoordination
+from lost.db import model
+from lost.db.model import User as DBUser
+from lost.utils.validators import is_valid_grpc_url
 
 router = APIRouter(tags=["models"], route_class=ProfilingRoute)
 

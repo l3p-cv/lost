@@ -14,8 +14,8 @@ globals, not the methods. ``logic/anno_task`` stays shared for now
 import json
 from datetime import datetime
 
-from lost.db import dtype, model, state
 from lost.controllers.annotasks.AnnotasksBusiness import set_finished, update_anno_task
+from lost.db import dtype, model, state
 from lost.logic.file_man import FileMan
 
 __author__ = "Gereon Reus"

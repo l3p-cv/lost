@@ -1,8 +1,8 @@
 import pytest
 
 import lostconfig as config
-from lost.db.access import DBMan
 from lost.controllers.label.LabelBusiness import LabelTree
+from lost.db.access import DBMan
 
 ROOT_NAME = "first tree"
 ROOT_EXTERNAL_ID = "0"

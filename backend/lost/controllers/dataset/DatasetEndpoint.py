@@ -20,15 +20,14 @@ Routes:
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, Query
-from fastapi.responses import Response, PlainTextResponse
+from fastapi.responses import PlainTextResponse, Response
 from pydantic import BaseModel, field_validator
 
-from lost.controllers.Dependencies import require_role
 from lost.controllers.base import ProfilingRoute
-from lost.db import roles
-from lost.db.model import  User as DBUser
 from lost.controllers.dataset.DatasetCoordination import DatasetCoordination
-from lost.controllers.Dependencies import get_dataset_coordination
+from lost.controllers.Dependencies import get_dataset_coordination, require_role
+from lost.db import roles
+from lost.db.model import User as DBUser
 
 router = APIRouter(tags=["datasets"], route_class=ProfilingRoute)
 

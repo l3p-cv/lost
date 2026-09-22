@@ -34,12 +34,11 @@ from fastapi import APIRouter, Depends, Query
 from fastapi.responses import Response
 from pydantic import BaseModel
 
-from lost.controllers.Dependencies import get_current_user, require_role, get_annotasks_coordination
+from lost.controllers.annotasks.AnnotasksCoordination import AnnotasksCoordination
 from lost.controllers.base import ProfilingRoute
+from lost.controllers.Dependencies import get_annotasks_coordination, get_current_user, require_role
 from lost.db import roles
 from lost.db.model import User as DBUser
-from lost.controllers.annotasks import AnnotasksBusiness as annotask_service
-from lost.controllers.annotasks.AnnotasksCoordination import AnnotasksCoordination
 
 logger = logging.getLogger("lost.controllers.annotasks")
 router = APIRouter(tags=["annotasks"], route_class=ProfilingRoute)
