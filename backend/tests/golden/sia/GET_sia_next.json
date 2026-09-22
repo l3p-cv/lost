@@ -7,29 +7,43 @@
     "method": "GET",
     "params": {
       "direction": "next",
-      "lastImgId": "2541"
+      "lastImgId": "2616"
     },
     "path": "/api/sia"
   },
   "response": {
     "body": {
       "annotations": {
-        "bBoxes": null,
-        "lines": null,
-        "points": null,
-        "polygons": null
+        "bBoxes": [],
+        "lines": [],
+        "points": [
+          {
+            "annoTime": 0.0,
+            "comment": null,
+            "data": {
+              "x": 0.4431143259416385,
+              "y": 0.45338041934432105
+            },
+            "id": "<ID>",
+            "isExample": false,
+            "labelIds": [
+              2
+            ]
+          }
+        ],
+        "polygons": []
       },
       "image": {
-        "amount": null,
-        "annoTime": null,
+        "amount": 3,
+        "annoTime": 2.57,
         "description": null,
         "id": "<ID>",
-        "imgActions": null,
-        "isFirst": null,
+        "imgActions": [],
+        "isFirst": true,
         "isJunk": null,
-        "isLast": null,
-        "labelIds": null,
-        "number": null
+        "isLast": true,
+        "labelIds": [],
+        "number": 2
       }
     },
     "headers": {

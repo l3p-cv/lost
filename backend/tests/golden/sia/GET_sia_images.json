@@ -9,7 +9,13 @@
   },
   "response": {
     "body": {
-      "images": []
+      "images": [
+        {
+          "imageId": 2617,
+          "number": 1,
+          "total": 1
+        }
+      ]
     },
     "headers": {
       "content-type": "application/json"

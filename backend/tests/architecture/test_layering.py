@@ -48,6 +48,7 @@ SPLIT_MODULES: dict[str, tuple[str, str, str]] = {
     "sia": ("SiaEndpoint.py", "SiaCoordination.py", "SiaBusiness.py"),
     "dataset": ("DatasetEndpoint.py", "DatasetCoordination.py", "DatasetBusiness.py"),
     "pipeline": ("PipelineEndpoint.py", "PipelineCoordination.py", "PipelineBusiness.py"),
+    "annotasks": ("AnnotasksEndpoint.py", "AnnotasksCoordination.py", "AnnotasksBusiness.py"),
 }
 
 SHARED_FRAMEWORK_FREE = (

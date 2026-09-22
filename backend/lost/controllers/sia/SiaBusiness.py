@@ -26,7 +26,6 @@ logger = logging.getLogger("lost.logic.sia")
 
 from lost.db import dtype, model, state, roles
 from lost.db.access import DBMan
-from lost.logic.anno_task import set_finished, update_anno_task
 from lost.controllers.Exceptions import DomainError
 from lost.controllers.AuthorizationService import AuthorizationService
 from lost.settings import DATA_URL
@@ -357,6 +356,7 @@ def review_update_annotask(db_man, data, user_id, annotask_id):
 def finish(db_man, user_id):
     at = get_sia_anno_task(db_man, user_id)
     if at.idx:
+        from lost.controllers.annotasks.AnnotasksBusiness import set_finished
         return set_finished(db_man, at.idx)
     else:
         return "error: anno_task not found"
@@ -439,6 +439,7 @@ class SiaUpdateOneThing:
         self.db_man.add(self.image_anno)
         self.db_man.commit()
         # self.__update_history_json_file()
+        from lost.controllers.annotasks.AnnotasksBusiness import update_anno_task
         update_anno_task(self.db_man, self.at.idx, self.user_id)
         return res
 
@@ -683,6 +684,7 @@ class SiaUpdate:
         self.db_man.add(self.image_anno)
         self.db_man.commit()
         # self.__update_history_json_file()
+        from lost.controllers.annotasks.AnnotasksBusiness import update_anno_task
         update_anno_task(self.db_man, self.at.idx, self.user_id)
         return "success"
 

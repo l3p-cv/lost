@@ -10,12 +10,12 @@
   "response": {
     "body": {
       "created_at": "<TS>",
-      "finished": 2,
+      "finished": 1,
       "group": "admin",
       "id": "<ID>",
       "instruction_id": null,
-      "last_activity": null,
-      "last_annotator": "N/A",
+      "last_activity": "2026-09-21T13:14:29.000Z",
+      "last_annotator": "admin",
       "locked_img_count": 0,
       "name": "compare_test_sia",
       "pipeline_creator": "admin",
@@ -25,12 +25,12 @@
       "statistic": {
         "amount_per_label": [
           {
-            "amount": 1,
+            "amount": 2,
             "color": "#46aed7",
             "label": "Aeroplane"
           }
         ],
-        "seconds_per_anno": null
+        "seconds_per_anno": "0.00"
       },
       "status": "inProgress",
       "type": "SIA"

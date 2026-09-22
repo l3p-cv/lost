@@ -15,7 +15,7 @@ import json
 from datetime import datetime
 
 from lost.db import dtype, model, state
-from lost.logic.anno_task import set_finished, update_anno_task
+from lost.controllers.annotasks.AnnotasksBusiness import set_finished, update_anno_task
 from lost.logic.file_man import FileMan
 
 __author__ = "Gereon Reus"
