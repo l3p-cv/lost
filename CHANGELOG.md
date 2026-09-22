@@ -93,6 +93,7 @@ Added `create_jwt_pyjwt()` to LoginManager, PyJWT-based token creation.Same stru
 - `backend/` : removed all Flask-dependent code at P1.3 cutover — deleted `lost/app.py`, `lost/flaskapp.py`, `lost/wsgi.py`, `lost/wsgi.ini`, `lost/api/api.py` and dropped Flask deps (`flask`, `flask-cors`, `flask-jwt-extended`, `flask-mail`, `flask-pydantic`, `flask-restx`, `flask-sqlalchemy`, `uwsgi`) from `pyproject.toml`, added `redis`, `itsdangerous`, `pyjwt`.
 - `services/` directory removed.
 - `auth/exceptions.py` : moved MisconfiguredException to OpenidBusiness.py
+- removed the 38 dead Flask-era restx reference files, 2 annotasks JSON fixtures , triton preserved , dropped unused imports
 
 ## [4.0.0-alpha] - 2026-08-18
 ### Added

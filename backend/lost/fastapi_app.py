@@ -56,7 +56,6 @@ _OPENAPI_TAGS = [
     {"name": "system"},
     {"name": "statistics"},
     {"name": "config"},
-    {"name": "anno_example"},
     {"name": "instructions"},
     {"name": "instructionmedia"},
     {"name": "models"},

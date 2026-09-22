@@ -23,7 +23,6 @@ dependencies = [
     "fastapi>=0.115.0",
     "fsspec>=2025.5.0",
     "httpx>=0.28.0",
-    "httpx2>=2.12.0",
     "igraph>=0.11.8",
     "jinja2>=3.1.0",
     "lost-ds==1.2.0",
@@ -74,6 +73,7 @@ dev = [
 # py-modules = ["lost"]
 
 [tool.mypy]
+exclude = ["lost/controllers/triton"]
 files = ["lost"]
 disallow_untyped_defs = true
 disallow_any_unimported = true
@@ -87,6 +87,7 @@ show_error_codes = true
 testpaths = ["tests"]
 
 [tool.ruff]
+extend-exclude = ["lost/controllers/triton"]
 target-version = "py39"
 line-length = 120
 fix = true
