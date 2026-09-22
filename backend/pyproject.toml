@@ -90,7 +90,7 @@ testpaths = ["tests"]
 extend-exclude = ["lost/controllers/triton"]
 target-version = "py39"
 line-length = 120
-fix = true
+fix = false
 
 [tool.ruff.lint]
 select = [
@@ -131,10 +131,30 @@ ignore = [
     "E501",
     # DoNotAssignLambda
     "E731",
+    # Intentional codebase style: raise sites carry message context (incl. DomainErrors)
+    "TRY002",
+    "TRY003",
 ]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["S101"]
+# Legacy zones use assert as lightweight validation — fixing is a behavior change, backlog
+"lost/pyapi/*" = ["S101"]
+"lost/logic/*" = ["S101"]
+
+[tool.ruff.lint.flake8-bugbear]
+# silences the B008 false positives on the Depends()/Query() signature idiom.
+extend-immutable-calls = [
+    "fastapi.Depends", "fastapi.params.Depends",
+    "fastapi.Query", "fastapi.params.Query",
+    "fastapi.File", "fastapi.params.File",
+    "fastapi.Form", "fastapi.params.Form",
+    "fastapi.Body", "fastapi.params.Body",
+    "fastapi.Header", "fastapi.params.Header",
+    "fastapi.Cookie", "fastapi.params.Cookie",
+    "fastapi.Security", "fastapi.params.Security",
+    "pytest.fixture",
+]
 
 [tool.ruff.format]
 preview = true
