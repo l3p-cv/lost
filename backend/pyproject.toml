@@ -153,7 +153,7 @@ extend-immutable-calls = [
     "fastapi.Header", "fastapi.params.Header",
     "fastapi.Cookie", "fastapi.params.Cookie",
     "fastapi.Security", "fastapi.params.Security",
-    "pytest.fixture",
+    "pytest.fixture","lost.controllers.Dependencies.require_role",
 ]
 
 [tool.ruff.format]
