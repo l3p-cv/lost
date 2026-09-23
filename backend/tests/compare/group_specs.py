@@ -1,19 +1,19 @@
 """Group namespace request specs for golden-snapshot testing.
 
-4 routes: 4 active.
+7 routes: 7 active.
 - 2 GETs (list, by_id)
 - 1 POST (create test group → GET verify → cleanup)
 - 1 DELETE (create test group → delete via API → GET verify 404)
+- 3 error-path specs (D2 pilot — exact mode, byte-exact legacy bodies):
+  duplicate create → 409, empty name → 400, missing-id delete → 400
 """
 
 from __future__ import annotations
 
-from typing import Callable
-
-from tests.helpers.recorder import RequestSpec
-from tests.helpers.seed import unique_suffix, TEST_PREFIX
-from tests.helpers.specs import RouteSpec
 from tests.compare.migration_status import target_for
+from tests.helpers.recorder import RequestSpec
+from tests.helpers.seed import TEST_PREFIX, unique_suffix
+from tests.helpers.specs import RouteSpec
 
 _TARGET = target_for("group")
 
@@ -34,8 +34,6 @@ def _create_test_group_db(dbm):
 
 def _cleanup_test_group_db(dbm, context):
     """Delete a test group from the DB."""
-    from lost.db.model import Group
-
     gid = context.get("group_id")
     if gid:
         g = dbm.get_group_by_id(gid)
@@ -53,6 +51,19 @@ def _cleanup_created_group_by_name(dbm, context):
         if g:
             dbm.delete(g)
             dbm.commit()
+
+
+def _ensure_group_exists(dbm):
+    """Ensure the fixed-name duplicate-spec group exists (reuse if leaked by a prior run)."""
+    name = f"{TEST_PREFIX}dup_group"
+    g = dbm.get_group_by_name(name)
+    if g is None:
+        from lost.db.model import Group
+
+        g = Group(name=name, manager_id=1)
+        dbm.save_obj(g)
+        dbm.commit()
+    return {"group_id": g.idx, "group_name": name}
 
 
 def get_group_specs() -> list[RouteSpec]:
@@ -102,6 +113,37 @@ def get_group_specs() -> list[RouteSpec]:
         ),
         setup=_create_test_group_db,
         cleanup=_cleanup_test_group_db,  # safe if already deleted
+        target=_TARGET,
+    ))
+
+    # 5. POST /api/group — duplicate name → 409 (exact: FIXED name for determinism —
+    #    error-path specs never use run-generated values in exact-mode bodies)
+    specs.append(RouteSpec(
+        name="POST_group_create_duplicate",
+        request=RequestSpec(
+            method="POST", path="/api/group", json={"group_name": f"{TEST_PREFIX}dup_group"}, mode="exact",
+        ),
+        target=_TARGET,
+        setup=_ensure_group_exists,
+        cleanup=_cleanup_test_group_db,  # setup-created/reused group survives the 409
+    ))
+
+    # 6. POST /api/group — empty name → 400 (exact)
+    specs.append(RouteSpec(
+        name="POST_group_create_no_name",
+        request=RequestSpec(
+            method="POST", path="/api/group", json={"group_name": ""}, mode="exact",
+        ),
+        target=_TARGET,
+    ))
+
+    # 7. DELETE /api/group/{id} — nonexistent id → 400 (exact; hardcoded
+    #    implausible id for determinism — no setup, no cleanup)
+    specs.append(RouteSpec(
+        name="DELETE_group_not_found",
+        request=RequestSpec(
+            method="DELETE", path="/api/group/999999", mode="exact",
+        ),
         target=_TARGET,
     ))
 

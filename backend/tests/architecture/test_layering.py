@@ -56,7 +56,7 @@ SHARED_FRAMEWORK_FREE = (
     "auth/login_manager.py",
 )
 
-_INFRA_NAME_BAN = ("Dependencies", "base", "dependencies")
+_INFRA_NAME_BAN = ("Dependencies", "base", "dependencies", "Responses")
 _BUSINESS_SUFFIX_BAN = ("Endpoint", "Coordination")
 _COORDINATION_SUFFIX_BAN = ("Endpoint",)
 

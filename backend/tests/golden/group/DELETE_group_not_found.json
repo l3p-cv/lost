@@ -1,17 +1,17 @@
 {
-  "mode": "structural",
+  "mode": "exact",
   "request": {
     "headers": {
       "Authorization": "<AUTH>"
     },
     "method": "DELETE",
-    "path": "/api/group/1094"
+    "path": "/api/group/999999"
   },
   "response": {
-    "body": "success",
+    "body": "Group with ID '999999' not found.",
     "headers": {
       "content-type": "application/json"
     },
-    "status": 200
+    "status": 400
   }
 }

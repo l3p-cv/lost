@@ -1,9 +1,11 @@
 """Group namespace — FastAPI endpoints for group management.
 
-Pass 2 CCB split: routes, schemas, response construction only.
-Flow: GroupEndpoint -> GroupCoordination -> GroupBusiness.
-Domain errors are mapped to legacy HTTP bodies by the DomainError handler
-in fastapi_app.py.
+Pass 2 CCB split, D2-pure: routes, schemas, response construction — and the
+transport boundary for domain errors. Flow: GroupEndpoint -> GroupCoordination
+-> GroupBusiness. Business raises PLAIN domain errors (no HTTP vocabulary);
+this endpoint catches them and builds the byte-exact legacy responses via
+Responses. The global DomainError handler remains only as a loud fallback
+(un-transcribed error -> 500) for the duration of the D2 sweep.
 
 Routes:
     GET    /api/group              — list all groups (designer)
@@ -18,7 +20,13 @@ from pydantic import BaseModel, ConfigDict
 
 from lost.controllers.base import ProfilingRoute
 from lost.controllers.Dependencies import get_current_user, get_group_coordination, require_role
+from lost.controllers.group.GroupBusiness import (
+    GroupAlreadyExistsError,
+    GroupNameRequiredError,
+    GroupNotFoundError,
+)
 from lost.controllers.group.GroupCoordination import GroupCoordination
+from lost.controllers.Responses import Responses
 from lost.db import roles
 from lost.db.model import User as DBUser
 
@@ -59,8 +67,14 @@ def create_group(
     coord: GroupCoordination = Depends(get_group_coordination),
 ):
     """Create a new group. Current user becomes the manager."""
-    coord.create_group(user, req.group_name)
-    return "success"
+    try:
+        coord.create_group(user, req.group_name)
+    except GroupNameRequiredError:
+        return Responses.bad_request("A group name is required.")
+    except GroupAlreadyExistsError:
+        return Responses.conflict(f"Group with name '{req.group_name}' already exists.")
+    else:
+        return "success"
 
 
 @router.get("/{group_id}", response_model=GroupSchema)
@@ -83,5 +97,9 @@ def delete_group(
     coord: GroupCoordination = Depends(get_group_coordination),
 ):
     """Delete a group by ID (designer only)."""
-    coord.delete_group(group_id)
-    return "success"
+    try:
+        coord.delete_group(group_id)
+    except GroupNotFoundError:
+        return Responses.bad_request(f"Group with ID '{group_id}' not found.")
+    else:
+        return "success"

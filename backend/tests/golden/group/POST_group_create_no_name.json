@@ -1,20 +1,20 @@
 {
-  "mode": "structural",
+  "mode": "exact",
   "request": {
     "headers": {
       "Authorization": "<AUTH>"
     },
     "json": {
-      "group_name": "compare_test_ac67d05c"
+      "group_name": ""
     },
     "method": "POST",
     "path": "/api/group"
   },
   "response": {
-    "body": "success",
+    "body": "A group name is required.",
     "headers": {
       "content-type": "application/json"
     },
-    "status": 200
+    "status": 400
   }
 }

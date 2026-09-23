@@ -1,12 +1,10 @@
-"""Group business layer — group-management domain logic.
+"""Group business layer — group-management domain logic (D2-pure).
 
 No legacy lost/logic counterpart existed; all logic was inline in the
 endpoint. Holds the module-specific rules (creation, duplicate check,
-deletion). Domain errors are self-describing ``DomainError`` subclasses —
-the single handler in fastapi_app.py maps them to the legacy bodies.
-
-Dynamic legacy bodies (interpolated names) are produced by overriding
-``http_body`` per instance — the canonical pattern for interpolated messages.
+deletion). Domain errors are PLAIN signals (D2): they carry only the data
+the endpoint needs — no HTTP vocabulary lives here. GroupEndpoint catches
+them and builds the exact legacy responses via Responses.
 """
 from __future__ import annotations
 
@@ -17,28 +15,19 @@ from lost.db import model
 class GroupNameRequiredError(DomainError):
     """A group was created without a name."""
 
-    http_status = 400
-    http_body = "A group name is required."
-
 
 class GroupAlreadyExistsError(DomainError):
     """A group with the requested name already exists."""
 
-    http_status = 409
-
     def __init__(self, group_name: str) -> None:
         super().__init__(group_name)
-        self.http_body = f"Group with name '{group_name}' already exists."
 
 
 class GroupNotFoundError(DomainError):
     """The requested group does not exist."""
 
-    http_status = 400
-
     def __init__(self, group_id: int) -> None:
         super().__init__(group_id)
-        self.http_body = f"Group with ID '{group_id}' not found."
 
 
 class GroupBusiness:
