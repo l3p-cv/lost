@@ -14,8 +14,10 @@ from fastapi import APIRouter, Depends, Query
 from fastapi.responses import PlainTextResponse, Response
 
 from lost.controllers.base import ProfilingRoute
+from lost.controllers.data.DataBusiness import UnknownMiaImageTypeError
 from lost.controllers.data.DataCoordination import DataCoordination
 from lost.controllers.Dependencies import get_current_user, get_data_coordination, require_role
+from lost.controllers.Responses import Responses
 from lost.db import roles
 from lost.db.model import User as DBUser
 
@@ -46,7 +48,12 @@ def get_image(
     coord: DataCoordination = Depends(get_data_coordination),
 ):
     """Get the image with the given ID as a base64 encoded BLOB."""
-    return PlainTextResponse(coord.get_image(user, image_id, type, context, drawAnno))
+    try:
+        result = coord.get_image(user, image_id, type, context, drawAnno)
+    except UnknownMiaImageTypeError:
+        return Responses.plain_text("Unknown mia image type", 422)
+    else:
+        return PlainTextResponse(result)
 
 
 @router.get("/storeKeys")

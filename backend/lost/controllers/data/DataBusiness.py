@@ -21,11 +21,6 @@ from lost.settings import LOST_CONFIG
 class UnknownMiaImageTypeError(DomainError):
     """The mia image type is neither imageBased nor annoBased."""
 
-    http_status = 422
-    http_body = "Unknown mia image type"
-    http_media_type = "text/plain"
-
-
 _STORE_KEYS = {
     "1": "Datastore 1", "2": "Datastore 2", "3": "Datastore 3",
     "4": "Datastore 4", "5": "Datastore 5",
