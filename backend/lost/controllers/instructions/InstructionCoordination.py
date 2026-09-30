@@ -23,10 +23,10 @@ class InstructionCoordination:
         """Add instruction. Delegates to InstructionBusiness.add_instruction."""
         return self._business.add_instruction(user, req)
 
-    def edit_instruction(self, user, req) -> dict:
+    def edit_instruction(self, req) -> dict:
         """Edit instruction. Delegates to InstructionBusiness.edit_instruction."""
-        return self._business.edit_instruction(user, req)
+        return self._business.edit_instruction(req)
 
-    def delete_instruction(self, user, instruction_id: int) -> dict:
+    def delete_instruction(self, instruction_id: int) -> dict:
         """Soft-delete instruction. Delegates to InstructionBusiness.delete_instruction."""
-        return self._business.delete_instruction(user, instruction_id)
+        return self._business.delete_instruction(instruction_id)

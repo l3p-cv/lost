@@ -1,0 +1,22 @@
+{
+  "mode": "exact",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "json": {
+      "id": 0
+    },
+    "method": "PUT",
+    "path": "/api/instructions/editInstruction"
+  },
+  "response": {
+    "body": {
+      "message": "Instruction ID is required"
+    },
+    "headers": {
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

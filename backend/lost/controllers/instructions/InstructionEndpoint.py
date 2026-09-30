@@ -14,7 +14,16 @@ from pydantic import BaseModel
 
 from lost.controllers.base import ProfilingRoute
 from lost.controllers.Dependencies import get_current_user, get_instructions_coordination
+from lost.controllers.instructions.InstructionBusiness import (
+    DefaultGroupNotFoundError,
+    InstructionIdRequiredError,
+    InstructionNotFoundError,
+    InstructionOperationError,
+    InvalidVisibilityError,
+)
 from lost.controllers.instructions.InstructionCoordination import InstructionCoordination
+from lost.controllers.Responses import Responses
+from lost.db import roles
 from lost.db.model import User as DBUser
 
 router = APIRouter(tags=["instructions"], route_class=ProfilingRoute)
@@ -51,6 +60,16 @@ class EditInstructionRequest(BaseModel):
     is_deleted: bool | None = None
 
 
+# --- Helper ---
+
+def _role_denied(user, action: str):
+    """Legacy quirk: unauthorized mutations answer 200 with a message, NOT 403."""
+    if user.has_role(roles.ADMINISTRATOR) or user.has_role(roles.DESIGNER):
+        return None
+    return Responses.ok(
+        {"message": f"You are not authorized to {action} instructions. Required role: ADMINISTRATOR or DESIGNER."}
+    )
+
 # --- Routes ---
 
 
@@ -61,7 +80,12 @@ def get_instructions(
     coord: InstructionCoordination = Depends(get_instructions_coordination),
 ):
     """Get all instructions for the given visibility level."""
-    return coord.get_instructions(user, visibility)
+    try:
+        result = coord.get_instructions(user, visibility)
+    except InvalidVisibilityError:
+        return Responses.ok({"message": "Invalid visibility level"})
+    else:
+        return result
 
 
 @router.post("/addInstruction", status_code=201)
@@ -71,7 +95,17 @@ def add_instruction(
     coord: InstructionCoordination = Depends(get_instructions_coordination),
 ):
     """Add a new instruction (designer/admin only)."""
-    return coord.add_instruction(user, req)
+    denied = _role_denied(user, "add")
+    if denied:
+        return denied
+    try:
+        result = coord.add_instruction(user, req)
+    except DefaultGroupNotFoundError:
+        return Responses.ok({"message": "Default group not found for user."})
+    except InstructionOperationError as e:
+        return Responses.ok({"message": f"Error {e.action} instruction: {e.exc!s}"})
+    else:
+        return result
 
 
 @router.put("/editInstruction")
@@ -81,7 +115,19 @@ def edit_instruction(
     coord: InstructionCoordination = Depends(get_instructions_coordination),
 ):
     """Edit an existing instruction (designer/admin only)."""
-    return coord.edit_instruction(user, req)
+    denied = _role_denied(user, "edit")
+    if denied:
+        return denied
+    try:
+        result = coord.edit_instruction(req)
+    except InstructionIdRequiredError:
+        return Responses.ok({"message": "Instruction ID is required"})
+    except InstructionNotFoundError as e:
+        return Responses.ok({"message": e.args[0]})
+    except InstructionOperationError as e:
+        return Responses.ok({"message": f"Error {e.action} instruction: {e.exc!s}"})
+    else:
+        return result
 
 
 @router.delete("/deleteInstruction/{instruction_id}")
@@ -91,4 +137,14 @@ def delete_instruction(
     coord: InstructionCoordination = Depends(get_instructions_coordination),
 ):
     """Soft-delete an instruction (designer/admin only)."""
-    return coord.delete_instruction(user, instruction_id)
+    denied = _role_denied(user, "delete")
+    if denied:
+        return denied
+    try:
+        result = coord.delete_instruction(instruction_id)
+    except InstructionNotFoundError as e:
+        return Responses.ok({"message": e.args[0]})
+    except InstructionOperationError as e:
+        return Responses.ok({"message": f"Error {e.action} instruction: {e.exc!s}"})
+    else:
+        return result

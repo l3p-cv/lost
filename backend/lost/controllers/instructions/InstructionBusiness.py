@@ -2,25 +2,24 @@
 
 No legacy lost/logic counterpart; logic was inline in the endpoint. Legacy
 failure flows return HTTP 200 with ``{"message": ...}`` bodies (not error
-codes) — modeled as self-describing ``DomainError`` subclasses with
-``http_status=200`` so the global handler reproduces them byte-exactly while
-endpoints stay declarative. Role enforcement stays here (NOT require_role)
-because the legacy contract answers unauthorized calls with 200 messages.
+codes) — business raises PLAIN domain signals (D2-pure) and the endpoint
+builds the byte-exact legacy responses via Responses. Role enforcement for
+mutations lives in the ENDPOINT as inline checks because the legacy
+contract answers unauthorized calls with 200 message bodies.
 """
 from __future__ import annotations
 
 from lost.controllers.Exceptions import DomainError
-from lost.db import model, roles
+from lost.db import model
 from lost.db.vis_level import VisLevel
 
 
 class _InstructionMessage(DomainError):
-    """Base for legacy 200-status message bodies."""
-    http_status = 200
+    """Base for legacy 200-status message signals."""
 
 
 class InvalidVisibilityError(_InstructionMessage):
-    http_body = {"message": "Invalid visibility level"}
+    """The visiblity level is not one of user/global/all."""
 
 
 class InstructionRoleRequiredError(_InstructionMessage):
@@ -31,23 +30,25 @@ class InstructionRoleRequiredError(_InstructionMessage):
 
 
 class DefaultGroupNotFoundError(_InstructionMessage):
-    http_body = {"message": "Default group not found for user."}
+    """The user has no default group (visiblity=user)."""
 
 
 class InstructionIdRequiredError(_InstructionMessage):
-    http_body = {"message": "Instruction ID is required"}
+    """The user has no default group (visibility=user)."""
 
 
 class InstructionNotFoundError(_InstructionMessage):
+    """The instruction does not exist or is soft deleted."""
     def __init__(self, detail: str) -> None:
         super().__init__(detail)
-        self.http_body = {"message": detail}
 
 
 class InstructionOperationError(_InstructionMessage):
+    """The DB action failed. Carries the action and the cause."""
     def __init__(self, action: str, exc: Exception) -> None:
-        super().__init__(action)
-        self.http_body = {"message": f"Error {action} instruction: {exc!s}"}
+        super().__init__(action, str(exc))
+        self.action = action
+        self.exc = exc
 
 
 class InstructionBusiness:
@@ -55,11 +56,6 @@ class InstructionBusiness:
 
     def __init__(self, dbm) -> None:
         self.dbm = dbm
-
-    @staticmethod
-    def _ensure_designer_or_admin(user, action: str) -> None:
-        if not (user.has_role(roles.ADMINISTRATOR) or user.has_role(roles.DESIGNER)):
-            raise InstructionRoleRequiredError(action)
 
     def list_instructions(self, user, visibility: str) -> dict:
         """All instructions for a visibility level."""
@@ -76,7 +72,6 @@ class InstructionBusiness:
 
     def add_instruction(self, user, req) -> dict:
         """Add an instruction (designer/admin)."""
-        self._ensure_designer_or_admin(user, "add")
         group_id = None
         if req.visibility == "user":
             for user_group in self.dbm.get_user_groups_by_user_id(user.idx):
@@ -96,9 +91,8 @@ class InstructionBusiness:
             self.dbm.session.rollback()
             raise InstructionOperationError("adding", e) from e
 
-    def edit_instruction(self, user, req) -> dict:
+    def edit_instruction(self, req) -> dict:
         """Edit an instruction (designer/admin)."""
-        self._ensure_designer_or_admin(user, "edit")
         if not req.id:
             raise InstructionIdRequiredError("id required")
         try:
@@ -117,9 +111,8 @@ class InstructionBusiness:
             self.dbm.session.rollback()
             raise InstructionOperationError("updating", e) from e
 
-    def delete_instruction(self, user, instruction_id: int) -> dict:
+    def delete_instruction(self, instruction_id: int) -> dict:
         """Soft-delete an instruction (designer/admin)."""
-        self._ensure_designer_or_admin(user, "delete")
         try:
             instruction = self.dbm.session.query(model.Instruction).filter_by(id=instruction_id).first()
             if not instruction or instruction.is_deleted:

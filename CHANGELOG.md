@@ -98,6 +98,7 @@ Added `create_jwt_pyjwt()` to LoginManager, PyJWT-based token creation.Same stru
 - inference_model module migrated to business pure logic and endpoint raises exceptions build from error responses using Responses.py.
 - added test specs for inference_model.
 - user module migrated to business pure logic and endpoint raises exceptions build from error responses using Responses.py.
+- the instructions module (role checks moved to endpoint(thinking of making it more generalized), 4 error-path specs added) business pure logic and endpoint raises exceptions and endpoint catches it.
 ### Removed
 - `backend/` : removed all Flask-dependent code at P1.3 cutover — deleted `lost/app.py`, `lost/flaskapp.py`, `lost/wsgi.py`, `lost/wsgi.ini`, `lost/api/api.py` and dropped Flask deps (`flask`, `flask-cors`, `flask-jwt-extended`, `flask-mail`, `flask-pydantic`, `flask-restx`, `flask-sqlalchemy`, `uwsgi`) from `pyproject.toml`, added `redis`, `itsdangerous`, `pyjwt`.
 - `services/` directory removed.
