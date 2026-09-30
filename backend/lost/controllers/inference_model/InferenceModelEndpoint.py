@@ -1,5 +1,11 @@
 """Inference model namespace — FastAPI endpoints for model management.
 
+Pass 2 CCB split, D2-pure: routes, schemas, response construction — and the
+transport boundary for domain errors. Business raises PLAIN domain errors
+(no HTTP vocabulary); this endpoint catches them and builds the byte-exact
+legacy responses via Responses. The global DomainError handler remains only
+as a loud fallback (un-transcribed error -> 500)
+
 Routes:
     GET    /api/models           — list all inference models
     GET    /api/models/{id}      — get model by ID
@@ -13,12 +19,13 @@ from __future__ import annotations
 import datetime
 
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import JSONResponse, PlainTextResponse
 from pydantic import BaseModel, field_validator
 
 from lost.controllers.base import ProfilingRoute
 from lost.controllers.Dependencies import get_current_user, get_inference_model_coordination
+from lost.controllers.inference_model.InferenceModelBusiness import ModelDuplicateError, ModelNotFoundError
 from lost.controllers.inference_model.InferenceModelCoordination import InferenceModelCoordination
+from lost.controllers.Responses import Responses
 from lost.db import model
 from lost.db.model import User as DBUser
 from lost.utils.validators import is_valid_grpc_url
@@ -88,13 +95,6 @@ def _to_schema(m: model.InferenceModel) -> ModelSchema:
     )
 
 
-def _duplicate_response(display_name: str) -> JSONResponse:
-    return JSONResponse(
-        status_code=400,
-        content={"message": f'Model with display name "{display_name}" already exists'},
-    )
-
-
 # --- Routes ---
 
 
@@ -110,7 +110,15 @@ def create_model(
     coord: InferenceModelCoordination = Depends(get_inference_model_coordination),
 ):
     """Create a new inference model. Duplicate displayName → 400."""
-    return coord.create_model(req)
+    try:
+        result = coord.create_model(req)
+    except ModelDuplicateError:
+        return Responses.bad_request(
+            {"message": f'Model with display name "{req.displayName}" already exists'}
+        )
+    else:
+        return result
+
 
 
 @router.get("/{idx}", response_model=ModelSchema)
@@ -119,7 +127,12 @@ def get_model(
     coord: InferenceModelCoordination = Depends(get_inference_model_coordination),
 ):
     """Get an inference model by ID. 404 if not found."""
-    return coord.get_model(idx)
+    try:
+        result = coord.get_model(idx)
+    except ModelNotFoundError:
+        return Responses.not_found({"message": "Model not found"})
+    else:
+        return result
 
 
 @router.put("/{idx}", response_model=ModelSchema)
@@ -129,7 +142,16 @@ def update_model(
     coord: InferenceModelCoordination = Depends(get_inference_model_coordination),
 ):
     """Update an inference model. 404 if not found, duplicate displayName → 400."""
-    return coord.update_model(idx, req)
+    try:
+        result = coord.update_model(idx, req)
+    except ModelNotFoundError:
+        return Responses.not_found({"message": "Model not found"})
+    except ModelDuplicateError:
+        return Responses.bad_request(
+            {"message": f'Model with display name "{req.displayName}" already exists'}
+        )
+    else:
+        return result
 
 
 @router.delete("/{idx}", status_code=204)
@@ -140,4 +162,4 @@ def delete_model(
 ):
     """Delete an inference model (JWT required). Missing ID is a no-op → 204."""
     coord.delete_model(idx)
-    return PlainTextResponse("", status_code=204)
+    return Responses.no_content()

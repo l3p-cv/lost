@@ -94,11 +94,14 @@ Added `create_jwt_pyjwt()` to LoginManager, PyJWT-based token creation.Same stru
 - `controllers/annotasks` : split AnnotasksEndpoint into 3 layer CCB pattern.
 - group,label modules migrated to endpoint-side exception handling `Business` raises plain domain errors, `Endpoint` builds legacy error responses (generalized error responses) using `Responses.py`
 - error-path specs added to test_specs, group/label/statistics goldens re-recorded to current DB state.
+- inference_model module migrated to business pure logic and endpoint raises exceptions build from error responses using Responses.py.
+- added test specs for inference_model.
 ### Removed
 - `backend/` : removed all Flask-dependent code at P1.3 cutover — deleted `lost/app.py`, `lost/flaskapp.py`, `lost/wsgi.py`, `lost/wsgi.ini`, `lost/api/api.py` and dropped Flask deps (`flask`, `flask-cors`, `flask-jwt-extended`, `flask-mail`, `flask-pydantic`, `flask-restx`, `flask-sqlalchemy`, `uwsgi`) from `pyproject.toml`, added `redis`, `itsdangerous`, `pyjwt`.
 - `services/` directory removed.
 - `auth/exceptions.py` : moved MisconfiguredException to OpenidBusiness.py
-- removed the 38 dead Flask-era restx reference files, 2 annotasks JSON fixtures , triton preserved , dropped unused imports
+- removed the 38 dead Flask-era restx reference files, 2 annotasks JSON fixtures , triton preserved , dropped unused imports.
+- removed dead schame code from InferenceModelEndpoint.py 
 
 ## [4.0.0-alpha] - 2026-08-18
 ### Added

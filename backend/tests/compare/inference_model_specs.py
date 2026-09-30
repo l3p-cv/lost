@@ -189,6 +189,51 @@ def get_inference_model_specs() -> list[RouteSpec]:
         target=_TARGET,
     ))
 
+    # 6. GET /api/models/999999 — nonexistent ID → 404 (exact)
+    specs.append(RouteSpec(
+        name="GET_model_not_found",
+        request=RequestSpec(method="GET", path="/api/models/999999", mode="exact"),
+        target=_TARGET,
+        # no setup/cleanup — nothing is created
+    ))
+
+    # 7. POST /api/models — displayName collides with the seeded model → 400 (exact)
+    specs.append(RouteSpec(
+        name="POST_model_create_duplicate",
+        request=RequestSpec(
+            method="POST", path="/api/models", mode="exact",
+            json={
+                "name": f"{TEST_PREFIX}model_dup",
+                "displayName": SEED_DISPLAY_NAME,
+                "serverUrl": "localhost:8001",
+                "taskType": 0,
+                "modelType": "YOLO",
+                "description": "duplicate spec body",
+            },
+        ),
+        target=_TARGET,
+        # no cleanup — the unique constraint bails before anything is written
+    ))
+
+    # 8. PUT /api/models/{seeded} — update colliding with the seeded displayName → 400 (exact)
+    specs.append(RouteSpec(
+        name="PUT_model_update_duplicate",
+        request=RequestSpec(
+            method="PUT", path="/api/models/{model_id}", mode="exact",
+            json={
+                "name": f"{TEST_PREFIX}model_dup",
+                "displayName": SEED_DISPLAY_NAME,
+                "serverUrl": "localhost:8001",
+                "taskType": 0,
+                "modelType": "YOLO",
+                "description": "duplicate spec body",
+            },
+        ),
+        setup=lambda dbm: {"model_id": _find_seeded_model_id(dbm)},
+        target=_TARGET,
+        # no cleanup — IntegrityError → rollback, nothing changes
+    ))
+
     return specs
 
 

@@ -3,6 +3,10 @@
 No legacy lost/logic counterpart; logic was inline in the endpoint. Request
 validation (grpc URL / model type) stays with the endpoint's pydantic
 schemas; the unique display name is enforced by the DB and translated here.
+
+D2-pure: domain errors are PLAIN signals (no HTTP vocabulary) the
+endpoint catches them and builds the byte-exact legacy responses via
+Responses.
 """
 from __future__ import annotations
 
@@ -13,16 +17,17 @@ from lost.db import model
 
 
 class ModelNotFoundError(DomainError):
-    http_status = 404
-    http_body = {"message": "Model not found"}
+    """The requested inference model does not exist."""
+
+    def __init__(self, idx: int) -> None:
+        super().__init__(idx)
 
 
 class ModelDuplicateError(DomainError):
-    http_status = 400
+    """A model with the requested display name already exists."""
 
     def __init__(self, display_name: str) -> None:
         super().__init__(display_name)
-        self.http_body = {"message": f'Model with display name "{display_name}" already exists'}
 
 
 def model_to_dict(m: model.InferenceModel) -> dict:
