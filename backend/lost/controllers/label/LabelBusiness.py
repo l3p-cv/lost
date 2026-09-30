@@ -1,4 +1,10 @@
-"""Label business layer — LabelTree domain logic (moved from lost/logic/label.py in Pass 2)."""
+"""Label business layer — LabelTree domain logic (moved from lost/logic/label.py in Pass 2).
+
+D2-pure: module domain errors are PLAIN signals (no HTTP vocabulary) —
+LabelEndpoint catches them and builds the legacy responses via Responses.
+Visibility failures still raise the shared NotAuthorizedError, which the
+retained global handler maps.
+"""
 import hashlib
 import logging
 from io import BytesIO
@@ -159,7 +165,7 @@ class LabelTree:
             return self._colors[label_id]
 
         # deterministic seed per label ID
-        h = hashlib.md5(str(label_id).encode()).digest()
+        h = hashlib.md5(str(label_id).encode()).digest()  # noqa: S324
         seed = int.from_bytes(h[:4], "big")
         rng = np.random.default_rng(seed)
 
@@ -181,10 +187,7 @@ class LabelTree:
             rgb = np.clip(rgb, 0, 1)
 
             # perceptual separation score (simple but effective)
-            if ref_colors:
-                min_dist = min(np.linalg.norm(rgb - c) for c in ref_colors)
-            else:
-                min_dist = 999
+            min_dist = min(np.linalg.norm(rgb - c) for c in ref_colors) if ref_colors else 999
 
             # maximize distance from ALL existing + default colors
             if min_dist > best_score:
@@ -193,7 +196,7 @@ class LabelTree:
 
         self._used.append(best_rgb)
 
-        hex_color = '#%02x%02x%02x' % tuple((best_rgb * 255).astype(int))
+        hex_color = "#{:02x}{:02x}{:02x}".format(*(best_rgb * 255).astype(int))
         self._colors[label_id] = hex_color
 
         return hex_color
@@ -235,7 +238,7 @@ class LabelTree:
             pandas.DataFrame
         """
         df_list = []
-        for leaf_id, leaf in self.tree.items():
+        for _leaf_id, leaf in self.tree.items():
             df_list.append(leaf.to_df())
         df = pd.concat(df_list)
         return df.reset_index().drop(columns=["index"])
@@ -354,8 +357,8 @@ class LabelTree:
         childs = {}
 
         if len(root) != 1:
-            raise ValueError(f"""Can not import. There needs 
-                to be exactly one root leaf for that tree! 
+            raise ValueError(f"""Can not import. There needs
+                to be exactly one root leaf for that tree!
                 Found: \n{root}""")
         else:
             try:
@@ -365,31 +368,26 @@ class LabelTree:
                 self._df_row_to_leaf(root.loc[0], root_leaf)
 
                 # Create child dict
-                for index, row in no_root.iterrows():
+                for _index, row in no_root.iterrows():
                     if row["parent_leaf_id"] not in childs:
                         childs[row["parent_leaf_id"]] = []
                     childs[row["parent_leaf_id"]].append(row)
 
                 self.__create_childs_from_df(childs, root_leaf, root.loc[0])
                 self.dbm.commit()
-                return root_leaf
             except KeyError:
-                self.logger.error("""At least the following columns 
+                self.logger.exception("""At least the following columns
                     need to be provided: *idx*, *name*, *parent_leaf_id*""")
                 raise
+            else:
+                return root_leaf
 
 class DuplicateLabelTreeError(DomainError):
     """A label tree with the same root name already exists in the database."""
 
-    http_status = 400
-    http_body = {"error": "LabelTree already present in database!"}
-
 
 class InvalidLabelUploadError(DomainError):
     """The uploaded file is not a CSV."""
-
-    http_status = 400
-    http_body = {"error": "Invalid file format. Please upload a CSV file."}
 
 
 class LabelBusiness:

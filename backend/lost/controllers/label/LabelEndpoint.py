@@ -22,7 +22,9 @@ from pydantic import BaseModel
 
 from lost.controllers.base import ProfilingRoute
 from lost.controllers.Dependencies import get_label_coordination, require_role
+from lost.controllers.label.LabelBusiness import DuplicateLabelTreeError, InvalidLabelUploadError
 from lost.controllers.label.LabelCoordination import LabelCoordination
+from lost.controllers.Responses import Responses
 from lost.db import roles
 
 router = APIRouter(tags=["label"], route_class=ProfilingRoute)
@@ -87,8 +89,14 @@ async def import_label_tree(
 ):
     """Import a label tree from CSV."""
     csv_bytes = await file.read()
-    coord.import_label_tree(user, visibility, file.filename, csv_bytes)
-    return {"message": "Tree imported successfully"}
+    try:
+        coord.import_label_tree(user, visibility, file.filename, csv_bytes)
+    except InvalidLabelUploadError:
+        return Responses.bad_request({"error": "Invalid file format. Please upload a CSV file."})
+    except DuplicateLabelTreeError:
+        return Responses.bad_request({"error": "LabelTree already present in database!"})
+    else:
+        return {"message": "Tree imported successfully"}
 
 
 @router.get("/{label_leaf_id}")

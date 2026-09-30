@@ -1,20 +1,20 @@
 {
-  "mode": "structural",
+  "mode": "exact",
   "request": {
     "headers": {
       "Authorization": "<AUTH>"
     },
-    "method": "POST",
-    "path": "/api/label/tree/all"
+    "method": "GET",
+    "path": "/api/label/tree/invalid_visibility"
   },
   "response": {
     "body": {
-      "message": "Tree imported successfully"
+      "message": "You are not authorized."
     },
     "headers": {
       "content-type": "application/json",
       "vary": "Origin"
     },
-    "status": 200
+    "status": 403
   }
 }
