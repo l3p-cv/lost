@@ -1,0 +1,17 @@
+{
+  "mode": "exact",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "DELETE",
+    "path": "/api/user/1"
+  },
+  "response": {
+    "body": "You are not able to delete yourself",
+    "headers": {
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

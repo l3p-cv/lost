@@ -58,6 +58,6 @@ class UserCoordination:
         """Login with username and password. Delegates to UserBusiness.login."""
         return self._business.login(req.userName, req.password)
 
-    def long_lived_user(self, user) -> dict:
+    def long_lived_token(self, user) -> dict:
         """Create a long-lived token (3650 days). Delegates to UserBusiness.long_lived_token."""
         return self._business.long_lived_token(user)

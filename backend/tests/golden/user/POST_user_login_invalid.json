@@ -1,0 +1,23 @@
+{
+  "mode": "exact",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "json": {
+      "password": "definitely_wrong_password",
+      "userName": "admin"
+    },
+    "method": "POST",
+    "path": "/api/user/login"
+  },
+  "response": {
+    "body": {
+      "message": "Invalid credentials"
+    },
+    "headers": {
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

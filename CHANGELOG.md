@@ -65,6 +65,7 @@ Added `create_jwt_pyjwt()` to LoginManager, PyJWT-based token creation.Same stru
 - `comparator.py` : strips `vary` in headers now. -Starlette CORS behaviour change after rebuild caused tests to fail
 - `label_specs.py` : fixed malformed label-import CSV fixture (missing idx column) the import spec had silently recorded 500s.
 - `statistics_specs.py` : skipped the personal stats endpoint test as it changes frequently.
+- the long_lived_user to long_lived_token.
 ### Changed
 - `dependencies.py` :auth scheme changed to `HTTPBearer` credentials extraction in auth dependencies from `OAuth2PasswordBearer`
 - placed the `RouteSpec` in `specs.py` from user_specs.py
@@ -96,6 +97,7 @@ Added `create_jwt_pyjwt()` to LoginManager, PyJWT-based token creation.Same stru
 - error-path specs added to test_specs, group/label/statistics goldens re-recorded to current DB state.
 - inference_model module migrated to business pure logic and endpoint raises exceptions build from error responses using Responses.py.
 - added test specs for inference_model.
+- user module migrated to business pure logic and endpoint raises exceptions build from error responses using Responses.py.
 ### Removed
 - `backend/` : removed all Flask-dependent code at P1.3 cutover — deleted `lost/app.py`, `lost/flaskapp.py`, `lost/wsgi.py`, `lost/wsgi.ini`, `lost/api/api.py` and dropped Flask deps (`flask`, `flask-cors`, `flask-jwt-extended`, `flask-mail`, `flask-pydantic`, `flask-restx`, `flask-sqlalchemy`, `uwsgi`) from `pyproject.toml`, added `redis`, `itsdangerous`, `pyjwt`.
 - `services/` directory removed.

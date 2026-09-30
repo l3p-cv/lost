@@ -6,8 +6,11 @@ FileBrowserEndpoint.py); login_manager stays in auth/ (shared infra).
 Uses shared utils: logic/email, logic/dask_session, logic/file_access,
 logic/user, db/redis, auth/login_manager.
 
-Legacy failure flows returning HTTP 200 bodies are modeled as
-self-describing DomainError subclasses (http_status=200).
+D2-pure: domain errors are PLAIN signals (no HTTP vocabulary) — the
+endpoint catches them and builds the byte-exact legacy responses via
+Responses. Legacy failure flows that return HTTP 200 message bodies
+(exists / not-found / self-delete / invalid credentials) keep that
+quirk at the endpoint via Responses.ok.
 """
 from __future__ import annotations
 
@@ -28,37 +31,30 @@ from lost.settings import LOST_CONFIG
 
 
 class UserExistsError(DomainError):
-    http_status = 200
-    http_body = {"message": "User already exists."}
+    """A user with the same name or email already exists."""
 
 
 class UserNotFoundMessageError(DomainError):
-    """Legacy 200 string-body not-found message."""
-    http_status = 200
+    """Legacy 200 string-body not-found message (carries the user ID)."""
 
     def __init__(self, user_id: int) -> None:
         super().__init__(user_id)
-        self.http_body = f"User with ID '{user_id}' not found."
 
 
 class SelfDeleteError(DomainError):
-    http_status = 200
-    http_body = "You are not able to delete yourself"
+    """The current user attempted to delete their own account."""
 
 
 class InvalidCredentialsError(DomainError):
-    http_status = 200
-    http_body = {"message": "Invalid credentials"}
+    """Login failed - wrong username or password."""
 
 
 class InvalidRefreshTokenError(DomainError):
-    http_status = 401
-    http_body = {"message": "Invalid refresh token"}
+    """The token provided is not a refresh token."""
 
 
 class InvalidUserAuthError(DomainError):
-    http_status = 401
-    http_body = {"message": "Invalid user"}
+    """The refresh token's user no longer exists."""
 
 
 def user_to_dict(user):

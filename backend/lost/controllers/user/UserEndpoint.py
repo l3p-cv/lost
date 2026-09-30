@@ -1,7 +1,10 @@
 """User namespace — FastAPI endpoints for user management and auth.
 
-Pass 2 CCB split: routes, schemas, response construction only.
-Flow: UserEndpoint -> UserCoordination -> UserBusiness.
+Pass 2 CCB split, D2-pure: routes, schemas, response construction — and the
+transport boundary for domain errors. Business raises PLAIN domain errors
+(no HTTP vocabulary); this endpoint catches them and builds the byte-exact
+legacy responses via Responses. The global DomainError handler remains only
+as a loud fallback (un-transcribed error -> 500)
 
 Routes:
     GET    /api/user                    — list users (admin)
@@ -25,6 +28,15 @@ from pydantic import BaseModel
 
 from lost.controllers.base import ProfilingRoute
 from lost.controllers.Dependencies import get_current_user, get_user_coordination, oauth2_scheme, require_role
+from lost.controllers.Responses import Responses
+from lost.controllers.user.UserBusiness import (
+    InvalidCredentialsError,
+    InvalidRefreshTokenError,
+    InvalidUserAuthError,
+    SelfDeleteError,
+    UserExistsError,
+    UserNotFoundMessageError,
+)
 from lost.controllers.user.UserCoordination import UserCoordination
 from lost.db import roles
 from lost.db.model import User as DBUser
@@ -80,8 +92,13 @@ def create_user(
     user: DBUser = Depends(require_role(roles.ADMINISTRATOR)),
     coord: UserCoordination = Depends(get_user_coordination),
 ):
-    """Create a new user (admin only)."""
-    return coord.create_user(req)
+    """Create a new user (admin only). Existing name/email → 200 message."""
+    try:
+        result = coord.create_user(req)
+    except UserExistsError:
+        return Responses.ok({"message": "User already exists."})
+    else:
+        return result
 
 
 @router.get("/anno_task_user")
@@ -118,8 +135,13 @@ def get_user_by_id(
     user: DBUser = Depends(require_role(roles.ADMINISTRATOR)),
     coord: UserCoordination = Depends(get_user_coordination),
 ):
-    """Get a user by ID (admin only)."""
-    return coord.get_user(user_id)
+    """Get a user by ID (admin only).Legacy 200-message not-found."""
+    try:
+        result = coord.get_user(user_id)
+    except UserNotFoundMessageError:
+        return Responses.ok(f"User with ID '{user_id}' not found.")
+    else:
+        return result
 
 
 @router.delete("/{user_id}")
@@ -129,7 +151,14 @@ def delete_user(
     coord: UserCoordination = Depends(get_user_coordination),
 ):
     """Delete a user by ID (admin only). Cannot delete yourself."""
-    return coord.delete_user(user, user_id)
+    try:
+        result = coord.delete_user(user, user_id)
+    except SelfDeleteError:
+        return Responses.ok("You are not able to delete yourself")
+    except UserNotFoundMessageError:
+        return Responses.ok(f"User with ID '{user_id}' not found.")
+    else:
+        return result
 
 
 @router.patch("/{user_id}")
@@ -140,7 +169,12 @@ def update_user(
     coord: UserCoordination = Depends(get_user_coordination),
 ):
     """Update a user by ID (admin only)."""
-    return coord.update_user(user_id, req)
+    try:
+        result = coord.update_user(user_id, req)
+    except UserNotFoundMessageError:
+        return Responses.ok(f"User with ID '{user_id}' not found.")
+    else:
+        return result
 
 
 @router.post("/logout")
@@ -159,7 +193,14 @@ def refresh_token(
     coord: UserCoordination = Depends(get_user_coordination),
 ):
     """Refresh — return new JWT pair using refresh token."""
-    return coord.refresh(credentials.credentials)
+    try:
+        result = coord.refresh(credentials.credentials)
+    except InvalidRefreshTokenError:
+        return Responses.ok({"message": "Invalid refresh token"})
+    except InvalidUserAuthError:
+        return Responses.ok({"message": "Invalid user"})
+    else:
+        return result
 
 
 @router.post("/login")
@@ -168,7 +209,12 @@ def login(
     coord: UserCoordination = Depends(get_user_coordination),
 ):
     """Login — return JWT pair using userName and password."""
-    return coord.login(req)
+    try:
+        result = coord.login(req)
+    except InvalidCredentialsError:
+        return Responses.ok({"message": "Invalid credentials"})
+    else:
+        return result
 
 
 @router.post("/token")

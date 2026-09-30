@@ -1,0 +1,24 @@
+{
+  "mode": "exact",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "json": {
+      "email": "",
+      "password": "x",
+      "user_name": "admin"
+    },
+    "method": "POST",
+    "path": "/api/user"
+  },
+  "response": {
+    "body": {
+      "message": "User already exists."
+    },
+    "headers": {
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}
