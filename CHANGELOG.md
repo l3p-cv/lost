@@ -110,12 +110,16 @@ Added `create_jwt_pyjwt()` to LoginManager, PyJWT-based token creation.Same stru
 - `pipeline` migrated to endpoint-side exception handling business raises plain domain errors, endpoint builds legacy 403/404/400/500 responses via `Responses` visibility-conditional role checks kept in business and 3 error-path specs added.
 - `annotasks` module migrated to endpoint-side exception handling, 4 error path test specs added
 - `instructionmedia` module migrated to endpoint side exception handling anf 4 error path test specs added to instructionmedia_specs.py.
+- `lost/logic/project_config.py` moved to `lost/controllers/config/ProjectConfig.py` for logic repo cleanup.
+- `controllers/Exception.py` : DomainError is now having no HTTP vocabulary just a bare marker and NotAuthorizedError keeps the standard 403 mapping as a globally handled error.
+- `fastapi_app.py` :  global DomainError handler narrowed to `NotAuthorizedError` (guard type only), un-transcribed module errors fail loudly (500 + log).
 ### Removed
 - `backend/` : removed all Flask-dependent code at P1.3 cutover — deleted `lost/app.py`, `lost/flaskapp.py`, `lost/wsgi.py`, `lost/wsgi.ini`, `lost/api/api.py` and dropped Flask deps (`flask`, `flask-cors`, `flask-jwt-extended`, `flask-mail`, `flask-pydantic`, `flask-restx`, `flask-sqlalchemy`, `uwsgi`) from `pyproject.toml`, added `redis`, `itsdangerous`, `pyjwt`.
 - `services/` directory removed.
 - `auth/exceptions.py` : moved MisconfiguredException to OpenidBusiness.py
 - removed the 38 dead Flask-era restx reference files, 2 annotasks JSON fixtures , triton preserved , dropped unused imports.
 - removed dead schame code from InferenceModelEndpoint.py 
+- removed following for cleanup of `lost/logic/` : `report.py`, `logic/clitest/` , `logic/statistics/` (moved to StatisticsBusiness).
 
 ## [4.0.0-alpha] - 2026-08-18
 ### Added

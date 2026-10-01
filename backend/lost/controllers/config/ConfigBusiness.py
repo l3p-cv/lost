@@ -5,7 +5,7 @@ which stays in logic/ — it is used beyond the HTTP surface.
 """
 from __future__ import annotations
 
-from lost.logic.project_config import ProjectConfigMan
+from lost.controllers.config.ProjectConfig import ProjectConfigMan
 
 
 class ConfigBusiness:

@@ -1,25 +1,21 @@
 """Shared cross-module domain exceptions.
 
-All domain exceptions derive from :class:`DomainError` and declare their own
-legacy HTTP mapping (status + body). The single handler registered in
-``fastapi_app.py`` maps them; endpoints never need try/except.
+D2 end-state: DomainError is a bare MARKER base — module errors carry no
+HTTP vocabulary
 
-Shared cross-module vocabulary lives here; module-specific domain errors
-live in the module's Business file
-(e.g. ``label.LabelBusiness.DuplicateLabelTreeError``).
+Endpoints catch them and build legacy responses via
+Responses (lost/controllers/Responses.py). The single exception is
+NotAuthorizedError: the shared guard error whose standard 403 body is
+mapped by the global handler registered in fastapi_app.py.
 """
 
 
 class DomainError(Exception):
-    """Base for all domain exceptions — subclasses declare their legacy HTTP mapping."""
-
-    http_status: int = 500
-    http_body: dict | str = {}
-    http_media_type: str | None = None
+    """Marker base for all domain exceptions."""
 
 
 class NotAuthorizedError(DomainError):
-    """A resource-level permission check failed (visibility / ownership)."""
+    """A resource-level permission check failed (shared guard error → global handler)."""
 
-    http_status = 403
-    http_body = {"message": "You are not authorized."}
+    http_status: int = 403
+    http_body: dict | str = {"message": "You are not authorized."}

@@ -18,7 +18,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.sessions import SessionMiddleware
 
 from lost import settings
-from lost.controllers.Exceptions import DomainError
+from lost.controllers.Exceptions import NotAuthorizedError
 from lost.logic import dask_session
 
 logger = logging.getLogger("lost")
@@ -116,13 +116,11 @@ async def handle_exception_handler(request: Request, exc: StarletteHTTPException
 
 # Dask background thread (mirrors Flask app.py:156)
 
-# --- Domain-error handler (self-describing exceptions carry their legacy bodies) ---
+# --- Shared guard-error handler (D2 end-state: NotAuthorizedError only) ---
 
-@app.exception_handler(DomainError)
-async def handle_domain_error(request: Request, exc: DomainError):
-    logger.warning("Domain error: %s: %s", type(exc).__name__, exc)
-    if exc.http_media_type == "text/plain":
-        return PlainTextResponse(exc.http_body, status_code=exc.http_status)
+@app.exception_handler(NotAuthorizedError)
+async def handle_not_authorized(request: Request, exc: NotAuthorizedError):
+    logger.warning("Guard error: %s: %s", type(exc).__name__, exc)
     return JSONResponse(status_code=exc.http_status, content=exc.http_body)
 
 @app.on_event("startup")

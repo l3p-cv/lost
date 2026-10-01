@@ -1054,8 +1054,6 @@ def reviewoptions_annotask(dbm, at_id, user_id):
 class PolygonOperationError(DomainError):
     """A polygon-operation payload failed validation."""
 
-    http_status = 400
-
     def __init__(self, message):
         super().__init__(message)
         self.message = message
