@@ -50,6 +50,7 @@ Added `create_jwt_pyjwt()` to LoginManager, PyJWT-based token creation.Same stru
 - `controllers/AuthorizationService.py` : resource level authorization util
 - sia_specs.py added 4 new specs to this
 - `Dependencies.py` : added annotask resource gaurds and the inline `may_access_pe` / pipe-manager checks moved out of AnnotasksBusiness as standard-body 403 guards.
+- `backend/lost/README.md` : added documentation of new backend architecture split into Controller,Coordination and Business Layers. 
 ### Fixed
 - `backend/tests/helpers/recorder.py` : Fixed empty-body handling for 204 No Content responses.
 - fixed recorder for FastAPI TestClient compatibility.
