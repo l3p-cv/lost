@@ -1,6 +1,6 @@
 """Filebrowser namespace request specs for golden-snapshot testing.
 
-12 routes: 7 active (read-only GETs + POSTs + upload), 5 skipped (destructive mutations + complex).
+12 routes: 9 active (read-only GETs + POSTs + upload), 5 skipped (destructive mutations + complex).
 
 Self-contained: uses OOTB 'default' filesystem (idx looked up by name, seeded by initlost).
 No new init_test_data.py additions needed.
@@ -13,6 +13,7 @@ import os
 from tests.helpers.recorder import RequestSpec
 from tests.helpers.specs import RouteSpec
 from tests.compare.migration_status import target_for
+from tests.helpers.seed import cleanup_test_user, create_test_user
 
 _TARGET = target_for("filebrowser")
 
@@ -31,6 +32,31 @@ def _setup_fs_context(dbm):
     if fs_id is None:
         return {"skip": True}
     return {"fs_id": fs_id, "skip": False}
+
+def _setup_designer_no_admin(dbm) -> dict:
+    """Create a designer-without-admin test user and mint its token.
+
+    Used by the local-fs role-quirk specs: the legacy contract answers
+    non-admin local-fs access with 403/401 string bodies. Minting happens
+    AFTER the designer role commit so the token payload sees the role.
+    """
+    from lost.controllers.user.login_manager import LoginManager
+    from lost.db import roles as db_roles
+    from lost.db.model import UserRoles
+
+    user = create_test_user(dbm)
+    designer = dbm.get_role_by_name(db_roles.DESIGNER)
+    dbm.save_obj(UserRoles(user_id=user.idx, role_id=designer.idx))
+    dbm.commit()
+    lm = LoginManager(dbm, user.user_name, "")
+    fresh_token, _ = lm.create_jwt_pyjwt(user.idx, user.user_name, user.roles)
+    return {"fresh_token": fresh_token, "user_obj": user}
+
+
+def _cleanup_designer_no_admin(dbm, context) -> None:
+    """Delete the designer-without-admin test user (rollback-first, idempotent)."""
+    if "user_obj" in context:
+        cleanup_test_user(dbm, context["user_obj"])
 
 
 def get_filebrowser_specs() -> list[RouteSpec]:
@@ -157,6 +183,37 @@ def get_filebrowser_specs() -> list[RouteSpec]:
         request=RequestSpec(method="POST", path="/api/fb/mkdirs"),
         skip=True,
         skip_reason="Creates directories on filesystem — reversible but risky. Verified manually in P1.2.",
+    ))
+
+    # 8. POST /api/fb/lsTest — local 'file' type as designer-without-admin → 403 (exact)
+    specs.append(RouteSpec(
+        name="POST_fb_ls_test_local_forbidden",
+        request=RequestSpec(
+            method="POST", path="/api/fb/lsTest",
+            json={"fs": {"fsType": "file", "connection": "{}", "rootPath": "/tmp"},
+                  "path": "/tmp"},
+            mode="exact",
+        ),
+        setup=_setup_designer_no_admin,
+        cleanup=_cleanup_designer_no_admin,
+        target=_TARGET,
+        # role check fires before any connection parsing — no fs access
+    ))
+
+    # 9. POST /api/fb/savefs — save local 'file' fs (no id → create) as
+    #    designer-without-admin → 401 (exact)
+    specs.append(RouteSpec(
+        name="POST_fb_savefs_local_forbidden",
+        request=RequestSpec(
+            method="POST", path="/api/fb/savefs",
+            json={"visLevel": "user", "fsType": "file", "connection": "{}",
+                  "rootPath": "/tmp", "name": "compare_test_local_fs"},
+            mode="exact",
+        ),
+        setup=_setup_designer_no_admin,
+        cleanup=_cleanup_designer_no_admin,
+        target=_TARGET,
+        # LocalFsAdminRequiredError fires before any write — only the user needs cleanup
     ))
 
     return specs

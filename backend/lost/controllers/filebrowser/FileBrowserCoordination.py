@@ -27,9 +27,9 @@ class FileBrowserCoordination:
         """List directory. Delegates to FileBrowserBusiness.ls."""
         return self._business.ls(user, req)
 
-    def ls_test(self, user, req):
+    def ls_test(self, req):
         """Test fs connection. Delegates to FileBrowserBusiness.ls_test."""
-        return self._business.ls_test(user, req)
+        return self._business.ls_test(req)
 
     def rm_files(self, user, req) -> str:
         """Remove files. Delegates to FileBrowserBusiness.rm_files."""

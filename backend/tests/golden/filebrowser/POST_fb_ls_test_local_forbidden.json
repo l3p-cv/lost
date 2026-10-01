@@ -1,0 +1,25 @@
+{
+  "mode": "exact",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "json": {
+      "fs": {
+        "connection": "{}",
+        "fsType": "file",
+        "rootPath": "/tmp"
+      },
+      "path": "/tmp"
+    },
+    "method": "POST",
+    "path": "/api/fb/lsTest"
+  },
+  "response": {
+    "body": "You need to be Administrator in order to perform this request.",
+    "headers": {
+      "content-type": "application/json"
+    },
+    "status": 403
+  }
+}

@@ -22,7 +22,14 @@ from pydantic import BaseModel
 
 from lost.controllers.base import ProfilingRoute
 from lost.controllers.Dependencies import get_filebrowser_coordination, require_role
+from lost.controllers.filebrowser.FileBrowserBusiness import (
+    CheckPathError,
+    DatasourceValidationError,
+    LocalFsAdminRequiredError,
+    UploadNotPermittedError,
+)
 from lost.controllers.filebrowser.FileBrowserCoordination import FileBrowserCoordination
+from lost.controllers.Responses import Responses
 from lost.db import roles
 from lost.db.model import User as DBUser
 
@@ -85,8 +92,6 @@ class SaveFsRequest(BaseModel):
 
 # --- Routes ---
 
-# --- Routes ---
-
 @router.get("/fslist/{visibility}")
 def get_fs_list(
     visibility: str,
@@ -122,8 +127,10 @@ def ls_test(
     user: DBUser = Depends(require_role(roles.DESIGNER)),
     coord: FileBrowserCoordination = Depends(get_filebrowser_coordination),
 ):
-    """Test an arbitrary filesystem connection."""
-    return coord.ls_test(user, req)
+    """Test an arbitrary filesystem connection (local 'file' type requires admin)."""
+    if req.fs["fsType"] == "file" and not user.has_role(roles.ADMINISTRATOR):
+        return Responses.forbidden(f"You need to be {roles.ADMINISTRATOR} in order to perform this request.")
+    return coord.ls_test(req)
 
 
 @router.post("/rm")
@@ -153,7 +160,12 @@ def save_fs(
     coord: FileBrowserCoordination = Depends(get_filebrowser_coordination),
 ):
     """Save or update a filesystem entry."""
-    return coord.save_fs(user, req)
+    try:
+        result = coord.save_fs(user, req)
+    except LocalFsAdminRequiredError:
+        return Responses.unauthorized("Access to the local file system can only be performed by administrators.")
+    else:
+        return result
 
 
 @router.post("/fullfs")
@@ -176,7 +188,12 @@ async def upload(
 ):
     """Upload files to a filesystem path."""
     payload = [(f.filename, await f.read()) for f in files]
-    return coord.upload(user, fsId, path, payload)
+    try:
+        result = coord.upload(user, fsId, path, payload)
+    except UploadNotPermittedError:
+        return Responses.forbidden("Not allowed to upload to this filesystem")
+    else:
+        return result
 
 
 @router.post("/mkdirs")
@@ -196,7 +213,12 @@ def check_path(
     coord: FileBrowserCoordination = Depends(get_filebrowser_coordination),
 ):
     """Check if a path exists on the filesystem."""
-    return coord.check_path(user, req)
+    try:
+        result = coord.check_path(user, req)
+    except CheckPathError as e:
+        return Responses.ok({"error": str(e.args[0])})
+    else:
+        return result
 
 
 @router.post("/validate-datasource")
@@ -206,4 +228,9 @@ def validate_datasource(
     coord: FileBrowserCoordination = Depends(get_filebrowser_coordination),
 ):
     """Validate a datasource (image folder or dataset file)."""
-    return coord.validate_datasource(user, req)
+    try:
+        result = coord.validate_datasource(user, req)
+    except DatasourceValidationError as e:
+        return Responses.ok({"error": str(e.args[0])})
+    else:
+        return result

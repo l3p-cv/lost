@@ -2,9 +2,13 @@
 
 No legacy lost/logic counterpart was moved: file_access / file_man /
 crypt / logic.user are shared utils that stay in logic/ (consumed across
-modules). Failure flows with legacy HTTP semantics are self-describing
-DomainError subclasses (string bodies for 401/403 checks; 200 {"error": …}
-for check-path / validate-datasource exception paths).
+modules). D2-pure: domain errors are PLAIN signals (no HTTP vocabulary) —
+the endpoint catches them and builds the byte-exact legacy responses via
+Responses (string bodies for 401/403 checks; 200 {"error": ...} dicts for
+check-path / validate-datasource failures). The lsTest local-fs role check
+moved to the endpoint; the savefs local-fs check stays here because it
+fires only when CREATING a filesystem (DB-state-conditional — moving it
+would change update behavior).
 """
 from __future__ import annotations
 
@@ -23,43 +27,25 @@ from lost.logic.file_man import FileMan, chonkyfy
 from lost.logic.user import get_user_default_group
 
 
-class FilesystemTestForbiddenError(DomainError):
-    """Testing a local ('file') filesystem requires the administrator role."""
-
-    http_status = 403
-    http_body = f"You need to be {roles.ADMINISTRATOR} in order to perform this request."
-
-
 class LocalFsAdminRequiredError(DomainError):
     """Saving a local ('file') filesystem requires the administrator role."""
-
-    http_status = 401
-    http_body = "Access to the local file system can only be performed by administrators."
-
 
 class UploadNotPermittedError(DomainError):
     """The filesystem does not permit write access."""
 
-    http_status = 403
-    http_body = "Not allowed to upload to this filesystem"
-
 
 class CheckPathError(DomainError):
-    """Legacy 200 error-dict for check-path failures."""
-    http_status = 200
+    """A check-path failure; carries the cause (arg 0) for the legacy 200 error-dict."""
 
     def __init__(self, exc: Exception) -> None:
         super().__init__(exc)
-        self.http_body = {"error": str(exc)}
 
 
 class DatasourceValidationError(DomainError):
-    """Legacy 200 error-dict for validate-datasource failures."""
-    http_status = 200
+    """A validate-datasource failure; carries the cause (arg 0) for the legacy 200 error-dict."""
 
     def __init__(self, exc: Exception) -> None:
         super().__init__(exc)
-        self.http_body = {"error": str(exc)}
 
 
 class FileBrowserBusiness:
@@ -121,11 +107,8 @@ class FileBrowserBusiness:
         res = ufa.ls(path, detail=True)
         return chonkyfy(res, path, fm)
 
-    def ls_test(self, user, req) -> list:
+    def ls_test(self, req) -> list:
         """Test an arbitrary filesystem connection."""
-        if req.fs["fsType"] == "file":
-            if not user.has_role(roles.ADMINISTRATOR):
-                raise FilesystemTestForbiddenError(req.fs["fsType"])
         connection_dict = ast.literal_eval(req.fs["connection"])
         db_fs = model.FileSystem(
             connection=json.dumps(connection_dict),
