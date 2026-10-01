@@ -49,6 +49,7 @@ Added `create_jwt_pyjwt()` to LoginManager, PyJWT-based token creation.Same stru
 - `controllers/Dependencies.py` : contains all changes that were previously in `controllers/auth/dependecies.py` (all endpoint layer wiring: `get_current_user`/`require_role`)
 - `controllers/AuthorizationService.py` : resource level authorization util
 - sia_specs.py added 4 new specs to this
+- `Dependencies.py` : added annotask resource gaurds and the inline `may_access_pe` / pipe-manager checks moved out of AnnotasksBusiness as standard-body 403 guards.
 ### Fixed
 - `backend/tests/helpers/recorder.py` : Fixed empty-body handling for 204 No Content responses.
 - fixed recorder for FastAPI TestClient compatibility.
@@ -107,6 +108,7 @@ Added `create_jwt_pyjwt()` to LoginManager, PyJWT-based token creation.Same stru
 - `sia` module migrated to endpoint-side exception handling .Business layer raises plain domain errors, endpoint build the errpr responses via Responses.py.
 - `dataset` module migrated to endpoint-side exception handling business raises plain domain errors, endpoint builds legacy plain-text and JSON responses via `Responses`, 3 error-path specs added.
 - `pipeline` migrated to endpoint-side exception handling business raises plain domain errors, endpoint builds legacy 403/404/400/500 responses via `Responses` visibility-conditional role checks kept in business and 3 error-path specs added.
+- `annotasks` module migrated to endpoint-side exception handling, 4 error path test specs added
 ### Removed
 - `backend/` : removed all Flask-dependent code at P1.3 cutover — deleted `lost/app.py`, `lost/flaskapp.py`, `lost/wsgi.py`, `lost/wsgi.ini`, `lost/api/api.py` and dropped Flask deps (`flask`, `flask-cors`, `flask-jwt-extended`, `flask-mail`, `flask-pydantic`, `flask-restx`, `flask-sqlalchemy`, `uwsgi`) from `pyproject.toml`, added `redis`, `itsdangerous`, `pyjwt`.
 - `services/` directory removed.

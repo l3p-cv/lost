@@ -16,7 +16,7 @@ import os
 from datetime import datetime
 
 from lost import settings
-from lost.controllers.Exceptions import DomainError, NotAuthorizedError
+from lost.controllers.Exceptions import DomainError
 from lost.controllers.sia.SiaBusiness import (
     SiaSerialize,
     SiaUpdateOneThing,
@@ -26,7 +26,6 @@ from lost.controllers.sia.SiaBusiness import (
 )
 from lost.db import access, dtype, model, state
 from lost.logic import dask_session, email
-from lost.logic.db_access import UserDbAccess
 from lost.logic.file_access import UserFileAccess
 from lost.logic.jobs.jobs import delete_ds_export, export_ds, force_anno_release
 from lost.pyapi import pipe_elements
@@ -35,13 +34,11 @@ from lost.settings import DATA_URL, LOST_CONFIG
 logger = logging.getLogger("lost.controllers.annotasks")
 
 class WorkingTaskNotFoundError(DomainError):
-    http_status = 412
-    http_body = {"message": "Current working annotation task not found"}
+    """No current working annotation task (user id)."""
 
 
 class AnnotaskInstructionNotFoundError(DomainError):
-    http_status = 404
-    http_body = {"message": "Annotation task not found."}
+    """The annotation task does not exist (annotask id)."""
 
 
 def update_anno_task(dbm, anno_task_id, user_id=None):
@@ -394,11 +391,7 @@ class AnnotasksBusiness:
     # --- exports ---
 
     def download_annotask_export(self, user, annotask_export_id: int) -> tuple[bytes, str]:
-        udb = UserDbAccess(self.dbm, user)
         anno_task_export = self.dbm.get_anno_task_export(anno_task_export_id=annotask_export_id)
-        anno_task = self.dbm.get_anno_task(anno_task_export.anno_task_id)
-        if not udb.may_access_pe(anno_task.pipe_element):
-            raise NotAuthorizedError(user.idx)
         fs_db = self.dbm.get_user_default_fs(user.idx)
         ufa = UserFileAccess(self.dbm, user, fs_db)
         my_file = ufa.load_file(anno_task_export.file_path)
@@ -406,21 +399,14 @@ class AnnotasksBusiness:
 
     def delete_annotask_export(self, user, annotask_export_id: int) -> str:
         anno_task_data_export = self.dbm.get_anno_task_export(annotask_export_id)
-        anno_task = self.dbm.get_anno_task(anno_task_data_export.anno_task_id)
-        pipe_manager_id = anno_task.pipe_element.pipe.manager_id
-        if pipe_manager_id == user.idx:
-            delete_ds_export(anno_task_data_export.idx, user.idx)
-            self.dbm.delete(anno_task_data_export)
-            self.dbm.commit()
-            return "Success"
-        raise NotAuthorizedError(user.idx)
+        delete_ds_export(anno_task_data_export.idx, user.idx)
+        self.dbm.delete(anno_task_data_export)
+        self.dbm.commit()
+        return "Success"
 
     def generate_export(self, user, annotask_id: int, req) -> str:
         identity = user.idx
-        udb = UserDbAccess(self.dbm, user)
         anno_task = self.dbm.get_anno_task(annotask_id)
-        if not udb.may_access_pe(anno_task.pipe_element):
-            raise NotAuthorizedError(identity)
         include_images = req.includeImages
         random_splits_active = req.randomSplits.get("active", False)
         splits = req.randomSplits if random_splits_active else None
@@ -451,11 +437,8 @@ class AnnotasksBusiness:
         dask_session.close_client(user, client)
         return "Success"
 
-    def get_annotask_exports(self, user, annotask_id: int) -> dict:
-        udb = UserDbAccess(self.dbm, user)
+    def get_annotask_exports(self, annotask_id: int) -> dict:
         anno_task = self.dbm.get_anno_task(annotask_id)
-        if not udb.may_access_pe(anno_task.pipe_element):
-            raise NotAuthorizedError(user.idx)
         d_exports = self.dbm.get_anno_task_export(anno_task_id=anno_task.idx)
         ret_json = []
         for export in d_exports:
@@ -504,23 +487,17 @@ class AnnotasksBusiness:
         force_anno_release(self.dbm, annotask_id)
         return "Success"
 
-    def change_group(self, user, annotask_id: int, group_id: int) -> str:
+    def change_group(self, annotask_id: int, group_id: int) -> str:
         anno_task = self.dbm.get_anno_task(annotask_id)
-        pipe_manager_id = anno_task.pipe_element.pipe.manager_id
-        if pipe_manager_id == user.idx:
-            anno_task.group_id = group_id
-            self.dbm.save_obj(anno_task)
-            return "Success"
-        raise NotAuthorizedError(user.idx)
+        anno_task.group_id = group_id
+        self.dbm.save_obj(anno_task)
+        return "Success"
 
-    def update_annotask_config(self, user, annotask_id: int, configuration) -> str:
+    def update_annotask_config(self, annotask_id: int, configuration) -> str:
         anno_task = self.dbm.get_anno_task(annotask_id)
-        pipe_manager_id = anno_task.pipe_element.pipe.manager_id
-        if pipe_manager_id == user.idx:
-            anno_task.configuration = json.dumps(configuration)
-            self.dbm.save_obj(anno_task)
-            return "Success"
-        raise NotAuthorizedError(user.idx)
+        anno_task.configuration = json.dumps(configuration)
+        self.dbm.save_obj(anno_task)
+        return "Success"
 
     def get_storage_settings(self, annotask_id: int) -> dict:
         anno_task = self.dbm.get_anno_task(annotask_id)

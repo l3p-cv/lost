@@ -34,9 +34,22 @@ from fastapi import APIRouter, Depends, Query
 from fastapi.responses import Response
 from pydantic import BaseModel
 
+from lost.controllers.annotasks.AnnotasksBusiness import (
+    AnnotaskInstructionNotFoundError,
+    WorkingTaskNotFoundError,
+)
 from lost.controllers.annotasks.AnnotasksCoordination import AnnotasksCoordination
 from lost.controllers.base import ProfilingRoute
-from lost.controllers.Dependencies import get_annotasks_coordination, get_current_user, require_role
+from lost.controllers.Dependencies import (
+    get_annotasks_coordination,
+    get_current_user,
+    require_annotask_manager_for_annotask,
+    require_annotask_manager_for_export,
+    require_pe_access_for_annotask,
+    require_pe_access_for_export,
+    require_role,
+)
+from lost.controllers.Responses import Responses
 from lost.db import roles
 from lost.db.model import User as DBUser
 
@@ -121,7 +134,12 @@ def get_working_annotask(
     coord: AnnotasksCoordination = Depends(get_annotasks_coordination),
 ):
     """Get currently active annotation task."""
-    return coord.get_working_annotask(user)
+    try:
+        result = coord.get_working_annotask(user)
+    except WorkingTaskNotFoundError:
+        return Responses.precondition_failed({"message": "Current working annotation task not found."})
+    else:
+        return result
 
 
 @router.get("/filterLabels")
@@ -149,7 +167,7 @@ def get_annotask_statistics(
 @router.get("/exports/{annotask_export_id}")
 def download_annotask_export(
     annotask_export_id: int,
-    user: DBUser = Depends(get_current_user),
+    user: DBUser = Depends(require_pe_access_for_export),
     coord: AnnotasksCoordination = Depends(get_annotasks_coordination),
 ):
     """Download an annotation task export."""
@@ -165,9 +183,10 @@ def download_annotask_export(
 def delete_annotask_export(
     annotask_export_id: int,
     user: DBUser = Depends(require_role(roles.DESIGNER)),
+    _manager: DBUser = Depends(require_annotask_manager_for_export),
     coord: AnnotasksCoordination = Depends(get_annotasks_coordination)
 ):
-    """Delete an annotation task export (designer only)."""
+    """Delete an annotation task export (designer / pipeline manager only)."""
     return coord.delete_annotask_export(user, annotask_export_id)
 
 
@@ -198,10 +217,11 @@ def change_group(
     annotask_id: int,
     req: UpdateGroupRequest,
     user: DBUser = Depends(require_role(roles.DESIGNER)),
+    _manager: DBUser = Depends(require_annotask_manager_for_annotask),
     coord: AnnotasksCoordination = Depends(get_annotasks_coordination)
 ):
     """Update the group the annotation task is assigned to."""
-    return coord.change_group(user, annotask_id, req.groupId)
+    return coord.change_group(annotask_id, req.groupId)
 
 
 @router.put("/{annotask_id}/config")
@@ -209,10 +229,11 @@ def update_annotask_config(
     annotask_id: int,
     req: UpdateConfigRequest,
     user: DBUser = Depends(require_role(roles.DESIGNER)),
+    _manager: DBUser = Depends(require_annotask_manager_for_annotask),
     coord: AnnotasksCoordination = Depends(get_annotasks_coordination)
 ):
     """Update the config of the annotation task."""
-    return coord.update_annotask_config(user, annotask_id, req.configuration)
+    return coord.update_annotask_config(annotask_id, req.configuration)
 
 
 @router.get("/{annotask_id}/storage_settings")
@@ -240,7 +261,7 @@ def update_storage_settings(
 def generate_export(
     annotask_id: int,
     req: GenerateExportRequest,
-    user: DBUser = Depends(get_current_user),
+    user: DBUser = Depends(require_pe_access_for_annotask),
     coord: AnnotasksCoordination = Depends(get_annotasks_coordination)
 ):
     """Generate an export for the annotation task."""
@@ -250,11 +271,11 @@ def generate_export(
 @router.get("/{annotask_id}/exports")
 def get_annotask_exports(
     annotask_id: int,
-    user: DBUser = Depends(get_current_user),
+    user: DBUser = Depends(require_pe_access_for_annotask),
     coord: AnnotasksCoordination = Depends(get_annotasks_coordination)
 ):
     """Get all exports for the annotation task."""
-    return coord.get_annotask_exports(user, annotask_id)
+    return coord.get_annotask_exports(annotask_id)
 
 @router.get("/{annotask_id}/instruction")
 def get_annotask_instruction(
@@ -263,7 +284,12 @@ def get_annotask_instruction(
     coord: AnnotasksCoordination = Depends(get_annotasks_coordination)
 ):
     """Get the current instruction of the annotation task."""
-    return coord.get_annotask_instruction(annotask_id)
+    try:
+        result = coord.get_annotask_instruction(annotask_id)
+    except AnnotaskInstructionNotFoundError:
+        return Responses.not_found({"message": "Annotation task not found."})
+    else:
+        return result
 
 @router.patch("/{annotask_id}/instruction")
 def update_annotask_instruction(

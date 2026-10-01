@@ -51,13 +51,13 @@ class AnnotasksCoordination:
         """Force release. Delegates to AnnotasksBusiness.force_release."""
         return self._business.force_release(annotask_id)
 
-    def change_group(self, user, annotask_id: int, group_id: int) -> str:
+    def change_group(self, annotask_id: int, group_id: int) -> str:
         """Change group. Delegates to AnnotasksBusiness.change_group."""
-        return self._business.change_group(user, annotask_id, group_id)
+        return self._business.change_group(annotask_id, group_id)
 
-    def update_annotask_config(self, user, annotask_id: int, configuration) -> str:
+    def update_annotask_config(self, annotask_id: int, configuration) -> str:
         """Update config. Delegates to AnnotasksBusiness.update_annotask_config."""
-        return self._business.update_annotask_config(user, annotask_id, configuration)
+        return self._business.update_annotask_config(annotask_id, configuration)
 
     def get_storage_settings(self, annotask_id: int) -> dict:
         """Storage settings. Delegates to AnnotasksBusiness.get_storage_settings."""
@@ -71,9 +71,9 @@ class AnnotasksCoordination:
         """Generate export. Delegates to AnnotasksBusiness.generate_export."""
         return self._business.generate_export(user, annotask_id, req)
 
-    def get_annotask_exports(self, user, annotask_id: int) -> dict:
+    def get_annotask_exports(self, annotask_id: int) -> dict:
         """List exports. Delegates to AnnotasksBusiness.get_annotask_exports."""
-        return self._business.get_annotask_exports(user, annotask_id)
+        return self._business.get_annotask_exports(annotask_id)
 
     def get_annotask_instruction(self, annotask_id: int) -> dict:
         """Get instruction. Delegates to AnnotasksBusiness.get_annotask_instruction."""

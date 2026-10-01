@@ -1,0 +1,20 @@
+{
+  "mode": "exact",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/annotasks/179/exports"
+  },
+  "response": {
+    "body": {
+      "error": "User is not allowed to access pipe element!",
+      "type": "NotAllowedToAccessPipeElement"
+    },
+    "headers": {
+      "content-type": "application/json"
+    },
+    "status": 500
+  }
+}

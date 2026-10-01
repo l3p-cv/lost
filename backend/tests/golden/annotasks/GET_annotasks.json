@@ -12,6 +12,27 @@
       "annoTasks": [
         {
           "createdAt": "<TS>",
+          "finished": 0,
+          "group": "admin",
+          "id": "<ID>",
+          "instructionId": 1,
+          "lastActivity": "<TS>",
+          "lastAnnotator": "N/A",
+          "lockedImgCount": 0,
+          "name": "Single Image Annotation Task",
+          "pipelineCreator": "admin",
+          "pipelineName": "Test start pipeline",
+          "progress": "<REDACTED>",
+          "size": 16,
+          "statistic": {
+            "amountPerLabel": [],
+            "secondsPerAnno": null
+          },
+          "status": "inProgress",
+          "type": "SIA"
+        },
+        {
+          "createdAt": "<TS>",
           "finished": 2,
           "group": "admin",
           "id": "<ID>",
@@ -33,12 +54,54 @@
         },
         {
           "createdAt": "<TS>",
-          "finished": 2,
+          "finished": 1,
+          "group": "admin",
+          "id": "<ID>",
+          "instructionId": null,
+          "lastActivity": "<TS>",
+          "lastAnnotator": "admin",
+          "lockedImgCount": 0,
+          "name": "compare_test_sia",
+          "pipelineCreator": "admin",
+          "pipelineName": "compare_test_sia_pipe",
+          "progress": "<REDACTED>",
+          "size": 3,
+          "statistic": {
+            "amountPerLabel": [],
+            "secondsPerAnno": null
+          },
+          "status": "inProgress",
+          "type": "SIA"
+        },
+        {
+          "createdAt": "<TS>",
+          "finished": 3,
           "group": "admin",
           "id": "<ID>",
           "instructionId": 1,
           "lastActivity": "<TS>",
-          "lastAnnotator": "N/A",
+          "lastAnnotator": "admin",
+          "lockedImgCount": 0,
+          "name": "sia new",
+          "pipelineCreator": "admin",
+          "pipelineName": "test new sia",
+          "progress": "<REDACTED>",
+          "size": 35,
+          "statistic": {
+            "amountPerLabel": [],
+            "secondsPerAnno": null
+          },
+          "status": "inProgress",
+          "type": "SIA"
+        },
+        {
+          "createdAt": "<TS>",
+          "finished": 10,
+          "group": "admin",
+          "id": "<ID>",
+          "instructionId": null,
+          "lastActivity": "<TS>",
+          "lastAnnotator": "admin",
           "lockedImgCount": 0,
           "name": "SIA test",
           "pipelineCreator": "admin",

@@ -1,0 +1,19 @@
+{
+  "mode": "exact",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/annotasks/999999/instruction"
+  },
+  "response": {
+    "body": {
+      "message": "Annotation task not found."
+    },
+    "headers": {
+      "content-type": "application/json"
+    },
+    "status": 404
+  }
+}

@@ -51,6 +51,8 @@ from lost.db.model import User as DBUser
 from lost.db.redis import is_token_revoked
 from lost.db.session import get_db
 from lost.settings import LOST_CONFIG
+from lost.controllers.Exceptions import NotAuthorizedError
+from lost.logic.db_access import UserDbAccess
 
 # Bearer token scheme for Swagger UI "Authorize" button
 oauth2_scheme = HTTPBearer()
@@ -96,6 +98,57 @@ def require_role(*allowed_roles: str):
         return user
 
     return dependency
+
+def require_pe_access_for_annotask(
+    annotask_id: int,
+    user: DBUser = Depends(get_current_user),
+    dbm: DBMan = Depends(get_db),
+) -> DBUser:
+    """May the user access this annotask's pipe element?"""
+    udb = UserDbAccess(dbm, user)
+    anno_task = dbm.get_anno_task(annotask_id)
+    if not udb.may_access_pe(anno_task.pipe_element):
+        raise NotAuthorizedError(user.idx)
+    return user
+
+
+def require_pe_access_for_export(
+    annotask_export_id: int,
+    user: DBUser = Depends(get_current_user),
+    dbm: DBMan = Depends(get_db),
+) -> DBUser:
+    """May the user access the pipe element behind this export?"""
+    udb = UserDbAccess(dbm, user)
+    anno_task_export = dbm.get_anno_task_export(anno_task_export_id=annotask_export_id)
+    anno_task = dbm.get_anno_task(anno_task_export.anno_task_id)
+    if not udb.may_access_pe(anno_task.pipe_element):
+        raise NotAuthorizedError(user.idx)
+    return user
+
+
+def require_annotask_manager_for_annotask(
+    annotask_id: int,
+    user: DBUser = Depends(get_current_user),
+    dbm: DBMan = Depends(get_db),
+) -> DBUser:
+    """Is the user the manager of this annotask's pipeline?"""
+    anno_task = dbm.get_anno_task(annotask_id)
+    if anno_task.pipe_element.pipe.manager_id != user.idx:
+        raise NotAuthorizedError(user.idx)
+    return user
+
+
+def require_annotask_manager_for_export(
+    annotask_export_id: int,
+    user: DBUser = Depends(get_current_user),
+    dbm: DBMan = Depends(get_db),
+) -> DBUser:
+    """Is the user the manager of the export's pipeline?"""
+    anno_task_data_export = dbm.get_anno_task_export(annotask_export_id)
+    anno_task = dbm.get_anno_task(anno_task_data_export.anno_task_id)
+    if anno_task.pipe_element.pipe.manager_id != user.idx:
+        raise NotAuthorizedError(user.idx)
+    return user
 
 # --- Coordination service factories ---
 # these are used in the endpoints to wire the coordination services with their dependencies.

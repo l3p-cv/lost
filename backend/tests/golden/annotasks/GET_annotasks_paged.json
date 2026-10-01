@@ -16,6 +16,69 @@
       "annoTasks": [
         {
           "createdAt": "<TS>",
+          "finished": 1,
+          "group": "admin",
+          "id": "<ID>",
+          "instructionId": 257,
+          "lastActivity": "<TS>",
+          "lastAnnotator": "admin",
+          "lockedImgCount": 0,
+          "name": "test ui sia create",
+          "pipelineCreator": "admin",
+          "pipelineName": "test sia create ",
+          "progress": "<REDACTED>",
+          "size": 1,
+          "statistic": {
+            "amountPerLabel": [],
+            "secondsPerAnno": null
+          },
+          "status": "inProgress",
+          "type": "SIA"
+        },
+        {
+          "createdAt": "<TS>",
+          "finished": 1,
+          "group": "admin",
+          "id": "<ID>",
+          "instructionId": null,
+          "lastActivity": "<TS>",
+          "lastAnnotator": "admin",
+          "lockedImgCount": 0,
+          "name": "Single Image Annotation Task",
+          "pipelineCreator": "admin",
+          "pipelineName": "test 0 progress",
+          "progress": "<REDACTED>",
+          "size": 35,
+          "statistic": {
+            "amountPerLabel": [],
+            "secondsPerAnno": null
+          },
+          "status": "inProgress",
+          "type": "SIA"
+        },
+        {
+          "createdAt": "<TS>",
+          "finished": 35,
+          "group": "admin",
+          "id": "<ID>",
+          "instructionId": null,
+          "lastActivity": "<TS>",
+          "lastAnnotator": "admin",
+          "lockedImgCount": 0,
+          "name": "MultiImageAnnoation",
+          "pipelineCreator": "admin",
+          "pipelineName": "mia task for ui test mozilla",
+          "progress": "<REDACTED>",
+          "size": 35,
+          "statistic": {
+            "amountPerLabel": [],
+            "secondsPerAnno": null
+          },
+          "status": "finished",
+          "type": "MIA"
+        },
+        {
+          "createdAt": "<TS>",
           "finished": 35,
           "group": "admin",
           "id": "<ID>",
@@ -160,72 +223,9 @@
           },
           "status": "inProgress",
           "type": "SIA"
-        },
-        {
-          "createdAt": "<TS>",
-          "finished": 35,
-          "group": "admin",
-          "id": "<ID>",
-          "instructionId": null,
-          "lastActivity": "<TS>",
-          "lastAnnotator": "admin",
-          "lockedImgCount": 0,
-          "name": "MultiImageAnnoation",
-          "pipelineCreator": "admin",
-          "pipelineName": "mia",
-          "progress": "<REDACTED>",
-          "size": 35,
-          "statistic": {
-            "amountPerLabel": [],
-            "secondsPerAnno": null
-          },
-          "status": "finished",
-          "type": "MIA"
-        },
-        {
-          "createdAt": "<TS>",
-          "finished": 1,
-          "group": "admin",
-          "id": "<ID>",
-          "instructionId": null,
-          "lastActivity": "<TS>",
-          "lastAnnotator": "admin",
-          "lockedImgCount": 0,
-          "name": "Single Image Annotation Task",
-          "pipelineCreator": "admin",
-          "pipelineName": "pop",
-          "progress": "<REDACTED>",
-          "size": 1,
-          "statistic": {
-            "amountPerLabel": [],
-            "secondsPerAnno": null
-          },
-          "status": "finished",
-          "type": "SIA"
-        },
-        {
-          "createdAt": "<TS>",
-          "finished": 35,
-          "group": "admin",
-          "id": "<ID>",
-          "instructionId": null,
-          "lastActivity": "<TS>",
-          "lastAnnotator": "admin",
-          "lockedImgCount": 0,
-          "name": "MultiImageAnnoation",
-          "pipelineCreator": "admin",
-          "pipelineName": "c",
-          "progress": "<REDACTED>",
-          "size": 35,
-          "statistic": {
-            "amountPerLabel": [],
-            "secondsPerAnno": null
-          },
-          "status": "finished",
-          "type": "MIA"
         }
       ],
-      "pages": 8
+      "pages": 9
     },
     "headers": {
       "content-type": "application/json"
