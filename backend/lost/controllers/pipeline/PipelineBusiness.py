@@ -38,37 +38,28 @@ from lostconfig import LOSTConfig
 
 
 class TemplateRoleError(DomainError):
-    """Legacy 403 JSON-string role body."""
-    http_status = 403
+    """Template access denied, carries role name for legacy 403 body."""
 
     def __init__(self, role_name: str) -> None:
         super().__init__(role_name)
-        self.http_body = f"You need to be {role_name} in order to perform this request."
-
 
 class TemplateNotFoundError(DomainError):
-    http_status = 404
-
+    """Template lookup failed , carries result str or None for 404 body."""
     def __init__(self, result) -> None:
         super().__init__(result)
-        self.http_body = {"message": result or "Template not found."}
 
 
 class StartNoDefaultGroupError(DomainError):
-    http_status = 400
-
+    """Starting a pipeline without a default group. carries user id"""
     def __init__(self, user_id: int) -> None:
         super().__init__(user_id)
-        self.http_body = f"default group for user {user_id} not found."
 
 
 class PipeImportJSONError(DomainError):
     """Legacy 500 traceback-string body for broken import payloads."""
-    http_status = 500
 
     def __init__(self, trace: str) -> None:
         super().__init__(trace)
-        self.http_body = trace
 
 
 class PipelineBusiness:

@@ -1,0 +1,17 @@
+{
+  "mode": "exact",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/pipeline/template/all"
+  },
+  "response": {
+    "body": "You need to be Designer in order to perform this request.",
+    "headers": {
+      "content-type": "application/json"
+    },
+    "status": 403
+  }
+}

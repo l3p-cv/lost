@@ -11,6 +11,8 @@ from __future__ import annotations
 from tests.helpers.recorder import RequestSpec
 from tests.helpers.specs import RouteSpec
 from tests.compare.migration_status import target_for
+from datetime import datetime
+from tests.helpers.seed import TEST_PREFIX, cleanup_test_user, unique_suffix
 
 _TARGET = target_for("pipeline")
 
@@ -33,6 +35,32 @@ def _setup_pipe_context(dbm):
         "skip": False,
     }
 
+def _setup_roleless_user(dbm) -> dict:
+    """Create a test user with NO roles and mint its token (thumbnail role-quirk spec)."""
+    from lost.controllers.user.login_manager import LoginManager
+    from lost.db.model import Group, User, UserGroups
+
+    user_name = f"{TEST_PREFIX}roleless_{unique_suffix()}"
+    user = User(
+        user_name=user_name,
+        email=f"{user_name}@test.local",
+        email_confirmed_at=datetime.utcnow(),
+        password="test",
+    )
+    dbm.save_obj(user)
+    g = Group(name=user_name, is_user_default=True)
+    dbm.save_obj(g)
+    dbm.save_obj(UserGroups(group_id=g.idx, user_id=user.idx))
+    dbm.commit()
+    lm = LoginManager(dbm, user_name, "")
+    fresh_token, _ = lm.create_jwt_pyjwt(user.idx, user_name, user.roles)
+    return {"fresh_token": fresh_token, "user_obj": user}
+
+
+def _cleanup_roleless_user(dbm, context) -> None:
+    """Delete the role-less test user (idempotent, rollback-first)."""
+    if "user_obj" in context:
+        cleanup_test_user(dbm, context["user_obj"])
 
 def get_pipeline_specs() -> list[RouteSpec]:
     specs: list[RouteSpec] = []
@@ -188,6 +216,35 @@ def get_pipeline_specs() -> list[RouteSpec]:
         request=RequestSpec(method="PUT", path="/api/pipeline/element/{annotask_id}/review"),
         skip=True,
         skip_reason="Mutation — updates review state. Verified manually in P1.2.",
+    ))
+
+     # GET /api/pipeline/template/999999 — nonexistent template ID → 404 (exact)
+    specs.append(RouteSpec(
+        name="GET_pipeline_template_not_found",
+        request=RequestSpec(method="GET", path="/api/pipeline/template/999999", mode="exact"),
+        target=_TARGET,
+        # no setup — template.py's finally-return makes get_template return
+        # the fixed message string for missing ids
+    ))
+
+    # GET /api/pipeline/template/all as a role-less user → 403 (exact)
+    specs.append(RouteSpec(
+        name="GET_pipeline_template_role_forbidden",
+        request=RequestSpec(method="GET", path="/api/pipeline/template/all", mode="exact"),
+        setup=_setup_roleless_user,
+        cleanup=_cleanup_roleless_user,
+        target=_TARGET,
+        # the visibility-branch role check fires in business → plain signal → 403
+    ))
+
+    # GET /api/pipeline/project/all as a role-less user → 403 (exact)
+    specs.append(RouteSpec(
+        name="GET_pipeline_project_role_forbidden",
+        request=RequestSpec(method="GET", path="/api/pipeline/project/all", mode="exact"),
+        setup=_setup_roleless_user,
+        cleanup=_cleanup_roleless_user,
+        target=_TARGET,
+        # same transcription via the get_projects branch
     ))
 
     return specs

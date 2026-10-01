@@ -29,7 +29,14 @@ from pydantic import BaseModel
 
 from lost.controllers.base import ProfilingRoute
 from lost.controllers.Dependencies import get_current_user, get_pipeline_coordination, require_role
+from lost.controllers.pipeline.PipelineBusiness import (
+    PipeImportJSONError,
+    StartNoDefaultGroupError,
+    TemplateNotFoundError,
+    TemplateRoleError,
+)
 from lost.controllers.pipeline.PipelineCoordination import PipelineCoordination
+from lost.controllers.Responses import Responses
 from lost.db import roles
 from lost.db.model import User as DBUser
 
@@ -87,12 +94,18 @@ def get_template_or_templates(
     coord: PipelineCoordination = Depends(get_pipeline_coordination),
 ):
     """Get pipeline template by ID or list templates by visibility."""
-    result = coord.get_template_or_templates(user, template_id_or_visibility)
-    if result is None:
-        return TemplatesSchema()
-    if isinstance(result, dict) and "templates" in result:
-        return TemplatesSchema.model_validate(result)
-    return result
+    try:
+        result = coord.get_template_or_templates(user, template_id_or_visibility)
+    except TemplateRoleError as e:
+        return Responses.forbidden(f"You need to be {e.args[0]} in order to perform this request.")
+    except TemplateNotFoundError as e:
+        return Responses.not_found({"message": e.args[0] or "Template not found."})
+    else:
+        if result is None:
+            return TemplatesSchema()
+        if isinstance(result, dict) and "templates" in result:
+            return TemplatesSchema.model_validate(result)
+        return result
 
 
 @router.get("/project/{visibility}", response_model=TemplatesSchema)
@@ -102,7 +115,12 @@ def get_projects(
     coord: PipelineCoordination = Depends(get_pipeline_coordination),
 ):
     """Get list of pipeline projects for given visibility (deduplicated by pipeProject)."""
-    return coord.get_projects(user, visibility)
+    try:
+        result = coord.get_projects(user, visibility)
+    except TemplateRoleError as e:
+        return Responses.forbidden(f"You need to be {e.args[0]} in order to perform this request.")
+    else:
+        return result
 
 
 @router.get("/project/export/{pipe_project}")
@@ -128,7 +146,12 @@ async def import_zip(
 ):
     """Import a pipeline project from a zip file."""
     contents = await zip_file.read()
-    return coord.import_zip(user, zip_file.filename, contents)
+    try:
+        result = coord.import_zip(user, zip_file.filename, contents)
+    except PipeImportJSONError as e:
+        return Responses.internal(e.args[0])
+    else:
+        return result
 
 
 @router.post("/project/import_git")
@@ -138,7 +161,12 @@ def import_git(
     coord: PipelineCoordination = Depends(get_pipeline_coordination),
 ):
     """Import a pipeline project from a git repository."""
-    return coord.import_git(user, req.gitUrl, req.gitBranch)
+    try:
+        result = coord.import_git(user, req.gitUrl, req.gitBranch)
+    except PipeImportJSONError as e:
+        return Responses.internal(e.args[0])
+    else:
+        return result
 
 
 @router.post("/project/delete")
@@ -204,8 +232,12 @@ def start_pipeline(
     coord: PipelineCoordination = Depends(get_pipeline_coordination),
 ):
     """Start a new pipeline."""
-    return coord.start_pipeline(user, data)
-
+    try:
+        result = coord.start_pipeline(user, data)
+    except StartNoDefaultGroupError as e:
+        return Responses.bad_request(f"default group for user {e.args[0]} not found.")
+    else:
+        return result
 
 @router.post("/updateArguments")
 async def update_arguments(
