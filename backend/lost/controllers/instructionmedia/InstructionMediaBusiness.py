@@ -14,23 +14,19 @@ from lost.logic.file_man import INSTRUCTION_MEDIA_PATH
 
 
 class InvalidMediaPathError(DomainError):
-    http_status = 403
-    http_body = {"message": "Forbidden: Invalid path"}
+    """The path lies outside the instruction media directory."""
 
 
 class MediaFileNotFoundError(DomainError):
-    http_status = 404
-    http_body = {"message": "File not found"}
+    """The media file does not exist."""
 
 
 class MissingEncodedPathError(DomainError):
-    http_status = 400
-    http_body = {"message": 'Missing "encodedPath"'}
+    """The request carried no encoded path."""
 
 
 class MediaForbiddenError(DomainError):
-    http_status = 403
-    http_body = {"message": "Forbidden"}
+    """The path is outside the user's instruction media save directory."""
 
 
 class InstructionMediaBusiness:

@@ -1,0 +1,22 @@
+{
+  "mode": "exact",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "json": {
+      "encodedPath": "%2Fetc%2Fpasswd"
+    },
+    "method": "POST",
+    "path": "/api/media/get-image-markdown"
+  },
+  "response": {
+    "body": {
+      "message": "Forbidden"
+    },
+    "headers": {
+      "content-type": "application/json"
+    },
+    "status": 403
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "mode": "exact",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "json": {
+      "encodedPath": ""
+    },
+    "method": "POST",
+    "path": "/api/media/get-image-markdown"
+  },
+  "response": {
+    "body": {
+      "message": "Missing \"encodedPath\""
+    },
+    "headers": {
+      "content-type": "application/json"
+    },
+    "status": 400
+  }
+}

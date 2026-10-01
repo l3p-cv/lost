@@ -13,7 +13,14 @@ from pydantic import BaseModel
 
 from lost.controllers.base import ProfilingRoute
 from lost.controllers.Dependencies import get_instructionmedia_coordination, require_role
+from lost.controllers.instructionmedia.InstructionMediaBusiness import (
+    InvalidMediaPathError,
+    MediaFileNotFoundError,
+    MediaForbiddenError,
+    MissingEncodedPathError,
+)
 from lost.controllers.instructionmedia.InstructionMediaCoordination import InstructionMediaCoordination
+from lost.controllers.Responses import Responses
 from lost.db import roles
 from lost.db.model import User as DBUser
 
@@ -36,7 +43,14 @@ def serve_instruction_image(
     coord: InstructionMediaCoordination = Depends(get_instructionmedia_coordination),
 ):
     """Serve a static instruction image file. No auth — path validation only."""
-    return FileResponse(coord.media_file_path(path))
+    try:
+        result = coord.media_file_path(path)
+    except InvalidMediaPathError:
+        return Responses.forbidden({"message": "Forbidden: Invalid path"})
+    except MediaFileNotFoundError:
+        return Responses.not_found({"message": "File not found"})
+    else:
+        return FileResponse(result)
 
 
 @router.post("/get-image-markdown")
@@ -48,4 +62,13 @@ def get_image_markdown(
 ):
     """Get markdown for an instruction image."""
     base_url = str(request.base_url).rstrip("/")
-    return coord.image_markdown(user, req.encodedPath, base_url)
+    try:
+        result = coord.image_markdown(user, req.encodedPath, base_url)
+    except MissingEncodedPathError:
+        return Responses.bad_request({"message": 'Missing "encodedPath"'})
+    except MediaForbiddenError:
+        return Responses.forbidden({"message": "Forbidden"})
+    except MediaFileNotFoundError:
+        return Responses.not_found({"message": "File not found"})
+    else:
+        return result
