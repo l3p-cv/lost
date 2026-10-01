@@ -61,7 +61,7 @@ class DatasetCoordination:
 
   def delete_dataset_export(self, user, export_id: int) -> str:
     """Delete dataset export. Delegates to DatasetBusiness.delete_export."""
-    return self._business.delete_dataset(user,export_id)
+    return self._business.delete_export(user,export_id)
 
   def download_dataset_export(self, user, export_id: int) -> tuple[bytes, str]:
     """Download Dataset export. Delegates to DatasetBusiness.read_export."""

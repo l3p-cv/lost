@@ -30,30 +30,22 @@ from lost.settings import DATA_URL, LOST_CONFIG
 
 
 class DatasetParentSelfError(DomainError):
-    http_status = 400
-    http_body = "Dataset can't have itself as its parent"
-    http_media_type = "text/plain"
+    """The dataset was set as its own parent."""
 
 
 class DatasetParentChildError(DomainError):
-    http_status = 400
-    http_body = "Chosen parent can't be a child of the current dataset"
-    http_media_type = "text/plain"
+    """The chosen parent is a child of the current dataset."""
 
 
 class DatasetReviewNoAnnotationError(DomainError):
-    """Legacy 400 JSON-string body."""
-    http_status = 400
-    http_body = "no annotation found"
+    """Review navigation found no annotation (carries the legacy message)."""
 
 
 class DatasetNotFoundError(DomainError):
-    http_status = 404
-    http_media_type = "text/plain"
+    """The dataset does not exist (carries the id)."""
 
     def __init__(self, dataset_id: int) -> None:
         super().__init__(dataset_id)
-        self.http_body = f"Dataset with id {dataset_id} not found"
 
 # --- Helper functions (converted from Flask Resource private methods) ---
 
@@ -172,7 +164,7 @@ def _review(dbm, dataset_id, user_id, data):
     first_annotask_key = annotask_keys[0]
     first_annotask = dbm.get_sia_review_first(first_annotask_key, iteration)
     if not first_annotask:
-        return DatasetReviewNoAnnotationError(status_code=400, content="no annotation found")
+        raise DatasetReviewNoAnnotationError("no annotation found")
     last_annotask_key = annotask_keys[-1]
     last_annotask_image = dbm.get_sia_review_last(last_annotask_key, iteration)
     current_idx = data.get("imageAnnoId", None)
@@ -208,7 +200,7 @@ def _review(dbm, dataset_id, user_id, data):
         image_anno = dbm.get_image_anno(current_idx)
         current_annotask_idx = image_anno.anno_task_id
     if not image_anno:
-        return DatasetReviewNoAnnotationError(status_code=400,content="no annotation found")
+        raise DatasetReviewNoAnnotationError("no annotation found")
     anno_current_image_number, anno_total_image_amount = get_image_progress(
         dbm, annotasks[current_annotask_idx], image_anno.idx, iteration
     )

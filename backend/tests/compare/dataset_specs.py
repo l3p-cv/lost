@@ -108,6 +108,35 @@ def _setup_delete_dataset(dbm):
     dbm.save_obj(ds)
     return {"dataset_id": ds.idx, "skip": False}
 
+def _setup_dataset_parent_child(dbm):
+    """Create a throwaway parent dataset with one child (for the parent-cycle spec)."""
+    from lost.db import model
+    from tests.helpers.seed import unique_suffix, TEST_PREFIX
+
+    parent = model.Dataset(
+        name=f"{TEST_PREFIX}cycle_{unique_suffix()}",
+        description="Throwaway parent dataset for parent-cycle spec",
+    )
+    dbm.save_obj(parent)
+    child = model.Dataset(
+        name=f"{TEST_PREFIX}cycle_child_{unique_suffix()}",
+        description="Throwaway child dataset for parent-cycle spec",
+        parent_dataset_id=parent.idx,
+    )
+    dbm.save_obj(child)
+    return {"dataset_id": parent.idx, "child_id": child.idx, "skip": False}
+
+
+def _cleanup_dataset_parent_child(dbm, context):
+    """Delete the throwaway parent+child datasets (the error path saved nothing)."""
+    for key in ("child_id", "dataset_id"):
+        ds_id = context.get(key)
+        if ds_id is not None:
+            ds = dbm.get_dataset(ds_id)
+            if ds:
+                dbm.session.delete(ds)
+                dbm.session.commit()
+
 
 # ---------------------------------------------------------------------------
 # Setup: create a throwaway DatasetExport for DELETE test
@@ -347,6 +376,55 @@ def get_dataset_specs() -> list[RouteSpec]:
         request=RequestSpec(method="GET", path="/api/datasets/ds_exports/{export_id}"),
         skip=True,
         skip_reason="Binary file download — recorder needs fix for binary responses. Verified manually in P1.2.",
+    ))
+
+    # 14. POST /api/datasets/export_ds_parquet/999999 → 404 plain-text (exact)
+    specs.append(RouteSpec(
+        name="POST_dataset_parquet_export_not_found",
+        request=RequestSpec(
+            method="POST", path="/api/datasets/export_ds_parquet/999999",
+            json={}, mode="exact",
+        ),
+        target=_TARGET,
+        # no setup/cleanup — DatasetNotFoundError fires before any fs/dask work
+    ))
+
+    # 15. PATCH /api/datasets — dataset as its own parent → 400 plain-text (exact)
+    specs.append(RouteSpec(
+        name="PATCH_dataset_update_parent_self",
+        request=RequestSpec(
+            method="PATCH", path="/api/datasets",
+            json={
+                "id": "{dataset_id}",
+                "name": "compare_test_parent_self",
+                "description": "parent-self error spec",
+                "parentDatasetId": "{dataset_id}",
+            },
+            mode="exact",
+        ),
+        setup=_setup_delete_dataset,   # reuse the throwaway-dataset helper
+        cleanup=_cleanup_created_dataset,
+        target=_TARGET,
+        # raise fires before save — nothing is mutated
+    ))
+
+    # 16. PATCH /api/datasets — parent is a child of the dataset → 400 plain-text (exact)
+    specs.append(RouteSpec(
+        name="PATCH_dataset_update_parent_cycle",
+        request=RequestSpec(
+            method="PATCH", path="/api/datasets",
+            json={
+                "id": "{dataset_id}",
+                "name": "compare_test_parent_cycle",
+                "description": "parent-cycle error spec",
+                "parentDatasetId": "{child_id}",
+            },
+            mode="exact",
+        ),
+        setup=_setup_dataset_parent_child,
+        cleanup=_cleanup_dataset_parent_child,
+        target=_TARGET,
+        # raise fires before save — nothing is mutated
     ))
 
     return specs

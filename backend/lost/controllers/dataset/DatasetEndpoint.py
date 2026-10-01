@@ -20,12 +20,19 @@ Routes:
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, Query
-from fastapi.responses import PlainTextResponse, Response
+from fastapi.responses import Response
 from pydantic import BaseModel, field_validator
 
 from lost.controllers.base import ProfilingRoute
+from lost.controllers.dataset.DatasetBusiness import (
+    DatasetNotFoundError,
+    DatasetParentChildError,
+    DatasetParentSelfError,
+    DatasetReviewNoAnnotationError,
+)
 from lost.controllers.dataset.DatasetCoordination import DatasetCoordination
 from lost.controllers.Dependencies import get_dataset_coordination, require_role
+from lost.controllers.Responses import Responses
 from lost.db import roles
 from lost.db.model import User as DBUser
 
@@ -90,9 +97,15 @@ def update_dataset(
     user: DBUser = Depends(require_role(roles.DESIGNER)),
     coord: DatasetCoordination = Depends(get_dataset_coordination),
 ):
-    """Update a single dataset."""
-    coord.update_dataset(req)
-    return PlainTextResponse("", status_code=204)
+    """Update a single dataset. Parent-cycle errors → legacy 400 plain-text."""
+    try:
+        coord.update_dataset(req)
+    except DatasetParentSelfError:
+        return Responses.plain_text("Dataset can't have itself as its parent", 400)
+    except DatasetParentChildError:
+        return Responses.plain_text("Chosen parent can't be a child of the current dataset", 400)
+    else:
+        return Responses.no_content()
 
 
 @router.delete("/{dataset_id}")
@@ -132,7 +145,12 @@ def dataset_review(
     coord: DatasetCoordination = Depends(get_dataset_coordination),
 ):
     """Get data for the next dataset review annotation."""
-    return coord.dataset_review(user, dataset_id, req.model_dump())
+    try:
+        result = coord.dataset_review(user, dataset_id, req.model_dump())
+    except DatasetReviewNoAnnotationError:
+        return Responses.bad_request("no annotation found")
+    else:
+        return result
 
 
 @router.get("/{dataset_id}/review/images")
@@ -165,7 +183,12 @@ def export_ds_parquet(
     coord: DatasetCoordination = Depends(get_dataset_coordination),
 ):
     """Export dataset as parquet to a given file system."""
-    return coord.export_ds_parquet(user, dataset_id, req)
+    try:
+        result = coord.export_ds_parquet(user, dataset_id, req)
+    except DatasetNotFoundError:
+        return Responses.plain_text(f"Dataset with id {dataset_id} not found", 404)
+    else:
+        return result
 
 
 @router.get("/{dataset_id}/ds_exports")
