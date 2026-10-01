@@ -48,6 +48,7 @@ Added `create_jwt_pyjwt()` to LoginManager, PyJWT-based token creation.Same stru
 - `backend/tests/README.md` : added test-suite documentation (harness flow, how to run, comparison modes, adding new coverage).
 - `controllers/Dependencies.py` : contains all changes that were previously in `controllers/auth/dependecies.py` (all endpoint layer wiring: `get_current_user`/`require_role`)
 - `controllers/AuthorizationService.py` : resource level authorization util
+- sia_specs.py added 4 new specs to this
 ### Fixed
 - `backend/tests/helpers/recorder.py` : Fixed empty-body handling for 204 No Content responses.
 - fixed recorder for FastAPI TestClient compatibility.
@@ -101,7 +102,8 @@ Added `create_jwt_pyjwt()` to LoginManager, PyJWT-based token creation.Same stru
 - the `instructions` module (role checks moved to endpoint(thinking of making it more generalized), 4 error-path specs added) business pure logic and endpoint raises exceptions and endpoint catches it.
 - `data` module migrated to business pure logic and endpoint raises exceptions build from error responses using Responses.py added one extra test spec to test exception.
 - `filebrowser` module migrated to endpoint-side exception handling business raises plain domain errors, endpoint builds legacy 401/403 string and 200 error-dict responses via `Responses`
-- lsTest local-fs role check moved to the endpoint (savefs check kept in business fires only on fs creation) 2 role-quirk error-path specs via a fresh designer-without-admin token. 
+- lsTest local-fs role check moved to the endpoint (savefs check kept in business fires only on fs creation) 2 role-quirk error-path specs via a fresh designer-without-admin token.
+- sia module migrated to endpoint-side exception handling .Business layer raises plain domain errors, endpoint build the errpr responses via Responses.py. 
 ### Removed
 - `backend/` : removed all Flask-dependent code at P1.3 cutover — deleted `lost/app.py`, `lost/flaskapp.py`, `lost/wsgi.py`, `lost/wsgi.ini`, `lost/api/api.py` and dropped Flask deps (`flask`, `flask-cors`, `flask-jwt-extended`, `flask-mail`, `flask-pydantic`, `flask-restx`, `flask-sqlalchemy`, `uwsgi`) from `pyproject.toml`, added `redis`, `itsdangerous`, `pyjwt`.
 - `services/` directory removed.

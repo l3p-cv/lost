@@ -1,0 +1,19 @@
+{
+  "mode": "exact",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/sia/image/999999/thumbnail"
+  },
+  "response": {
+    "body": {
+      "message": "You need to be Annotator or Designer in order to perform this request."
+    },
+    "headers": {
+      "content-type": "application/json"
+    },
+    "status": 403
+  }
+}

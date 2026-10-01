@@ -7,6 +7,10 @@ temporarily by the pipeline/dataset/annotasks endpoints and the logic unit tests
 the :class:`SiaBusiness` service at the bind them to the request-scoped dbm. Method names mirror the module
 functions they delegate to bare calls inside methods resolve to module
 globals. ``logic/anno_task`` stays shared until the annotasks split.
+D2-pure: domain errors are PLAIN signals (no HTTP vocabulary) —
+the endpoint catches them and builds the byte-exact legacy responses via
+Responses (string bodies for 401/403 checks; 200-message bodies for SIA update failures). 
+The global DomainError handler remains only as a loud fallback (un-transcribed error -> 500)
 """
 
 import base64
@@ -1055,8 +1059,6 @@ class PolygonOperationError(DomainError):
     def __init__(self, message):
         super().__init__(message)
         self.message = message
-        self.http_body = {"error": str(message)}
-
 
 def bbox_to_polygon(bbox):
     x, y, w, h = bbox["x"], bbox["y"], bbox["w"], bbox["h"]
@@ -1435,68 +1437,54 @@ def compute_bboxes_from_points(data):
     return results
 
 class SiaUpdateError(DomainError):
-    http_status = 500
-    http_body = "error updating sia anno"
+    """Updating a SIA annotation failed."""
 
 
 class SiaImageNotFoundError(DomainError):
-    http_status = 404
-    http_body = {"error": "Not found"}
+    """The requested image annotation does not exist."""
 
 
 class SiaFilterValueError(DomainError):
-    http_status = 400
+    """Invalid filter arguments (carries the ValueError)."""
 
     def __init__(self, exc: Exception) -> None:
         super().__init__(exc)
-        self.http_body = {"error": str(exc)}
 
 
 class SiaFilterError(DomainError):
-    http_status = 500
+    """Applying filters failed (carries the cause)."""
 
     def __init__(self, exc: Exception) -> None:
         super().__init__(exc)
-        self.http_body = {"error": str(exc)}
-
-
-class ThumbnailRoleError(DomainError):
-    http_status = 403
-    http_body = {"message": f"You need to be {roles.ANNOTATOR} or {roles.DESIGNER} in order to perform this request."}
 
 
 class ThumbnailGroupNotFoundError(DomainError):
-    http_status = 404
-    http_body = {"error": "Group not found"}
+    """The thumbnail's annotask group does not exist."""
 
 
 class ThumbnailForbiddenError(DomainError):
-    http_status = 403
-    http_body = {"error": "Forbidden"}
+    """The user may not see this image's thumbnail."""
 
 
 class ThumbnailError(DomainError):
-    http_status = 500
+    """Thumbnail generation failed (carries the cause)."""
 
     def __init__(self, exc: Exception) -> None:
         super().__init__(exc)
-        self.http_body = {"error": str(exc)}
 
 
 class PolygonTopologyError(DomainError):
-    http_status = 400
+    """A polygon topology error occurred (carries the cause)."""
 
     def __init__(self, exc: Exception) -> None:
         super().__init__(exc)
-        self.http_body = {"error": str(exc)}
 
 
 class PolygonOperationFailedError(DomainError):
-    http_status = 500
+    """A polygon operation failed unexpectedly (carries the cause)."""
 
     def __init__(self, exc: Exception) -> None:
         super().__init__(exc)
-        self.http_body = {"error": str(exc)}
 
 
 class SiaBusiness:
@@ -1616,8 +1604,6 @@ class SiaBusiness:
         return {"images": [{"imageId": a.idx, "number": i + 1, "total": total} for i, a in enumerate(user_annos)]}
 
     def get_thumbnail(self, user, image_id: int) -> str:
-        if not user.has_role(roles.ANNOTATOR) and not user.has_role(roles.DESIGNER):
-            raise ThumbnailRoleError(user)
         try:
             img = self.dbm.get_image_anno(image_id)
             if img is None:

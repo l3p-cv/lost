@@ -28,6 +28,19 @@ from pydantic import BaseModel
 
 from lost.controllers.base import ProfilingRoute
 from lost.controllers.Dependencies import get_current_user, get_sia_coordination, require_role
+from lost.controllers.Responses import Responses
+from lost.controllers.sia.SiaBusiness import (
+    PolygonOperationError,
+    PolygonOperationFailedError,
+    PolygonTopologyError,
+    SiaFilterError,
+    SiaFilterValueError,
+    SiaImageNotFoundError,
+    SiaUpdateError,
+    ThumbnailError,
+    ThumbnailForbiddenError,
+    ThumbnailGroupNotFoundError,
+)
 from lost.controllers.sia.SiaCoordination import SiaCoordination
 from lost.db import roles
 from lost.db.model import User as DBUser
@@ -128,8 +141,12 @@ def update_sia_anno(
     coord: SiaCoordination = Depends(get_sia_coordination),
 ):
     """Update whole SIA annotation."""
-    return coord.update_sia_anno(user, data)
-
+    try:
+        result = coord.update_sia_anno(user, data)
+    except SiaUpdateError:
+        return Responses.internal("error updating sia anno")
+    else:
+        return result
 
 @router.patch("")
 def update_partial_sia_anno(
@@ -160,8 +177,12 @@ def get_sia_image_name(
     coord: SiaCoordination = Depends(get_sia_coordination),
 ):
     """Get SIA image name."""
-    return coord.get_sia_image_name(image_id)
-
+    try:
+        result = coord.get_sia_image_name(image_id)
+    except SiaImageNotFoundError:
+        return Responses.not_found({"error": "Not found"})
+    else:
+        return result
 
 @router.post("/image/{image_id}/filters")
 def get_image_with_filters(
@@ -171,8 +192,14 @@ def get_image_with_filters(
     coord: SiaCoordination = Depends(get_sia_coordination),
 ):
     """Get an image with applied filters."""
-    return PlainTextResponse(coord.get_image_with_filters(image_id, req.filters))
-
+    try:
+        result = coord.get_image_with_filters(image_id, req.filters)
+    except SiaFilterValueError as e:
+        return Responses.bad_request({"error": str(e.args[0])})
+    except SiaFilterError as e:
+        return Responses.bad_request({"error": str(e.args[0])})
+    else:
+        return PlainTextResponse(result)
 
 @router.get("/images")
 def get_sia_image_list(
@@ -191,8 +218,22 @@ def get_sia_thumbnail(
     coord: SiaCoordination = Depends(get_sia_coordination),
 ):
     """Get a small thumbnail for the given image annotation ID."""
-    return PlainTextResponse(coord.get_sia_thumbnail(user, image_id))
-
+    if not user.has_role(roles.ANNOTATOR) and not user.has_role(roles.DESIGNER):
+        return Responses.forbidden(
+            {"message": f"You need to be {roles.ANNOTATOR} or {roles.DESIGNER} in order to perform this request."}
+        )
+    try:
+        result = coord.get_sia_thumbnail(user, image_id)
+    except SiaImageNotFoundError:
+        return Responses.not_found({"error": "Not found"})
+    except ThumbnailGroupNotFoundError:
+        return Responses.not_found({"error": "Group not found"})
+    except ThumbnailForbiddenError:
+        return Responses.forbidden({"error": "Forbidden"})
+    except ThumbnailError as e:
+        return Responses.internal({"error": str(e.args[0])})
+    else:
+        return PlainTextResponse(result)
 
 @router.get("/allowedExampler")
 def get_allowed_exampler(
@@ -246,7 +287,16 @@ def polygon_union(
     coord: SiaCoordination = Depends(get_sia_coordination),
 ):
     """Perform union operation on a list of at least 2 polygons."""
-    return coord.polygon_union(data)
+    try:
+        result = coord.polygon_union(data)
+    except PolygonOperationError as e:
+        return Responses.bad_request({"error": e.message})
+    except PolygonTopologyError as e:
+        return Responses.bad_request({"error": str(e.args[0])})
+    except PolygonOperationFailedError as e:
+        return Responses.internal({"error": str(e.args[0])})
+    else:
+        return result
 
 
 @router.post("/polygonOperations/intersection")
@@ -256,7 +306,16 @@ def polygon_intersection(
     coord: SiaCoordination = Depends(get_sia_coordination),
 ):
     """Perform intersection operation on exactly 2 polygons."""
-    return coord.polygon_intersection(data)
+    try:
+        result = coord.polygon_intersection(data)
+    except PolygonOperationError as e:
+        return Responses.bad_request({"error": e.message})
+    except PolygonTopologyError as e:
+        return Responses.bad_request({"error": str(e.args[0])})
+    except PolygonOperationFailedError as e:
+        return Responses.internal({"error": str(e.args[0])})
+    else:
+        return result
 
 
 @router.post("/polygonOperations/difference")
@@ -266,7 +325,16 @@ def polygon_difference(
     coord: SiaCoordination = Depends(get_sia_coordination),
 ):
     """Perform difference operation on a selected polygon and a list of modifier polygons."""
-    return coord.polygon_difference(data)
+    try:
+        result = coord.polygon_difference(data)
+    except PolygonOperationError as e:
+        return Responses.bad_request({"error": e.message})
+    except PolygonTopologyError as e:
+        return Responses.bad_request({"error": str(e.args[0])})
+    except PolygonOperationFailedError as e:
+        return Responses.internal({"error": str(e.args[0])})
+    else:
+        return result
 
 
 @router.post("/bboxFromPoints")
@@ -276,4 +344,11 @@ def bbox_from_points(
     coord: SiaCoordination = Depends(get_sia_coordination),
 ):
     """Compute tightest bounding boxes from multiple point sets."""
-    return {"data": coord.bbox_from_points(data)}
+    try:
+        result = coord.bbox_from_points(data)
+    except PolygonOperationError as e:
+        return Responses.bad_request({"error": e.message})
+    except PolygonOperationFailedError as e:
+        return Responses.internal({"error": str(e.args[0])})
+    else:
+        return {"data": result}
