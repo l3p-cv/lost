@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 ### Added
+- Added [AGENTS](./AGENTS.md) for agentic software development
+- Added [AGENTS](./backend/tests/AGENTS.md) domain reference for the golden-snapshot harness
+- Added [AGENTS](./backend/AGENTS.md) scoped instructions for the backend
+- Added [AGENTS](./frontend/AGENTS.md) scoped instructions for the frontend
 
 ## [4.1.0] - 2026-10-02
 ### Added
@@ -15,10 +19,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - sia_specs.py added 4 new specs to this
 - `Dependencies.py` : added annotask resource guards and the inline `may_access_pe` / pipe-manager checks moved out of AnnotasksBusiness as standard-body 403 guards.
 - `backend/lost/README.md` : added documentation of new backend architecture split into Controller,Coordination and Business Layers.
-- Added [AGENTS](./AGENTS.md) for agentic software development
-- Added [AGENTS](./backend/tests/AGENTS.md) domain reference for the golden-snapshot harness
-- Added [AGENTS](./backend/AGENTS.md) scoped instructions for the backend
-- Added [AGENTS](./frontend/AGENTS.md) scoped instructions for the frontend
 ### Fixed
 - `controllers/PipelineEndpoint.py` : Fixed updateArguments/ endpoint which wasn't working in FastAPI to use Request instead of bytes.
 - `comparator.py` : strips the `vary` in headers now. -Starlette CORS behaviour change after rebuild caused tests to fail
@@ -135,6 +135,7 @@ Added `create_jwt_pyjwt()` to LoginManager, PyJWT-based token creation.Same stru
 - `backend/lost/api/group/GroupEndpoint.py`, `backend/lost/api/label/LabelEndpoint.py`, `backend/lost/api/pipeline/PipelineEndpoint.py` : responses updated to `JSONResponse` format matching Flask.
 ### Removed
 - `backend/` : removed all Flask-dependent code at P1.3 cutover — deleted `lost/app.py`, `lost/flaskapp.py`, `lost/wsgi.py`, `lost/wsgi.ini`, `lost/api/api.py` and dropped Flask deps (`flask`, `flask-cors`, `flask-jwt-extended`, `flask-mail`, `flask-pydantic`, `flask-restx`, `flask-sqlalchemy`, `uwsgi`) from `pyproject.toml`, added `redis`, `itsdangerous`, `pyjwt`.
+
 
 ## [4.0.0-alpha] - 2026-08-18
 ### Added
