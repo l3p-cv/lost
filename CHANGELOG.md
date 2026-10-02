@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - sia_specs.py added 4 new specs to this
 - `Dependencies.py` : added annotask resource guards and the inline `may_access_pe` / pipe-manager checks moved out of AnnotasksBusiness as standard-body 403 guards.
 - `backend/lost/README.md` : added documentation of new backend architecture split into Controller,Coordination and Business Layers.
+- Added [AGENTS](./AGENTS.md) for agentic software development
+- Added [AGENTS](./backend/tests/AGENTS.md) domain reference for the golden-snapshot harness
 ### Fixed
 - `controllers/PipelineEndpoint.py` : Fixed updateArguments/ endpoint which wasn't working in FastAPI to use Request instead of bytes.
 - `comparator.py` : strips the `vary` in headers now. -Starlette CORS behaviour change after rebuild caused tests to fail
