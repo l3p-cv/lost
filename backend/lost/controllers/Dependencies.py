@@ -20,6 +20,7 @@ from lost.controllers.data.DataBusiness import DataBusiness
 from lost.controllers.data.DataCoordination import DataCoordination
 from lost.controllers.dataset.DatasetBusiness import DatasetBusiness
 from lost.controllers.dataset.DatasetCoordination import DatasetCoordination
+from lost.controllers.Exceptions import NotAuthorizedError
 from lost.controllers.filebrowser.FileBrowserBusiness import FileBrowserBusiness
 from lost.controllers.filebrowser.FileBrowserCoordination import FileBrowserCoordination
 from lost.controllers.group.GroupBusiness import GroupBusiness
@@ -50,9 +51,8 @@ from lost.db.access import DBMan
 from lost.db.model import User as DBUser
 from lost.db.redis import is_token_revoked
 from lost.db.session import get_db
-from lost.settings import LOST_CONFIG
-from lost.controllers.Exceptions import NotAuthorizedError
 from lost.logic.db_access import UserDbAccess
+from lost.settings import LOST_CONFIG
 
 # Bearer token scheme for Swagger UI "Authorize" button
 oauth2_scheme = HTTPBearer()
@@ -77,12 +77,12 @@ def get_current_user(
         user_id = int(payload.get("sub", 0))
         jti = payload.get("jti")
     except pyjwt.PyJWTError:
-        raise credentials_exception
+        raise credentials_exception from None
 
     # Match Flask's @jwt_required(): protected endpoints accept access tokens only.
     if payload.get("type") != "access":
         raise credentials_exception
-    
+
     if is_token_revoked(jti):
         raise HTTPException(status_code=401, detail="Token has been revoked")
     user = dbm.get_user_by_id(user_id)
