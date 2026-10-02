@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 ### Added
+
+## [4.1.0] - 2026-10-02
+### Added
 - `tests/architecture/test_layering.py` : Added layering guard test (to test the CCB split)
 - `controllers/Dependencies.py` : contains all changes that were previously in `controllers/auth/dependencies.py` (all endpoint layer wiring: `get_current_user`/`require_role`)
 - `controllers/AuthorizationService.py` : resource level authorization util
@@ -127,11 +130,7 @@ Added `create_jwt_pyjwt()` to LoginManager, PyJWT-based token creation.Same stru
 - `backend/lost/logic/email.py` : untangled from Flask — replaced `from lost.flaskapp import app, mail` with jinja2 + smtplib (not yet tested with a real SMTP server).
 - `backend/lost/api/group/GroupEndpoint.py`, `backend/lost/api/label/LabelEndpoint.py`, `backend/lost/api/pipeline/PipelineEndpoint.py` : responses updated to `JSONResponse` format matching Flask.
 ### Removed
-<<<<<<< HEAD
 - `backend/` : removed all Flask-dependent code at P1.3 cutover — deleted `lost/app.py`, `lost/flaskapp.py`, `lost/wsgi.py`, `lost/wsgi.ini`, `lost/api/api.py` and dropped Flask deps (`flask`, `flask-cors`, `flask-jwt-extended`, `flask-mail`, `flask-pydantic`, `flask-restx`, `flask-sqlalchemy`, `uwsgi`) from `pyproject.toml`, added `redis`, `itsdangerous`, `pyjwt`.
-=======
->>>>>>> 58a4cc9faccaa0aeb40b4e0a0d57db334bd0b387
-- `backend/` : removed all Flask-dependent code at P1.3 cutover — deleted `lost/app.py`, `lost/flaskapp.py`, `lost/wsgi.py`, `lost/wsgi.ini`, `lost/api/api.py` and dropped Flask deps (`flask`, `flask-cors`, `flask-jwt-extended`, `flask-mail`, `flask-pydantic`, `flask-restx`, `flask-sqlalchemy`, `uwsgi`) from `pyproject.toml`, added `redis`, `itsdangerous`, `pyjwt`
 
 ## [4.0.0-alpha] - 2026-08-18
 ### Added
