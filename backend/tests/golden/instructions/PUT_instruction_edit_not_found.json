@@ -1,0 +1,22 @@
+{
+  "mode": "exact",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "json": {
+      "id": 999999
+    },
+    "method": "PUT",
+    "path": "/api/instructions/editInstruction"
+  },
+  "response": {
+    "body": {
+      "message": "Instruction not found or is deleted"
+    },
+    "headers": {
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

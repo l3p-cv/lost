@@ -1,6 +1,6 @@
 """SIA namespace request specs for golden-snapshot testing.
 
-Enumerates all 18 SIA routes. 15 are active (recorded + compared);
+Enumerates all 18 SIA routes. 19 are active, 4 new error-paths (recorded + compared);
 3 mutations (PUT, PATCH, finish) are skipped to avoid destructive dev DB changes.
 
 Self-contained: uses ``compare_test_sia`` annotask created by init_test_data.py.
@@ -18,6 +18,8 @@ import pytest
 from tests.helpers.recorder import RequestSpec
 from tests.helpers.specs import RouteSpec
 from tests.compare.migration_status import target_for
+from datetime import datetime
+from tests.helpers.seed import TEST_PREFIX, cleanup_test_user, unique_suffix
 
 _TARGET = target_for("sia")
 
@@ -181,6 +183,43 @@ def _cleanup_revert_choice(dbm, context):
     finally:
         fresh_dbm.close_session()
 
+def _setup_sia_image_id(dbm) -> dict:
+    """Resolve the compare_test_sia image ID (skip if missing) — no annotask choosing needed."""
+    from tests.helpers.lookups import get_test_sia_image_id
+
+    image_id = get_test_sia_image_id(dbm, 0)
+    if image_id is None:
+        return {"skip": True}
+    return {"image_id": image_id, "skip": False}
+
+
+def _setup_roleless_user(dbm) -> dict:
+    """Create a test user with NO roles and mint its token (thumbnail role-quirk spec)."""
+    from lost.controllers.user.login_manager import LoginManager
+    from lost.db.model import Group, User, UserGroups
+
+    user_name = f"{TEST_PREFIX}roleless_{unique_suffix()}"
+    user = User(
+        user_name=user_name,
+        email=f"{user_name}@test.local",
+        email_confirmed_at=datetime.utcnow(),
+        password="test",
+    )
+    dbm.save_obj(user)
+    g = Group(name=user_name, is_user_default=True)
+    dbm.save_obj(g)
+    dbm.save_obj(UserGroups(group_id=g.idx, user_id=user.idx))
+    dbm.commit()
+    lm = LoginManager(dbm, user_name, "")
+    fresh_token, _ = lm.create_jwt_pyjwt(user.idx, user_name, user.roles)
+    return {"fresh_token": fresh_token, "user_obj": user}
+
+
+def _cleanup_roleless_user(dbm, context) -> None:
+    """Delete the role-less test user (idempotent, rollback-first)."""
+    if "user_obj" in context:
+        cleanup_test_user(dbm, context["user_obj"])
+
 
 # ---------------------------------------------------------------------------
 # Specs that need the annotask chosen (use setup/cleanup)
@@ -190,7 +229,7 @@ _NEEDS_CHOSEN = "needs_chosen"
 
 
 def get_sia_specs() -> list[RouteSpec]:
-    """Return all SIA namespace test specs (15 active, 3 skipped)."""
+    """Return all SIA namespace test specs (19 active, 4 skipped)."""
     specs: list[RouteSpec] = []
 
     # --- GETs that need the annotask chosen ---
@@ -372,6 +411,48 @@ def get_sia_specs() -> list[RouteSpec]:
         request=RequestSpec(method="POST", path="/api/sia/finish"),
         skip=True,
         skip_reason="Mutation — finishes annotask (state change), destructive. Verified manually in P1.2.",
+    ))
+
+     # 16. GET /api/sia/image/999999/name → 404 (exact)
+    specs.append(RouteSpec(
+        name="GET_sia_image_name_not_found",
+        request=RequestSpec(method="GET", path="/api/sia/image/999999/name", mode="exact"),
+        target=_TARGET,
+    ))
+
+    # 17. POST /api/sia/polygonOperations/union — single polygon → 400 (exact, pure compute)
+    specs.append(RouteSpec(
+        name="POST_sia_polygon_union_invalid",
+        request=RequestSpec(
+            method="POST", path="/api/sia/polygonOperations/union",
+            json={"annotations": [UNION_PAYLOAD["annotations"][0]]},
+            mode="exact",
+        ),
+        target=_TARGET,
+        # count check fires before per-polygon validation — deterministic message
+    ))
+
+    # 18. POST /api/sia/image/{id}/filters — cannyEdge without thresholds → 400 (exact)
+    specs.append(RouteSpec(
+        name="POST_sia_image_filters_invalid",
+        request=RequestSpec(
+            method="POST", path="/api/sia/image/{image_id}/filters",
+            json={"filters": [{"name": "cannyEdge"}]},
+            mode="exact",
+        ),
+        setup=_setup_sia_image_id,
+        target=_TARGET,
+        # ValueError fires in apply_filters before any processing — deterministic message
+    ))
+
+    # 19. GET /api/sia/image/999999/thumbnail as a role-less user → 403 (exact)
+    specs.append(RouteSpec(
+        name="GET_sia_thumbnail_role_forbidden",
+        request=RequestSpec(method="GET", path="/api/sia/image/999999/thumbnail", mode="exact"),
+        setup=_setup_roleless_user,
+        cleanup=_cleanup_roleless_user,
+        target=_TARGET,
+        # role check fires before any image access — image_id is never touched
     ))
 
     return specs

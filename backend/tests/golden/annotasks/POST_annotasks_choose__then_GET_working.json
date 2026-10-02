@@ -9,11 +9,35 @@
   },
   "response": {
     "body": {
-      "message": "Current working annotation task not found"
+      "created_at": "<TS>",
+      "finished": 1,
+      "group": "admin",
+      "id": "<ID>",
+      "instruction_id": null,
+      "last_activity": "2026-09-21T13:14:29.000Z",
+      "last_annotator": "admin",
+      "locked_img_count": 0,
+      "name": "compare_test_sia",
+      "pipeline_creator": "admin",
+      "pipeline_name": "compare_test_sia_pipe",
+      "progress": "<REDACTED>",
+      "size": 3,
+      "statistic": {
+        "amount_per_label": [
+          {
+            "amount": 2,
+            "color": "#46aed7",
+            "label": "Aeroplane"
+          }
+        ],
+        "seconds_per_anno": "0.00"
+      },
+      "status": "inProgress",
+      "type": "SIA"
     },
     "headers": {
       "content-type": "application/json"
     },
-    "status": 412
+    "status": 200
   }
 }

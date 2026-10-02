@@ -29,7 +29,7 @@ Usage in Flask (optional, replaces per-endpoint boilerplate)::
 
 from __future__ import annotations
 
-from typing import Iterator
+from collections.abc import Iterator
 
 import sqlalchemy
 from sqlalchemy.orm import sessionmaker

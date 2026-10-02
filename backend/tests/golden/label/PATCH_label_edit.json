@@ -9,7 +9,7 @@
       "color": "#00FF00",
       "description": "Edited by golden snapshot test",
       "external_id": "",
-      "id": "1095",
+      "id": "1700",
       "name": "compare_test_edited"
     },
     "method": "PATCH",
@@ -18,8 +18,8 @@
   "response": {
     "body": "success",
     "headers": {
-      "access-control-allow-origin": "*",
-      "content-type": "application/json"
+      "content-type": "application/json",
+      "vary": "Origin"
     },
     "status": 200
   }

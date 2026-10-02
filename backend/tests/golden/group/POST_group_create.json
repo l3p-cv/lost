@@ -5,7 +5,7 @@
       "Authorization": "<AUTH>"
     },
     "json": {
-      "group_name": "compare_test_964cc668"
+      "group_name": "compare_test_ac67d05c"
     },
     "method": "POST",
     "path": "/api/group"
@@ -13,7 +13,6 @@
   "response": {
     "body": "success",
     "headers": {
-      "access-control-allow-origin": "*",
       "content-type": "application/json"
     },
     "status": 200

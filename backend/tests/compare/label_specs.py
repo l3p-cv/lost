@@ -1,6 +1,6 @@
 """Label namespace request specs for golden-snapshot testing.
 
-8 routes: 7 active, 1 skipped.
+11 routes: 10 active, 1 skipped.
 - 3 GETs (tree/all, tree/global, by_id) — use OOTB VOC2012 root leaf (idx=1)
 - POST add label (create test leaf → cleanup delete)
 - PATCH edit label (create in setup → edit via API → cleanup delete)
@@ -15,12 +15,10 @@ POST/PATCH/DELETE create test leaves with compare_test_ prefix.
 
 from __future__ import annotations
 
-import io
-
-from tests.helpers.recorder import RequestSpec
-from tests.helpers.seed import unique_suffix, TEST_PREFIX
-from tests.helpers.specs import RouteSpec
 from tests.compare.migration_status import target_for
+from tests.helpers.recorder import RequestSpec
+from tests.helpers.seed import TEST_PREFIX, unique_suffix
+from tests.helpers.specs import RouteSpec
 
 _TARGET = target_for("label")
 
@@ -29,9 +27,15 @@ OOTB_LABEL_LEAF_ID = 1
 
 # Minimal CSV for label import test — creates a 2-leaf tree under a compare_test_ root
 _TEST_LABEL_CSV = (
+    "idx,name,abbreviation,description,external_id,is_root,parent_leaf_id,color\n"
+    f"1,{TEST_PREFIX}label_tree,,Test label tree for golden snapshots,,True,,#ff0000\n"
+    f"2,{TEST_PREFIX}leaf1,L1,First test leaf,,False,1,#00ff00\n"
+)
+
+# Root name collides with the OOTB VOC2012 tree (always present) → deterministic duplicate
+_DUPLICATE_TREE_CSV = (
     "name,abbreviation,description,external_id,is_root,parent_leaf_id,color\n"
-    f"{TEST_PREFIX}label_tree,,Test label tree for golden snapshots,,True,,#ff0000\n"
-    f"{TEST_PREFIX}leaf1,L1,First test leaf,1,False,,#00ff00\n"
+    "VOC2012,,Duplicate-root tree for golden snapshots,,True,,#ff0000\n"
 )
 
 
@@ -62,7 +66,6 @@ def _cleanup_test_label_db(dbm, context):
     """Delete a test label leaf from the DB (safe if already deleted)."""
     label_id = context.get("label_id")
     if label_id is not None:
-        from lost.db import model
 
         leaf = dbm.get_label_leaf(label_id)
         if leaf:
@@ -193,6 +196,40 @@ def get_label_specs() -> list[RouteSpec]:
         cleanup=_cleanup_imported_label_tree,
     ))
 
+    # 9. POST /api/label/tree/all — non-CSV filename → 400 (exact)
+    specs.append(RouteSpec(
+        name="POST_label_import_not_csv",
+        request=RequestSpec(
+            method="POST", path="/api/label/tree/all",
+            files={"file": ("compare_test_label.txt", b"name,is_root\nVOC2012,True\n", "text/plain")},
+            mode="exact",
+        ),
+        target=_TARGET,
+        # no cleanup — the filename check fires before anything is written
+    ))
+
+    # 10. POST /api/label/tree/all — root name collides with OOTB VOC2012 → 400 (exact)
+    specs.append(RouteSpec(
+        name="POST_label_import_duplicate",
+        request=RequestSpec(
+            method="POST", path="/api/label/tree/all",
+            files={"file": ("compare_test_label.csv", _DUPLICATE_TREE_CSV.encode("utf-8"), "text/csv")},
+            mode="exact",
+        ),
+        target=_TARGET,
+        # no cleanup — create_root bails before any write (fixed OOTB name: deterministic)
+    ))
+
+    # 11. GET /api/label/tree/{bad_visibility} → 403 (exact) — validates the retained
+    #     global-handler fallback path (shared NotAuthorizedError, attrs intact)
+    specs.append(RouteSpec(
+        name="GET_label_tree_bad_visibility",
+        request=RequestSpec(
+            method="GET", path="/api/label/tree/invalid_visibility", mode="exact",
+        ),
+        target=_TARGET,
+    ))
+
     return specs
 
 
@@ -202,6 +239,7 @@ def _cleanup_created_label_by_name(dbm, context):
 
     name = context.get("label_name")
     if name:
+        dbm.session.rollback()  # ensure no pending transactions
         leaf = dbm.session.query(model.LabelLeaf).filter_by(name=name).first()
         if leaf:
             dbm.delete(leaf)

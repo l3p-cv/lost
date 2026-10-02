@@ -1,0 +1,17 @@
+{
+  "mode": "exact",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/user/999999"
+  },
+  "response": {
+    "body": "User with ID '999999' not found.",
+    "headers": {
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

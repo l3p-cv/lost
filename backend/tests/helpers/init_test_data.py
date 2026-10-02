@@ -105,7 +105,7 @@ def _create_sia_test_data(dbm) -> None:
         at = model.AnnoTask(
             name=at_name,
             dtype=dtype.AnnoTask.SIA,
-            state=state.Pipe.IN_PROGRESS,
+            state=state.AnnoTask.IN_PROGRESS,
             group_id=1,
             pipe_element_id=pe.idx,
             configuration=SIA_CONFIG,
@@ -460,7 +460,41 @@ def _enrich_sia_test_data(dbm) -> None:
     elif at.dataset_id == ds.idx if ds else False:
         log.info("Annotask already linked to dataset")
 
+def reset_sia_test_state(dbm) -> int:
+    """Reset compare_test_sia image-state drift so the SIA specs are deterministic.
 
+    get_first/get_next lock images and mark the "last" image labeled as a
+    side effect; interrupted runs leave the drift behind. Restores each
+    image to its seeded state: the two OOTB annotation images →
+    UNLOCKED/unassigned, the enriched review image → LABELED/unassigned.
+
+    Idempotent; runs before every suite via init_test_data().
+    Returns the number of images reset.
+    """
+    at = dbm.session.query(model.AnnoTask).filter_by(name=f"{TEST_PREFIX}sia").first()
+    if at is None:
+        log.warning("SIA test annotask not found — skipping state reset")
+        return 0
+    reset = 0
+    if at.state != state.AnnoTask.IN_PROGRESS:
+        at.state = state.AnnoTask.IN_PROGRESS
+        dbm.add(at)
+    for img in dbm.get_all_image_annos(at.idx):
+        target_state = (
+            state.Anno.LABELED if img.img_path == OOTB_LABELED_IMG_PATH
+            else state.Anno.UNLOCKED
+        )
+        if img.state != target_state or img.user_id is not None or img.timestamp_lock is not None:
+            img.state = target_state
+            img.user_id = None
+            img.timestamp_lock = None
+            dbm.add(img)
+            reset += 1
+    if reset:
+        dbm.commit()
+        log.info("Reset %d drifted compare_test_sia images", reset)
+    return reset
+                 
 def init_test_data() -> None:
     """Create all test prerequisites (idempotent)."""
     dbm = access.DBMan(LOST_CONFIG)
@@ -470,6 +504,7 @@ def init_test_data() -> None:
         _create_dataset_test_data(dbm)
         _create_group_test_data(dbm)
         _enrich_sia_test_data(dbm)
+        reset_sia_test_state(dbm)
         _create_annotask_export_test_data(dbm)
         _create_dataset_export_test_data(dbm)
         _create_inference_model_test_data(dbm)

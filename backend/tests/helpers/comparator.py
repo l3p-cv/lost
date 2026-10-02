@@ -97,6 +97,7 @@ _STRIP_HEADERS = {
     "access-control-allow-credentials",
     "access-control-allow-methods",
     "access-control-allow-headers",
+    "vary",
     "allow",
 }
 

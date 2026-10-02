@@ -5,12 +5,11 @@
       "Authorization": "<AUTH>"
     },
     "method": "DELETE",
-    "path": "/api/group/368"
+    "path": "/api/group/1094"
   },
   "response": {
     "body": "success",
     "headers": {
-      "access-control-allow-origin": "*",
       "content-type": "application/json"
     },
     "status": 200

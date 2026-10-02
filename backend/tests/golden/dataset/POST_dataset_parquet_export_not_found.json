@@ -1,0 +1,18 @@
+{
+  "mode": "exact",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "json": {},
+    "method": "POST",
+    "path": "/api/datasets/export_ds_parquet/999999"
+  },
+  "response": {
+    "body": "Dataset with id 999999 not found",
+    "headers": {
+      "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 404
+  }
+}

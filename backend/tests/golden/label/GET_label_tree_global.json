@@ -519,11 +519,82 @@
         "name": "DummyTree",
         "parent_leaf_id": null,
         "timestamp": "<TS>"
+      },
+      {
+        "abbreviation": null,
+        "children": [],
+        "color": null,
+        "description": null,
+        "external_id": null,
+        "group_id": "<ID>",
+        "idx": "<ID>",
+        "is_deleted": null,
+        "is_root": true,
+        "name": "test_tree",
+        "parent_leaf_id": null,
+        "timestamp": "<TS>"
+      },
+      {
+        "abbreviation": "",
+        "children": [],
+        "color": null,
+        "description": "test",
+        "external_id": "",
+        "group_id": "<ID>",
+        "idx": "<ID>",
+        "is_deleted": null,
+        "is_root": true,
+        "name": "Test_new_global",
+        "parent_leaf_id": null,
+        "timestamp": "<TS>"
+      },
+      {
+        "abbreviation": "",
+        "children": [
+          {
+            "abbreviation": "",
+            "children": [],
+            "color": "#96de12",
+            "description": "",
+            "external_id": "",
+            "group_id": "<ID>",
+            "idx": "<ID>",
+            "is_deleted": null,
+            "is_root": false,
+            "name": "new child",
+            "parent_leaf_id": 1364,
+            "timestamp": "<TS>"
+          }
+        ],
+        "color": null,
+        "description": "add",
+        "external_id": "",
+        "group_id": "<ID>",
+        "idx": "<ID>",
+        "is_deleted": null,
+        "is_root": true,
+        "name": "test_add_global",
+        "parent_leaf_id": null,
+        "timestamp": "<TS>"
+      },
+      {
+        "abbreviation": "",
+        "children": [],
+        "color": null,
+        "description": "test",
+        "external_id": "",
+        "group_id": "<ID>",
+        "idx": "<ID>",
+        "is_deleted": null,
+        "is_root": true,
+        "name": "test new global 1",
+        "parent_leaf_id": null,
+        "timestamp": "<TS>"
       }
     ],
     "headers": {
-      "access-control-allow-origin": "*",
-      "content-type": "application/json"
+      "content-type": "application/json",
+      "vary": "Origin"
     },
     "status": 200
   }

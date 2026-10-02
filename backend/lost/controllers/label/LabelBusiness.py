@@ -1,0 +1,524 @@
+"""Label business layer — LabelTree domain logic (moved from lost/logic/label.py in Pass 2).
+
+D2-pure: module domain errors are PLAIN signals (no HTTP vocabulary) —
+LabelEndpoint catches them and builds the legacy responses via Responses.
+Visibility failures still raise the shared NotAuthorizedError, which the
+retained global handler maps.
+"""
+import hashlib
+import logging
+from io import BytesIO
+
+import numpy as np
+import pandas as pd
+from skimage import color as skcolor
+
+from lost.controllers.AuthorizationService import AuthorizationService
+from lost.controllers.Exceptions import DomainError, NotAuthorizedError
+from lost.db import model
+from lost.db.vis_level import VisLevel
+
+logger = logging.getLogger("lost.controllers.label")
+
+__author__ = "Jonas Jaeger"
+
+DEFAULT_LABEL_COLORS = [
+    "#FF6B6B",
+    "#4ECDC4",
+    "#FFA94D",
+    "#845EF7",
+    "#69DB7C",
+    "#F06595",
+    "#FFD43B",
+]
+
+class LabelTree:
+    """A class that represants a LabelTree.
+
+    Args:
+        dbm (:class:`lost.db.access.DBMan`): Database manager object.
+        root_id (int): label_leaf_id of the root Leaf.
+        root_leaf (:class:`lost.db.model.LabelLeaf`): Root leaf of the tree.
+        name (str): Name of a label tree.
+        logger (logger): A logger.
+        group_id (int): Id of the group where the LabelTree belongs to.
+    """
+
+    def __init__(self, dbm, root_id=None, root_leaf=None, name=None, logger=None, group_id=None):
+        self.dbm = dbm  # type: lost.db.access.DBMan
+        self.root = None  # type: lost.db.model.LabelLeaf
+        self.group_id = group_id
+        self.tree = {}
+        if logger is None:
+            import logging
+
+            self.logger = logging
+        else:
+            self.logger = logger
+        if root_leaf is not None:
+            self.root = root_leaf
+            self.__collect_tree(self.root, self.tree)
+        elif root_id is not None:
+            self.root = self.dbm.get_label_leaf(root_id)
+            self.__collect_tree(self.root, self.tree)
+        elif name is not None:
+            if group_id is None:
+                root_list = self.dbm.get_all_label_trees(global_only=True)
+            else:
+                root_list = self.dbm.get_all_label_trees(group_id=group_id, add_global=True)
+            for leaf in root_list:
+                print(leaf.name)
+            root = next(filter(lambda x: x.name == name, root_list), None)
+            if root is None:
+                raise Exception(f'LabelTree with name "{name}" not found in database!')
+            else:
+                self.root = root
+                self.__collect_tree(self.root, self.tree)
+
+    def __collect_tree(self, label_leaf, leaf_map):
+        """Collect all LabelLeafs from Tree or Subtree
+
+        Args:
+            label_leaf (:class:`lost.db.model.LabelLeaf`): The leaf to start leaf collection.
+            leaf_map (dict): Dictionary that maps leaf ids to LabelLeaf objects
+                {leaf_id : LabelLeaf}
+        """
+        leaf_map[label_leaf.idx] = label_leaf
+        for ll in label_leaf.label_leaves:
+            self.__collect_tree(ll, leaf_map)
+
+    def delete_subtree(self, leaf):
+        """Recursive delete all leafs in subtree starting with leaf
+
+        Args:
+            leaf (:class:`lost.db.model.LabelLeaf`): Delete all childs
+                of this leaf. The leaf itself stays.
+        """
+        for ll in leaf.label_leaves:
+            self.delete_subtree(ll)
+            self.logger.info(f"Deleting label leaf: {ll.name}")
+            self.dbm.delete(ll)
+
+    def delete_tree(self):
+        """Delete whole tree from system"""
+        self.delete_subtree(self.root)
+        self.dbm.delete(self.root)
+        self.dbm.commit()
+
+    def create_root(self, name, external_id=None):
+        """Create the root of a label tree.
+
+        Args:
+            name (str): Name of the root leaf.
+            external_id (str): Some id of an external label system.
+
+        Retruns:
+            :class:`lost.db.model.LabelLeaf` or None:
+                The created root leaf or None if a root leaf with same
+                name is already present in database.
+        """
+        root_leafs = self.dbm.get_all_label_trees(global_only=True)
+        if root_leafs is not None:
+            for leaf in root_leafs:
+                if name == leaf.name:
+                    return None
+        self.root = model.LabelLeaf(name=name, external_id=external_id, is_root=True)
+        self.dbm.add(self.root)
+        self.dbm.commit()
+        self.tree[self.root.idx] = self.root
+        self.logger.info(f"Created root leaf: {name}")
+        return self.root
+
+    def create_child(self, parent_id, name, external_id=None):
+        """Create a new leaf in label tree.
+
+        Args:
+            parent_id (int): Id of the parend leaf.
+            name (str): Name of the leaf e.g the class name.
+            external_id (str): Some id of an external label system.
+
+        Retruns:
+            :class:`lost.db.model.LabelLeaf`: The the created child leaf.
+        """
+        leaf = model.LabelLeaf(name=name, external_id=external_id, parent_leaf_id=parent_id)
+        self.dbm.add(leaf)
+        self.dbm.commit()
+        self.tree[leaf.idx] = leaf
+        self.logger.info(f"Created child leaf: {name}")
+        return leaf
+
+
+    def _reset_import_color_state(self):
+        """Reset per-import color assignment state. Call at the start of each import."""
+        self._colors = {}
+        self._used = []
+        self._default_rgb = [
+            np.array([int(c[i:i+2], 16) / 255 for i in (1, 3, 5)])
+            for c in DEFAULT_LABEL_COLORS
+        ]
+
+    def assign_import_color(self, label_id):
+        if not hasattr(self, "_colors"):
+            self._reset_import_color_state()
+
+        if label_id in self._colors:
+            return self._colors[label_id]
+
+        # deterministic seed per label ID
+        h = hashlib.md5(str(label_id).encode()).digest()  # noqa: S324
+        seed = int.from_bytes(h[:4], "big")
+        rng = np.random.default_rng(seed)
+
+        best_rgb = None
+        best_score = -1
+
+        # combine already used + default palette (avoid both)
+        ref_colors = self._used + self._default_rgb
+
+        for _ in range(40):
+            # sample in Lab space (better perceptual control)
+            lab = np.array([
+                rng.uniform(55, 85),     # lightness (avoid extremes)
+                rng.uniform(-60, 60),    # a axis
+                rng.uniform(-60, 60)     # b axis
+            ])
+
+            rgb = skcolor.lab2rgb(lab.reshape(1, 1, 3))[0][0]
+            rgb = np.clip(rgb, 0, 1)
+
+            # perceptual separation score (simple but effective)
+            min_dist = min(np.linalg.norm(rgb - c) for c in ref_colors) if ref_colors else 999
+
+            # maximize distance from ALL existing + default colors
+            if min_dist > best_score:
+                best_score = min_dist
+                best_rgb = rgb
+
+        self._used.append(best_rgb)
+
+        hex_color = "#{:02x}{:02x}{:02x}".format(*(best_rgb * 255).astype(int))
+        self._colors[label_id] = hex_color
+
+        return hex_color
+
+    def get_child_vec(self, parent_id, columns="idx"):
+        """Get a vector of child labels.
+
+        Args:
+            parent_id (int): Id of the parent leaf.
+            columns (str or list of str): Can be any attribute of :class:`lost.db.model.LabelLeaf`
+                for example 'idx', 'external_idx', 'name' or a list of these e.g.
+                ['name', 'idx']
+
+        Example:
+            >>> label_tree.get_child_vec(1, columns='idx')
+            [2, 3, 4]
+
+            >>> label_tree.get_child_vec(1, columns=['idx', 'name'])
+            [
+                [2, 'cow'],
+                [3, 'horse'],
+                [4, 'person']
+            ]
+
+        Returns:
+            list in the requested columns:
+        """
+        parent = self.tree[parent_id]  # type: lost.db.model.LabelLeaf
+        df_list = []
+        for ll in parent.label_leaves:
+            df_list.append(ll.to_df()[columns])
+        df = pd.concat(df_list)
+        return df.values.tolist()
+
+    def to_df(self):
+        """Transform this LabelTree to a pandas DataFrame.
+
+        Returns:
+            pandas.DataFrame
+        """
+        df_list = []
+        for _leaf_id, leaf in self.tree.items():
+            df_list.append(leaf.to_df())
+        df = pd.concat(df_list)
+        return df.reset_index().drop(columns=["index"])
+
+    # def to_list(self):
+    #     leaves = list()
+    #     for leaf_id, leaf in self.tree.items():
+    #         leaves.append(leaf.to_dict())
+    #     return leaves
+
+    def __collect_dict_tree(self, label_leaf, t_dict):
+        t_dict["children"] = []
+        for ll in label_leaf.label_leaves:
+            ll_dict = ll.to_dict()
+            t_dict["children"].append(ll_dict)
+            self.__collect_dict_tree(ll, ll_dict)
+
+    def to_hierarchical_dict(self):
+        my_dict = self.root.to_dict()
+        self.__collect_dict_tree(self.root, my_dict)
+        return my_dict
+
+    def _df_row_to_leaf(self, row, leaf):
+        """Transfrom LabelLeaf in row style to a LabelLeaf object.
+
+        Args:
+            row (pandas.Series): A LabelLeaf in row style.
+
+        Returns:
+            :class:`lost.db.model.LabelLeaf`:
+                The transformed row.
+        """
+        try:
+            leaf.abbreviation = row["abbreviation"] if pd.notna(row["abbreviation"]) else ""
+            self.logger.info(f"\tabbreviation: {leaf.abbreviation}")
+        except KeyError:
+            self.logger.info("\tNo abbreviation provided.")
+
+        try:
+            leaf.description = row["description"] if pd.notna(row["description"]) else ""
+            self.logger.info(f"\tdescription: {leaf.description}")
+        except KeyError:
+            self.logger.info("\tNo description provided.")
+
+        try:
+            leaf.timestamp = row["timestamp"] if pd.notna(row["timestamp"]) else None
+            self.logger.info(f"\ttimestamp: {leaf.timestamp}")
+        except KeyError:
+            self.logger.info("\tNo timestamp provided.")
+
+        try:
+            leaf.external_id = int(row["external_id"]) if pd.notna(row["external_id"]) else None
+            self.logger.info(f"\texternal_id: {leaf.external_id}")
+        except KeyError:
+            self.logger.info("\tNo external_id provided.")
+
+        try:
+            leaf.is_deleted = bool(row["is_deleted"]) if pd.notna(row["is_deleted"]) else False
+            self.logger.info(f"\tis_deleted: {leaf.is_deleted}")
+        except KeyError:
+            self.logger.info("\tNo is_deleted provided.")
+
+        try:
+            raw_color = row.get("color", None)
+
+            invalid_colors = ["", "none", "#ffffff", "#46aed7"]
+
+            if pd.isna(raw_color) or str(raw_color).strip().lower() in invalid_colors:
+                name = row.get("name", None)
+                if name:
+                    leaf.color = self.assign_import_color(leaf.idx)
+                else:
+                    leaf.color = DEFAULT_LABEL_COLORS[0]
+            else:
+                leaf.color = raw_color
+
+            self.logger.info(f"\tcolor: {leaf.color}")
+        except KeyError:
+            self.logger.info("\tNo color provided.")
+
+        leaf.group_id = self.group_id
+
+    def __create_childs_from_df(self, child_dict, parent, parent_row):
+        """Create child leafs from a df.
+
+        Args:
+            child_dict (dict): A dictionary that maps parent_ids from DataFrame
+                to child rows from DataFrame.
+            parent (:class:`lost.db.model.LabelLeaf`): A parent LabelLeaf
+                that was already imported.
+            parent_row (pandas.Series): A row from the DataFrame to import.
+        """
+        if parent_row["idx"] not in child_dict:
+            return
+        for child_row in child_dict[parent_row["idx"]]:
+            child = self.create_child(parent.idx, child_row["name"])
+            self._df_row_to_leaf(child_row, child)
+            self.__create_childs_from_df(child_dict, child, child_row)
+
+    def import_df(self, df):
+        """Import LabelTree from DataFrame
+
+        Args:
+            df (pandas.DataFrame): LabelTree in DataFrame style.
+
+        Retruns:
+            :class:`lost.db.model.LabelLeaf` or None:
+                The created root leaf or None if a root leaf with same
+                name is already present in database.
+        """
+        # Reset color assignment state so each import starts with a clean palette
+        self._reset_import_color_state()
+        df = df.where((pd.notnull(df)), None)
+        root = df[df["parent_leaf_id"].isnull()]
+        no_root = df[~df["parent_leaf_id"].isnull()]
+        childs = {}
+
+        if len(root) != 1:
+            raise ValueError(f"""Can not import. There needs
+                to be exactly one root leaf for that tree!
+                Found: \n{root}""")
+        else:
+            try:
+                root_leaf = self.create_root(root["name"].values[0])
+                if root_leaf is None:
+                    return None  # A tree with the same name already exists.
+                self._df_row_to_leaf(root.loc[0], root_leaf)
+
+                # Create child dict
+                for _index, row in no_root.iterrows():
+                    if row["parent_leaf_id"] not in childs:
+                        childs[row["parent_leaf_id"]] = []
+                    childs[row["parent_leaf_id"]].append(row)
+
+                self.__create_childs_from_df(childs, root_leaf, root.loc[0])
+                self.dbm.commit()
+            except KeyError:
+                self.logger.exception("""At least the following columns
+                    need to be provided: *idx*, *name*, *parent_leaf_id*""")
+                raise
+            else:
+                return root_leaf
+
+class DuplicateLabelTreeError(DomainError):
+    """A label tree with the same root name already exists in the database."""
+
+
+class InvalidLabelUploadError(DomainError):
+    """The uploaded file is not a CSV."""
+
+
+class LabelBusiness:
+    """Label business service — specific label logic + shared utils.
+
+    Holds the module-specific logic (visibility scoping, CRUD, import/export,
+    API data mapping) and calls commonly-used utilities: the shared
+    AuthorizationService for resource-level checks and the LabelTree domain
+    object (also imported directly by pyapi / cli / initlost).
+    """
+
+    def __init__(self, dbm, authz: AuthorizationService) -> None:
+        self.dbm = dbm
+        self._authz = authz
+
+    # --- trees: listing / import / export ---
+
+    def list_trees(self, user, visibility: str) -> list[dict]:
+        """Hierarchical label-tree dicts for a visibility level.
+
+        Raises:
+            NotAuthorizedError: unknown visibility, or non-admin global access.
+        """
+        default_group = self._authz.default_group(self.dbm, user)
+        if visibility == VisLevel.USER:
+            root_leaves = self.dbm.get_all_label_trees(group_id=default_group.idx)
+        elif visibility == VisLevel.GLOBAL:
+            self._authz.assert_global_manage(user)
+            root_leaves = self.dbm.get_all_label_trees(global_only=True)
+        elif visibility == VisLevel.ALL:
+            root_leaves = self.dbm.get_all_label_trees(group_id=default_group.idx, add_global=True)
+        else:
+            raise NotAuthorizedError(f"unknown visibility level: {visibility}")
+        return [LabelTree(self.dbm, root_leaf.idx).to_hierarchical_dict() for root_leaf in root_leaves]
+
+    def import_tree(self, user, visibility: str, filename: str | None, csv_bytes: bytes):
+        """Import a label tree from CSV.
+
+        Raises:
+            InvalidLabelUploadError: the file is not a .csv.
+            NotAuthorizedError: unknown visibility, or non-admin global access.
+            DuplicateLabelTreeError: a tree with the same root name exists.
+        """
+        if not filename or not filename.endswith(".csv"):
+            raise InvalidLabelUploadError("not a CSV file")
+        default_group = self._authz.default_group(self.dbm, user)
+        if visibility == VisLevel.ALL:
+            group_id = default_group.idx
+        elif visibility == VisLevel.GLOBAL:
+            self._authz.assert_global_manage(user)
+            group_id = None
+        else:
+            raise NotAuthorizedError(f"unknown visibility level: {visibility}")
+        df = pd.read_csv(BytesIO(csv_bytes))
+        root = LabelTree(self.dbm, logger=logger, group_id=group_id).import_df(df)
+        if root is None:
+            raise DuplicateLabelTreeError("tree already present")
+        return root
+
+    def export_csv(self, root_id: int) -> tuple[bytes, str]:
+        """Export the tree rooted at *root_id* as ``(csv_bytes, root_name)``."""
+        label_tree = LabelTree(self.dbm, root_id=root_id)
+        ldf = label_tree.to_df()
+        f = BytesIO()
+        ldf.to_csv(f)
+        f.seek(0)
+        return f.read(), label_tree.root.name
+
+    # --- leaf CRUD ---
+
+    def get_leaf_dict(self, label_leaf_id: int) -> dict:
+        """API dict for one label leaf (Flask restx marshal parity)."""
+        return self.leaf_to_api_dict(self.dbm.get_label_leaf(label_leaf_id))
+
+    def delete_leaf(self, label_leaf_id: int) -> None:
+        label = self.dbm.get_label_leaf(label_leaf_id)
+        self.dbm.delete(label)
+        self.dbm.commit()
+
+    def update_leaf(self, label_id, name, description, abbreviation, external_id, color) -> None:
+        label = self.dbm.get_label_leaf(label_id)
+        label.name = name
+        label.description = description
+        label.abbreviation = abbreviation
+        label.external_id = external_id
+        label.color = color
+        self.dbm.save_obj(label)
+
+    def create_leaf(self, user, visibility: str, req) -> int:
+        """Create a label leaf and return its idx.
+
+        Raises:
+            NotAuthorizedError: unknown visibility, or non-admin global access.
+        """
+        default_group = self._authz.default_group(self.dbm, user)
+        if visibility == VisLevel.ALL:
+            group_id = default_group.idx
+        elif visibility == VisLevel.GLOBAL:
+            self._authz.assert_global_manage(user)
+            group_id = None
+        else:
+            raise NotAuthorizedError(f"unknown visibility level: {visibility}")
+        label = model.LabelLeaf(
+            name=req.name, abbreviation=req.abbreviation, description=req.description,
+            external_id=req.external_id, is_root=req.is_root, color=req.color,
+            group_id=group_id,
+        )
+        if req.parent_leaf_id:
+            label.parent_leaf_id = req.parent_leaf_id
+        self.dbm.save_obj(label)
+        return label.idx
+
+    @staticmethod
+    def leaf_to_api_dict(leaf) -> dict:
+        """LabelLeaf ORM -> dict matching Flask restx marshal_with output.
+
+        LabelLeaf has group_id but no 'group' relationship — Flask restx
+        outputs {"idx": null, "name": null} for the missing nested model.
+        """
+        if leaf is None:
+            return {"id": None, "name": None, "description": None, "abbreviation": None,
+                    "leaf_id": None, "group": {"idx": None, "name": None},
+                    "is_root": None, "color": None, "label": None}
+        return {
+            "id": leaf.idx,
+            "name": leaf.name,
+            "description": leaf.description,
+            "abbreviation": leaf.abbreviation,
+            "leaf_id": leaf.external_id if leaf.external_id else None,
+            "group": {"idx": None, "name": None},
+            "is_root": leaf.is_root,
+            "color": leaf.color,
+            "label": None,
+        }

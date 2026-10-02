@@ -1,0 +1,24 @@
+{
+  "mode": "exact",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "json": {
+      "connection": "{}",
+      "fsType": "file",
+      "name": "compare_test_local_fs",
+      "rootPath": "/tmp",
+      "visLevel": "user"
+    },
+    "method": "POST",
+    "path": "/api/fb/savefs"
+  },
+  "response": {
+    "body": "Access to the local file system can only be performed by administrators.",
+    "headers": {
+      "content-type": "application/json"
+    },
+    "status": 401
+  }
+}

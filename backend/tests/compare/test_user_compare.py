@@ -80,6 +80,7 @@ def _run_spec(client, auth_headers, dbm, spec: RouteSpec, record: bool):
 
             # For POST create, we need the created user's ID from the DB
             if spec.name == "POST_user_create":
+                dbm.session.rollback() # this's for fresh lookup
                 created = dbm.find_user_by_user_name(context.get("user_name"))
                 if created:
                     context["user_id"] = created.idx

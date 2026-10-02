@@ -132,6 +132,48 @@ def get_instruction_specs() -> list[RouteSpec]:
         target=_TARGET,
     ))
 
+    # 5. GET /api/instructions/getInstructions/invalid_visibility → 200 message (exact)
+    specs.append(RouteSpec(
+        name="GET_instructions_invalid_visibility",
+        request=RequestSpec(
+            method="GET", path="/api/instructions/getInstructions/invalid_visibility",
+            mode="exact",
+        ),
+        target=_TARGET,
+    ))
+
+    # 6. PUT /api/instructions/editInstruction — nonexistent ID → 200 message (exact)
+    specs.append(RouteSpec(
+        name="PUT_instruction_edit_not_found",
+        request=RequestSpec(
+            method="PUT", path="/api/instructions/editInstruction",
+            json={"id": 999999}, mode="exact",
+        ),
+        target=_TARGET,
+        # no cleanup — nothing is written
+    ))
+
+    # 7. DELETE /api/instructions/deleteInstruction/999999 → 200 message (exact)
+    specs.append(RouteSpec(
+        name="DELETE_instruction_not_found",
+        request=RequestSpec(
+            method="DELETE", path="/api/instructions/deleteInstruction/999999",
+            mode="exact",
+        ),
+        target=_TARGET,
+        # no cleanup — nothing is written
+    ))
+
+    # 8. PUT /api/instructions/editInstruction — id=0 → 200 "ID is required" (exact)
+    specs.append(RouteSpec(
+        name="PUT_instruction_edit_id_zero",
+        request=RequestSpec(
+            method="PUT", path="/api/instructions/editInstruction",
+            json={"id": 0}, mode="exact",
+        ),
+        target=_TARGET,
+    ))
+    
     return specs
 
 

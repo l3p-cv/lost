@@ -1,0 +1,22 @@
+{
+  "mode": "exact",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "params": {
+      "path": "/home/lost/data/instruction_media/no_such_file.png"
+    },
+    "path": "/api/media/media-file"
+  },
+  "response": {
+    "body": {
+      "message": "Forbidden: Invalid path"
+    },
+    "headers": {
+      "content-type": "application/json"
+    },
+    "status": 403
+  }
+}

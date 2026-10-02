@@ -1,0 +1,20 @@
+{
+  "mode": "exact",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "POST",
+    "path": "/api/label/tree/all"
+  },
+  "response": {
+    "body": {
+      "error": "LabelTree already present in database!"
+    },
+    "headers": {
+      "content-type": "application/json",
+      "vary": "Origin"
+    },
+    "status": 400
+  }
+}

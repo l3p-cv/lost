@@ -1,0 +1,19 @@
+{
+  "mode": "exact",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/user/self"
+  },
+  "response": {
+    "body": {
+      "message": "Could not validate credentials"
+    },
+    "headers": {
+      "content-type": "application/json"
+    },
+    "status": 401
+  }
+}

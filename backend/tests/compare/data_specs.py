@@ -63,6 +63,20 @@ def get_data_specs() -> list[RouteSpec]:
         skip_reason="0 data exports in dev DB — would 404. Verified manually in P1.2.",
     ))
 
+    # 4. GET /api/data/image/1?type=invalid_type → 422 text/plain (exact)
+    specs.append(RouteSpec(
+        name="GET_data_image_unknown_type",
+        request=RequestSpec(
+            method="GET",
+            path="/api/data/image/1",
+            params={"type": "invalid_type"},
+            mode="exact",
+        ),
+        target=_TARGET,
+        # no setup/cleanup — the type check fires before the image is loaded,
+        # so image_id is never touched (any value works)
+    ))
+
     return specs
 
 

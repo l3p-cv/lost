@@ -397,3 +397,21 @@ Additional notes:
   hard-fail post-cutover. Always pass `target=_TARGET` in new specs.
 - The `--record` flow is capture → save → compare in one step, so a broken recording
   fails immediately instead of landing in `golden/`.
+
+## Harness rules (hard-won — obey all)
+
+1. **Repeatable-read trap** — any by-name/by-ID lookup through the session-scoped
+   `dbm` after an API commit needs `dbm.session.rollback()` first (already applied
+   in the runners and cleanup helpers — sweep for new ones per module).
+2. **Exact-mode specs** — fixed names + hardcoded nonexistent IDs (`999999`) only;
+   never `unique_suffix()` in exact bodies (structural mode ignores values).
+3. **Never re-record to silence a failure** — root-cause first. Documented cases:
+   statistics state-drift (now permanently skipped), TemplatesSchema shape
+   regression, annotasks drift, the label-import fixture 500, the pipeline
+   function-object typo.
+4. **Stateful specs** — `reset_sia_test_state()`; `GET_annotasks_working` uses a
+   deterministic choose+revert; non-admin identities use the runner's
+   `fresh_token` mechanism (user, filebrowser, sia, pipeline, annotasks).
+5. **Error-path conventions (D2)** — exact mode, no setup/cleanup (errors fire
+   before any write), record only NEW specs via `-k`; never re-record a namespace.
+6. **Ruff** — config is `fix = false`; always `ruff check --no-fix`.

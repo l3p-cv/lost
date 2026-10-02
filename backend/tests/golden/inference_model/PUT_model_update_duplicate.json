@@ -1,0 +1,34 @@
+{
+  "mode": "exact",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "json": {
+      "description": "duplicate spec body",
+      "displayName": "compare_test_Dummy YOLO",
+      "modelType": "YOLO",
+      "name": "compare_test_model_dup",
+      "serverUrl": "localhost:8001",
+      "taskType": 0
+    },
+    "method": "PUT",
+    "path": "/api/models/52"
+  },
+  "response": {
+    "body": {
+      "description": "duplicate spec body",
+      "displayName": "compare_test_Dummy YOLO",
+      "id": "<ID>",
+      "lastUpdated": "<TS>",
+      "modelType": "YOLO",
+      "name": "compare_test_model_dup",
+      "serverUrl": "localhost:8001",
+      "taskType": 0
+    },
+    "headers": {
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

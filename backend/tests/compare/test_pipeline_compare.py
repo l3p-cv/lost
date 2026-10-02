@@ -53,7 +53,10 @@ def _run_pipeline_spec(client, auth_headers, dbm, spec: RouteSpec, record: bool)
         req = spec.request
         path = _substitute(req.path, context)
         json_body = _substitute(req.json, context)
-        headers = {**auth_headers, **req.headers}
+        if "fresh_token" in context:
+            headers = {"Authorization": f"Bearer {context['fresh_token']}", **req.headers}
+        else:
+            headers = {**auth_headers, **req.headers}
 
         live_spec = RequestSpec(
             method=req.method, path=path, headers=headers,

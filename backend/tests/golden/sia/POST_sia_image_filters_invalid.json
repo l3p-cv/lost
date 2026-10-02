@@ -1,0 +1,26 @@
+{
+  "mode": "exact",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "json": {
+      "filters": [
+        {
+          "name": "cannyEdge"
+        }
+      ]
+    },
+    "method": "POST",
+    "path": "/api/sia/image/2616/filters"
+  },
+  "response": {
+    "body": {
+      "error": "Both lowerThreshold and upperThreshold are required for cannyEdge filter"
+    },
+    "headers": {
+      "content-type": "application/json"
+    },
+    "status": 400
+  }
+}

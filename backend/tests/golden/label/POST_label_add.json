@@ -10,7 +10,7 @@
       "description": "Test label for golden snapshots",
       "external_id": "",
       "is_root": false,
-      "name": "compare_test_aa58ccc9",
+      "name": "compare_test_41c4ea41",
       "parent_leaf_id": 1
     },
     "method": "POST",
@@ -18,12 +18,12 @@
   },
   "response": {
     "body": {
-      "labelId": 1094,
+      "labelId": 1699,
       "message": "Label added successfully"
     },
     "headers": {
-      "access-control-allow-origin": "*",
-      "content-type": "application/json"
+      "content-type": "application/json",
+      "vary": "Origin"
     },
     "status": 200
   }

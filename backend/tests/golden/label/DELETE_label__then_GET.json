@@ -5,7 +5,7 @@
       "Authorization": "<AUTH>"
     },
     "method": "GET",
-    "path": "/api/label/1096"
+    "path": "/api/label/1701"
   },
   "response": {
     "body": {
@@ -23,8 +23,8 @@
       "name": null
     },
     "headers": {
-      "access-control-allow-origin": "*",
-      "content-type": "application/json"
+      "content-type": "application/json",
+      "vary": "Origin"
     },
     "status": 200
   }

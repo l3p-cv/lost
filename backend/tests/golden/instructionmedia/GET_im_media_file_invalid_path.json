@@ -1,0 +1,22 @@
+{
+  "mode": "exact",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "params": {
+      "path": "/definitely/not/in/fs/x.png"
+    },
+    "path": "/api/media/media-file"
+  },
+  "response": {
+    "body": {
+      "message": "Forbidden: Invalid path"
+    },
+    "headers": {
+      "content-type": "application/json"
+    },
+    "status": 403
+  }
+}

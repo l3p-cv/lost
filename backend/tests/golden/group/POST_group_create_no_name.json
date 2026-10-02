@@ -1,0 +1,20 @@
+{
+  "mode": "exact",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "json": {
+      "group_name": ""
+    },
+    "method": "POST",
+    "path": "/api/group"
+  },
+  "response": {
+    "body": "A group name is required.",
+    "headers": {
+      "content-type": "application/json"
+    },
+    "status": 400
+  }
+}

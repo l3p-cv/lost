@@ -1,0 +1,22 @@
+{
+  "mode": "exact",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "json": {
+      "groupId": 1
+    },
+    "method": "PATCH",
+    "path": "/api/annotasks/179/group"
+  },
+  "response": {
+    "body": {
+      "message": "You are not authorized."
+    },
+    "headers": {
+      "content-type": "application/json"
+    },
+    "status": 403
+  }
+}

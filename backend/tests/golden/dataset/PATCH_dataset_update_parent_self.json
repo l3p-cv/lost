@@ -1,0 +1,23 @@
+{
+  "mode": "exact",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "json": {
+      "description": "parent-self error spec",
+      "id": 469,
+      "name": "compare_test_parent_self",
+      "parentDatasetId": 469
+    },
+    "method": "PATCH",
+    "path": "/api/datasets"
+  },
+  "response": {
+    "body": "Dataset can't have itself as its parent",
+    "headers": {
+      "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 400
+  }
+}
