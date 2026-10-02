@@ -6,6 +6,65 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 ### Added
+- `tests/architecture/test_layering.py` : Added layering guard test (to test the CCB split)
+- `controllers/Dependencies.py` : contains all changes that were previously in `controllers/auth/dependecies.py` (all endpoint layer wiring: `get_current_user`/`require_role`)
+- `controllers/AuthorizationService.py` : resource level authorization util
+- sia_specs.py added 4 new specs to this
+- `Dependencies.py` : added annotask resource gaurds and the inline `may_access_pe` / pipe-manager checks moved out of AnnotasksBusiness as standard-body 403 guards.
+- `backend/lost/README.md` : added documentation of new backend architecture split into Controller,Coordination and Business Layers.
+### Fixed
+- `controllers/PipelineEndpoint.py` : Fixed updateArguments/ endpoint which wasn't working in FastAPI to use Request instead of bytes.
+- `comparator.py` : strips `vary` in headers now. -Starlette CORS behaviour change after rebuild caused tests to fail
+- `label_specs.py` : fixed malformed label-import CSV fixture (missing idx column) the import spec had silently recorded 500s.
+- `statistics_specs.py` : skipped the personal stats endpoint test as it changes frequently.
+- the long_lived_user to long_lived_token.
+- fixed coordination layer of dataset module `delete_dataset_export` to use delete_dataset instead of delete_export. 
+### Changed
+- `backend/lost/` : renamed package from `lost/api` to `lost/controllers/` as prep for th phase 2 CCB split (only rename , no functional changes).Refactored and updated the imports from `lost.api` to `lost.controllers`.
+- `backend/lost/controllers/auth/` : normalized the auth business layer to the Phase 2 CCB naming convention style (moved from `openid_service.py` to `OpenidBusiness.py` and updated all importers).
+- `LabelCoordination` reduced to thin per-route delegation (OpenidCoordination style)
+- visibility scoping and domain logic moved into `LabelBusiness` (calls the shared `AuthorizationService` util)
+- `LabelEndpoint` reduced to declarative one-liner handlers with coordination service injected via Dependencies.py
+- `Exceptions` changed to use a DomainError (base class for exceptions) and is mapped by global handlers registered in `fastapi_app.py`
+- `backend/lost/controllers/group/` :  split group module to the v3 CCB pattern: new `GroupBusiness.py` (group CRUD + self-describing `DomainError`s for name-required/duplicate/not-found, including the instance-level `http_body` override for interpolated legacy bodies), thin `GroupCoordination.py`, declarative `GroupEndpoint.py` wired via `get_group_coordination` in `Dependencies.py`.
+- `controllers/worker/` : split worker module to CCB pattern (`WorkerEndpoint.py`,`WorkerCoordination.py`,`WorkerBusiness.py`)
+-  `controllers/config/` and `controllers/statistics/` : split config and statistics to CCB split pattern.
+- `controllers/instructions/` : split InstructionEndpoint into Endpoint, Coordination and Business pattern.
+- `controllers/instructionmedia/` : split into three layers Endpoint, Coordination and Business.
+- `controllers/data/` : split data into 3 layers endpoint, business and coordination.
+- `controllers/inference_model` : split data into 3 layers CCB pattern.
+- `controllers/user` : split UserEndpoint into 3 layers CCB pattern.
+- `controllers/filebrwoser` : split FileBrowserEndpoint into 3 layer CCB pattern.
+`controllers/mia` : split MiaEndpoint is now split into three parts according to the CCB architecture.
+- `controllers/sia` : split SiaEndpoint into 3 layer CCB pattern.
+- `controllers/dataset` : split DatasetEndpoint into 3 layer CCB pattern.
+- `controllers/pipeline` : split PipelineEndpoint into 3 layer CCB pattern.
+- `controllers/annotasks` : split AnnotasksEndpoint into 3 layer CCB pattern.
+- `group,label` modules migrated to endpoint-side exception handling `Business` raises plain domain errors, `Endpoint` builds legacy error responses (generalized error responses) using `Responses.py`
+- error-path specs added to test_specs, group/label/statistics goldens re-recorded to current DB state.
+- `inference_model` module migrated to business pure logic and endpoint raises exceptions build from error responses using Responses.py.
+- added test specs for inference_model.
+- `user` module migrated to business pure logic and endpoint raises exceptions build from error responses using Responses.py.
+- the `instructions` module (role checks moved to endpoint(thinking of making it more generalized), 4 error-path specs added) business pure logic and endpoint raises exceptions and endpoint catches it.
+- `data` module migrated to business pure logic and endpoint raises exceptions build from error responses using Responses.py added one extra test spec to test exception.
+- `filebrowser` module migrated to endpoint-side exception handling business raises plain domain errors, endpoint builds legacy 401/403 string and 200 error-dict responses via `Responses`
+- lsTest local-fs role check moved to the endpoint (savefs check kept in business fires only on fs creation) 2 role-quirk error-path specs via a fresh designer-without-admin token.
+- `sia` module migrated to endpoint-side exception handling .Business layer raises plain domain errors, endpoint build the errpr responses via Responses.py.
+- `dataset` module migrated to endpoint-side exception handling business raises plain domain errors, endpoint builds legacy plain-text and JSON responses via `Responses`, 3 error-path specs added.
+- `pipeline` migrated to endpoint-side exception handling business raises plain domain errors, endpoint builds legacy 403/404/400/500 responses via `Responses` visibility-conditional role checks kept in business and 3 error-path specs added.
+- `annotasks` module migrated to endpoint-side exception handling, 4 error path test specs added
+- `instructionmedia` module migrated to endpoint side exception handling anf 4 error path test specs added to instructionmedia_specs.py.
+- `lost/logic/project_config.py` moved to `lost/controllers/config/ProjectConfig.py` for logic repo cleanup.
+- `controllers/Exception.py` : DomainError is now having no HTTP vocabulary just a bare marker and NotAuthorizedError keeps the standard 403 mapping as a globally handled error.
+- `fastapi_app.py` :  global DomainError handler narrowed to `NotAuthorizedError` (guard type only), un-transcribed module errors fail loudly (500 + log).
+### Removed
+- `services/` directory removed.
+- `auth/exceptions.py` : moved MisconfiguredException to OpenidBusiness.py
+- removed the 38 dead Flask-era restx reference files, 2 annotasks JSON fixtures , triton preserved , dropped unused imports.
+- removed dead schame code from InferenceModelEndpoint.py 
+- removed following for cleanup of `lost/logic/` : `report.py`, `logic/clitest/` , `logic/statistics/` (moved to StatisticsBusiness).
+## [4.0.0] - 2026-09-16
+### Added
 - `backend/tests/` : Added golden-snapshot API comparison harness for the Flask→FastAPI migration (P0). Records Flask's API responses as reference snapshots and replays them against FastAPI to verify behavioral equivalence. Includes `conftest.py` with JWT minting, `helpers/` (client, comparator, recorder, seed), and parametrized comparison tests for the `user` namespace.
 - `backend/run_snapshots.sh` : Added one-command wrapper script that ensures compose stack is up, runs idempotent DB seed (`initlost.py`), and executes the golden-snapshot pytest suite inside the backend container. Supports `--record` (re-capture snapshots), `--cleanup` (force-remove test data), and `--verbose` (show container logs after run).
 - `backend/.dockerignore` : Added `tests` so the golden-snapshot suite is not shipped in the production Docker image.
@@ -46,11 +105,6 @@ Added `create_jwt_pyjwt()` to LoginManager, PyJWT-based token creation.Same stru
 - `backend/tests/compare/inference_model_specs.py`, `test_inference_model_compare.py` : added inference_model comparison specs/tests and 8 golden snapshots recorded from pre-migration Flask; seeded test inference model (`compare_test Dummy YOLO`) via `init_test_data.py`.
 - `backend/tests/` : harness coverage now 100 active comparison specs across 17 namespaces plus 7 active OpenID mock tests; 40 specs intentionally skipped with documented reasons (non-deterministic, destructive or manually verified).
 - `backend/tests/README.md` : added test-suite documentation (harness flow, how to run, comparison modes, adding new coverage).
-- `controllers/Dependencies.py` : contains all changes that were previously in `controllers/auth/dependecies.py` (all endpoint layer wiring: `get_current_user`/`require_role`)
-- `controllers/AuthorizationService.py` : resource level authorization util
-- sia_specs.py added 4 new specs to this
-- `Dependencies.py` : added annotask resource gaurds and the inline `may_access_pe` / pipe-manager checks moved out of AnnotasksBusiness as standard-body 403 guards.
-- `backend/lost/README.md` : added documentation of new backend architecture split into Controller,Coordination and Business Layers. 
 ### Fixed
 - `backend/tests/helpers/recorder.py` : Fixed empty-body handling for 204 No Content responses.
 - fixed recorder for FastAPI TestClient compatibility.
@@ -64,12 +118,6 @@ Added `create_jwt_pyjwt()` to LoginManager, PyJWT-based token creation.Same stru
 - `backend/lost/api/filebrowser/FileBrowserEndpoint.py` : fixed the delete endpoint.
 - `backend/lost/api/label/LabelEndpoint.py` : fixed responses to `JSONResponse` format similar to Flask.
 - `backend/lost/logic/pipeline/service.py` : fixed serialization errors surfaced during pipeline migration testing; re-recorded pipeline, statistics, user and annotasks golden snapshots for resolved error cases.
-- `controllers/PipelineEndpoint.py` : Fixed updateArguments/ endpoint which wasn't working in FastAPI to use Request instead of bytes.
-- `comparator.py` : strips `vary` in headers now. -Starlette CORS behaviour change after rebuild caused tests to fail
-- `label_specs.py` : fixed malformed label-import CSV fixture (missing idx column) the import spec had silently recorded 500s.
-- `statistics_specs.py` : skipped the personal stats endpoint test as it changes frequently.
-- the long_lived_user to long_lived_token.
-- fixed coordination layer of dataset module `delete_dataset_export` to use delete_dataset instead of delete_export. 
 ### Changed
 - `dependencies.py` :auth scheme changed to `HTTPBearer` credentials extraction in auth dependencies from `OAuth2PasswordBearer`
 - placed the `RouteSpec` in `specs.py` from user_specs.py
@@ -77,50 +125,8 @@ Added `create_jwt_pyjwt()` to LoginManager, PyJWT-based token creation.Same stru
 - `backend/lost/api/auth/OpenidEndpoint.py` : migrated OpenID login/callback/token endpoints to FastAPI, verified with the mocked-IDP test suite.
 - `backend/lost/logic/email.py` : untangled from Flask — replaced `from lost.flaskapp import app, mail` with jinja2 + smtplib (not yet tested with a real SMTP server).
 - `backend/lost/api/group/GroupEndpoint.py`, `backend/lost/api/label/LabelEndpoint.py`, `backend/lost/api/pipeline/PipelineEndpoint.py` : responses updated to `JSONResponse` format matching Flask.
-- `backend/lost/` : renamed package from `lost/api` to `lost/controllers/` as prep for th phase 2 CCB split (only rename , no functional changes).Refactored and updated the imports from `lost.api` to `lost.controllers`.
-- `backend/lost/controllers/auth/` : normalized the auth business layer to the Phase 2 CCB naming convention style (moved from `openid_service.py` to `OpenidBusiness.py` and updated all importers).
-- `LabelCoordination` reduced to thin per-route delegation (OpenidCoordination style)
-- visibility scoping and domain logic moved into `LabelBusiness` (calls the shared `AuthorizationService` util)
-- `LabelEndpoint` reduced to declarative one-liner handlers with coordination service injected via Dependencies.py
-- `Exceptions` changed to use a DomainError (base class for exceptions) and is mapped by global handlers registered in `fastapi_app.py`
-- `backend/lost/controllers/group/` :  split group module to the v3 CCB pattern: new `GroupBusiness.py` (group CRUD + self-describing `DomainError`s for name-required/duplicate/not-found, including the instance-level `http_body` override for interpolated legacy bodies), thin `GroupCoordination.py`, declarative `GroupEndpoint.py` wired via `get_group_coordination` in `Dependencies.py`.
-- `controllers/worker/` : split worker module to CCB pattern (`WorkerEndpoint.py`,`WorkerCoordination.py`,`WorkerBusiness.py`)
--  `controllers/config/` and `controllers/statistics/` : split config and statistics to CCB split pattern.
-- `controllers/instructions/` : split InstructionEndpoint into Endpoint, Coordination and Business pattern.
-- `controllers/instructionmedia/` : split into three layers Endpoint, Coordination and Business.
-- `controllers/data/` : split data into 3 layers endpoint, business and coordination.
-- `controllers/inference_model` : split data into 3 layers CCB pattern.
-- `controllers/user` : split UserEndpoint into 3 layers CCB pattern.
-- `controllers/filebrwoser` : split FileBrowserEndpoint into 3 layer CCB pattern.
-`controllers/mia` : split MiaEndpoint is now split into three parts according to the CCB architecture.
-- `controllers/sia` : split SiaEndpoint into 3 layer CCB pattern.
-- `controllers/dataset` : split DatasetEndpoint into 3 layer CCB pattern.
-- `controllers/pipeline` : split PipelineEndpoint into 3 layer CCB pattern.
-- `controllers/annotasks` : split AnnotasksEndpoint into 3 layer CCB pattern.
-- `group,label` modules migrated to endpoint-side exception handling `Business` raises plain domain errors, `Endpoint` builds legacy error responses (generalized error responses) using `Responses.py`
-- error-path specs added to test_specs, group/label/statistics goldens re-recorded to current DB state.
-- `inference_model` module migrated to business pure logic and endpoint raises exceptions build from error responses using Responses.py.
-- added test specs for inference_model.
-- `user` module migrated to business pure logic and endpoint raises exceptions build from error responses using Responses.py.
-- the `instructions` module (role checks moved to endpoint(thinking of making it more generalized), 4 error-path specs added) business pure logic and endpoint raises exceptions and endpoint catches it.
-- `data` module migrated to business pure logic and endpoint raises exceptions build from error responses using Responses.py added one extra test spec to test exception.
-- `filebrowser` module migrated to endpoint-side exception handling business raises plain domain errors, endpoint builds legacy 401/403 string and 200 error-dict responses via `Responses`
-- lsTest local-fs role check moved to the endpoint (savefs check kept in business fires only on fs creation) 2 role-quirk error-path specs via a fresh designer-without-admin token.
-- `sia` module migrated to endpoint-side exception handling .Business layer raises plain domain errors, endpoint build the errpr responses via Responses.py.
-- `dataset` module migrated to endpoint-side exception handling business raises plain domain errors, endpoint builds legacy plain-text and JSON responses via `Responses`, 3 error-path specs added.
-- `pipeline` migrated to endpoint-side exception handling business raises plain domain errors, endpoint builds legacy 403/404/400/500 responses via `Responses` visibility-conditional role checks kept in business and 3 error-path specs added.
-- `annotasks` module migrated to endpoint-side exception handling, 4 error path test specs added
-- `instructionmedia` module migrated to endpoint side exception handling anf 4 error path test specs added to instructionmedia_specs.py.
-- `lost/logic/project_config.py` moved to `lost/controllers/config/ProjectConfig.py` for logic repo cleanup.
-- `controllers/Exception.py` : DomainError is now having no HTTP vocabulary just a bare marker and NotAuthorizedError keeps the standard 403 mapping as a globally handled error.
-- `fastapi_app.py` :  global DomainError handler narrowed to `NotAuthorizedError` (guard type only), un-transcribed module errors fail loudly (500 + log).
 ### Removed
 - `backend/` : removed all Flask-dependent code at P1.3 cutover — deleted `lost/app.py`, `lost/flaskapp.py`, `lost/wsgi.py`, `lost/wsgi.ini`, `lost/api/api.py` and dropped Flask deps (`flask`, `flask-cors`, `flask-jwt-extended`, `flask-mail`, `flask-pydantic`, `flask-restx`, `flask-sqlalchemy`, `uwsgi`) from `pyproject.toml`, added `redis`, `itsdangerous`, `pyjwt`.
-- `services/` directory removed.
-- `auth/exceptions.py` : moved MisconfiguredException to OpenidBusiness.py
-- removed the 38 dead Flask-era restx reference files, 2 annotasks JSON fixtures , triton preserved , dropped unused imports.
-- removed dead schame code from InferenceModelEndpoint.py 
-- removed following for cleanup of `lost/logic/` : `report.py`, `logic/clitest/` , `logic/statistics/` (moved to StatisticsBusiness).
 
 ## [4.0.0-alpha] - 2026-08-18
 ### Added
@@ -136,7 +142,6 @@ Added `create_jwt_pyjwt()` to LoginManager, PyJWT-based token creation.Same stru
 - `DatasourceModal.tsx` : Added datasource validation on path selection with toast feedback and `verified` flag on node, info `CAlert` showing expected data type, and auto-validation of existing path when modal opens.
 - `LostFileBrowser.jsx` : Added Max file per selection cap upto 200 files.
 - `DatasourceModal.tsx` : Added acceptable file types to be uploaded even for the pipeline in family-1 (those which expect the types .jpg, .jpeg, .png, .bmp)
-- `tests/architecture/test_layering.py` : Added layering guard test (to test the CCB split)
 ### Fixed
 - `EditInstruction.jsx` : Fixed the instruction_media creation when it doesnt exist.
 - `LostFileBrowser.jsx` : Fixed `restrictToPath` boundary check, duplicate shake using composite `name-size` key, and double-click during tour now selects instead of inserting.
