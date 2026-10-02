@@ -78,6 +78,11 @@ def get_current_user(
         jti = payload.get("jti")
     except pyjwt.PyJWTError:
         raise credentials_exception
+
+    # Match Flask's @jwt_required(): protected endpoints accept access tokens only.
+    if payload.get("type") != "access":
+        raise credentials_exception
+    
     if is_token_revoked(jti):
         raise HTTPException(status_code=401, detail="Token has been revoked")
     user = dbm.get_user_by_id(user_id)

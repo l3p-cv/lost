@@ -77,6 +77,15 @@ def _setup_ghost_refresh_token(dbm) -> dict:
     _, refresh_token = lm.create_jwt_pyjwt(999999, "ghost", [])
     return {"fresh_token": refresh_token}
 
+def _setup_refresh_token_only(dbm) -> dict:
+    """Mint admin's REFRESH token to prove it is rejected as an access token."""
+    from lost.controllers.user.login_manager import LoginManager
+
+    user = dbm.find_user_by_user_name("admin")
+    lm = LoginManager(dbm, "admin", "admin")
+    _, refresh_token = lm.create_jwt_pyjwt(user.idx, user.user_name, user.roles)
+    return {"fresh_token": refresh_token}
+
 # ---------------------------------------------------------------------------
 # Path substitution helper
 # ---------------------------------------------------------------------------
@@ -295,6 +304,15 @@ def get_user_specs() -> list[RouteSpec]:
         name="POST_user_refresh_ghost_user",
         request=RequestSpec(method="POST", path="/api/user/refresh", mode="exact"),
         setup=_setup_ghost_refresh_token,
+        target=_TARGET,
+    ))
+
+    # GET /api/user/self with a REFRESH token → 401 (exact) — validates the
+    # ported access-type check (master fix 5de15935e)
+    specs.append(RouteSpec(
+        name="GET_user_refresh_token_rejected",
+        request=RequestSpec(method="GET", path="/api/user/self", mode="exact"),
+        setup=_setup_refresh_token_only,
         target=_TARGET,
     ))
     

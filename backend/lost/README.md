@@ -48,4 +48,4 @@ dask_session, email, crypt, user, log, template, jobs/, pipeline/ machinery).
 The layering is enforced by `../tests/architecture/test_layering.py`
 (one-way imports, framework-free business/coordination, infra import bans).
 
-See `../tests/README.md` for the golden-snapshot harness and its rules.
+See `backend/tests/README.md` for the golden-snapshot harness and its rules.

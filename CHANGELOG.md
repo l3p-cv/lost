@@ -7,20 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## unreleased
 ### Added
 - `tests/architecture/test_layering.py` : Added layering guard test (to test the CCB split)
-- `controllers/Dependencies.py` : contains all changes that were previously in `controllers/auth/dependecies.py` (all endpoint layer wiring: `get_current_user`/`require_role`)
+- `controllers/Dependencies.py` : contains all changes that were previously in `controllers/auth/dependencies.py` (all endpoint layer wiring: `get_current_user`/`require_role`)
 - `controllers/AuthorizationService.py` : resource level authorization util
 - sia_specs.py added 4 new specs to this
-- `Dependencies.py` : added annotask resource gaurds and the inline `may_access_pe` / pipe-manager checks moved out of AnnotasksBusiness as standard-body 403 guards.
+- `Dependencies.py` : added annotask resource guards and the inline `may_access_pe` / pipe-manager checks moved out of AnnotasksBusiness as standard-body 403 guards.
 - `backend/lost/README.md` : added documentation of new backend architecture split into Controller,Coordination and Business Layers.
 ### Fixed
 - `controllers/PipelineEndpoint.py` : Fixed updateArguments/ endpoint which wasn't working in FastAPI to use Request instead of bytes.
-- `comparator.py` : strips `vary` in headers now. -Starlette CORS behaviour change after rebuild caused tests to fail
+- `comparator.py` : strips the `vary` in headers now. -Starlette CORS behaviour change after rebuild caused tests to fail
 - `label_specs.py` : fixed malformed label-import CSV fixture (missing idx column) the import spec had silently recorded 500s.
 - `statistics_specs.py` : skipped the personal stats endpoint test as it changes frequently.
-- the long_lived_user to long_lived_token.
-- fixed coordination layer of dataset module `delete_dataset_export` to use delete_dataset instead of delete_export. 
+- `controllers/user/UserCoordination.py` : fixed the the long_lived_user to long_lived_token.(method name mismatch).
+- `controllers/dataset/DatasetCoordination.py` : fixed dataset module `delete_dataset_export` to use delete_dataset instead of delete_export. (could deleted unrelated dataset on id collision)
 ### Changed
-- `backend/lost/` : renamed package from `lost/api` to `lost/controllers/` as prep for th phase 2 CCB split (only rename , no functional changes).Refactored and updated the imports from `lost.api` to `lost.controllers`.
+- `backend/lost/` : renamed package from `lost/api` to `lost/controllers/` as prep for th phase 2 CCB split (only rename , no functional changes). Refactored and updated the imports from `lost.api` to `lost.controllers`.
 - `backend/lost/controllers/auth/` : normalized the auth business layer to the Phase 2 CCB naming convention style (moved from `openid_service.py` to `OpenidBusiness.py` and updated all importers).
 - `LabelCoordination` reduced to thin per-route delegation (OpenidCoordination style)
 - visibility scoping and domain logic moved into `LabelBusiness` (calls the shared `AuthorizationService` util)
@@ -34,8 +34,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `controllers/data/` : split data into 3 layers endpoint, business and coordination.
 - `controllers/inference_model` : split data into 3 layers CCB pattern.
 - `controllers/user` : split UserEndpoint into 3 layers CCB pattern.
-- `controllers/filebrwoser` : split FileBrowserEndpoint into 3 layer CCB pattern.
-`controllers/mia` : split MiaEndpoint is now split into three parts according to the CCB architecture.
+- `controllers/filebrowser` : split FileBrowserEndpoint into 3 layer CCB pattern.
+- `controllers/mia` : split MiaEndpoint is now split into three parts according to the CCB architecture.
 - `controllers/sia` : split SiaEndpoint into 3 layer CCB pattern.
 - `controllers/dataset` : split DatasetEndpoint into 3 layer CCB pattern.
 - `controllers/pipeline` : split PipelineEndpoint into 3 layer CCB pattern.
@@ -49,19 +49,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `data` module migrated to business pure logic and endpoint raises exceptions build from error responses using Responses.py added one extra test spec to test exception.
 - `filebrowser` module migrated to endpoint-side exception handling business raises plain domain errors, endpoint builds legacy 401/403 string and 200 error-dict responses via `Responses`
 - lsTest local-fs role check moved to the endpoint (savefs check kept in business fires only on fs creation) 2 role-quirk error-path specs via a fresh designer-without-admin token.
-- `sia` module migrated to endpoint-side exception handling .Business layer raises plain domain errors, endpoint build the errpr responses via Responses.py.
+- `sia` module migrated to endpoint-side exception handling. Business layer raises plain domain errors, endpoint build the errpr responses via Responses.py.
 - `dataset` module migrated to endpoint-side exception handling business raises plain domain errors, endpoint builds legacy plain-text and JSON responses via `Responses`, 3 error-path specs added.
 - `pipeline` migrated to endpoint-side exception handling business raises plain domain errors, endpoint builds legacy 403/404/400/500 responses via `Responses` visibility-conditional role checks kept in business and 3 error-path specs added.
 - `annotasks` module migrated to endpoint-side exception handling, 4 error path test specs added
-- `instructionmedia` module migrated to endpoint side exception handling anf 4 error path test specs added to instructionmedia_specs.py.
+- `instructionmedia` module migrated to endpoint side exception handling and 4 error path test specs added to instructionmedia_specs.py.
 - `lost/logic/project_config.py` moved to `lost/controllers/config/ProjectConfig.py` for logic repo cleanup.
-- `controllers/Exception.py` : DomainError is now having no HTTP vocabulary just a bare marker and NotAuthorizedError keeps the standard 403 mapping as a globally handled error.
+- `controllers/Exceptions.py` : DomainError is now having no HTTP vocabulary just a bare marker and NotAuthorizedError keeps the standard 403 mapping as a globally handled error.
 - `fastapi_app.py` :  global DomainError handler narrowed to `NotAuthorizedError` (guard type only), un-transcribed module errors fail loudly (500 + log).
 ### Removed
 - `services/` directory removed.
 - `auth/exceptions.py` : moved MisconfiguredException to OpenidBusiness.py
 - removed the 38 dead Flask-era restx reference files, 2 annotasks JSON fixtures , triton preserved , dropped unused imports.
-- removed dead schame code from InferenceModelEndpoint.py 
+- removed dead schema code from InferenceModelEndpoint.py 
 - removed following for cleanup of `lost/logic/` : `report.py`, `logic/clitest/` , `logic/statistics/` (moved to StatisticsBusiness).
 ## [4.0.0] - 2026-09-16
 ### Added
