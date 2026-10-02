@@ -23,8 +23,8 @@
       "name": "VOC2012"
     },
     "headers": {
-      "access-control-allow-origin": "*",
-      "content-type": "application/json"
+      "content-type": "application/json",
+      "vary": "Origin"
     },
     "status": 200
   }

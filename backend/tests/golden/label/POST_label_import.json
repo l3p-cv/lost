@@ -9,13 +9,12 @@
   },
   "response": {
     "body": {
-      "error": "Object of type Response is not JSON serializable",
-      "type": "TypeError"
+      "message": "Tree imported successfully"
     },
     "headers": {
-      "access-control-allow-origin": "*",
-      "content-type": "application/json"
+      "content-type": "application/json",
+      "vary": "Origin"
     },
-    "status": 500
+    "status": 200
   }
 }

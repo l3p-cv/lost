@@ -1,0 +1,19 @@
+{
+  "mode": "exact",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "POST",
+    "path": "/api/user/refresh"
+  },
+  "response": {
+    "body": {
+      "message": "Invalid user"
+    },
+    "headers": {
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

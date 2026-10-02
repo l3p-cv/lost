@@ -1,0 +1,20 @@
+{
+  "mode": "exact",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "json": {
+      "group_name": "compare_test_dup_group"
+    },
+    "method": "POST",
+    "path": "/api/group"
+  },
+  "response": {
+    "body": "Group with name 'compare_test_dup_group' already exists.",
+    "headers": {
+      "content-type": "application/json"
+    },
+    "status": 409
+  }
+}

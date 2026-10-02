@@ -120,7 +120,7 @@ def auth_token(dbm):
     route. Minting directly (rather than hitting /api/user/login) avoids coupling
     the fixture to the login endpoint, which itself migrates in P1.2.
     """
-    from lost.api.user.login_manager import LoginManager
+    from lost.controllers.user.login_manager import LoginManager
     user = dbm.find_user_by_user_name("admin")
     if user is None:
         pytest.fail("admin user not found — run initlost.py to seed the DB")
@@ -194,8 +194,10 @@ def seed(dbm, request):
     # If --cleanup flag is set, force-remove all leftover test data first
     if request.config.getoption("--cleanup"):
         n = seed_module.cleanup_all_test_users(dbm)
-        if n:
-            print(f"\n[cleanup] removed {n} leftover test users")
+        m = seed_module.cleanup_all_test_label_leaves(dbm)
+        k = seed_module.cleanup_all_test_groups(dbm)
+        if n or m or k:
+            print(f"\n[cleanup] removed {n} leftover test users, {m} leftover test label leaves, and {k} leftover test groups")
 
     yield seed_module
 

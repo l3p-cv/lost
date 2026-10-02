@@ -15,9 +15,9 @@
       "size": 1866
     },
     "headers": {
-      "access-control-allow-origin": "*",
       "content-disposition": "attachment; filename=VOC2012.csv",
-      "content-type": "blob"
+      "content-type": "blob",
+      "vary": "Origin"
     },
     "status": 200
   }

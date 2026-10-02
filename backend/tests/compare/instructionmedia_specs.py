@@ -39,6 +39,47 @@ def get_instructionmedia_specs() -> list[RouteSpec]:
         skip=True,
         skip_reason="Tested manually"
     ))
+    
+    # GET /api/media/media-file — path outside all instruction-media dirs → 403 (exact)
+    specs.append(RouteSpec(
+        name="GET_im_media_file_invalid_path",
+        request=RequestSpec(
+            method="GET", path="/api/media/media-file",
+            params={"path": "/definitely/not/in/fs/x.png"}, mode="exact",
+        ),
+        target=_TARGET,
+    ))
+
+    # GET /api/media/media-file — valid prefix, nonexistent file → 404 (exact)
+    specs.append(RouteSpec(
+        name="GET_im_media_file_not_found",
+        request=RequestSpec(
+            method="GET", path="/api/media/media-file",
+            params={"path": "/home/lost/data/instruction_media/no_such_file.png"},
+            mode="exact",
+        ),
+        target=_TARGET,
+    ))
+
+    # POST /api/media/get-image-markdown — empty encodedPath → 400 (exact)
+    specs.append(RouteSpec(
+        name="POST_im_markdown_missing_encoded_path",
+        request=RequestSpec(
+            method="POST", path="/api/media/get-image-markdown",
+            json={"encodedPath": ""}, mode="exact",
+        ),
+        target=_TARGET,
+    ))
+
+    # POST /api/media/get-image-markdown — path outside the save dir → 403 (exact)
+    specs.append(RouteSpec(
+        name="POST_im_markdown_forbidden",
+        request=RequestSpec(
+            method="POST", path="/api/media/get-image-markdown",
+            json={"encodedPath": "%2Fetc%2Fpasswd"}, mode="exact",
+        ),
+        target=_TARGET,
+    ))
 
     return specs
 

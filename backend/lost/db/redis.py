@@ -2,7 +2,6 @@ from redis import Redis
 
 from lost.settings import LOST_CONFIG
 
-
 redis_client = Redis(
     host=LOST_CONFIG.redis_host,
     port=LOST_CONFIG.redis_port,

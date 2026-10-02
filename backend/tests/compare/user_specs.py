@@ -6,7 +6,7 @@ Enumerates all 10 user routes as TestSpec objects, describing:
 - For mutations: a follow-up GET to verify the state change
 - Setup/cleanup hooks for mutate-then-GET tests
 
-Routes (from lost/api/user/endpoint.py):
+Routes (from lost/controllers/user/endpoint.py):
     GET  /api/user                   - list users (admin)           → structural
     GET  /api/user/anno_task_user    - list anno task users (designer) → structural
     GET  /api/user/<id>              - get single user (admin)      → structural
@@ -50,7 +50,7 @@ def _setup_fresh_token(dbm):
     uses it as the Authorization header instead of the shared auth_headers.
     """
     # from lost.app import app
-    from lost.api.user.login_manager import LoginManager
+    from lost.controllers.user.login_manager import LoginManager
 
     user = dbm.find_user_by_user_name("admin")
     lm = LoginManager(dbm, "admin", "admin")
@@ -70,6 +70,21 @@ def _cleanup_created_user(dbm, context):
     if user_name:
         cleanup_test_user(dbm, user_name)
 
+def _setup_ghost_refresh_token(dbm) -> dict:
+    from lost.controllers.user.login_manager import LoginManager
+
+    lm = LoginManager(dbm, "ghost", "")
+    _, refresh_token = lm.create_jwt_pyjwt(999999, "ghost", [])
+    return {"fresh_token": refresh_token}
+
+def _setup_refresh_token_only(dbm) -> dict:
+    """Mint admin's REFRESH token to prove it is rejected as an access token."""
+    from lost.controllers.user.login_manager import LoginManager
+
+    user = dbm.find_user_by_user_name("admin")
+    lm = LoginManager(dbm, "admin", "admin")
+    _, refresh_token = lm.create_jwt_pyjwt(user.idx, user.user_name, user.roles)
+    return {"fresh_token": refresh_token}
 
 # ---------------------------------------------------------------------------
 # Path substitution helper
@@ -239,6 +254,68 @@ def get_user_specs() -> list[RouteSpec]:
         target=_TARGET,
     ))
 
+    # 12. GET /api/user/999999 — nonexistent ID → 200 string body (legacy quirk, exact)
+    specs.append(RouteSpec(
+        name="GET_user_by_id_not_found",
+        request=RequestSpec(method="GET", path="/api/user/999999", mode="exact"),
+        target=_TARGET,
+    ))
+
+    # 13. POST /api/user — user_name collides with admin → 200 message (exact)
+    specs.append(RouteSpec(
+        name="POST_user_create_duplicate",
+        request=RequestSpec(
+            method="POST", path="/api/user", mode="exact",
+            json={"user_name": "admin", "password": "x", "email": ""},
+        ),
+        target=_TARGET,
+        # no cleanup — UserExistsError fires before any write
+    ))
+
+    # 14. DELETE /api/user/1 — deleting admin (=self, runner authenticates as admin)
+    #     → 200 string body (exact). Precedent: GET_user_by_id hardcodes id 1.
+    specs.append(RouteSpec(
+        name="DELETE_user_self",
+        request=RequestSpec(method="DELETE", path="/api/user/1", mode="exact"),
+        target=_TARGET,
+        # no cleanup — SelfDeleteError fires before any write
+    ))
+
+    # 15. POST /api/user/refresh — sending the session ACCESS token
+    #     (default auth header) → 401 (exact)
+    specs.append(RouteSpec(
+        name="POST_user_refresh_with_access_token",
+        request=RequestSpec(method="POST", path="/api/user/refresh", mode="exact"),
+        target=_TARGET,
+    ))
+
+    # 16. POST /api/user/login — wrong password → 200 message (exact)
+    specs.append(RouteSpec(
+        name="POST_user_login_invalid",
+        request=RequestSpec(
+            method="POST", path="/api/user/login", mode="exact",
+            json={"userName": "admin", "password": "definitely_wrong_password"},
+        ),
+        target=_TARGET,
+    ))
+
+     # 17. POST /api/user/refresh — valid refresh token for nonexistent user → 401 (exact)
+    specs.append(RouteSpec(
+        name="POST_user_refresh_ghost_user",
+        request=RequestSpec(method="POST", path="/api/user/refresh", mode="exact"),
+        setup=_setup_ghost_refresh_token,
+        target=_TARGET,
+    ))
+
+    # GET /api/user/self with a REFRESH token → 401 (exact) — validates the
+    # ported access-type check (master fix 5de15935e)
+    specs.append(RouteSpec(
+        name="GET_user_refresh_token_rejected",
+        request=RequestSpec(method="GET", path="/api/user/self", mode="exact"),
+        setup=_setup_refresh_token_only,
+        target=_TARGET,
+    ))
+    
     return specs
 
 

@@ -53,7 +53,11 @@ def _run_filebrowser_spec(client, auth_headers, dbm, spec: RouteSpec, record: bo
         req = spec.request
         path = _substitute(req.path, context)
         json_body = _substitute(req.json, context)
-        headers = {**auth_headers, **req.headers}
+         # Use a per-spec token if the setup provided one (local-fs role-quirk specs)
+        if "fresh_token" in context:
+            headers = {"Authorization": f"Bearer {context['fresh_token']}", **req.headers}
+        else:
+            headers = {**auth_headers, **req.headers}
 
         data_body = _substitute(req.data, context) if req.data else None
         live_spec = RequestSpec(

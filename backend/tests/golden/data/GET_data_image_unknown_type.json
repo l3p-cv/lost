@@ -1,0 +1,20 @@
+{
+  "mode": "exact",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "params": {
+      "type": "invalid_type"
+    },
+    "path": "/api/data/image/1"
+  },
+  "response": {
+    "body": "Unknown mia image type",
+    "headers": {
+      "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 422
+  }
+}

@@ -25,6 +25,8 @@ def get_statistics_specs() -> list[RouteSpec]:
             mode="structural",
         ),
         target=_TARGET,
+        skip=True,
+        skip_reason="Changes on a daily basis"
     ))
 
     # 2. GET /api/statistics/designer — designer annotation stats (designer)

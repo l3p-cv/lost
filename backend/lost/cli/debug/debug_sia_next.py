@@ -1,5 +1,5 @@
+import lost.controllers.sia.SiaBusiness as sia
 from lost.db import access, dtype
-from lost.logic import sia
 from lost.settings import DATA_URL, LOST_CONFIG
 
 USER_ID = 7

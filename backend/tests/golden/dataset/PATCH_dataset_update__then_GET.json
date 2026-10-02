@@ -12,44 +12,180 @@
       {
         "children": [
           {
-            "children": [],
-            "createdAt": "<TS>",
+            "created_at": "<TS>",
+            "datasetId": 1,
             "datastoreId": null,
-            "description": "sdc",
+            "description": "Progress: 100%",
+            "dtype": 2,
+            "group_id": "<ID>",
             "idx": "<ID>",
-            "isReviewable": false,
-            "name": "Dataset 3",
-            "parentId": 1
+            "instruction_id": 1,
+            "isAnnotask": true,
+            "manager_id": null,
+            "name": "Single Image Annotation Task",
+            "pipe_element_id": "<ID>",
+            "progress": "<REDACTED>",
+            "state": 3
           },
           {
-            "children": [],
-            "createdAt": "<TS>",
+            "created_at": "<TS>",
+            "datasetId": 1,
             "datastoreId": null,
-            "description": "fg",
+            "description": "Progress: 100%",
+            "dtype": 2,
+            "group_id": "<ID>",
             "idx": "<ID>",
-            "isReviewable": false,
-            "name": "sub 2",
-            "parentId": 1
+            "instruction_id": 1,
+            "isAnnotask": true,
+            "manager_id": null,
+            "name": "Single Image Annotation Task",
+            "pipe_element_id": "<ID>",
+            "progress": "<REDACTED>",
+            "state": 3
           },
           {
-            "children": [],
-            "createdAt": "<TS>",
+            "created_at": "<TS>",
+            "datasetId": 1,
             "datastoreId": null,
-            "description": "dc",
+            "description": "Progress: 100%",
+            "dtype": 2,
+            "group_id": "<ID>",
             "idx": "<ID>",
-            "isReviewable": false,
-            "name": "dataset sub 2",
-            "parentId": 1
+            "instruction_id": null,
+            "isAnnotask": true,
+            "manager_id": null,
+            "name": "Single Image Annotation Task",
+            "pipe_element_id": "<ID>",
+            "progress": "<REDACTED>",
+            "state": 2
           },
           {
-            "children": [],
-            "createdAt": "<TS>",
+            "created_at": "<TS>",
+            "datasetId": 1,
             "datastoreId": null,
-            "description": "cdcds",
+            "description": "Progress: 3%",
+            "dtype": 2,
+            "group_id": "<ID>",
             "idx": "<ID>",
-            "isReviewable": false,
-            "name": "Dataset 2.2",
-            "parentId": 1
+            "instruction_id": 1,
+            "isAnnotask": true,
+            "manager_id": null,
+            "name": "Single Image Annotation Task",
+            "pipe_element_id": "<ID>",
+            "progress": "<REDACTED>",
+            "state": 2
+          },
+          {
+            "created_at": "<TS>",
+            "datasetId": 1,
+            "datastoreId": null,
+            "description": "Progress: 51%",
+            "dtype": 2,
+            "group_id": "<ID>",
+            "idx": "<ID>",
+            "instruction_id": 1,
+            "isAnnotask": true,
+            "manager_id": null,
+            "name": "Single Image Annotation Task",
+            "pipe_element_id": "<ID>",
+            "progress": "<REDACTED>",
+            "state": 2
+          },
+          {
+            "created_at": "<TS>",
+            "datasetId": 1,
+            "datastoreId": null,
+            "description": "Progress: 100%",
+            "dtype": 1,
+            "group_id": "<ID>",
+            "idx": "<ID>",
+            "instruction_id": null,
+            "isAnnotask": true,
+            "manager_id": null,
+            "name": "MultiImageAnnoation",
+            "pipe_element_id": "<ID>",
+            "progress": "<REDACTED>",
+            "state": 3
+          },
+          {
+            "created_at": "<TS>",
+            "datasetId": 1,
+            "datastoreId": null,
+            "description": "Progress: 57%",
+            "dtype": 1,
+            "group_id": "<ID>",
+            "idx": "<ID>",
+            "instruction_id": null,
+            "isAnnotask": true,
+            "manager_id": null,
+            "name": "MultiImageAnnoation",
+            "pipe_element_id": "<ID>",
+            "progress": "<REDACTED>",
+            "state": 2
+          },
+          {
+            "created_at": "<TS>",
+            "datasetId": 1,
+            "datastoreId": null,
+            "description": "Progress: 100%",
+            "dtype": 1,
+            "group_id": "<ID>",
+            "idx": "<ID>",
+            "instruction_id": null,
+            "isAnnotask": true,
+            "manager_id": null,
+            "name": "MultiImageAnnoation",
+            "pipe_element_id": "<ID>",
+            "progress": "<REDACTED>",
+            "state": 3
+          },
+          {
+            "created_at": "<TS>",
+            "datasetId": 1,
+            "datastoreId": null,
+            "description": "Progress: 100%",
+            "dtype": 1,
+            "group_id": "<ID>",
+            "idx": "<ID>",
+            "instruction_id": null,
+            "isAnnotask": true,
+            "manager_id": null,
+            "name": "MultiImageAnnoation",
+            "pipe_element_id": "<ID>",
+            "progress": "<REDACTED>",
+            "state": 3
+          },
+          {
+            "created_at": "<TS>",
+            "datasetId": 1,
+            "datastoreId": null,
+            "description": "Progress: 100%",
+            "dtype": 2,
+            "group_id": "<ID>",
+            "idx": "<ID>",
+            "instruction_id": 257,
+            "isAnnotask": true,
+            "manager_id": null,
+            "name": "test ui sia create",
+            "pipe_element_id": "<ID>",
+            "progress": "<REDACTED>",
+            "state": 2
+          },
+          {
+            "created_at": "<TS>",
+            "datasetId": 1,
+            "datastoreId": null,
+            "description": "Progress: 100%",
+            "dtype": 2,
+            "group_id": "<ID>",
+            "idx": "<ID>",
+            "instruction_id": 257,
+            "isAnnotask": true,
+            "manager_id": null,
+            "name": "SIA test",
+            "pipe_element_id": "<ID>",
+            "progress": "<REDACTED>",
+            "state": 2
           },
           {
             "created_at": "<TS>",
@@ -62,9 +198,57 @@
             "instruction_id": 1,
             "isAnnotask": true,
             "manager_id": null,
-            "name": "Single Image Annotation Task",
+            "name": "SIA test",
             "pipe_element_id": "<ID>",
-            "progress": 0.0,
+            "progress": "<REDACTED>",
+            "state": 1
+          },
+          {
+            "created_at": "<TS>",
+            "datasetId": 1,
+            "datastoreId": null,
+            "description": "Progress: 0%",
+            "dtype": 2,
+            "group_id": "<ID>",
+            "idx": "<ID>",
+            "instruction_id": 1,
+            "isAnnotask": true,
+            "manager_id": null,
+            "name": "SIA test",
+            "pipe_element_id": "<ID>",
+            "progress": "<REDACTED>",
+            "state": 1
+          },
+          {
+            "created_at": "<TS>",
+            "datasetId": 1,
+            "datastoreId": null,
+            "description": "Progress: 0%",
+            "dtype": 2,
+            "group_id": "<ID>",
+            "idx": "<ID>",
+            "instruction_id": null,
+            "isAnnotask": true,
+            "manager_id": null,
+            "name": "sia 1",
+            "pipe_element_id": "<ID>",
+            "progress": "<REDACTED>",
+            "state": 1
+          },
+          {
+            "created_at": "<TS>",
+            "datasetId": 1,
+            "datastoreId": null,
+            "description": "Progress: 0%",
+            "dtype": 2,
+            "group_id": "<ID>",
+            "idx": "<ID>",
+            "instruction_id": 1,
+            "isAnnotask": true,
+            "manager_id": null,
+            "name": "SIA test",
+            "pipe_element_id": "<ID>",
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -80,16 +264,58 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 2.85714,
+            "progress": "<REDACTED>",
+            "state": 2
+          },
+          {
+            "created_at": "<TS>",
+            "datasetId": 1,
+            "datastoreId": null,
+            "description": "Progress: 17%",
+            "dtype": 2,
+            "group_id": "<ID>",
+            "idx": "<ID>",
+            "instruction_id": null,
+            "isAnnotask": true,
+            "manager_id": null,
+            "name": "SIA test",
+            "pipe_element_id": "<ID>",
+            "progress": "<REDACTED>",
+            "state": 2
+          },
+          {
+            "created_at": "<TS>",
+            "datasetId": 1,
+            "datastoreId": null,
+            "description": "Progress: 0%",
+            "dtype": 2,
+            "group_id": "<ID>",
+            "idx": "<ID>",
+            "instruction_id": null,
+            "isAnnotask": true,
+            "manager_id": null,
+            "name": "sia new",
+            "pipe_element_id": "<ID>",
+            "progress": "<REDACTED>",
             "state": 2
           }
         ],
         "createdAt": "<TS>",
         "datastoreId": null,
-        "description": null,
+        "description": "dataset 2",
         "idx": "<ID>",
         "isReviewable": true,
         "name": "Dataset 2",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "sdc",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "Dataset 3",
         "parentId": null
       },
       {
@@ -136,7 +362,7 @@
         "children": [
           {
             "created_at": "<TS>",
-            "datasetId": 56,
+            "datasetId": 228,
             "datastoreId": null,
             "description": "Progress: 0%",
             "dtype": 2,
@@ -147,8 +373,8 @@
             "manager_id": null,
             "name": "compare_test_sia",
             "pipe_element_id": "<ID>",
-            "progress": null,
-            "state": 1
+            "progress": "<REDACTED>",
+            "state": 2
           }
         ],
         "createdAt": "<TS>",
@@ -166,7 +392,7 @@
         "description": "Test dataset for golden snapshots",
         "idx": "<ID>",
         "isReviewable": false,
-        "name": "compare_test_1320c06f",
+        "name": "compare_test_c0419079",
         "parentId": null
       },
       {
@@ -176,7 +402,7 @@
         "description": "Test dataset for golden snapshots",
         "idx": "<ID>",
         "isReviewable": false,
-        "name": "compare_test_da662e35",
+        "name": "compare_test_2435d591",
         "parentId": null
       },
       {
@@ -186,7 +412,7 @@
         "description": "Test dataset for golden snapshots",
         "idx": "<ID>",
         "isReviewable": false,
-        "name": "compare_test_329be7d8",
+        "name": "compare_test_9f7888c7",
         "parentId": null
       },
       {
@@ -196,7 +422,17 @@
         "description": "Test dataset for golden snapshots",
         "idx": "<ID>",
         "isReviewable": false,
-        "name": "compare_test_8d920026",
+        "name": "compare_test_681f81cf",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "test",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "Test Dataset",
         "parentId": null
       },
       {
@@ -206,7 +442,7 @@
         "description": "Test dataset for golden snapshots",
         "idx": "<ID>",
         "isReviewable": false,
-        "name": "compare_test_b8255abb",
+        "name": "compare_test_41ef3dce",
         "parentId": null
       },
       {
@@ -216,7 +452,7 @@
         "description": "Test dataset for golden snapshots",
         "idx": "<ID>",
         "isReviewable": false,
-        "name": "compare_test_ef228df9",
+        "name": "compare_test_b0b9d7d5",
         "parentId": null
       },
       {
@@ -226,7 +462,7 @@
         "description": "Test dataset for golden snapshots",
         "idx": "<ID>",
         "isReviewable": false,
-        "name": "compare_test_c3711313",
+        "name": "compare_test_6f6a4251",
         "parentId": null
       },
       {
@@ -236,7 +472,7 @@
         "description": "Test dataset for golden snapshots",
         "idx": "<ID>",
         "isReviewable": false,
-        "name": "compare_test_b98de9d3",
+        "name": "compare_test_4b3ba133",
         "parentId": null
       },
       {
@@ -246,7 +482,7 @@
         "description": "Test dataset for golden snapshots",
         "idx": "<ID>",
         "isReviewable": false,
-        "name": "compare_test_8ffcf281",
+        "name": "compare_test_890773f1",
         "parentId": null
       },
       {
@@ -256,7 +492,7 @@
         "description": "Test dataset for golden snapshots",
         "idx": "<ID>",
         "isReviewable": false,
-        "name": "compare_test_26cdfdd1",
+        "name": "compare_test_98ca8b9f",
         "parentId": null
       },
       {
@@ -266,7 +502,7 @@
         "description": "Test dataset for golden snapshots",
         "idx": "<ID>",
         "isReviewable": false,
-        "name": "compare_test_033db81d",
+        "name": "compare_test_b03daee3",
         "parentId": null
       },
       {
@@ -276,7 +512,7 @@
         "description": "Test dataset for golden snapshots",
         "idx": "<ID>",
         "isReviewable": false,
-        "name": "compare_test_f97f8b63",
+        "name": "compare_test_9348da4b",
         "parentId": null
       },
       {
@@ -286,7 +522,7 @@
         "description": "Test dataset for golden snapshots",
         "idx": "<ID>",
         "isReviewable": false,
-        "name": "compare_test_029f7b35",
+        "name": "compare_test_cbf0f872",
         "parentId": null
       },
       {
@@ -296,7 +532,7 @@
         "description": "Test dataset for golden snapshots",
         "idx": "<ID>",
         "isReviewable": false,
-        "name": "compare_test_d8febd56",
+        "name": "compare_test_b8f842e4",
         "parentId": null
       },
       {
@@ -306,7 +542,7 @@
         "description": "Test dataset for golden snapshots",
         "idx": "<ID>",
         "isReviewable": false,
-        "name": "compare_test_44e8eac0",
+        "name": "compare_test_3a1ee7c7",
         "parentId": null
       },
       {
@@ -316,7 +552,7 @@
         "description": "Test dataset for golden snapshots",
         "idx": "<ID>",
         "isReviewable": false,
-        "name": "compare_test_9fe3bea5",
+        "name": "compare_test_caac11ba",
         "parentId": null
       },
       {
@@ -326,7 +562,7 @@
         "description": "Test dataset for golden snapshots",
         "idx": "<ID>",
         "isReviewable": false,
-        "name": "compare_test_4bdd6cb3",
+        "name": "compare_test_511ea4ed",
         "parentId": null
       },
       {
@@ -336,7 +572,637 @@
         "description": "Test dataset for golden snapshots",
         "idx": "<ID>",
         "isReviewable": false,
-        "name": "compare_test_680187ef",
+        "name": "compare_test_17167f78",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_d1771868",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_bcdf0f0d",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_1d514e7d",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_c04b3d90",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_47d6873e",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_9e66ac01",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_603f8c15",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_396c5bbd",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_20fdd990",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_027ff595",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_dc22bc45",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_e3ad4d0d",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_039be0f5",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_9f0d548e",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_81f30668",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_37a1192d",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_99490e5a",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_404c576d",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_060cc65c",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_6173bcb3",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_9729b146",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_1bd926cc",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_5d6dbc6d",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_225583f8",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_111c236a",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_5735fda7",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_03b2908f",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_01c8fb19",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_9247b5cf",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_96804d9b",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_323987fe",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_77ff841a",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_afbbf855",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_45933ecf",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_e971a436",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_685ce428",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_36dedd40",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_d6270177",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_8b06e9a1",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_4832957d",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_ff5e23cb",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_1c7c3e7d",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_cf8e1e49",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_1bc37c1a",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_d7fd5ce1",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_165c752b",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_b23b2905",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_8ecee471",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_22c26444",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_44e356be",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_511f632c",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_a8ec078f",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_4b61ebc5",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_f72202a3",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_3e278110",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_363e64fc",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_959b72e4",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_1497b948",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_ce56f9ca",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_3ee11e45",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_a0167bf9",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_86d61ea4",
+        "parentId": null
+      },
+      {
+        "children": [],
+        "createdAt": "<TS>",
+        "datastoreId": null,
+        "description": "Test dataset for golden snapshots",
+        "idx": "<ID>",
+        "isReviewable": false,
+        "name": "compare_test_58e26f44",
         "parentId": null
       },
       {
@@ -354,7 +1220,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 100.0,
+            "progress": "<REDACTED>",
             "state": 3
           },
           {
@@ -370,7 +1236,7 @@
             "manager_id": null,
             "name": "TestAnnoTask",
             "pipe_element_id": "<ID>",
-            "progress": null,
+            "progress": "<REDACTED>",
             "state": null
           },
           {
@@ -386,7 +1252,7 @@
             "manager_id": null,
             "name": "TestAnnoTask",
             "pipe_element_id": "<ID>",
-            "progress": null,
+            "progress": "<REDACTED>",
             "state": null
           },
           {
@@ -402,7 +1268,7 @@
             "manager_id": null,
             "name": "TestAnnoTask",
             "pipe_element_id": "<ID>",
-            "progress": null,
+            "progress": "<REDACTED>",
             "state": null
           },
           {
@@ -418,7 +1284,7 @@
             "manager_id": null,
             "name": "TestAnnoTask",
             "pipe_element_id": "<ID>",
-            "progress": null,
+            "progress": "<REDACTED>",
             "state": null
           },
           {
@@ -434,7 +1300,7 @@
             "manager_id": null,
             "name": "TestAnnoTask",
             "pipe_element_id": "<ID>",
-            "progress": null,
+            "progress": "<REDACTED>",
             "state": null
           },
           {
@@ -450,7 +1316,7 @@
             "manager_id": null,
             "name": "TestAnnoTask",
             "pipe_element_id": "<ID>",
-            "progress": null,
+            "progress": "<REDACTED>",
             "state": null
           },
           {
@@ -466,7 +1332,7 @@
             "manager_id": null,
             "name": "TestAnnoTask",
             "pipe_element_id": "<ID>",
-            "progress": null,
+            "progress": "<REDACTED>",
             "state": null
           },
           {
@@ -482,7 +1348,7 @@
             "manager_id": null,
             "name": "MultiImageAnnoation",
             "pipe_element_id": "<ID>",
-            "progress": 100.0,
+            "progress": "<REDACTED>",
             "state": 3
           },
           {
@@ -498,7 +1364,7 @@
             "manager_id": null,
             "name": "MultiImageAnnoation",
             "pipe_element_id": "<ID>",
-            "progress": 100.0,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -514,7 +1380,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 100.0,
+            "progress": "<REDACTED>",
             "state": 3
           },
           {
@@ -530,7 +1396,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 100.0,
+            "progress": "<REDACTED>",
             "state": 3
           },
           {
@@ -546,7 +1412,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 5.88235,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -562,7 +1428,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 100.0,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -578,7 +1444,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 100.0,
+            "progress": "<REDACTED>",
             "state": 3
           },
           {
@@ -594,7 +1460,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 100.0,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -610,7 +1476,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 95.6522,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -626,14 +1492,14 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 100.0,
+            "progress": "<REDACTED>",
             "state": 3
           },
           {
             "created_at": "<TS>",
             "datasetId": null,
             "datastoreId": null,
-            "description": "Progress: 43%",
+            "description": "Progress: 100%",
             "dtype": 1,
             "group_id": "<ID>",
             "idx": "<ID>",
@@ -642,7 +1508,7 @@
             "manager_id": null,
             "name": "MultiImageAnnoation",
             "pipe_element_id": "<ID>",
-            "progress": 43.4783,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -658,7 +1524,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 100.0,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -674,7 +1540,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 100.0,
+            "progress": "<REDACTED>",
             "state": 3
           },
           {
@@ -690,7 +1556,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 100.0,
+            "progress": "<REDACTED>",
             "state": 3
           },
           {
@@ -706,7 +1572,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 100.0,
+            "progress": "<REDACTED>",
             "state": 3
           },
           {
@@ -722,7 +1588,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 0.0,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -738,7 +1604,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 0.0,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -754,7 +1620,7 @@
             "manager_id": null,
             "name": "SIA",
             "pipe_element_id": "<ID>",
-            "progress": 78.2609,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -770,7 +1636,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 0.0,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -786,7 +1652,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 17.3913,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -802,7 +1668,7 @@
             "manager_id": null,
             "name": "SIA",
             "pipe_element_id": "<ID>",
-            "progress": 0.0,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -818,7 +1684,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 0.0,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -834,7 +1700,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 0.0,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -850,7 +1716,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 39.1304,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -866,24 +1732,8 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 0.0,
+            "progress": "<REDACTED>",
             "state": 2
-          },
-          {
-            "created_at": "<TS>",
-            "datasetId": null,
-            "datastoreId": null,
-            "description": "Progress: 100%",
-            "dtype": 2,
-            "group_id": "<ID>",
-            "idx": "<ID>",
-            "instruction_id": 1,
-            "isAnnotask": true,
-            "manager_id": null,
-            "name": "Single Image Annotation Task",
-            "pipe_element_id": "<ID>",
-            "progress": 100.0,
-            "state": 3
           },
           {
             "created_at": "<TS>",
@@ -898,7 +1748,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 73.3333,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -914,7 +1764,7 @@
             "manager_id": null,
             "name": "SIA numbers",
             "pipe_element_id": "<ID>",
-            "progress": 80.0,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -930,7 +1780,7 @@
             "manager_id": null,
             "name": "SIA numbers",
             "pipe_element_id": "<ID>",
-            "progress": 0.0,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -946,7 +1796,7 @@
             "manager_id": null,
             "name": "SIA numbers",
             "pipe_element_id": "<ID>",
-            "progress": 0.0,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -962,7 +1812,7 @@
             "manager_id": null,
             "name": "SIA numbers",
             "pipe_element_id": "<ID>",
-            "progress": 0.0,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -978,7 +1828,7 @@
             "manager_id": null,
             "name": "SIA numbers",
             "pipe_element_id": "<ID>",
-            "progress": 70.0,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -994,7 +1844,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 60.0,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -1010,7 +1860,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 0.0,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -1026,7 +1876,7 @@
             "manager_id": null,
             "name": "SIA numbers",
             "pipe_element_id": "<ID>",
-            "progress": 30.0,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -1042,7 +1892,7 @@
             "manager_id": null,
             "name": "SIA numbers",
             "pipe_element_id": "<ID>",
-            "progress": 10.0,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -1058,7 +1908,7 @@
             "manager_id": null,
             "name": "SIA numbers",
             "pipe_element_id": "<ID>",
-            "progress": 10.0,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -1074,7 +1924,7 @@
             "manager_id": null,
             "name": "SIA numbers",
             "pipe_element_id": "<ID>",
-            "progress": 0.0,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -1090,7 +1940,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 90.0,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -1106,7 +1956,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 100.0,
+            "progress": "<REDACTED>",
             "state": 3
           },
           {
@@ -1122,7 +1972,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 0.0,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -1138,7 +1988,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 100.0,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -1154,7 +2004,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 80.0,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -1170,7 +2020,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 100.0,
+            "progress": "<REDACTED>",
             "state": 3
           },
           {
@@ -1186,7 +2036,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 100.0,
+            "progress": "<REDACTED>",
             "state": 3
           },
           {
@@ -1202,7 +2052,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 100.0,
+            "progress": "<REDACTED>",
             "state": 3
           },
           {
@@ -1218,7 +2068,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 100.0,
+            "progress": "<REDACTED>",
             "state": 3
           },
           {
@@ -1234,7 +2084,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 60.0,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -1250,7 +2100,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 100.0,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -1266,7 +2116,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 70.0,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -1282,7 +2132,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 40.0,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -1298,7 +2148,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 0.0,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -1314,7 +2164,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 100.0,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -1330,7 +2180,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 60.0,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -1346,7 +2196,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 60.0,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -1362,7 +2212,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 10.0,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -1378,7 +2228,7 @@
             "manager_id": null,
             "name": "Test Label 50",
             "pipe_element_id": "<ID>",
-            "progress": 20.0,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -1394,7 +2244,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 21.2121,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -1410,7 +2260,7 @@
             "manager_id": null,
             "name": "test 70 labels 2",
             "pipe_element_id": "<ID>",
-            "progress": 9.09091,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -1426,7 +2276,7 @@
             "manager_id": null,
             "name": "test 70 labels 2",
             "pipe_element_id": "<ID>",
-            "progress": 54.5455,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -1442,7 +2292,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 81.8182,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -1458,7 +2308,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 100.0,
+            "progress": "<REDACTED>",
             "state": 3
           },
           {
@@ -1474,7 +2324,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 100.0,
+            "progress": "<REDACTED>",
             "state": 3
           },
           {
@@ -1490,7 +2340,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 100.0,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -1506,7 +2356,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 100.0,
+            "progress": "<REDACTED>",
             "state": 3
           },
           {
@@ -1522,14 +2372,14 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 2.85714,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
             "created_at": "<TS>",
             "datasetId": null,
             "datastoreId": null,
-            "description": "Progress: 0%",
+            "description": "Progress: 56%",
             "dtype": 2,
             "group_id": "<ID>",
             "idx": "<ID>",
@@ -1538,7 +2388,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 0.0,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -1554,7 +2404,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 100.0,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -1570,7 +2420,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 0.0,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -1586,7 +2436,7 @@
             "manager_id": null,
             "name": "test type 2",
             "pipe_element_id": "<ID>",
-            "progress": null,
+            "progress": "<REDACTED>",
             "state": 1
           },
           {
@@ -1602,14 +2452,14 @@
             "manager_id": null,
             "name": "MultiImageAnnoation",
             "pipe_element_id": "<ID>",
-            "progress": 100.0,
+            "progress": "<REDACTED>",
             "state": 3
           },
           {
             "created_at": "<TS>",
             "datasetId": null,
             "datastoreId": null,
-            "description": "Progress: 0%",
+            "description": "Progress: 9%",
             "dtype": 2,
             "group_id": "<ID>",
             "idx": "<ID>",
@@ -1618,7 +2468,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 0.0,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -1634,7 +2484,7 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 0.0,
+            "progress": "<REDACTED>",
             "state": 2
           },
           {
@@ -1650,8 +2500,328 @@
             "manager_id": null,
             "name": "Single Image Annotation Task",
             "pipe_element_id": "<ID>",
-            "progress": 0.0,
+            "progress": "<REDACTED>",
             "state": 2
+          },
+          {
+            "created_at": "<TS>",
+            "datasetId": null,
+            "datastoreId": null,
+            "description": "Progress: 3%",
+            "dtype": 2,
+            "group_id": "<ID>",
+            "idx": "<ID>",
+            "instruction_id": null,
+            "isAnnotask": true,
+            "manager_id": null,
+            "name": "Single Image Annotation Task",
+            "pipe_element_id": "<ID>",
+            "progress": "<REDACTED>",
+            "state": 2
+          },
+          {
+            "created_at": "<TS>",
+            "datasetId": null,
+            "datastoreId": null,
+            "description": "Progress: 100%",
+            "dtype": 1,
+            "group_id": "<ID>",
+            "idx": "<ID>",
+            "instruction_id": null,
+            "isAnnotask": true,
+            "manager_id": null,
+            "name": "MultiImageAnnoation",
+            "pipe_element_id": "<ID>",
+            "progress": "<REDACTED>",
+            "state": 3
+          },
+          {
+            "created_at": "<TS>",
+            "datasetId": null,
+            "datastoreId": null,
+            "description": "Progress: 100%",
+            "dtype": 2,
+            "group_id": "<ID>",
+            "idx": "<ID>",
+            "instruction_id": null,
+            "isAnnotask": true,
+            "manager_id": null,
+            "name": "Single Image Annotation Task",
+            "pipe_element_id": "<ID>",
+            "progress": "<REDACTED>",
+            "state": 3
+          },
+          {
+            "created_at": "<TS>",
+            "datasetId": null,
+            "datastoreId": null,
+            "description": "Progress: 40%",
+            "dtype": 2,
+            "group_id": "<ID>",
+            "idx": "<ID>",
+            "instruction_id": null,
+            "isAnnotask": true,
+            "manager_id": null,
+            "name": "Single Image Annotation Task",
+            "pipe_element_id": "<ID>",
+            "progress": "<REDACTED>",
+            "state": 2
+          },
+          {
+            "created_at": "<TS>",
+            "datasetId": null,
+            "datastoreId": null,
+            "description": "Progress: 46%",
+            "dtype": 2,
+            "group_id": "<ID>",
+            "idx": "<ID>",
+            "instruction_id": null,
+            "isAnnotask": true,
+            "manager_id": null,
+            "name": "Single Image Annotation Task",
+            "pipe_element_id": "<ID>",
+            "progress": "<REDACTED>",
+            "state": 2
+          },
+          {
+            "created_at": "<TS>",
+            "datasetId": null,
+            "datastoreId": null,
+            "description": "Progress: 17%",
+            "dtype": 2,
+            "group_id": "<ID>",
+            "idx": "<ID>",
+            "instruction_id": null,
+            "isAnnotask": true,
+            "manager_id": null,
+            "name": "Single Image Annotation Task",
+            "pipe_element_id": "<ID>",
+            "progress": "<REDACTED>",
+            "state": 2
+          },
+          {
+            "created_at": "<TS>",
+            "datasetId": null,
+            "datastoreId": null,
+            "description": "Progress: 100%",
+            "dtype": 2,
+            "group_id": "<ID>",
+            "idx": "<ID>",
+            "instruction_id": null,
+            "isAnnotask": true,
+            "manager_id": null,
+            "name": "Single Image Annotation Task",
+            "pipe_element_id": "<ID>",
+            "progress": "<REDACTED>",
+            "state": 3
+          },
+          {
+            "created_at": "<TS>",
+            "datasetId": null,
+            "datastoreId": null,
+            "description": "Progress: 100%",
+            "dtype": 2,
+            "group_id": "<ID>",
+            "idx": "<ID>",
+            "instruction_id": null,
+            "isAnnotask": true,
+            "manager_id": null,
+            "name": "Single Image Annotation Task",
+            "pipe_element_id": "<ID>",
+            "progress": "<REDACTED>",
+            "state": 3
+          },
+          {
+            "created_at": "<TS>",
+            "datasetId": null,
+            "datastoreId": null,
+            "description": "Progress: 3%",
+            "dtype": 2,
+            "group_id": "<ID>",
+            "idx": "<ID>",
+            "instruction_id": null,
+            "isAnnotask": true,
+            "manager_id": null,
+            "name": "Single Image Annotation Task",
+            "pipe_element_id": "<ID>",
+            "progress": "<REDACTED>",
+            "state": 2
+          },
+          {
+            "created_at": "<TS>",
+            "datasetId": null,
+            "datastoreId": null,
+            "description": "Progress: 0%",
+            "dtype": 2,
+            "group_id": "<ID>",
+            "idx": "<ID>",
+            "instruction_id": null,
+            "isAnnotask": true,
+            "manager_id": null,
+            "name": "Single Image Annotation Task",
+            "pipe_element_id": "<ID>",
+            "progress": "<REDACTED>",
+            "state": 1
+          },
+          {
+            "created_at": "<TS>",
+            "datasetId": null,
+            "datastoreId": null,
+            "description": "Progress: 0%",
+            "dtype": 2,
+            "group_id": "<ID>",
+            "idx": "<ID>",
+            "instruction_id": null,
+            "isAnnotask": true,
+            "manager_id": null,
+            "name": "Single Image Annotation Task",
+            "pipe_element_id": "<ID>",
+            "progress": "<REDACTED>",
+            "state": 1
+          },
+          {
+            "created_at": "<TS>",
+            "datasetId": null,
+            "datastoreId": null,
+            "description": "Progress: 0%",
+            "dtype": 2,
+            "group_id": "<ID>",
+            "idx": "<ID>",
+            "instruction_id": null,
+            "isAnnotask": true,
+            "manager_id": null,
+            "name": "Single Image Annotation Task",
+            "pipe_element_id": "<ID>",
+            "progress": "<REDACTED>",
+            "state": 1
+          },
+          {
+            "created_at": "<TS>",
+            "datasetId": null,
+            "datastoreId": null,
+            "description": "Progress: 0%",
+            "dtype": 2,
+            "group_id": "<ID>",
+            "idx": "<ID>",
+            "instruction_id": 1,
+            "isAnnotask": true,
+            "manager_id": null,
+            "name": "Single Image Annotation Task",
+            "pipe_element_id": "<ID>",
+            "progress": "<REDACTED>",
+            "state": 2
+          },
+          {
+            "created_at": "<TS>",
+            "datasetId": null,
+            "datastoreId": null,
+            "description": "Progress: 0%",
+            "dtype": 2,
+            "group_id": "<ID>",
+            "idx": "<ID>",
+            "instruction_id": null,
+            "isAnnotask": true,
+            "manager_id": null,
+            "name": "Single Image Annotation Task",
+            "pipe_element_id": "<ID>",
+            "progress": "<REDACTED>",
+            "state": 2
+          },
+          {
+            "created_at": "<TS>",
+            "datasetId": null,
+            "datastoreId": null,
+            "description": "Progress: 0%",
+            "dtype": 2,
+            "group_id": "<ID>",
+            "idx": "<ID>",
+            "instruction_id": 1,
+            "isAnnotask": true,
+            "manager_id": null,
+            "name": "SIA test",
+            "pipe_element_id": "<ID>",
+            "progress": "<REDACTED>",
+            "state": 2
+          },
+          {
+            "created_at": "<TS>",
+            "datasetId": null,
+            "datastoreId": null,
+            "description": "Progress: 0%",
+            "dtype": null,
+            "group_id": "<ID>",
+            "idx": "<ID>",
+            "instruction_id": null,
+            "isAnnotask": true,
+            "manager_id": null,
+            "name": "TestAnnoTask",
+            "pipe_element_id": "<ID>",
+            "progress": "<REDACTED>",
+            "state": null
+          },
+          {
+            "created_at": "<TS>",
+            "datasetId": null,
+            "datastoreId": null,
+            "description": "Progress: 0%",
+            "dtype": null,
+            "group_id": "<ID>",
+            "idx": "<ID>",
+            "instruction_id": null,
+            "isAnnotask": true,
+            "manager_id": null,
+            "name": "TestAnnoTask",
+            "pipe_element_id": "<ID>",
+            "progress": "<REDACTED>",
+            "state": null
+          },
+          {
+            "created_at": "<TS>",
+            "datasetId": null,
+            "datastoreId": null,
+            "description": "Progress: 0%",
+            "dtype": null,
+            "group_id": "<ID>",
+            "idx": "<ID>",
+            "instruction_id": null,
+            "isAnnotask": true,
+            "manager_id": null,
+            "name": "TestAnnoTask",
+            "pipe_element_id": "<ID>",
+            "progress": "<REDACTED>",
+            "state": null
+          },
+          {
+            "created_at": "<TS>",
+            "datasetId": null,
+            "datastoreId": null,
+            "description": "Progress: 0%",
+            "dtype": null,
+            "group_id": "<ID>",
+            "idx": "<ID>",
+            "instruction_id": null,
+            "isAnnotask": true,
+            "manager_id": null,
+            "name": "TestAnnoTask",
+            "pipe_element_id": "<ID>",
+            "progress": "<REDACTED>",
+            "state": null
+          },
+          {
+            "created_at": "<TS>",
+            "datasetId": null,
+            "datastoreId": null,
+            "description": "Progress: 0%",
+            "dtype": null,
+            "group_id": "<ID>",
+            "idx": "<ID>",
+            "instruction_id": null,
+            "isAnnotask": true,
+            "manager_id": null,
+            "name": "TestAnnoTask",
+            "pipe_element_id": "<ID>",
+            "progress": "<REDACTED>",
+            "state": null
           },
           {
             "created_at": "<TS>",
@@ -1666,7 +2836,7 @@
             "manager_id": null,
             "name": "compare_test_mia",
             "pipe_element_id": "<ID>",
-            "progress": null,
+            "progress": "<REDACTED>",
             "state": 2
           }
         ],
@@ -1680,7 +2850,6 @@
       }
     ],
     "headers": {
-      "access-control-allow-origin": "*",
       "content-type": "application/json"
     },
     "status": 200

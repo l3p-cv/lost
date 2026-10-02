@@ -1,0 +1,19 @@
+{
+  "mode": "exact",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "DELETE",
+    "path": "/api/instructions/deleteInstruction/999999"
+  },
+  "response": {
+    "body": {
+      "message": "Instruction not found or is already deleted"
+    },
+    "headers": {
+      "content-type": "application/json"
+    },
+    "status": 200
+  }
+}

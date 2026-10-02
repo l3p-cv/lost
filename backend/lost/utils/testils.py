@@ -5,8 +5,8 @@ import json
 
 import pandas as pd
 
+from lost.controllers.label.LabelBusiness import LabelTree
 from lost.db import dtype, model
-from lost.logic.label import LabelTree
 
 
 def get_user(dbm):

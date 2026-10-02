@@ -85,7 +85,7 @@ def create_test_user(dbm, suffix: str | None = None) -> User:
 def cleanup_test_user(dbm, user: User | int | str) -> bool:
     """Delete a test user and all associated entities (groups, roles, filesystem).
 
-    Mirrors the delete logic in ``lost/api/user/endpoint.py:166`` (the DELETE endpoint).
+    Mirrors the delete logic in ``lost/controllers/user/endpoint.py:166`` (the DELETE endpoint).
     Handles already-deleted entities gracefully (the DELETE endpoint may have partially
     or fully deleted the user before raising an exception).
 
@@ -96,6 +96,7 @@ def cleanup_test_user(dbm, user: User | int | str) -> bool:
     Returns:
         True if the user was found and deleted, False otherwise.
     """
+    dbm.session.rollback()
     # Resolve to a User object — use a fresh query to avoid stale session state
     if isinstance(user, User):
         db_user = dbm.get_user_by_id(user.idx)
@@ -174,7 +175,32 @@ def cleanup_all_test_users(dbm) -> int:
                 count += 1
     return count
 
+def cleanup_all_test_label_leaves(dbm) -> int:
+    """Remove leftover compare_test_* label leaves (e.g. strays inside OOTB trees)."""
+    from lost.db import model
+    strays = dbm.session.query(model.LabelLeaf).filter(
+        model.LabelLeaf.name.like(f"{TEST_PREFIX}%")
+    ).all()
+    for leaf in strays:
+        dbm.delete(leaf)
+    dbm.commit()
+    return len(strays)
 
+def cleanup_all_test_groups(dbm) -> int:
+    """Remove leftover compare_test_* groups (FK-safe: deletes membership rows first).
+
+    Run after cleanup_all_test_users — user-default groups die with their users;
+    whatever remains here is test residue.
+    """
+    from lost.db import model
+    n = 0
+    for g in dbm.session.query(model.Group).filter(model.Group.name.like(f"{TEST_PREFIX}%")).all():
+        for ug in dbm.session.query(model.UserGroups).filter_by(group_id=g.idx).all():
+            dbm.delete(ug)
+        dbm.delete(g)
+        n += 1
+    dbm.commit()
+    return n
 # ---------------------------------------------------------------------------
 # Helper for tests: build the JSON body for creating a user via the API
 # ---------------------------------------------------------------------------

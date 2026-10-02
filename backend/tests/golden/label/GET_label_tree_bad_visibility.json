@@ -1,0 +1,20 @@
+{
+  "mode": "exact",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "GET",
+    "path": "/api/label/tree/invalid_visibility"
+  },
+  "response": {
+    "body": {
+      "message": "You are not authorized."
+    },
+    "headers": {
+      "content-type": "application/json",
+      "vary": "Origin"
+    },
+    "status": 403
+  }
+}

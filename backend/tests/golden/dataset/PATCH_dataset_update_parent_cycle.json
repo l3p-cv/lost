@@ -1,0 +1,23 @@
+{
+  "mode": "exact",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "json": {
+      "description": "parent-cycle error spec",
+      "id": 470,
+      "name": "compare_test_parent_cycle",
+      "parentDatasetId": 471
+    },
+    "method": "PATCH",
+    "path": "/api/datasets"
+  },
+  "response": {
+    "body": "Chosen parent can't be a child of the current dataset",
+    "headers": {
+      "content-type": "text/plain; charset=utf-8"
+    },
+    "status": 400
+  }
+}

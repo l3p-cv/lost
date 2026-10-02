@@ -14,7 +14,7 @@ Reversible mutations modify compare_test_sia (not a real user's annotask):
 from __future__ import annotations
 
 from tests.helpers.recorder import RequestSpec
-from tests.helpers.seed import unique_suffix, TEST_PREFIX
+from tests.helpers.seed import unique_suffix, TEST_PREFIX, create_test_user, cleanup_test_user
 from tests.helpers.specs import RouteSpec
 from tests.compare.migration_status import target_for
 
@@ -156,6 +156,54 @@ def _revert_dataset_id(dbm, context):
             fresh_dbm.save_obj(at)
     finally:
         fresh_dbm.close_session()
+
+def _fresh_annotator(dbm) -> dict:
+    """Fresh annotator token — no working task, no access to any pipe element."""
+    from lost.controllers.user.login_manager import LoginManager
+
+    user = create_test_user(dbm)
+    lm = LoginManager(dbm, user.user_name, "")
+    fresh_token, _ = lm.create_jwt_pyjwt(user.idx, user.user_name, user.roles)
+    return {"fresh_token": fresh_token, "user_obj": user, "skip": False}
+
+
+def _fresh_annotator_with_annotask(dbm) -> dict:
+    """Fresh annotator token + the compare_test_sia annotask id."""
+    ctx = _setup_annotask_context(dbm)
+    if ctx.get("skip"):
+        return ctx
+    fresh = _fresh_annotator(dbm)
+    ctx.update(fresh)
+    return ctx
+
+def _fresh_designer_with_annotask(dbm) -> dict:
+    """Fresh designer-without-admin token + the compare_test_sia annotask id.
+
+    The designer role is committed BEFORE minting so the token payload sees
+    it. The user is not the pipeline manager, so the manager guard answers
+    with the standard 403 body.
+    """
+    ctx = _setup_annotask_context(dbm)
+    if ctx.get("skip"):
+        return ctx
+
+    from lost.controllers.user.login_manager import LoginManager
+    from lost.db import roles as db_roles
+    from lost.db.model import UserRoles
+
+    user = create_test_user(dbm)
+    designer = dbm.get_role_by_name(db_roles.DESIGNER)
+    dbm.save_obj(UserRoles(user_id=user.idx, role_id=designer.idx))
+    dbm.commit()
+    lm = LoginManager(dbm, user.user_name, "")
+    fresh_token, _ = lm.create_jwt_pyjwt(user.idx, user.user_name, user.roles)
+    ctx.update({"fresh_token": fresh_token, "user_obj": user})
+    return ctx
+
+
+def _cleanup_fresh_user(dbm, context) -> None:
+    if "user_obj" in context:
+        cleanup_test_user(dbm, context["user_obj"])
 
 
 # ---------------------------------------------------------------------------
@@ -526,6 +574,47 @@ def get_annotask_specs() -> list[RouteSpec]:
         request=RequestSpec(method="GET", path="/api/annotasks/exports/{export_id}"),
         skip=True,
         skip_reason="Binary file download — recorder needs fix. Verified manually in P1.2.",
+    ))
+
+    # GET /api/annotasks/999999/instruction → 404 (exact)
+    specs.append(RouteSpec(
+        name="GET_annotask_instruction_not_found",
+        request=RequestSpec(method="GET", path="/api/annotasks/999999/instruction", mode="exact"),
+        target=_TARGET,
+    ))
+
+    # GET /api/annotasks/working as a fresh annotator (no working task) → 412 (exact)
+    specs.append(RouteSpec(
+        name="GET_annotasks_working_not_found",
+        request=RequestSpec(method="GET", path="/api/annotasks/working", mode="exact"),
+        setup=_fresh_annotator,
+        cleanup=_cleanup_fresh_user,
+        target=_TARGET,
+    ))
+
+    # GET /api/annotasks/{id}/exports as a fresh annotator (no pe access) → 403 (exact)
+    specs.append(RouteSpec(
+        name="GET_annotask_exports_forbidden",
+        request=RequestSpec(
+            method="GET", path="/api/annotasks/{annotask_id}/exports", mode="exact",
+        ),
+        setup=_fresh_annotator_with_annotask,
+        cleanup=_cleanup_fresh_user,
+        target=_TARGET,
+        # proves the migrated require_pe_access_for_annotask guard
+    ))
+
+    # PATCH /api/annotasks/{id}/group as a fresh designer (not the manager) → 403 (exact)
+    specs.append(RouteSpec(
+        name="PATCH_annotask_group_forbidden",
+        request=RequestSpec(
+            method="PATCH", path="/api/annotasks/{annotask_id}/group",
+            json={"groupId": 1}, mode="exact",
+        ),
+        setup=_fresh_designer_with_annotask,
+        cleanup=_cleanup_fresh_user,
+        target=_TARGET,
+        # proves the migrated manager guard; the 403 path mutates nothing
     ))
 
     return specs

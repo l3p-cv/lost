@@ -1,0 +1,20 @@
+{
+  "mode": "exact",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "method": "POST",
+    "path": "/api/label/tree/all"
+  },
+  "response": {
+    "body": {
+      "error": "Invalid file format. Please upload a CSV file."
+    },
+    "headers": {
+      "content-type": "application/json",
+      "vary": "Origin"
+    },
+    "status": 400
+  }
+}

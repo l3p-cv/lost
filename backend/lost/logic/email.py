@@ -7,7 +7,6 @@ from jinja2 import Environment, FileSystemLoader
 from lost.db import dtype
 from lost.settings import LOST_CONFIG
 
-
 # Templates are in lost/templates/email/
 template_env = Environment(
     loader=FileSystemLoader(Path(__file__).resolve().parent.parent / "templates"),

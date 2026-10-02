@@ -5,8 +5,8 @@ import logging
 import pandas as pd
 
 import lostconfig as config
+from lost.controllers.label.LabelBusiness import LabelTree
 from lost.db import access
-from lost.logic.label import LabelTree
 
 logging.basicConfig(level=logging.INFO, format="(%(levelname)s): %(message)s")
 
