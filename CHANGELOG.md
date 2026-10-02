@@ -6,7 +6,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 ### Added
-<<<<<<< HEAD
 - `tests/architecture/test_layering.py` : Added layering guard test (to test the CCB split)
 - `controllers/Dependencies.py` : contains all changes that were previously in `controllers/auth/dependencies.py` (all endpoint layer wiring: `get_current_user`/`require_role`)
 - `controllers/AuthorizationService.py` : resource level authorization util
@@ -64,9 +63,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - removed the 38 dead Flask-era restx reference files, 2 annotasks JSON fixtures , triton preserved , dropped unused imports.
 - removed dead schema code from InferenceModelEndpoint.py 
 - removed following for cleanup of `lost/logic/` : `report.py`, `logic/clitest/` , `logic/statistics/` (moved to StatisticsBusiness).
-=======
 
->>>>>>> 7dc380f0e95ccd5a4a9c9aa3bec55c65b9d1a2e7
 ## [4.0.0] - 2026-09-16
 ### Added
 - `backend/tests/` : Added golden-snapshot API comparison harness for the Flask→FastAPI migration (P0). Records Flask's API responses as reference snapshots and replays them against FastAPI to verify behavioral equivalence. Includes `conftest.py` with JWT minting, `helpers/` (client, comparator, recorder, seed), and parametrized comparison tests for the `user` namespace.
