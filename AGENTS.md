@@ -126,6 +126,7 @@ Also: record notable changes in the root `CHANGELOG.md` under `## unreleased`.
 ### Subproject guides
 - Before editing under `backend/` — read `backend/AGENTS.md` (Python standards, module map, D2/CCB rules, schema patches, harness commands)
 - Before editing under `frontend/` — read `frontend/AGENTS.md` (JS/TS standards, app nesting, structure, red lint baselines)
+- Before touching the annotation domain (SIA/MIA, pipelines, review) — read the "Annotation domain map" in `backend/AGENTS.md` and the "Annotation UI map" in `frontend/AGENTS.md`
 
 ### Environment Variables
 - All backend config flows through `lostconfig.LOSTConfig` reading `LOST_*` vars (`lost_db_*`, `lost_secret_key`, `lost_redis_*`, `lost_worker_*`, mail, jupyter, ...).
