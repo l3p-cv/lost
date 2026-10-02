@@ -114,103 +114,6 @@ Also: record notable changes in the root `CHANGELOG.md` under `## unreleased`.
 
 ---
 
-## Python Standards
-
-### 1. General Coding Standards
-
-- **Linter**: `ruff check --no-fix .` from `backend/` — config in `backend/pyproject.toml` (line length **120**, `fix = false`, rules incl. S/B/C4/I/TRY/UP; `lost/controllers/triton` excluded). `uv.lock` pins ruff **0.11.8** — use `uvx ruff@0.11.8 check --no-fix .`; newer ruff versions report ~800 pre-existing findings — never mass-fix unrelated ones.
-- **Naming**: `snake_case` (vars/funcs), `PascalCase` (classes), `UPPER_SNAKE_CASE` (constants).
-- **Path Handling**: prefer `pathlib.Path` in new code; legacy uses `os.*` — don't mass-migrate.
-- **String Formatting**: f-strings are used everywhere, including legacy logging calls; new modules (e.g. `fastapi_app.py`) use structured `logger.info("event", extra={...})` — prefer that for new code.
-- **Imports**: Absolute imports only (`from lost...`); no relative imports. Group: Stdlib → Third-party → Local.
-- **Package Manager**: `uv` (`uv.lock`); the container installs from `uv pip compile pyproject.toml`.
-
-### 2. Type Hinting
-
-- Mypy is configured in `backend/pyproject.toml` (`files = ["lost"]`, `disallow_untyped_defs = true`); locked version **1.15.0** → `uvx mypy@1.15.0` from `backend/`. Annotate all defs in new code.
-- Use modern syntax (`list[str]`, `str | None`) over `List`, `Optional`, `Union` — new code already does.
-- `lost/controllers/triton` is excluded from mypy.
-
-### 3. Documentation (Google Style)
-
-- Google Style docstrings (summary in imperative mood, Args/Returns/Raises) — e.g. `LabelTree` in `lost/controllers/label/LabelBusiness.py`.
-- New modules carry a module docstring stating their CCB layer context (see `backend/lost/README.md`).
-
-### 4. Exception Handling — the D2 pattern
-
-- **Business layer raises plain `DomainError` subclasses** (no HTTP vocabulary), defined in each module's Business file; the Endpoint catches them and builds the byte-exact legacy response via `lost/controllers/Responses.py`.
-- `NotAuthorizedError` is the shared permission-guard error and the **only** globally-handled domain error.
-- `raise ... from e` to preserve stack traces; no new bare `except:` (legacy has ~70 — leave them).
-
-```python
-# Business (framework-free)
-from lost.controllers.Exceptions import DomainError
-
-class DuplicateLabelTreeError(DomainError):
-    """Raised when a label tree name already exists."""
-
-# Endpoint
-from lost.controllers import Responses
-
-try:
-    tree = coordination.create_tree(name)
-except DuplicateLabelTreeError as e:
-    return Responses.conflict(str(e))
-return Responses.ok(result)
-```
-
-### 5. Logging
-
-- stdlib `logging`, module loggers via `logging.getLogger(__name__)`; GELF/Graylog when configured.
-- Prefer structured fields (`extra={...}`) in new code over f-string interpolation.
-
-### 6. Async Patterns
-
-- FastAPI endpoints are mostly sync `def` today; a few `async def` exist. Don't convert wholesale — use `async def` only where it demonstrably helps.
-
-### 7. Testing (Pytest, docker-only)
-
-- Suites: `backend/tests/` (golden-snapshot compare, auth, architecture) and in-package unit tests (`lost/logic/test/`, `lost/pyapi/test/`).
-- All tests need the compose stack (live MySQL + seeded `admin`). No coverage threshold is enforced.
-
-### 8. Web Service Standards (FastAPI)
-
-- Pydantic for request/response validation; `Depends()` for auth (`lost/controllers/Dependencies.py`: `require_role`, annotask resource guards) and DB access (`DBMan`).
-- **Do NOT raise `HTTPException` in migrated namespaces** — use the D2 pattern (`DomainError` → `Responses`) to keep byte-exact legacy responses.
-- Response vocabulary: `Responses.ok / no_content / bad_request / unauthorized / forbidden / not_found / conflict / precondition_failed / unprocessable / internal / plain_text`.
-- CCB layering is enforced by `backend/tests/architecture/test_layering.py` — register every fully-split module in its `SPLIT_MODULES` registry.
-
----
-
-## JavaScript/TypeScript Standards
-
-### 1. General Coding Standards
-
-- **Package manager**: bun only (`bun.lock` is tracked; `package-lock.json` is gitignored).
-- **Formatter**: prettier — `bun run format` (no prettier config file; editor defaults, format-on-save).
-- **Linter**: eslint 9 flat config (`eslint.config.mjs`). ⚠️ `bun run lint` fails at baseline with 172 parser errors (`parserOptions.project` points at the solution-style `tsconfig.json` with `files: []`) — pre-existing, not caused by your change; don't fix the eslint config as a side quest.
-- **Naming**: `PascalCase` components/containers (`src/components`, `src/containers`), `camelCase` everything else.
-- **Mixed JS/TS**: the codebase is mostly `.jsx` with growing `.ts/.tsx` — follow the local style of the file you edit.
-- **API modules**: one file per namespace in `src/api/` (`user.tsx`, `sia.tsx`, `pipeline/`, ...).
-
-### 2. React & Frontend Patterns
-
-- React 19, functional components + hooks only; CoreUI 5 component library.
-- State: Redux + react-query v3 for server state; i18n via react-i18next (`src/assets/locales/{de,en}.json`).
-- Dev API base: `src/lost_settings.js` → `VITE_BACKEND_PORT` (default: 80 for the compose stack); production uses same-origin `/api`.
-- Runtime config: `public/config.js` sets `globalThis.__APP_CONFIG__` (overwritten in production).
-
-### 3. TypeScript
-
-- `tsconfig.app.json`: `strict: true` + `checkJs`, but `noImplicitAny: false`; pre-existing type errors exist.
-- **Verification gate is `bun run build`** (vite build) — it does NOT typecheck; `bunx tsc --noEmit` is not a clean baseline.
-
-### 4. Testing
-
-- No frontend tests exist. (The `bun test` note in `frontend/lost/README.md` is Vite template boilerplate.)
-
----
-
 ## 🎯 Project-Specific Guidelines
 
 **Critical information for AI coding agents working on this project:**
@@ -220,23 +123,9 @@ return Responses.ok(result)
 - **Architecture**: full-stack monorepo — FastAPI backend (`backend/lost`) + React SPA (`frontend/lost`); everything runs via docker compose
 - **Domain**: annotation pipelines (SIA single-image, MIA multi-image), label trees, dataset exports, file browser (S3/Azure/FTP/...), statistics, review workflows, Triton inference integration
 
-### Backend Architecture
-
-**CCB split** per namespace under `lost/controllers/<name>/`:
-- `<Name>Endpoint.py` — routes, schemas, response construction (catches `DomainError` → `Responses`)
-- `<Name>Coordination.py` — thin delegation only
-- `<Name>Business.py` — framework-free domain logic (no fastapi imports)
-- Enforced by `backend/tests/architecture/test_layering.py` (one-way imports, framework-free business/coordination, `SPLIT_MODULES` registry)
-
-**Shared infrastructure** (controllers root): `Dependencies.py` (auth guards + coordination factories), `Responses.py` (legacy response vocabulary), `Exceptions.py` (`DomainError`, `NotAuthorizedError`), `AuthorizationService.py`.
-
-**Database:**
-- SQLAlchemy 2 on MySQL via `DBMan` (`lost/db/access.py`) — the only session boundary; close sessions in `finally` or use fixtures that do
-- **No alembic** — schema changes require a new patch file + entry in `lost/db/db_patches/patches.py` `patch_dict` (applied by `initlost.py`)
-
-**Pipeline engine:** user-authored scripts run on dask workers via `lost/pyapi/` (legacy zone: `S101` asserts ignored on purpose in `pyapi/` and `logic/`).
-
-**Triton:** `lost/controllers/triton` (Nvidia inference integration, see `INFERENCE_SERVER_DOC.md`) is excluded from lint/typecheck and has no tests.
+### Subproject guides
+- Before editing under `backend/` — read `backend/AGENTS.md` (Python standards, module map, D2/CCB rules, schema patches, harness commands)
+- Before editing under `frontend/` — read `frontend/AGENTS.md` (JS/TS standards, app nesting, structure, red lint baselines)
 
 ### Environment Variables
 - All backend config flows through `lostconfig.LOSTConfig` reading `LOST_*` vars (`lost_db_*`, `lost_secret_key`, `lost_redis_*`, `lost_worker_*`, mail, jupyter, ...).
@@ -252,35 +141,15 @@ return Responses.ok(result)
 - `compose.override.yaml` bind-mounts `backend/` → `/code`: backend edits are live without rebuilds. Frontend changes need a rebuild (`docker compose build frontend`) or `bun run dev` against the stack.
 - Backend debugging: `docker exec lost-backend-1 ...` (container name overridable via `LOST_CONTAINER`).
 
-### Testing (docker-only)
-Golden-snapshot API suite — the regression net (`backend/tests/`, not in CI):
-
-```bash
-./backend/run_snapshots.sh tests/compare/ -v                     # full suite
-./backend/run_snapshots.sh tests/compare/test_user_compare.py -v # focused file
-./backend/run_snapshots.sh tests/compare/ -k GET_user_self -v    # focused test
-./backend/run_snapshots.sh tests/compare/ --record -v            # re-record goldens
-./backend/run_snapshots.sh tests/compare/ --cleanup              # remove leftover test data
-```
-Direct: `docker exec lost-backend-1 bash -lc "cd /code && python -m pytest tests/compare/ -v"`
-
-**Harness rules** (full detail in `backend/tests/README.md` and `backend/tests/AGENTS.md` — read before touching the suite):
-- Never `--record` to silence a failure — root-cause first; record NEW specs only (via `-k`), review the golden diff, commit specs + goldens together
-- `RouteSpec.target` defaults to `"flask"` and hard-fails post-cutover — always `target=_TARGET` from `target_for("<namespace>")`
-- After an API commit, `dbm.session.rollback()` before by-name lookups through the session-scoped `dbm` (repeatable-read trap)
-- Test entities: `compare_test_` prefix only; seed via `tests/helpers/init_test_data.py`, look up by name via `helpers/lookups.py` (`None` → runtime skip); never hardcode IDs
-- Exact-mode specs: fixed names + hardcoded nonexistent IDs (`999999`) only
-
-**New endpoint coverage:** extend seeder + lookups → spec file (`<name>_specs.py`) + runner → register namespace in `compare/migration_status.py` `MIGRATED` → `--record` new specs → verify without `--record` → full suite.
-
-**Fixtures:** `auth_token` mints an admin JWT directly via `LoginManager.create_jwt_pyjwt` (admin holds all roles) — decoupled from login routes; requires the `admin` user seeded by `initlost.py`.
+### Testing
+- All suites are docker-only; CI runs only the in-package unit tests.
+- The golden-snapshot API suite (`backend/tests/`) is the regression net — dev-run before merging API changes; commands and harness rules live in `backend/AGENTS.md` and `backend/tests/README.md`.
 
 ### Common Gotchas
-- `backend/lost/__init__.py` is empty on purpose — overwritten at image build with a `__version__` stamp
-- `bun run lint` and `tsc` baselines are red (pre-existing) — verify frontend changes with `bun run build`
-- Backend lint baseline is version-sensitive: locked ruff 0.11.8 vs. newer ruff → ~800 pre-existing findings; don't mass-fix
+- `docker/compose/.env` is committed with dev defaults — don't put real secrets there; a real env always wins
 - `docs/develop.md` tech-stack section is stale (Flask/Celery era) — trust the code
-- Bare `except:` and asserts in `pyapi/`+`logic/` are known legacy debt (per-file ruff ignores) — leave them
+- Frontend lint/tsc baselines are red (pre-existing) — see `frontend/AGENTS.md` before "fixing" anything
+- Backend lint baseline is version-sensitive (locked ruff 0.11.8) — see `backend/AGENTS.md` before "fixing" anything
 
 ---
 
