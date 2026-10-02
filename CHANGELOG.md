@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `statistics_specs.py` : skipped the personal stats endpoint test as it changes frequently.
 - `controllers/user/UserCoordination.py` : fixed the the long_lived_user to long_lived_token.(method name mismatch).
 - `controllers/dataset/DatasetCoordination.py` : fixed dataset module `delete_dataset_export` to use delete_dataset instead of delete_export. (could deleted unrelated dataset on id collision)
+- `controllers/annotasks/AnnotasksEndpoint.py` : Fixed the UpdateConfigRequest schema signature to not have id, Also added the same in the test specs signature.
 ### Changed
 - `backend/lost/` : renamed package from `lost/api` to `lost/controllers/` as prep for th phase 2 CCB split (only rename , no functional changes). Refactored and updated the imports from `lost.api` to `lost.controllers`.
 - `backend/lost/controllers/auth/` : normalized the auth business layer to the Phase 2 CCB naming convention style (moved from `openid_service.py` to `OpenidBusiness.py` and updated all importers).

@@ -69,7 +69,6 @@ class UpdateGroupRequest(BaseModel):
 
 
 class UpdateConfigRequest(BaseModel):
-    id: int
     configuration: dict | None = None
 
 
