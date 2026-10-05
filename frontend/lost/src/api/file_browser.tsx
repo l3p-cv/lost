@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef } from 'react'
 import axios from 'axios'
 import { API_URL } from '../lost_settings'
-import { useMutation } from 'react-query'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
 
 type uploadProgress = {
   idle: boolean
@@ -30,15 +30,33 @@ export async function lsTest(fs, path) {
   return res.data
 }
 
+export const useFSListQuery = (visLevel: string) =>
+  useQuery(['fslist', visLevel], () =>
+    axios.get(API_URL + `/fb/fslist/${visLevel}`).then((res) => res.data),
+    { refetchOnWindowFocus: false },
+  )
+
 export const useDeleteFs = () => {
+  const queryClient = useQueryClient()
   return useMutation((fs) =>
     axios.post(API_URL + '/fb/delete', { fs: fs }).then((res) => res.data),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['fslist'])
+      }
+    }
   )
 }
 
 export const useSaveFs = () => {
+  const queryClient = useQueryClient()
   return useMutation((fs) =>
     axios.post(API_URL + '/fb/savefs', fs).then((res) => res.data),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['fslist'])
+      }
+    }
   )
 }
 

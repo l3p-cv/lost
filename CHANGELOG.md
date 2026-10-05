@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added [AGENTS](./frontend/AGENTS.md) scoped instructions for the frontend
 - SIA annotations: reintroduced the `minArea` annotask configuration — annotations (bbox/polygon) smaller than the configured minimum are rejected with a warning toast. Requires lost-sia >= 3.5.0; enforcement is active in annotation mode only.
 - `cron.py` : script paths are now shlex-qotted as  Pipelines fail to start after re-importing a project from a browser-renamed zip (e.g. `found(1) (Copy).zip`) script paths in the generated start/debug commands are now safely quoted.
+- `controllers/filebrowser/` : Fixed Datasource page bugs lsTest now returns typed 400/404 error messages for invalid connection strings, missing paths and relative paths on file datasources instead of raw 500s; delete_fs reads the flat `fs.id` payload matching the frontend `SaveFsRequest.visLevel` is optional (datasource edit sent none → 422).
+- `frontend/lost/src/containers/DataSources/` : Fixed Datasource page UI the table refreshes after saving/deleting a datasource, edit/delete operate on the datasource object instead of the table-row wrapper, Save is disabled until the connection test succeeds, and failed file-browser listings show an error instead of spinning forever.
 ### Fixed
 - `controllers/PipelineEndpoint.py` : Fixed updateArguments/ endpoint which wasn't working in FastAPI to use Request instead of bytes.
 - `comparator.py` : strips the `vary` in headers now. -Starlette CORS behaviour change after rebuild caused tests to fail
