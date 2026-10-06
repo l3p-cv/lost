@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `frontend/lost/src/containers/DataSources/` : Fixed Datasource page UI the table refreshes after saving/deleting a datasource, edit/delete operate on the datasource object instead of the table-row wrapper, Save is disabled until the connection test succeeds, and failed file-browser listings show an error instead of spinning forever.
 - `controllers/pipeline/` : Fixed pipeline project import (zip/git) returning failures as plain 200 strings — validation errors now come back as HTTP 400 with the server message, and the success response lists which templates were created vs updated (`logic/pipeline/template_import.py` tracks them).
 - `containers/Pipelines/AddPipelineProject.jsx` : Fixed import toasts — server error messages are surfaced on failure and the success toast lists added vs updated templates; the template list refreshes after import.
+- `containers/Users/GroupsTable.tsx` : Fixed the group table not refreshing after creating a group (and the input not clearing), which invited duplicate groups.
 ### Changed
 - `backend/lost/` : renamed package from `lost/api` to `lost/controllers/` as prep for th phase 2 CCB split (only rename , no functional changes). Refactored and updated the imports from `lost.api` to `lost.controllers`.
 - `backend/lost/controllers/auth/` : normalized the auth business layer to the Phase 2 CCB naming convention style (moved from `openid_service.py` to `OpenidBusiness.py` and updated all importers).
