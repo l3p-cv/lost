@@ -7,6 +7,7 @@ import type {
   SiaResponse,
   ImageEditData,
 } from '../../../api/sia'
+import { useAnnotask } from '../../../api/anno_task'
 import { useGetSiaImage, useFinishAnnotask, useImageJunk } from '../../../api/sia'
 import polygonOperationApi from '../../../api/polygon_operation'
 
@@ -112,6 +113,13 @@ const SiaWrapper = ({
   const [polygonEditMode, setPolygonEditMode] = useState<PolygonEditMode>(
     PolygonEditMode.NONE,
   )
+
+  // fetch the annotask configuration (annotation mode only — review and dataset
+  // contexts must not gain a minArea floor)
+  const { data: annotaskConfig } = useAnnotask(
+    !isReview && !isDatasetMode ? annoTaskId : undefined,
+  )
+  const minimalArea = Number(annotaskConfig?.configuration?.annos?.minArea) || 0
 
   // image search state
   const [isImageSearchActive, setIsImageSearchActive] = useState(false)
@@ -1339,6 +1347,13 @@ const SiaWrapper = ({
           tabIndex={0}
         >
           <Sia
+            annotationSettings={{
+              minimalArea,
+              canCreate: true,
+              canEdit: true,
+              canLabel: true,
+              canHaveMultipleLabels: false,
+            }}
             defaultLabelId={defaultLabelId}
             image={imageBlob}
             uiConfig={{ imageCentered: true }}

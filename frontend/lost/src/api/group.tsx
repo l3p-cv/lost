@@ -12,9 +12,13 @@ export const useGroups = (select?) => {
 }
 
 export const useCreateGroup = () => {
+  const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (payload) => httpClient.post(`/group`, payload),
-    onSuccess: () => showSuccess('Group created successfully'),
+    onSuccess: () => {
+      queryClient.invalidateQueries('groups')
+      showSuccess('Group created successfully')
+    },
     onError: () => showError('Failed to create group'),
   })
 }

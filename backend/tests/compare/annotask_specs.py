@@ -477,7 +477,7 @@ def get_annotask_specs() -> list[RouteSpec]:
         name="PUT_annotask_config",
         request=RequestSpec(
             method="PUT", path="/api/annotasks/{annotask_id}/config",
-            json={"id": "{annotask_id}", "configuration": {"test": True}}, mode="structural",
+            json={"configuration": {"test": True}}, mode="structural",
         ),
         follow_up=RequestSpec(
             method="GET", path="/api/annotasks/{annotask_id}",

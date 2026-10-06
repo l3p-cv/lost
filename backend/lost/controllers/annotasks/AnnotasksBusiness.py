@@ -20,8 +20,8 @@ from lost.controllers.Exceptions import DomainError
 from lost.controllers.sia.SiaBusiness import (
     SiaSerialize,
     SiaUpdateOneThing,
-    get_image_progress,
     get_label_trees_by_anno_task_id,
+    get_review_image_progress,
     reviewoptions_annotask,
 )
 from lost.db import access, dtype, model, state
@@ -39,6 +39,10 @@ class WorkingTaskNotFoundError(DomainError):
 
 class AnnotaskInstructionNotFoundError(DomainError):
     """The annotation task does not exist (annotask id)."""
+
+
+class AnnotaskReviewNoAnnotationError(DomainError):
+    """Review navigation found no annotation (carries the legacy message)."""
 
 
 def update_anno_task(dbm, anno_task_id, user_id=None):
@@ -309,7 +313,7 @@ def _review(dbm, annotask_id, user_id, data):
     first_annotation = dbm.get_sia_review_first(annotask.idx, iteration)
     last_annotation = dbm.get_sia_review_last(annotask.idx, iteration)
     if not first_annotation:
-        return "no annotation found"
+        raise AnnotaskReviewNoAnnotationError("no annotation found")
     current_annotask_idx = data.get("annotaskIdx", annotask.idx)
     if direction == "first":
         image_anno = first_annotation
@@ -320,10 +324,10 @@ def _review(dbm, annotask_id, user_id, data):
     elif direction in ("specificImage", "current"):
         image_anno = dbm.get_sia_review_id(annotask_id, current_idx, iteration)
     else:
-        return "no annotation found"
+        raise AnnotaskReviewNoAnnotationError("no annotation found")
     if not image_anno:
-        return "no annotation found"
-    anno_current_image_number, anno_total_image_amount = get_image_progress(
+        raise AnnotaskReviewNoAnnotationError("no annotation found")
+    anno_current_image_number, anno_total_image_amount = get_review_image_progress(
         dbm, annotask, image_anno.idx, iteration
     )
     is_first_image = first_annotation.idx == image_anno.idx
