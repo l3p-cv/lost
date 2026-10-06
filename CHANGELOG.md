@@ -6,7 +6,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 ### Added
-
+- SIA annotations: reintroduced the `minArea` annotask configuration — annotations (bbox/polygon) smaller than the configured minimum are rejected with a warning toast. Requires lost-sia >= 3.5.0; enforcement is active in annotation mode only.
+### Fixed
+- `controllers/annotasks/AnnotasksEndpoint.py` : Fixed the UpdateConfigRequest schema signature to not have id, Also added the same in the test specs signature.
+- `logic/pipeline/cron.py` : Fixed pipelines failing to start after re-importing a project from a browser-renamed zip (e.g. `found(1) (Copy).zip`) — script paths in the generated start/debug commands are now shlex-quoted.
+- `controllers/filebrowser/` : Fixed Datasource page bugs lsTest now returns typed 400/404 error messages for invalid connection strings, missing paths and relative paths on file datasources instead of raw 500s; delete_fs reads the flat `fs.id` payload matching the frontend `SaveFsRequest.visLevel` is optional (datasource edit sent none → 422).
+- `frontend/lost/src/containers/DataSources/` : Fixed Datasource page UI the table refreshes after saving/deleting a datasource, edit/delete operate on the datasource object instead of the table-row wrapper, Save is disabled until the connection test succeeds, and failed file-browser listings show an error instead of spinning forever.
+- `controllers/pipeline/` : Fixed pipeline project import (zip/git) returning failures as plain 200 strings — validation errors now come back as HTTP 400 with the server message, and the success response lists which templates were created vs updated (`logic/pipeline/template_import.py` tracks them).
+- `containers/Pipelines/AddPipelineProject.jsx` : Fixed import toasts — server error messages are surfaced on failure and the success toast lists added vs updated templates; the template list refreshes after import.
+- `containers/Users/GroupsTable.tsx` : Fixed the group table not refreshing after creating a group (and the input not clearing), which invited duplicate groups.
+- `controllers/annotasks/`, `controllers/dataset/`, `controllers/sia/SiaBusiness.py`, `db/access.py` : Fixed annotation review (annotask + dataset) progress and next/prev boundaries count only annotated (labeled/junk) images, navigation skips annotasks without reviewable images instead of crashing, and "no annotation found" is a proper 400 instead of a 200 string.
+- `api/dataset/dataset_review.tsx` + both `ReviewPage.tsx` : Fixed the review page silently retrying forever on server errors — failures now show an error alert with a retry button.
 ## [4.1.0] - 2026-10-02
 ### Added
 - Added [AGENTS](./AGENTS.md) for agentic software development
