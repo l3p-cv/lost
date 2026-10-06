@@ -62,6 +62,10 @@ class PipeImportJSONError(DomainError):
         super().__init__(trace)
 
 
+class PipeImportInvalidError(DomainError):
+    """Import failed validation — carries the legacy 400 message."""
+
+
 class PipelineBusiness:
     """Pipeline business service — templates, projects, pipelines, review flows."""
 
@@ -145,7 +149,7 @@ class PipelineBusiness:
         f.seek(0)
         return f.read(), pipe_project
 
-    def import_zip(self, user, filename: str, contents: bytes) -> str:
+    def import_zip(self, user, filename: str, contents: bytes) -> dict:
         """Import a pipeline project from zip contents."""
         upload_path = None
         try:
@@ -163,25 +167,25 @@ class PipelineBusiness:
                 shutil.rmtree(dst_path)
             try:
                 template_import.unpack_pipe_project(upload_path, extract_path)
-            except Exception:
-                return "No valid pipeline found."
+            except Exception as e:
+                raise PipeImportInvalidError("No valid pipeline found.") from e
             shutil.copytree(extract_path, dst_path, dirs_exist_ok=True)
             dbm = __import__("lost.db.access", fromlist=["DBMan"]).DBMan(LOST_CONFIG)
             importer = template_import.PipeImporter(dst_path, dbm)
             error_message = importer.start_import()
             fm.fs.rm(upload_path, recursive=True)
             fm.fs.rm(e_path, recursive=True)
-            if error_message != "":
-                return error_message
-            return "success"
         except template_import.JSONDecodeError:
             shutil.rmtree(upload_path, errors=True)
             raise PipeImportJSONError(traceback.format_exc()) from None
         except Exception:
             shutil.rmtree(upload_path, errors=True)
             raise
+        if error_message != "":
+            raise PipeImportInvalidError(error_message)
+        return {"status": "success", "created": importer.created, "updated": importer.updated}
 
-    def import_git(self, user, git_url: str, git_branch: str) -> str:
+    def import_git(self, user, git_url: str, git_branch: str) -> dict:
         """Import a pipeline project from a git repository."""
         def git(*args):
             return subprocess.check_call(["git"] + list(args))
@@ -204,15 +208,15 @@ class PipelineBusiness:
             importer = template_import.PipeImporter(dst_path, self.dbm)
             error_message = importer.start_import()
             shutil.rmtree(upload_path)
-            if error_message != "":
-                return error_message
-            return "success"
         except template_import.JSONDecodeError:
             shutil.rmtree(upload_path, errors=True)
             raise PipeImportJSONError(traceback.format_exc()) from None
         except Exception:
             shutil.rmtree(upload_path, errors=True)
             raise
+        if error_message != "":
+            raise PipeImportInvalidError(error_message)
+        return {"status": "success", "created": importer.created, "updated": importer.updated}
 
     def delete_project(self, pipe_project: str) -> str:
         fm = AppFileMan(LOST_CONFIG)

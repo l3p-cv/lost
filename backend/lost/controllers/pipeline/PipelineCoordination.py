@@ -27,11 +27,11 @@ class PipelineCoordination:
         """(zip_bytes, name). Delegates to PipelineBusiness.export_project."""
         return self._business.export_project(pipe_project)
 
-    def import_zip(self, user, filename: str, contents: bytes) -> str:
+    def import_zip(self, user, filename: str, contents: bytes) -> dict:
         """Zip import. Delegates to PipelineBusiness.import_zip."""
         return self._business.import_zip(user, filename, contents)
 
-    def import_git(self, user, git_url: str, git_branch: str) -> str:
+    def import_git(self, user, git_url: str, git_branch: str) -> dict:
         """Git import. Delegates to PipelineBusiness.import_git."""
         return self._business.import_git(user, git_url, git_branch)
 
