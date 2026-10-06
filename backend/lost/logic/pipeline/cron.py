@@ -1,10 +1,10 @@
 import json
 import logging
 import os
+import shlex
 import subprocess
 import traceback
 from datetime import datetime
-import shlex
 
 from lost.controllers.annotasks import AnnotasksBusiness as at_man
 from lost.controllers.annotasks.AnnotasksBusiness import update_anno_task

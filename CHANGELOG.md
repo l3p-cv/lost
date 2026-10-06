@@ -17,9 +17,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added [AGENTS](./backend/AGENTS.md) scoped instructions for the backend
 - Added [AGENTS](./frontend/AGENTS.md) scoped instructions for the frontend
 - SIA annotations: reintroduced the `minArea` annotask configuration — annotations (bbox/polygon) smaller than the configured minimum are rejected with a warning toast. Requires lost-sia >= 3.5.0; enforcement is active in annotation mode only.
-- `cron.py` : script paths are now shlex-qotted as  Pipelines fail to start after re-importing a project from a browser-renamed zip (e.g. `found(1) (Copy).zip`) script paths in the generated start/debug commands are now safely quoted.
-- `controllers/filebrowser/` : Fixed Datasource page bugs lsTest now returns typed 400/404 error messages for invalid connection strings, missing paths and relative paths on file datasources instead of raw 500s; delete_fs reads the flat `fs.id` payload matching the frontend `SaveFsRequest.visLevel` is optional (datasource edit sent none → 422).
-- `frontend/lost/src/containers/DataSources/` : Fixed Datasource page UI the table refreshes after saving/deleting a datasource, edit/delete operate on the datasource object instead of the table-row wrapper, Save is disabled until the connection test succeeds, and failed file-browser listings show an error instead of spinning forever.
 ### Fixed
 - `controllers/PipelineEndpoint.py` : Fixed updateArguments/ endpoint which wasn't working in FastAPI to use Request instead of bytes.
 - `comparator.py` : strips the `vary` in headers now. -Starlette CORS behaviour change after rebuild caused tests to fail
@@ -28,6 +25,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `controllers/user/UserCoordination.py` : fixed the the long_lived_user to long_lived_token.(method name mismatch).
 - `controllers/dataset/DatasetCoordination.py` : fixed dataset module `delete_dataset_export` to use delete_dataset instead of delete_export. (could deleted unrelated dataset on id collision)
 - `controllers/annotasks/AnnotasksEndpoint.py` : Fixed the UpdateConfigRequest schema signature to not have id, Also added the same in the test specs signature.
+- `logic/pipeline/cron.py` : Fixed pipelines failing to start after re-importing a project from a browser-renamed zip (e.g. `found(1) (Copy).zip`) — script paths in the generated start/debug commands are now shlex-quoted.
+- `controllers/filebrowser/` : Fixed Datasource page bugs lsTest now returns typed 400/404 error messages for invalid connection strings, missing paths and relative paths on file datasources instead of raw 500s; delete_fs reads the flat `fs.id` payload matching the frontend `SaveFsRequest.visLevel` is optional (datasource edit sent none → 422).
+- `frontend/lost/src/containers/DataSources/` : Fixed Datasource page UI the table refreshes after saving/deleting a datasource, edit/delete operate on the datasource object instead of the table-row wrapper, Save is disabled until the connection test succeeds, and failed file-browser listings show an error instead of spinning forever.
 ### Changed
 - `backend/lost/` : renamed package from `lost/api` to `lost/controllers/` as prep for th phase 2 CCB split (only rename , no functional changes). Refactored and updated the imports from `lost.api` to `lost.controllers`.
 - `backend/lost/controllers/auth/` : normalized the auth business layer to the Phase 2 CCB naming convention style (moved from `openid_service.py` to `OpenidBusiness.py` and updated all importers).
