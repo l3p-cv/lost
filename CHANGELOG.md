@@ -6,17 +6,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 ### Added
+
+## [4.1.0] - 2026-10-02
+### Added
+- Added [AGENTS](./AGENTS.md) for agentic software development
+- Added [AGENTS](./backend/tests/AGENTS.md) domain reference for the golden-snapshot harness
+- Added [AGENTS](./backend/AGENTS.md) scoped instructions for the backend
+- Added [AGENTS](./frontend/AGENTS.md) scoped instructions for the frontend
+
+## [4.1.0] - 2026-10-02
+### Added
 - `tests/architecture/test_layering.py` : Added layering guard test (to test the CCB split)
 - `controllers/Dependencies.py` : contains all changes that were previously in `controllers/auth/dependencies.py` (all endpoint layer wiring: `get_current_user`/`require_role`)
 - `controllers/AuthorizationService.py` : resource level authorization util
 - sia_specs.py added 4 new specs to this
 - `Dependencies.py` : added annotask resource guards and the inline `may_access_pe` / pipe-manager checks moved out of AnnotasksBusiness as standard-body 403 guards.
 - `backend/lost/README.md` : added documentation of new backend architecture split into Controller,Coordination and Business Layers.
-- Added [AGENTS](./AGENTS.md) for agentic software development
-- Added [AGENTS](./backend/tests/AGENTS.md) domain reference for the golden-snapshot harness
-- Added [AGENTS](./backend/AGENTS.md) scoped instructions for the backend
-- Added [AGENTS](./frontend/AGENTS.md) scoped instructions for the frontend
-- SIA annotations: reintroduced the `minArea` annotask configuration — annotations (bbox/polygon) smaller than the configured minimum are rejected with a warning toast. Requires lost-sia >= 3.5.0; enforcement is active in annotation mode only.
 ### Fixed
 - `controllers/PipelineEndpoint.py` : Fixed updateArguments/ endpoint which wasn't working in FastAPI to use Request instead of bytes.
 - `comparator.py` : strips the `vary` in headers now. -Starlette CORS behaviour change after rebuild caused tests to fail
@@ -24,15 +29,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `statistics_specs.py` : skipped the personal stats endpoint test as it changes frequently.
 - `controllers/user/UserCoordination.py` : fixed the the long_lived_user to long_lived_token.(method name mismatch).
 - `controllers/dataset/DatasetCoordination.py` : fixed dataset module `delete_dataset_export` to use delete_dataset instead of delete_export. (could deleted unrelated dataset on id collision)
-- `controllers/annotasks/AnnotasksEndpoint.py` : Fixed the UpdateConfigRequest schema signature to not have id, Also added the same in the test specs signature.
-- `logic/pipeline/cron.py` : Fixed pipelines failing to start after re-importing a project from a browser-renamed zip (e.g. `found(1) (Copy).zip`) — script paths in the generated start/debug commands are now shlex-quoted.
-- `controllers/filebrowser/` : Fixed Datasource page bugs lsTest now returns typed 400/404 error messages for invalid connection strings, missing paths and relative paths on file datasources instead of raw 500s; delete_fs reads the flat `fs.id` payload matching the frontend `SaveFsRequest.visLevel` is optional (datasource edit sent none → 422).
-- `frontend/lost/src/containers/DataSources/` : Fixed Datasource page UI the table refreshes after saving/deleting a datasource, edit/delete operate on the datasource object instead of the table-row wrapper, Save is disabled until the connection test succeeds, and failed file-browser listings show an error instead of spinning forever.
-- `controllers/pipeline/` : Fixed pipeline project import (zip/git) returning failures as plain 200 strings — validation errors now come back as HTTP 400 with the server message, and the success response lists which templates were created vs updated (`logic/pipeline/template_import.py` tracks them).
-- `containers/Pipelines/AddPipelineProject.jsx` : Fixed import toasts — server error messages are surfaced on failure and the success toast lists added vs updated templates; the template list refreshes after import.
-- `containers/Users/GroupsTable.tsx` : Fixed the group table not refreshing after creating a group (and the input not clearing), which invited duplicate groups.
-- `controllers/annotasks/`, `controllers/dataset/`, `controllers/sia/SiaBusiness.py`, `db/access.py` : Fixed annotation review (annotask + dataset) progress and next/prev boundaries count only annotated (labeled/junk) images, navigation skips annotasks without reviewable images instead of crashing, and "no annotation found" is a proper 400 instead of a 200 string.
-- `api/dataset/dataset_review.tsx` + both `ReviewPage.tsx` : Fixed the review page silently retrying forever on server errors — failures now show an error alert with a retry button.
 ### Changed
 - `backend/lost/` : renamed package from `lost/api` to `lost/controllers/` as prep for th phase 2 CCB split (only rename , no functional changes). Refactored and updated the imports from `lost.api` to `lost.controllers`.
 - `backend/lost/controllers/auth/` : normalized the auth business layer to the Phase 2 CCB naming convention style (moved from `openid_service.py` to `OpenidBusiness.py` and updated all importers).
@@ -77,6 +73,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - removed the 38 dead Flask-era restx reference files, 2 annotasks JSON fixtures , triton preserved , dropped unused imports.
 - removed dead schema code from InferenceModelEndpoint.py 
 - removed following for cleanup of `lost/logic/` : `report.py`, `logic/clitest/` , `logic/statistics/` (moved to StatisticsBusiness).
+
 ## [4.0.0] - 2026-09-16
 ### Added
 - `backend/tests/` : Added golden-snapshot API comparison harness for the Flask→FastAPI migration (P0). Records Flask's API responses as reference snapshots and replays them against FastAPI to verify behavioral equivalence. Includes `conftest.py` with JWT minting, `helpers/` (client, comparator, recorder, seed), and parametrized comparison tests for the `user` namespace.
@@ -140,7 +137,7 @@ Added `create_jwt_pyjwt()` to LoginManager, PyJWT-based token creation.Same stru
 - `backend/lost/logic/email.py` : untangled from Flask — replaced `from lost.flaskapp import app, mail` with jinja2 + smtplib (not yet tested with a real SMTP server).
 - `backend/lost/api/group/GroupEndpoint.py`, `backend/lost/api/label/LabelEndpoint.py`, `backend/lost/api/pipeline/PipelineEndpoint.py` : responses updated to `JSONResponse` format matching Flask.
 ### Removed
-- `backend/` : removed all Flask-dependent code at P1.3 cutover — deleted `lost/app.py`, `lost/flaskapp.py`, `lost/wsgi.py`, `lost/wsgi.ini`, `lost/api/api.py` and dropped Flask deps (`flask`, `flask-cors`, `flask-jwt-extended`, `flask-mail`, `flask-pydantic`, `flask-restx`, `flask-sqlalchemy`, `uwsgi`) from `pyproject.toml`, added `redis`, `itsdangerous`, `pyjwt`
+- `backend/` : removed all Flask-dependent code at P1.3 cutover — deleted `lost/app.py`, `lost/flaskapp.py`, `lost/wsgi.py`, `lost/wsgi.ini`, `lost/api/api.py` and dropped Flask deps (`flask`, `flask-cors`, `flask-jwt-extended`, `flask-mail`, `flask-pydantic`, `flask-restx`, `flask-sqlalchemy`, `uwsgi`) from `pyproject.toml`, added `redis`, `itsdangerous`, `pyjwt`.
 
 ## [4.0.0-alpha] - 2026-08-18
 ### Added

@@ -31,6 +31,54 @@
 - `fastapi_app.py` — app factory; `settings.py` → `LOST_CONFIG` (via root `lostconfig.py`)
 - `__init__.py` — intentionally EMPTY (the Docker build stamps `__version__` into it)
 
+## Annotation domain map
+Most backend code serves the annotation domain. Entities: `lost/db/model.py`; states:
+`lost/db/state.py`; roles: `lost/db/roles.py` (enforced via `require_role`).
+
+- **Pipe / PipeElement** — one pipeline run and its DAG nodes (edges = `ResultLink`s);
+  `PipeElement.dtype` ∈ SCRIPT, ANNO_TASK, DATASOURCE, VISUALIZATION, DATA_EXPORT, LOOP
+  (`db/dtype.py` — there is no dedicated "parallel" dtype)
+- **AnnoTask** — the human-in-the-loop element; `dtype` = SIA (single image) or MIA (multi
+  image); its `configuration` JSON selects MIA `annoBased` vs `imageBased` mode
+- **TwoDAnno / ImageAnno / Label** — drawn 2D annos (bbox/point/line/polygon), image-level
+  annos (image labels, `is_junk`), and the label assignments (`annotator_id`, `anno_time`)
+- **LabelLeaf** — label tree nodes (`parent_leaf_id`); a root leaf *is* a "label tree"
+- **ChoosenAnnoTask** — a user's single active annotask (`user_id` UNIQUE); SIA/MIA
+  endpoints take no task id — they resolve it through this row and filter by dtype
+- **Result / ResultLink** — the only channel data flows through between pipe elements
+- **Dataset** — annotask trees; `is_reviewable` is computed at query time, not a column
+- **Exports** — `AnnoTaskExport` / `DatasetExport` / `DataExport`: generated artifacts,
+  not pipe element types
+
+States: `AnnoTask` PENDING → IN_PROGRESS → FINISHED (`PAUSED` is vestigial, never written —
+pausing happens on the Pipe); `Anno` LOCKED/LABELED/LABELED_LOCKED (SIA image locking) +
+LOCKED_PRIORITY (MIA annoBased) + JUNK (the "skipped" analog — no skip state exists);
+`Pipe`/`PipeElement` PENDING → IN_PROGRESS → FINISHED (+ ERROR, SCRIPT_ERROR, DELETED, PAUSED).
+
+**Engine wake-up contract:** elements signal the scheduler by `pipe.changed_by_element += 1`;
+`logic/jobs/cron_jobs.py` only processes pipes where it differs from `changed_by_engine`
+(5s tick, `LOST_PIPE_SCHEDULE`). A forgotten bump stalls the pipeline **silently**.
+
+**SIA persistence:** the SPA writes via `PATCH /api/sia` (`SiaBusiness.SiaUpdateOneThing`);
+`PUT /api/sia` (`SiaUpdate`) is legacy-compat, unused by the frontend. `TwoDAnno.data` is
+relative (0–1) JSON — bbox center-style `xcycwh`, point/line/polygon `xy`; `meta_blob` is
+a pickled pandas Series, not JSON. Locks are transient (cron releases stale ones); MIA
+navigation is chunked via `chunk_id`/`update_id` (see `backend/mia_navigation_sequence.md`).
+
+**Review is a mode, not an entity** — no review table or status column: designers rewrite
+labeled/junked annos through the same update flow with `sia_type="review"` (keeps original
+`annoTime`). Landmine: `get_sia_review_prev` filters raw SQL `state IN (4,6)` — renumbering
+`state.Anno` silently breaks review.
+
+**pyapi contract:** user scripts subclass `lost.pyapi.script.Script`, implement `main()`,
+exchange data via `self.inp`/`self.outp`, and never call `i_am_done()` themselves. Default
+execution is a dask-worker subprocess; dynamic mode imports the class by the literal name
+`LostScript`.
+
+**Roles in the workflow:** Annotator chooses/annotates/finishes annotasks; Designer starts
+and pauses pipes, reviews, manages label trees/datasets/instructions; Administrator imports
+pipe projects and manages users/workers.
+
 ## Python Standards
 
 ### 1. General Coding Standards
