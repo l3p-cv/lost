@@ -36,6 +36,7 @@ from pydantic import BaseModel
 
 from lost.controllers.annotasks.AnnotasksBusiness import (
     AnnotaskInstructionNotFoundError,
+    AnnotaskReviewNoAnnotationError,
     WorkingTaskNotFoundError,
 )
 from lost.controllers.annotasks.AnnotasksCoordination import AnnotasksCoordination
@@ -350,4 +351,7 @@ def annotask_review(
     coord: AnnotasksCoordination = Depends(get_annotasks_coordination)
 ):
     """Get data for the next annotask review image."""
-    return coord.annotask_review(user, annotask_id, req.model_dump())
+    try:
+        return coord.annotask_review(user, annotask_id, req.model_dump())
+    except AnnotaskReviewNoAnnotationError:
+        return Responses.bad_request("no annotation found")

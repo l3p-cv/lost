@@ -47,6 +47,16 @@ export const useReview = (annotationRequestData: ReviewData) => {
       refetchOnWindowFocus: false,
       cacheTime: 0,
       staleTime: 0,
+      // fail fast instead of retrying — the review page shows an error state
+      retry: false,
+      onError: (error: any) => {
+        const detail = error?.response?.data
+        showError(
+          typeof detail === 'string' && detail
+            ? `Review navigation failed: ${detail}`
+            : 'Review navigation failed.',
+        )
+      },
     },
   )
 }

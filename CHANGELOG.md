@@ -31,6 +31,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `controllers/pipeline/` : Fixed pipeline project import (zip/git) returning failures as plain 200 strings — validation errors now come back as HTTP 400 with the server message, and the success response lists which templates were created vs updated (`logic/pipeline/template_import.py` tracks them).
 - `containers/Pipelines/AddPipelineProject.jsx` : Fixed import toasts — server error messages are surfaced on failure and the success toast lists added vs updated templates; the template list refreshes after import.
 - `containers/Users/GroupsTable.tsx` : Fixed the group table not refreshing after creating a group (and the input not clearing), which invited duplicate groups.
+- `controllers/annotasks/`, `controllers/dataset/`, `controllers/sia/SiaBusiness.py`, `db/access.py` : Fixed annotation review (annotask + dataset) progress and next/prev boundaries count only annotated (labeled/junk) images, navigation skips annotasks without reviewable images instead of crashing, and "no annotation found" is a proper 400 instead of a 200 string.
+- `api/dataset/dataset_review.tsx` + both `ReviewPage.tsx` : Fixed the review page silently retrying forever on server errors — failures now show an error alert with a retry button.
 ### Changed
 - `backend/lost/` : renamed package from `lost/api` to `lost/controllers/` as prep for th phase 2 CCB split (only rename , no functional changes). Refactored and updated the imports from `lost.api` to `lost.controllers`.
 - `backend/lost/controllers/auth/` : normalized the auth business layer to the Phase 2 CCB naming convention style (moved from `openid_service.py` to `OpenidBusiness.py` and updated all importers).
