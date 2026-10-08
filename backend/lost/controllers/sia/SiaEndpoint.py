@@ -168,7 +168,7 @@ def get_sia_image(
     image_id: int,
     angle: int | None = Query(None, description="Angle to rotate: 0, 90, 180, -90"),
     clipLimit: int | None = Query(None, description="Clip limit for clahe filter"),
-    user: DBUser = Depends(require_role(roles.ANNOTATOR)),
+    user: DBUser = Depends(require_role(roles.ANNOTATOR, roles.DESIGNER)),
     coord: SiaCoordination = Depends(get_sia_coordination),
 ):
     """Get SIA image with optional rotation/clahe filters."""
@@ -178,7 +178,7 @@ def get_sia_image(
 @router.get("/image/{image_id}/name")
 def get_sia_image_name(
     image_id: int,
-    user: DBUser = Depends(require_role(roles.ANNOTATOR)),
+    user: DBUser = Depends(require_role(roles.ANNOTATOR, roles.DESIGNER)),
     coord: SiaCoordination = Depends(get_sia_coordination),
 ):
     """Get SIA image name."""
@@ -193,7 +193,7 @@ def get_sia_image_name(
 def get_image_with_filters(
     image_id: int,
     req: ImageFiltersRequest,
-    user: DBUser = Depends(require_role(roles.ANNOTATOR)),
+    user: DBUser = Depends(require_role(roles.ANNOTATOR, roles.DESIGNER)),
     coord: SiaCoordination = Depends(get_sia_coordination),
 ):
     """Get an image with applied filters."""
@@ -288,7 +288,7 @@ def get_sia_configuration(
 @router.post("/polygonOperations/union")
 def polygon_union(
     data: dict,
-    user: DBUser = Depends(require_role(roles.ANNOTATOR)),
+    user: DBUser = Depends(require_role(roles.ANNOTATOR, roles.DESIGNER)),
     coord: SiaCoordination = Depends(get_sia_coordination),
 ):
     """Perform union operation on a list of at least 2 polygons."""
@@ -307,7 +307,7 @@ def polygon_union(
 @router.post("/polygonOperations/intersection")
 def polygon_intersection(
     data: dict,
-    user: DBUser = Depends(require_role(roles.ANNOTATOR)),
+    user: DBUser = Depends(require_role(roles.ANNOTATOR, roles.DESIGNER)),
     coord: SiaCoordination = Depends(get_sia_coordination),
 ):
     """Perform intersection operation on exactly 2 polygons."""
@@ -326,7 +326,7 @@ def polygon_intersection(
 @router.post("/polygonOperations/difference")
 def polygon_difference(
     data: dict,
-    user: DBUser = Depends(require_role(roles.ANNOTATOR)),
+    user: DBUser = Depends(require_role(roles.ANNOTATOR, roles.DESIGNER)),
     coord: SiaCoordination = Depends(get_sia_coordination),
 ):
     """Perform difference operation on a selected polygon and a list of modifier polygons."""
@@ -345,7 +345,7 @@ def polygon_difference(
 @router.post("/bboxFromPoints")
 def bbox_from_points(
     data: dict,
-    user: DBUser = Depends(require_role(roles.ANNOTATOR)),
+    user: DBUser = Depends(require_role(roles.ANNOTATOR, roles.DESIGNER)),
     coord: SiaCoordination = Depends(get_sia_coordination),
 ):
     """Compute tightest bounding boxes from multiple point sets."""

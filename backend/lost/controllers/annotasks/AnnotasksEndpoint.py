@@ -196,7 +196,7 @@ def get_annotask_by_id(
     annotask_id: int,
     statistics: str | None = Query(None, description="Return statistics too"),
     config: str | None = Query(None, description="Return config too"),
-    user: DBUser = Depends(require_role(roles.ANNOTATOR)),
+    user: DBUser = Depends(require_role(roles.ANNOTATOR, roles.DESIGNER)),
     coord: AnnotasksCoordination = Depends(get_annotasks_coordination)
 ):
     """Get details for an annotation task with the given id."""
@@ -328,7 +328,7 @@ def get_review_labels(
 def update_one_thing(
     annotask_id: int,
     req: PatchAnnotationRequest,
-    user: DBUser = Depends(require_role(roles.ANNOTATOR)),
+    user: DBUser = Depends(require_role(roles.ANNOTATOR, roles.DESIGNER)),
     coord: AnnotasksCoordination = Depends(get_annotasks_coordination)
 ):
     """Update image annotation time, junk status, or image label."""
