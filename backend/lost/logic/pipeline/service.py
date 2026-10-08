@@ -1,4 +1,5 @@
 import json
+import logging
 from datetime import datetime
 
 from dask.distributed import Client
@@ -11,6 +12,7 @@ from lost.logic.pipeline import cron
 from lost.logic.template import combine_arguments
 
 __author__ = "Gereon Reus"
+logger = logging.getLogger(__name__)
 
 ############################ start ################################
 #                                                                 #
@@ -32,6 +34,16 @@ def start(db_man, data, manager_id, group_id):
     # data = json.loads(data)
     # load template
     template = db_man.get_pipe_template(data["templateId"])
+    source_pipe_id = data.get("sourcePipeId")
+    if source_pipe_id is not None:
+        source_pipe = db_man.get_pipe(int(source_pipe_id))
+        if source_pipe is None:
+            logger.warning(
+                "regeneration source pipe not found — using posted definition",
+                extra={"source_pipe_id": source_pipe_id},
+            )
+        else:
+            data = refresh_start_definition_from_pipe(db_man, source_pipe, data)
     # initialize pipe starter
     pipe_starter = PipeStarter(template, data, manager_id, group_id)
     # create general pipe and fill with info
@@ -43,6 +55,102 @@ def start(db_man, data, manager_id, group_id):
     db_man.save_obj(pipe_starter.unlock_pipe())
     # process_pipeline(pipe_starter.pipe, db_man)
     return pipe_starter.pipe.idx
+
+def refresh_start_definition_from_pipe(
+    db_man: access.DBMan, source_pipe: model.Pipe, data: dict
+) -> dict:
+    """Overlay the live values of a source pipe onto a regeneration start request.
+
+    Edits made through the running-pipeline modals are persisted on the live
+    AnnoTask / PipeElement / Datasource rows only — never on the stored
+    start_definition. Before a regenerated pipeline is instantiated, this
+    copies the current values back into the request data, so the new pipeline
+    and its stored start_definition reflect them.
+
+    Falls back to the unmodified data when source pipe and request cannot be
+    mapped onto each other (logged as warning).
+
+    Args:
+        db_man: Database access manager.
+        source_pipe: Pipeline the request was regenerated from.
+        data: Parsed start request body (mutated in place).
+
+    Returns:
+        dict: The start request with live values overlaid.
+    """
+    template = db_man.get_pipe_template(source_pipe.pipe_template_id)
+    if (
+        template is None
+        or not template.json_template
+        or str(source_pipe.pipe_template_id) != str(data.get("templateId"))
+    ):
+        logger.warning(
+            "regeneration source template missing or mismatched — using posted definition",
+            extra={"source_pipe_id": source_pipe.idx},
+        )
+        return data
+    template_elements = json.loads(template.json_template)["elements"]
+    live_elements = sorted(db_man.get_pipe_elements(source_pipe.idx), key=lambda pe: pe.idx)
+    if len(live_elements) != len(template_elements):
+        logger.warning(
+            "regeneration element count mismatch — using posted definition",
+            extra={"source_pipe_id": source_pipe.idx},
+        )
+        return data
+    data_map = {element["peN"]: element for element in data["elements"]}
+    diverged = 0
+    for template_element, live_pe in zip(template_elements, live_elements):
+        request_element = data_map.get(template_element["peN"])
+        if request_element is None:
+            continue
+        before = json.dumps(request_element, sort_keys=True)
+        _overlay_request_element(request_element, live_pe)
+        if json.dumps(request_element, sort_keys=True) != before:
+            diverged += 1
+    if diverged:
+        logger.info(
+            "overlaid live values onto regenerated start definition",
+            extra={"source_pipe_id": source_pipe.idx, "diverged_elements": diverged},
+        )
+    return data
+
+
+def _overlay_annotask_request(anno_task_request: dict, anno_task: model.AnnoTask) -> None:
+    """Overlay the live values of an AnnoTask onto a start-definition annoTask element.
+
+    Args:
+        anno_task_request: The ``annoTask`` dict of a start-definition element
+            (mutated in place).
+        anno_task: The live AnnoTask the new pipeline should inherit values from.
+    """
+    if anno_task.configuration:
+        anno_task_request["configuration"] = json.loads(anno_task.configuration)
+    if anno_task.name:
+        anno_task_request["name"] = anno_task.name
+    anno_task_request["instructionId"] = anno_task.instruction_id
+    anno_task_request["workerId"] = anno_task.group_id if anno_task.group_id is not None else -1
+    if anno_task.group_id and anno_task.group:
+        anno_task_request["assignee"] = anno_task.group.name
+    dataset_id = anno_task.dataset_id if anno_task.dataset_id is not None else -1
+    anno_task_request.setdefault("storage", {})["datasetId"] = str(dataset_id)
+
+
+def _overlay_request_element(request_element: dict, live_pe: model.PipeElement) -> None:
+    """Overlay the live values of one pipe element onto its start-definition element.
+
+    Args:
+        request_element: One element of a start request (mutated in place).
+        live_pe: The live PipeElement of the source pipeline to inherit values from.
+    """
+    if live_pe.dtype == dtype.PipeElement.ANNO_TASK and live_pe.anno_task and "annoTask" in request_element:
+        _overlay_annotask_request(request_element["annoTask"], live_pe.anno_task)
+    elif live_pe.dtype == dtype.PipeElement.SCRIPT and live_pe.arguments and "script" in request_element:
+        request_element["script"]["arguments"] = json.loads(live_pe.arguments)
+    elif live_pe.dtype == dtype.PipeElement.DATASOURCE and live_pe.datasource and "datasource" in request_element:
+        request_element["datasource"]["selectedPath"] = live_pe.datasource.selected_path
+        request_element["datasource"]["fs_id"] = live_pe.datasource.fs_id
+    elif live_pe.dtype == dtype.PipeElement.LOOP and live_pe.loop and "loop" in request_element:
+        request_element["loop"]["maxIteration"] = live_pe.loop.max_iteration
 
 
 def create_pe_raw_element(db_man, pipe_starter):
@@ -223,7 +331,11 @@ class PipeStarter:
             anno_task.dtype = dtype.AnnoTask.SIA
         anno_task.configuration = json.dumps(data_element["annoTask"]["configuration"])
         anno_task.name = data_element["annoTask"]["name"]
-        anno_task.instruction_id = data_element["annoTask"]["instructionId"]
+        instruction_id = data_element["annoTask"]["instructionId"]
+        if instruction_id is None or str(instruction_id) == "-1":
+            anno_task.instruction_id = None
+        else:
+            anno_task.instruction_id = instruction_id
         anno_task.group_id = data_element["annoTask"]["workerId"]
         anno_task.timestamp = datetime.now()
 

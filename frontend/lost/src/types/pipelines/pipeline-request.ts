@@ -3,6 +3,7 @@ export interface StartPipeRequest {
   description: string
   elements: Element[]
   templateId: number
+  sourcePipeId?: number
 }
 
 export interface Element {

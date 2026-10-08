@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `controllers/sia/` + `frontend/lost/src/` : Fixed review-mode image junking junk sent from review screens hit `PATCH /api/sia`, which resolves the annotask from the acting user's `choosen_anno_task` (None for reviewers crashes with 500 and unrelated SIA task) to now review junk goes to `PUT /pipeline/element/{id}/review` (Designer-guarded, correct task context, keeps original annoTime) `update`/`update_one_thing` raise `SiaNoAnnoTaskError` clean 404 instead of a crash when there is a stale annotask entry in the `choosen_anno_task` db table.
 - `AnnotasktsEndpoint.py` , `DataEndpoint.py` and `SiaEndpoint.py` : Fixed review mode access issue for user with just DESIGNER role. widened endpoints that are used in review too to have role guard as ANNOTATOR and DESIGNER.
 - `Depenedencies.py` : Fixed has_role check in `required_role` to now check multiple roles.
+- `logic/pipeline/service.py`,`Toolbar.jsx` : Fixed pipeline regeneration replaying stale creation-time settings the regenerate request now carries `sourcePipeId` and the backend overlays the source pipeline's live values (annotask configuration, assigned group, instruction, storage settings, script arguments, datasource, loop) onto the start definition before instantiating and storing the new pipeline.
 ## [4.1.0] - 2026-10-02
 ### Added
 - Added [AGENTS](./AGENTS.md) for agentic software development
