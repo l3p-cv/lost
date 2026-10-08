@@ -14,6 +14,7 @@ from __future__ import annotations
 from tests.helpers.recorder import RequestSpec
 from tests.helpers.specs import RouteSpec
 from tests.compare.migration_status import target_for
+from tests.helpers.seed import cleanup_test_user, create_test_user
 
 _TARGET = target_for("data")
 
@@ -26,6 +27,28 @@ def _setup_data_context(dbm):
     if image_id is None:
         return {"skip": True}
     return {"image_id": image_id, "skip": False}
+
+
+def _setup_pure_designer_image(dbm) -> dict:
+    """Fresh user holding ONLY the Designer role + the compare_test_sia image id."""
+    ctx = _setup_data_context(dbm)
+    if ctx.get("skip"):
+        return ctx
+
+    from lost.controllers.user.login_manager import LoginManager
+    from lost.db import roles as db_roles
+
+    user = create_test_user(dbm, role=db_roles.DESIGNER)
+    lm = LoginManager(dbm, user.user_name, "")
+    fresh_token, _ = lm.create_jwt_pyjwt(user.idx, user.user_name, user.roles)
+    ctx.update({"fresh_token": fresh_token, "user_obj": user})
+    return ctx
+
+
+def _cleanup_fresh_user(dbm, context) -> None:
+    """Delete the fresh designer test user (idempotent, rollback-first)."""
+    if "user_obj" in context:
+        cleanup_test_user(dbm, context["user_obj"])
 
 
 def get_data_specs() -> list[RouteSpec]:
@@ -75,6 +98,22 @@ def get_data_specs() -> list[RouteSpec]:
         target=_TARGET,
         # no setup/cleanup — the type check fires before the image is loaded,
         # so image_id is never touched (any value works)
+    ))
+
+    # 5. GET /api/data/image/{id}?type=imageBased as a pure designer (no annotator role) → 200
+    specs.append(RouteSpec(
+        name="GET_data_image_designer",
+        request=RequestSpec(
+            method="GET",
+            path="/api/data/image/{image_id}",
+            params={"type": "imageBased"},
+            mode="exact",
+        ),
+        target=_TARGET,
+        setup=_setup_pure_designer_image,
+        cleanup=_cleanup_fresh_user,
+        # proves the designer-review guard widening; same deterministic seeded
+        # bytes as GET_data_image, hence exact mode
     ))
 
     return specs

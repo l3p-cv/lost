@@ -15,6 +15,48 @@
           "finished": 0,
           "group": "admin",
           "id": "<ID>",
+          "instructionId": null,
+          "lastActivity": "<TS>",
+          "lastAnnotator": "N/A",
+          "lockedImgCount": 0,
+          "name": "sia new",
+          "pipelineCreator": "admin",
+          "pipelineName": "testRecreate",
+          "progress": "<REDACTED>",
+          "size": 35,
+          "statistic": {
+            "amountPerLabel": [],
+            "secondsPerAnno": null
+          },
+          "status": "inProgress",
+          "type": "SIA"
+        },
+        {
+          "createdAt": "<TS>",
+          "finished": 2,
+          "group": "admin",
+          "id": "<ID>",
+          "instructionId": 1,
+          "lastActivity": "<TS>",
+          "lastAnnotator": "admin",
+          "lockedImgCount": 0,
+          "name": "Single Image Annotation Task",
+          "pipelineCreator": "admin",
+          "pipelineName": "testagain",
+          "progress": "<REDACTED>",
+          "size": 16,
+          "statistic": {
+            "amountPerLabel": [],
+            "secondsPerAnno": null
+          },
+          "status": "inProgress",
+          "type": "SIA"
+        },
+        {
+          "createdAt": "<TS>",
+          "finished": 0,
+          "group": "admin",
+          "id": "<ID>",
           "instructionId": 1,
           "lastActivity": "<TS>",
           "lastAnnotator": "N/A",
@@ -75,8 +117,8 @@
         },
         {
           "createdAt": "<TS>",
-          "finished": 3,
-          "group": "admin",
+          "finished": 4,
+          "group": "group4",
           "id": "<ID>",
           "instructionId": 1,
           "lastActivity": "<TS>",
@@ -96,7 +138,7 @@
         },
         {
           "createdAt": "<TS>",
-          "finished": 10,
+          "finished": 35,
           "group": "admin",
           "id": "<ID>",
           "instructionId": null,
@@ -112,7 +154,7 @@
             "amountPerLabel": [],
             "secondsPerAnno": null
           },
-          "status": "inProgress",
+          "status": "finished",
           "type": "SIA"
         },
         {
@@ -138,12 +180,12 @@
         },
         {
           "createdAt": "<TS>",
-          "finished": 1,
+          "finished": 2,
           "group": "admin",
           "id": "<ID>",
           "instructionId": null,
           "lastActivity": "<TS>",
-          "lastAnnotator": "admin",
+          "lastAnnotator": "testJ",
           "lockedImgCount": 0,
           "name": "Single Image Annotation Task",
           "pipelineCreator": "admin",
@@ -332,7 +374,7 @@
           "id": "<ID>",
           "instructionId": null,
           "lastActivity": "<TS>",
-          "lastAnnotator": "admin",
+          "lastAnnotator": "testJ",
           "lockedImgCount": 0,
           "name": "MultiImageAnnoation",
           "pipelineCreator": "admin",

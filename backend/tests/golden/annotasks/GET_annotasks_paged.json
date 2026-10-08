@@ -16,6 +16,48 @@
       "annoTasks": [
         {
           "createdAt": "<TS>",
+          "finished": 0,
+          "group": "admin",
+          "id": "<ID>",
+          "instructionId": 1,
+          "lastActivity": "<TS>",
+          "lastAnnotator": "N/A",
+          "lockedImgCount": 0,
+          "name": "SIA test",
+          "pipelineCreator": "admin",
+          "pipelineName": "test import pp",
+          "progress": "<REDACTED>",
+          "size": 35,
+          "statistic": {
+            "amountPerLabel": [],
+            "secondsPerAnno": null
+          },
+          "status": "inProgress",
+          "type": "SIA"
+        },
+        {
+          "createdAt": "<TS>",
+          "finished": 35,
+          "group": "group4",
+          "id": "<ID>",
+          "instructionId": 257,
+          "lastActivity": "<TS>",
+          "lastAnnotator": "admin",
+          "lockedImgCount": 0,
+          "name": "SIA test",
+          "pipelineCreator": "admin",
+          "pipelineName": "sia test (group test)",
+          "progress": "<REDACTED>",
+          "size": 35,
+          "statistic": {
+            "amountPerLabel": [],
+            "secondsPerAnno": null
+          },
+          "status": "inProgress",
+          "type": "SIA"
+        },
+        {
+          "createdAt": "<TS>",
           "finished": 1,
           "group": "admin",
           "id": "<ID>",
@@ -105,7 +147,7 @@
           "id": "<ID>",
           "instructionId": null,
           "lastActivity": "<TS>",
-          "lastAnnotator": "admin",
+          "lastAnnotator": "testJ",
           "lockedImgCount": 0,
           "name": "MultiImageAnnoation",
           "pipelineCreator": "admin",
@@ -173,48 +215,6 @@
           "name": "Single Image Annotation Task",
           "pipelineCreator": "admin",
           "pipelineName": "v1",
-          "progress": "<REDACTED>",
-          "size": 35,
-          "statistic": {
-            "amountPerLabel": [],
-            "secondsPerAnno": null
-          },
-          "status": "inProgress",
-          "type": "SIA"
-        },
-        {
-          "createdAt": "<TS>",
-          "finished": 22,
-          "group": "admin",
-          "id": "<ID>",
-          "instructionId": null,
-          "lastActivity": "<TS>",
-          "lastAnnotator": "admin",
-          "lockedImgCount": 0,
-          "name": "Single Image Annotation Task",
-          "pipelineCreator": "admin",
-          "pipelineName": "pp",
-          "progress": "<REDACTED>",
-          "size": 35,
-          "statistic": {
-            "amountPerLabel": [],
-            "secondsPerAnno": null
-          },
-          "status": "inProgress",
-          "type": "SIA"
-        },
-        {
-          "createdAt": "<TS>",
-          "finished": 14,
-          "group": "admin",
-          "id": "<ID>",
-          "instructionId": null,
-          "lastActivity": "<TS>",
-          "lastAnnotator": "admin",
-          "lockedImgCount": 0,
-          "name": "Single Image Annotation Task",
-          "pipelineCreator": "admin",
-          "pipelineName": "sia",
           "progress": "<REDACTED>",
           "size": 35,
           "statistic": {

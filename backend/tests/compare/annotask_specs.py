@@ -201,6 +201,27 @@ def _fresh_designer_with_annotask(dbm) -> dict:
     return ctx
 
 
+def _fresh_pure_designer_with_annotask(dbm) -> dict:
+    """Fresh user holding ONLY the Designer role + the compare_test_sia annotask id.
+
+    Unlike ``_fresh_designer_with_annotask`` (annotator + designer), this user has
+    no Annotator role — proves the designer-review guard widening on routes that
+    used to be annotator-only.
+    """
+    ctx = _setup_annotask_context(dbm)
+    if ctx.get("skip"):
+        return ctx
+
+    from lost.controllers.user.login_manager import LoginManager
+    from lost.db import roles as db_roles
+
+    user = create_test_user(dbm, role=db_roles.DESIGNER)
+    lm = LoginManager(dbm, user.user_name, "")
+    fresh_token, _ = lm.create_jwt_pyjwt(user.idx, user.user_name, user.roles)
+    ctx.update({"fresh_token": fresh_token, "user_obj": user})
+    return ctx
+
+
 def _cleanup_fresh_user(dbm, context) -> None:
     if "user_obj" in context:
         cleanup_test_user(dbm, context["user_obj"])
@@ -615,6 +636,31 @@ def get_annotask_specs() -> list[RouteSpec]:
         cleanup=_cleanup_fresh_user,
         target=_TARGET,
         # proves the migrated manager guard; the 403 path mutates nothing
+    ))
+
+    # PATCH /api/annotasks/999999/annotation — nonexistent annotask → 404 (exact)
+    specs.append(RouteSpec(
+        name="PATCH_annotask_annotation_not_found",
+        request=RequestSpec(
+            method="PATCH", path="/api/annotasks/999999/annotation",
+            json={"action": "imgJunkUpdate", "img": {"imgId": 999999, "annoTime": 1.0, "isJunk": True}},
+            mode="exact",
+        ),
+        target=_TARGET,
+        # SiaNoAnnoTaskError fires on the missing annotask before any write — no setup/cleanup
+    ))
+
+    # GET /api/annotasks/{id}?config=true as a pure designer (no annotator role) → 200
+    specs.append(RouteSpec(
+        name="GET_annotask_by_id_designer",
+        request=RequestSpec(
+            method="GET", path="/api/annotasks/{annotask_id}",
+            params={"config": "true"}, mode="structural",
+        ),
+        setup=_fresh_pure_designer_with_annotask,
+        cleanup=_cleanup_fresh_user,
+        target=_TARGET,
+        # proves the designer-review guard widening on the review top-bar call
     ))
 
     return specs
