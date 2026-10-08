@@ -8,7 +8,7 @@ import type {
   ImageEditData,
 } from '../../../api/sia'
 import { useAnnotask } from '../../../api/anno_task'
-import { useGetSiaImage, useFinishAnnotask, useImageJunk } from '../../../api/sia'
+import { useGetSiaImage, useFinishAnnotask } from '../../../api/sia'
 import polygonOperationApi from '../../../api/polygon_operation'
 
 import type {
@@ -233,7 +233,7 @@ const SiaWrapper = ({
     siaApi.useDeleteAnnotation()
   const { data: updateImageLabelResponse, mutate: sendUpdateImageLabel } =
     siaApi.useUpdateImageLabel()
-  const { data: imageJunkResponse, mutate: sendJunkImage } = useImageJunk()
+  const { data: imageJunkResponse, mutate: sendJunkImage } = siaApi.useImageJunk()
 
   const { data: finishAnnotaskResponse, mutate: sindFinishAnnotask } = useFinishAnnotask()
 
@@ -715,7 +715,11 @@ const SiaWrapper = ({
       annoTime: newAnnoTime,
       isJunk: newJunkState,
     }
-    sendJunkImage(imageData)
+    if (isReview) {
+      sendJunkImage({ imageJunkData: imageData, annoTaskId })
+    } else {
+      sendJunkImage(imageData)
+    }
     setCurrentlySelectedAnnotation(undefined)
   }
 

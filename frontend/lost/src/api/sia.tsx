@@ -29,6 +29,7 @@ export type SiaApi = {
     EditAnnotationData
   >
   useUpdateImageLabel: () => UseMutationResult
+  useImageJunk: () => UseMutationResult
 }
 
 export type ImageData = {
@@ -75,7 +76,7 @@ export type ImageLabelData = {
   imgLabelIds: number[]
 }
 
-type ImageJunkData = {
+export type ImageJunkData = {
   imgId: number
   annoTime: number
   isJunk: boolean
@@ -305,4 +306,5 @@ export default {
   useDeleteAnnotation,
   useGetPossibleLabels,
   useUpdateImageLabel,
+  useImageJunk,
 }

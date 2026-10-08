@@ -36,6 +36,7 @@ from lost.controllers.sia.SiaBusiness import (
     SiaFilterError,
     SiaFilterValueError,
     SiaImageNotFoundError,
+    SiaNoAnnoTaskError,
     SiaUpdateError,
     ThumbnailError,
     ThumbnailForbiddenError,
@@ -145,6 +146,8 @@ def update_sia_anno(
         result = coord.update_sia_anno(user, data)
     except SiaUpdateError:
         return Responses.internal("error updating sia anno")
+    except SiaNoAnnoTaskError as e:
+        return Responses.not_found(str(e))
     else:
         return result
 
@@ -155,8 +158,10 @@ def update_partial_sia_anno(
     coord: SiaCoordination = Depends(get_sia_coordination),
 ):
     """Update partial SIA annotation."""
-    return coord.update_partial_sia_anno(user, data)
-
+    try:
+        return coord.update_partial_sia_anno(user, data)
+    except SiaNoAnnoTaskError as e:
+        return Responses.not_found(str(e))
 
 @router.get("/image/{image_id}")
 def get_sia_image(

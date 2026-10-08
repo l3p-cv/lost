@@ -37,6 +37,7 @@ from pydantic import BaseModel
 from lost.controllers.annotasks.AnnotasksBusiness import (
     AnnotaskInstructionNotFoundError,
     AnnotaskReviewNoAnnotationError,
+    SiaNoAnnoTaskError,
     WorkingTaskNotFoundError,
 )
 from lost.controllers.annotasks.AnnotasksCoordination import AnnotasksCoordination
@@ -331,7 +332,10 @@ def update_one_thing(
     coord: AnnotasksCoordination = Depends(get_annotasks_coordination)
 ):
     """Update image annotation time, junk status, or image label."""
-    return coord.update_one_thing(user, annotask_id, req)
+    try:
+        return coord.update_one_thing(user, annotask_id, req)
+    except SiaNoAnnoTaskError as e:
+        return Responses.not_found(str(e))
 
 @router.get("/{annotask_id}/review/options")
 def get_review_options(

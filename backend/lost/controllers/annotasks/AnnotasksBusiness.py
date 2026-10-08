@@ -18,6 +18,7 @@ from datetime import datetime
 from lost import settings
 from lost.controllers.Exceptions import DomainError
 from lost.controllers.sia.SiaBusiness import (
+    SiaNoAnnoTaskError,
     SiaSerialize,
     SiaUpdateOneThing,
     get_label_trees_by_anno_task_id,
@@ -574,6 +575,8 @@ class AnnotasksBusiness:
             if req.action not in ["imgAnnoTimeUpdate", "imgJunkUpdate", "imgLabelUpdate"]:
                 raise Exception("Expect either anno or img information!")
         anno_task = self.dbm.get_anno_task(anno_task_id=annotask_id)
+        if anno_task is None:
+            raise SiaNoAnnoTaskError(f"Annotask with id {annotask_id} not found")
         sia_update = SiaUpdateOneThing(self.dbm, req.model_dump(), user.idx, anno_task)
         return sia_update.update()
 

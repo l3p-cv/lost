@@ -357,6 +357,8 @@ def update(db_man, data, user_id, auto_save=False):
     :type db_man: lost.db.access.DBMan
     """
     anno_task = get_sia_anno_task(db_man, user_id)
+    if anno_task is None:
+        raise SiaNoAnnoTaskError(f"No active SIA annotask found for user {user_id}")
     sia_update = SiaUpdate(db_man, data, user_id, anno_task)
     return sia_update.update(auto_save)
 
@@ -366,6 +368,8 @@ def update_one_thing(db_man, data, user_id):
     :type db_man: lost.db.access.DBMan
     """
     anno_task = get_sia_anno_task(db_man, user_id)
+    if anno_task is None:
+        raise SiaNoAnnoTaskError(f"No active SIA annotask found for user {user_id}")
     sia_update = SiaUpdateOneThing(db_man, data, user_id, anno_task)
     return sia_update.update()
 
@@ -1085,6 +1089,13 @@ def reviewoptions_annotask(dbm, at_id, user_id):
 
 class PolygonOperationError(DomainError):
     """A polygon-operation payload failed validation."""
+
+    def __init__(self, message):
+        super().__init__(message)
+        self.message = message
+
+class SiaNoAnnoTaskError(DomainError):
+    """Raised when the acting user has no active SIA annotask."""
 
     def __init__(self, message):
         super().__init__(message)
