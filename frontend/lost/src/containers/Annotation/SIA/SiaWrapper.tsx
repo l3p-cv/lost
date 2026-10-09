@@ -119,7 +119,31 @@ const SiaWrapper = ({
   const { data: annotaskConfig } = useAnnotask(
     !isReview && !isDatasetMode ? annoTaskId : undefined,
   )
+  const siaConfiguration = annotaskConfig?.configuration
   const minimalArea = Number(annotaskConfig?.configuration?.annos?.minArea) || 0
+
+  const allowedTools = {
+    point: siaConfiguration?.tools?.point !== false,
+    line: siaConfiguration?.tools?.line !== false,
+    polygon: siaConfiguration?.tools?.polygon !== false,
+    bbox: siaConfiguration?.tools?.bbox !== false,
+    junk: siaConfiguration?.tools?.junk !== false,
+    imageLabel: siaConfiguration?.img?.actions?.label !== false,
+  }
+  const annotationSettings = {
+    minimalArea,
+    canCreate: siaConfiguration?.annos?.actions?.draw !== false,
+    canEdit: siaConfiguration?.annos?.actions?.edit !== false,
+    canLabel: siaConfiguration?.annos?.actions?.label !== false,
+    canHaveMultipleLabels: siaConfiguration?.annos?.multilabels === true,
+  }
+
+  const defaultAnnotationTool =
+  allowedTools.point ? AnnotationTool.Point
+  : allowedTools.bbox ? AnnotationTool.BBox
+  : allowedTools.polygon ? AnnotationTool.Polygon
+  : allowedTools.line ? AnnotationTool.Line
+  : AnnotationTool.Point
 
   // image search state
   const [isImageSearchActive, setIsImageSearchActive] = useState(false)
@@ -1351,13 +1375,9 @@ const SiaWrapper = ({
           tabIndex={0}
         >
           <Sia
-            annotationSettings={{
-              minimalArea,
-              canCreate: true,
-              canEdit: true,
-              canLabel: true,
-              canHaveMultipleLabels: false,
-            }}
+            allowedTools={allowedTools}
+            annotationSettings={annotationSettings}
+            defaultAnnotationTool={defaultAnnotationTool}
             defaultLabelId={defaultLabelId}
             image={imageBlob}
             uiConfig={{ imageCentered: true }}

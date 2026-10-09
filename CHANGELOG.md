@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `AnnoTaskModalUtils/SelectMIAConfiguration.jsx` , `AnnoTaskModalUtils/SelectSIAConfiguration.jsx` : Fixed annotask "Adapt configuration" edits visually reverting. in MIA reselecting a selected dropdown item in configuration no longer fires a save PUT.
 - `anno_task.tsx` : "Adapt Configuration" modal reopening with pre-edit config for some seconds, added invalidation to useUpdateConfig to fix this.
 - `api/label.tsx` : Fixed label tree import not appearing in table until hard reload issue. label-tree get query refetched on file-picker close.
+- `SiaWrapper.tsx` : fixed the issue of SIA annotask config not being applied to the annotask .now passing allowedTools and defaultConfig to lost-sia Sia.tsx.
 ## [4.1.0] - 2026-10-02
 ### Added
 - Added [AGENTS](./AGENTS.md) for agentic software development
