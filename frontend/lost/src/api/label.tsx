@@ -103,6 +103,7 @@ export const useGetLabelTrees = (visLevel: string) => {
       return httpClient.get<LabelTreesResponse>(`/label/tree/${visLevel}`)
     },
     queryKey: ['labelTrees', visLevel],
+    refetchOnWindowFocus: false,
   })
 }
 
