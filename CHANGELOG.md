@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `.opencode/command/golden-tests.md` + `.opencode/skills/golden-tests/` : Added the `/golden-tests` command and `golden-tests` skill — generates golden-snapshot test coverage for new API endpoints (appends RouteSpec entries to the existing specs file) and new namespaces (creates specs file, runner, golden dir, and MIGRATED registration), with harness references (harness map, namespace flow, spec patterns) and record/verify hand-off commands.
 - SIA annotations: reintroduced the `minArea` annotask configuration — annotations (bbox/polygon) smaller than the configured minimum are rejected with a warning toast. Requires lost-sia >= 3.5.0; enforcement is active in annotation mode only.
 - `logic/pipeline/service.py` : Annotasks without an instruction are stored as NULL so added guard to `create_anno_task` so instruction_id set to -1 is normalized.
+- `anno_task.tsx` :PUT `/config` Annotask config now shows success and error toasts previously silent.
 ### Fixed
 - `controllers/annotasks/AnnotasksEndpoint.py` : Fixed the UpdateConfigRequest schema signature to not have id, Also added the same in the test specs signature.
 - `logic/pipeline/cron.py` : Fixed pipelines failing to start after re-importing a project from a browser-renamed zip (e.g. `found(1) (Copy).zip`) — script paths in the generated start/debug commands are now shlex-quoted.
@@ -27,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `AnnotasktsEndpoint.py` , `DataEndpoint.py` and `SiaEndpoint.py` : Fixed review mode access issue for user with just DESIGNER role. widened endpoints that are used in review too to have role guard as ANNOTATOR and DESIGNER.
 - `Depenedencies.py` : Fixed has_role check in `required_role` to now check multiple roles.
 - `logic/pipeline/service.py`,`Toolbar.jsx` : Fixed pipeline regeneration replaying stale creation-time settings the regenerate request now carries `sourcePipeId` and the backend overlays the source pipeline's live values (annotask configuration, assigned group, instruction, storage settings, script arguments, datasource, loop) onto the start definition before instantiating and storing the new pipeline.
+- `AnnoTaskModalUtils/SelectMIAConfiguration.jsx` , `AnnoTaskModalUtils/SelectSIAConfiguration.jsx` : Fixed annotask "Adapt configuration" edits visually reverting. in MIA reselecting a selected dropdown item in configuration no longer fires a save PUT.
 ## [4.1.0] - 2026-10-02
 ### Added
 - Added [AGENTS](./AGENTS.md) for agentic software development

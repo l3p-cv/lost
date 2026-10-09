@@ -6,16 +6,17 @@ import { CenteredSpinner } from '../../../../../../components/CenteredSpinner'
 import InfoText from '../../../../../../components/InfoText'
 
 export const SelectSIAConfiguration = ({ ...props }) => {
-  const [configuration, setConfiguration] = useState(undefined)
+  const [configuration, setConfiguration] = useState(props.configuration)
+  const configurationProp = props.configuration
 
   const { data: modelsData, isLoading: isModelsLoading } = useModels()
 
   useEffect(() => {
-    setConfiguration(props.configuration)
-  }, [props])
+    setConfiguration(configurationProp)
+  }, [configurationProp])
 
   const changeValue = (key, value) => {
-    const newConfiguration = { ...configuration }
+    const newConfiguration = structuredClone(configuration)
     switch (key) {
       case 'tool-bbox':
         newConfiguration.tools.bbox = value

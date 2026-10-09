@@ -10,6 +10,14 @@ export const useUpdateConfig = () => {
         configuration: data.configuration,
       })
       .then((res) => res.data),
+    {
+      onSuccess: () => {
+        showSuccess('Configuration successfully saved!')
+      },
+      onError: () => {
+        showError('An error occurred while saving the configuration.')
+      },
+    },
   )
 }
 

@@ -12,13 +12,21 @@ import { useEffect, useState } from 'react'
 import InfoText from '../../../../../../components/InfoText'
 
 export const SelectMIAConfiguration = ({ ...props }) => {
-  const [configuration, setConfiguration] = useState()
+  const [configuration, setConfiguration] = useState(props.configuration)
+  const configurationProp = props.configuration
 
   useEffect(() => {
-    setConfiguration(props.configuration)
-  }, [props])
+    setConfiguration(configurationProp)
+  }, [configurationProp])
 
   const changeValue = (key, value) => {
+    const current = {
+      'show-proposed-label': configuration.showProposedLabel,
+      'anno-type': configuration.type,
+      'draw-anno': configuration.drawAnno,
+      'add-context': configuration.addContext,
+    }[key]
+    if (current === value) return
     const newConfiguration = { ...configuration }
     switch (key) {
       case 'show-proposed-label':
@@ -93,13 +101,19 @@ export const SelectMIAConfiguration = ({ ...props }) => {
                       <CDropdownMenu>
                         <CDropdownItem
                           href="#"
-                          onClick={(e) => changeValue('anno-type', 'annoBased')}
+                          onClick={(e) => {
+                            e.preventDefault()
+                            changeValue('anno-type', 'annoBased')
+                            }}
                         >
                           annoBased
                         </CDropdownItem>
                         <CDropdownItem
                           href="#"
-                          onClick={(e) => changeValue('anno-type', 'imageBased')}
+                          onClick={(e) => {
+                            e.preventDefault()
+                            changeValue('anno-type', 'imageBased')
+                          }}
                         >
                           imageBased
                         </CDropdownItem>
