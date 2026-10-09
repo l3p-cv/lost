@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Depenedencies.py` : Fixed has_role check in `required_role` to now check multiple roles.
 - `logic/pipeline/service.py`,`Toolbar.jsx` : Fixed pipeline regeneration replaying stale creation-time settings the regenerate request now carries `sourcePipeId` and the backend overlays the source pipeline's live values (annotask configuration, assigned group, instruction, storage settings, script arguments, datasource, loop) onto the start definition before instantiating and storing the new pipeline.
 - `AnnoTaskModalUtils/SelectMIAConfiguration.jsx` , `AnnoTaskModalUtils/SelectSIAConfiguration.jsx` : Fixed annotask "Adapt configuration" edits visually reverting. in MIA reselecting a selected dropdown item in configuration no longer fires a save PUT.
+- `anno_task.tsx` "Adapt Configuration" modal reopening with pre-edit config for some seconds, added invalidation to useUpdateConfig to fix this.
 ## [4.1.0] - 2026-10-02
 ### Added
 - Added [AGENTS](./AGENTS.md) for agentic software development
