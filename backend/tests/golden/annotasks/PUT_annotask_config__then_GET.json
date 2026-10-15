@@ -8,16 +8,16 @@
     "params": {
       "config": "true"
     },
-    "path": "/api/annotasks/175"
+    "path": "/api/annotasks/179"
   },
   "response": {
     "body": {
-      "annotatedImgCount": 2,
+      "annotatedImgCount": 1,
       "configuration": {
         "test": true
       },
       "createdAt": "<TS>",
-      "finished": 2,
+      "finished": 1,
       "group": "admin",
       "id": "<ID>",
       "imgCount": 3,
@@ -30,7 +30,7 @@
         }
       ],
       "lastActivity": "<TS>",
-      "lastAnnotator": "N/A",
+      "lastAnnotator": "admin",
       "lockedImgCount": 0,
       "name": "compare_test_sia",
       "pipelineCreator": "admin",

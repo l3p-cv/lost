@@ -7,11 +7,10 @@
     "json": {
       "configuration": {
         "test": true
-      },
-      "id": 175
+      }
     },
     "method": "PUT",
-    "path": "/api/annotasks/175/config"
+    "path": "/api/annotasks/179/config"
   },
   "response": {
     "body": "Success",
