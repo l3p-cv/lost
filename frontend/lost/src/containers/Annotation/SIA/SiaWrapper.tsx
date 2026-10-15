@@ -1225,6 +1225,7 @@ const SiaWrapper = ({
     return (
       <>
         <CCol xs="auto">
+         {annotationSettings.canEdit && (
           <PolygonEditButtons
             polygonEditMode={polygonEditMode}
             onPolygonEditModeChanged={(polygonEditMode: PolygonEditMode) => {
@@ -1250,9 +1251,11 @@ const SiaWrapper = ({
               setPolygonEditMode(polygonEditMode)
             }}
           />
+         )}
         </CCol>
         <CCol xs="2">
           <CButtonGroup>
+           {annotationSettings.canEdit && (
             <ImageFilterButton
               isDisabled={isSiaLoading || noImagesLeft}
               appliedFilters={appliedImageFilters}
@@ -1261,6 +1264,7 @@ const SiaWrapper = ({
               imageIsLoading={imageIsLoading}
               imageId={imageId}
             />
+           )}
             <CoreIconButton
               toolTip="Open image search"
               color="primary"

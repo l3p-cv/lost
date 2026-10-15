@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `SiaWrapper.tsx` : fixed the issue of SIA annotask config not being applied to the annotask .now passing allowedTools and defaultConfig to lost-sia Sia.tsx.
 - `SiaWrapper.tsx` : fixed polygon operations staying applied when they fail issue or when their result is rejected. new callbacks now added to lost-sia to reset the operation mode.
 - `api/polygon_operations.tsx` : Fixed polygon operation requests failing silently on network errors.
+- `SiaWrapper.tsx` : Fixed polygon operations and open filter options being available when the edit action is toggled off.
 ## [4.1.0] - 2026-10-02
 ### Added
 - Added [AGENTS](./AGENTS.md) for agentic software development
