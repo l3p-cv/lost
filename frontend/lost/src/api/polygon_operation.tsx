@@ -19,7 +19,7 @@ const usePolygonDifference = () => {
     return axios
       .post(API_URL + `/sia/polygonOperations/difference`, requestData)
       .then((res) => res.data)
-      .catch((error) => error.response.data)
+      .catch((error) => error?.response?.data ?? { error: 'Polygon operation request failed' })
   })
 }
 
@@ -32,7 +32,7 @@ const usePolygonIntersection = () => {
     return axios
       .post(API_URL + `/sia/polygonOperations/intersection`, requestData)
       .then((res) => res.data)
-      .catch((error) => error.response.data)
+      .catch((error) => error?.response?.data ?? { error: 'Polygon operation request failed' })
   })
 }
 
@@ -45,7 +45,7 @@ const usePolygonUnion = () => {
     return axios
       .post(API_URL + `/sia/polygonOperations/union`, requestData)
       .then((res) => res.data)
-      .catch((error) => error.response.data)
+      .catch((error) => error?.response?.data ?? { error: 'Polygon operation request failed' })
   })
 }
 
@@ -58,7 +58,7 @@ const useBBoxCreation = () => {
     return axios
       .post(API_URL + `/sia/bboxFromPoints`, requestData)
       .then((res) => res.data)
-      .catch((error) => error.response.data)
+      .catch((error) => error?.response?.data ?? { error: 'Polygon operation request failed' })
   })
 }
 

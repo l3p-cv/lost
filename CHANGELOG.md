@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SIA annotations: reintroduced the `minArea` annotask configuration — annotations (bbox/polygon) smaller than the configured minimum are rejected with a warning toast. Requires lost-sia >= 3.5.0; enforcement is active in annotation mode only.
 - `logic/pipeline/service.py` : Annotasks without an instruction are stored as NULL so added guard to `create_anno_task` so instruction_id set to -1 is normalized.
 - `anno_task.tsx` :PUT `/config` Annotask config now shows success and error toasts previously silent.
+- `SiaWrapper.tsx` : Added new props onAnnoCreationRejected and onPolygonOperationInterrupted and a func resetPolygonOperationState.
 ### Fixed
 - `controllers/annotasks/AnnotasksEndpoint.py` : Fixed the UpdateConfigRequest schema signature to not have id, Also added the same in the test specs signature.
 - `logic/pipeline/cron.py` : Fixed pipelines failing to start after re-importing a project from a browser-renamed zip (e.g. `found(1) (Copy).zip`) — script paths in the generated start/debug commands are now shlex-quoted.
@@ -32,6 +33,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `anno_task.tsx` : "Adapt Configuration" modal reopening with pre-edit config for some seconds, added invalidation to useUpdateConfig to fix this.
 - `api/label.tsx` : Fixed label tree import not appearing in table until hard reload issue. label-tree get query refetched on file-picker close.
 - `SiaWrapper.tsx` : fixed the issue of SIA annotask config not being applied to the annotask .now passing allowedTools and defaultConfig to lost-sia Sia.tsx.
+- `SiaWrapper.tsx` : fixed polygon operations staying applied when they fail issue or when their result is rejected. new callbacks now added to lost-sia to reset the operation mode.
+- `api/polygon_operations.tsx` : Fixed polygon operation requests failing silently on network errors.
 ## [4.1.0] - 2026-10-02
 ### Added
 - Added [AGENTS](./AGENTS.md) for agentic software development
