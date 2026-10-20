@@ -22,7 +22,7 @@ dependencies = [
     "dask[complete]>=2026.6.0",
     "fastapi==0.141.1",
     "starlette==1.7.0",
-    "fsspec>=2025.5.0",
+    "fsspec>=2026.6.0",
     "httpx>=0.28.0",
     "igraph>=0.11.8",
     "jinja2>=3.1.0",
