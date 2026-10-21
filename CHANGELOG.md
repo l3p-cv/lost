@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## unreleased
 ### Added
 
-## [4.1.1] - 2026-10-21
+## [4.1.2] - 2026-10-21
 ### Added
 - `.opencode/command/golden-tests.md` + `.opencode/skills/golden-tests/` : Added the `/golden-tests` command and `golden-tests` skill — generates golden-snapshot test coverage for new API endpoints (appends RouteSpec entries to the existing specs file) and new namespaces (creates specs file, runner, golden dir, and MIGRATED registration), with harness references (harness map, namespace flow, spec patterns) and record/verify hand-off commands.
 - SIA annotations: reintroduced the `minArea` annotask configuration — annotations (bbox/polygon) smaller than the configured minimum are rejected with a warning toast. Requires lost-sia >= 3.4.1; enforcement is active in annotation mode only.
@@ -40,12 +40,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `api/polygon_operations.tsx` : Fixed polygon operation requests failing silently on network errors.
 - `SiaWrapper.tsx` : Fixed polygon operations and open filter options being available when the edit action is toggled off.
 
-## [4.1.0] - 2026-10-02
+## [4.1.1] - 2026-10-02
 ### Added
 - Added [AGENTS](./AGENTS.md) for agentic software development
 - Added [AGENTS](./backend/tests/AGENTS.md) domain reference for the golden-snapshot harness
 - Added [AGENTS](./backend/AGENTS.md) scoped instructions for the backend
 - Added [AGENTS](./frontend/AGENTS.md) scoped instructions for the frontend
+
+## [4.1.0] - 2026-10-02
+### Added
 - `tests/architecture/test_layering.py` : Added layering guard test (to test the CCB split)
 - `controllers/Dependencies.py` : contains all changes that were previously in `controllers/auth/dependencies.py` (all endpoint layer wiring: `get_current_user`/`require_role`)
 - `controllers/AuthorizationService.py` : resource level authorization util
