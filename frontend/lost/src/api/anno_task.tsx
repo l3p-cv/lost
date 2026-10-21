@@ -1,15 +1,25 @@
 import axios from 'axios'
 import { API_URL } from '../lost_settings'
-import { useMutation, useQuery } from 'react-query'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { showError, showSuccess } from '../components/Notification'
 
 export const useUpdateConfig = () => {
+  const queryClient = useQueryClient()
   return useMutation((data) =>
     axios
       .put(`${API_URL}/annotasks/${data.annotaskId}/config`, {
         configuration: data.configuration,
       })
       .then((res) => res.data),
+    {
+      onSuccess: () => {
+        showSuccess('Configuration successfully saved!')
+        queryClient.invalidateQueries('pipeline')
+      },
+      onError: () => {
+        showError('An error occurred while saving the configuration.')
+      },
+    },
   )
 }
 

@@ -38,17 +38,20 @@ def unique_suffix() -> str:
 # ---------------------------------------------------------------------------
 
 
-def create_test_user(dbm, suffix: str | None = None) -> User:
+def create_test_user(dbm, suffix: str | None = None, role: str = roles.ANNOTATOR) -> User:
     """Create a test user directly in the DB (bypasses the API).
 
     Creates:
     - User with user_name ``compare_test_<suffix>``
     - Default group named after the user
-    - Annotator role
+    - The given role (default: Annotator)
 
     Args:
         dbm: A DBMan instance.
         suffix: Optional suffix (defaults to a unique uuid hex).
+        role: Role name granted to the user. Defaults to ``roles.ANNOTATOR``;
+            pass ``roles.DESIGNER`` for a single-role designer user (e.g. to
+            prove designer-review guard coverage).
 
     Returns:
         The created User object (with ``idx`` populated).
@@ -73,9 +76,9 @@ def create_test_user(dbm, suffix: str | None = None) -> User:
     ug = UserGroups(group_id=g.idx, user_id=user.idx)
     dbm.save_obj(ug)
 
-    # Annotator role
-    anno_role = dbm.get_role_by_name(roles.ANNOTATOR)
-    ur = UserRoles(user_id=user.idx, role_id=anno_role.idx)
+    # Role
+    role_row = dbm.get_role_by_name(role)
+    ur = UserRoles(user_id=user.idx, role_id=role_row.idx)
     dbm.save_obj(ur)
 
     dbm.save_obj(user)

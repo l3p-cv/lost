@@ -58,10 +58,12 @@ const Toolbar = (props) => {
 
   const regeneratePipelineHandler = async () => {
     if (name && description) {
-      const obj = props.data.startDefinition
-      obj.name = name
-      obj.description = description
-      postPipeline(props.data.startDefinition)
+      postPipeline({
+        ...props.data.startDefinition,
+        name,
+        description,
+        sourcePipeId: props.data.id,
+      })
     }
   }
 

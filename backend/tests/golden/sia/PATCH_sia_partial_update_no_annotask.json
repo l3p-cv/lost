@@ -1,0 +1,25 @@
+{
+  "mode": "structural",
+  "request": {
+    "headers": {
+      "Authorization": "<AUTH>"
+    },
+    "json": {
+      "action": "imgJunkUpdate",
+      "img": {
+        "annoTime": 1.0,
+        "imgId": 999999,
+        "isJunk": true
+      }
+    },
+    "method": "PATCH",
+    "path": "/api/sia"
+  },
+  "response": {
+    "body": "No active SIA annotask found for user 906",
+    "headers": {
+      "content-type": "application/json"
+    },
+    "status": 404
+  }
+}

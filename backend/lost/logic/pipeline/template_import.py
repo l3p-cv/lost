@@ -45,6 +45,8 @@ class PipeImporter:
         self.forTest = forTest
         self.dbm = dbm
         self.user_id = user_id
+        self.created = []
+        self.updated = []
         self.file_man = AppFileMan(self.dbm.lostconfig)
         pt_dir = find_pipe_root_path(pipe_template_dir)
         self.install_path = pipe_template_dir
@@ -183,6 +185,7 @@ class PipeImporter:
                 if db_json["name"].lower() == pipe["name"].lower():
                     pipe_in_db = True
                     logging.warning(f"PipeTemplate already in database: {db_json['name'].lower()}")
+                    self.updated.append(pipe["name"])
                     db_pipe.json_template = json.dumps(pipe)
                     db_pipe.timestamp = datetime.now()
                     self.dbm.save_obj(db_pipe)
@@ -198,6 +201,7 @@ class PipeImporter:
 
                 self.dbm.save_obj(pipe_temp)
                 logging.info("Added Pipeline: *** %s ***" % (pipe["name"],))
+                self.created.append(pipe["name"])
                 return error_message
         except Exception as e:
             logging.error(e, exc_info=True)

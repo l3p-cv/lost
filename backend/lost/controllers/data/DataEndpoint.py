@@ -44,7 +44,7 @@ def get_image(
     type: str = Query(..., description='Type of the mia image: "imageBased" or "annoBased"'),
     context: float = Query(0.0, description="Context Size"),
     drawAnno: bool = Query(False, description="Whether anno should be drawn"),
-    user: DBUser = Depends(require_role(roles.ANNOTATOR)),
+    user: DBUser = Depends(require_role(roles.ANNOTATOR, roles.DESIGNER)),
     coord: DataCoordination = Depends(get_data_coordination),
 ):
     """Get the image with the given ID as a base64 encoded BLOB."""

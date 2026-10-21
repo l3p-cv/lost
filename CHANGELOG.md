@@ -6,16 +6,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 ### Added
-
+- `.opencode/command/golden-tests.md` + `.opencode/skills/golden-tests/` : Added the `/golden-tests` command and `golden-tests` skill — generates golden-snapshot test coverage for new API endpoints (appends RouteSpec entries to the existing specs file) and new namespaces (creates specs file, runner, golden dir, and MIGRATED registration), with harness references (harness map, namespace flow, spec patterns) and record/verify hand-off commands.
+- SIA annotations: reintroduced the `minArea` annotask configuration — annotations (bbox/polygon) smaller than the configured minimum are rejected with a warning toast. Requires lost-sia >= 3.4.1; enforcement is active in annotation mode only.
+- `logic/pipeline/service.py` : Annotasks without an instruction are stored as NULL so added guard to `create_anno_task` so instruction_id set to -1 is normalized.
+- `anno_task.tsx` :PUT `/config` Annotask config now shows success and error toasts previously silent.
+- `SiaWrapper.tsx` : Added new props onAnnoCreationRejected and onPolygonOperationInterrupted and a func resetPolygonOperationState.
+### Fixed
+- `controllers/annotasks/AnnotasksEndpoint.py` : Fixed the UpdateConfigRequest schema signature to not have id, Also added the same in the test specs signature.
+- `logic/pipeline/cron.py` : Fixed pipelines failing to start after re-importing a project from a browser-renamed zip (e.g. `found(1) (Copy).zip`) — script paths in the generated start/debug commands are now shlex-quoted.
+- `controllers/filebrowser/FileBrowserEndpoint.py` : Fixed lsTest to return typed 400/404 error messages for invalid connection strings, missing paths and relative paths on file datasources instead of raw 500s.
+- `controllers/filebrowser/FileBrowserBusiness.py` : Fixed the datasource delete endpoint to read the flat `fs.id` payload matching the frontend — breaking: the old table-row payload shape is no longer accepted on `/fb/delete`.
+- `controllers/filebrowser/FileBrowserEndpoint.py` : `SaveFsRequest.visLevel` is now optional — datasource edits sent no visLevel and were rejected with a 422.
+- `frontend/lost/src/containers/DataSources/` : Fixed Datasource page UI — the table refreshes after saving/deleting a datasource, edit/delete operate on the datasource object instead of the table-row wrapper, Save is disabled until the connection test succeeds, and failed file-browser listings show an error instead of spinning forever.
+- `controllers/pipeline/` : Fixed pipeline project import (zip/git) returning failures as plain 200 strings — validation errors now come back as HTTP 400 with the server message, and the success response lists which templates were created vs updated (`logic/pipeline/template_import.py` tracks them).
+- `containers/Pipelines/AddPipelineProject.jsx` : Fixed import toasts — server error messages are surfaced on failure and the success toast lists added vs updated templates; the template list refreshes after import.
+- `containers/Users/GroupsTable.tsx` : Fixed the group table not refreshing after creating a group (and the input not clearing), which invited duplicate groups.
+- `controllers/annotasks/`, `controllers/dataset/`, `controllers/sia/SiaBusiness.py`, `db/access.py` : Fixed annotation review (annotask + dataset) progress and next/prev boundaries count only annotated (labeled/junk) images, navigation skips annotasks without reviewable images instead of crashing, and "no annotation found" is a proper 400 instead of a 200 string.
+- `api/dataset/dataset_review.tsx` + both `ReviewPage.tsx` : Fixed the review page silently retrying forever on server errors — failures now show an error alert with a retry button.
+- `containers/AdminArea/InferenceModelConfigModal.tsx` : Fixed the inference model dialog — saving works again (validation now on display name + Triton server URL), the form no longer resets while the modal is closed, and task/model-type selections are applied instead of being silently dropped.
+- `containers/Annotation/AnnoTask/WorkingOn.jsx` : Fixed "Started at" showing Invalid Date on the annotask card — reads `created_at` from the `/annotasks/working` response instead of the non-existent `createdAt` key.
+- `controllers/sia/` + `frontend/lost/src/` : Fixed review-mode image junking junk sent from review screens hit `PATCH /api/sia`, which resolves the annotask from the acting user's `choosen_anno_task` (None for reviewers crashes with 500 and unrelated SIA task) to now review junk goes to `PUT /pipeline/element/{id}/review` (Designer-guarded, correct task context, keeps original annoTime) `update`/`update_one_thing` raise `SiaNoAnnoTaskError` clean 404 instead of a crash when there is a stale annotask entry in the `choosen_anno_task` db table.
+- `AnnotasktsEndpoint.py` , `DataEndpoint.py` and `SiaEndpoint.py` : Fixed review mode access issue for user with just DESIGNER role. widened endpoints that are used in review too to have role guard as ANNOTATOR and DESIGNER.
+- `Depenedencies.py` : Fixed has_role check in `required_role` to now check multiple roles.
+- `logic/pipeline/service.py`,`Toolbar.jsx` : Fixed pipeline regeneration replaying stale creation-time settings the regenerate request now carries `sourcePipeId` and the backend overlays the source pipeline's live values (annotask configuration, assigned group, instruction, storage settings, script arguments, datasource, loop) onto the start definition before instantiating and storing the new pipeline.
+- `AnnoTaskModalUtils/SelectMIAConfiguration.jsx` , `AnnoTaskModalUtils/SelectSIAConfiguration.jsx` : Fixed annotask "Adapt configuration" edits visually reverting. in MIA reselecting a selected dropdown item in configuration no longer fires a save PUT.
+- `anno_task.tsx` : "Adapt Configuration" modal reopening with pre-edit config for some seconds, added invalidation to useUpdateConfig to fix this.
+- `api/label.tsx` : Fixed label tree import not appearing in table until hard reload issue. label-tree get query refetched on file-picker close.
+- `SiaWrapper.tsx` : fixed the issue of SIA annotask config not being applied to the annotask .now passing allowedTools and defaultConfig to lost-sia Sia.tsx.
+- `SiaWrapper.tsx` : fixed polygon operations staying applied when they fail issue or when their result is rejected. new callbacks now added to lost-sia to reset the operation mode.
+- `api/polygon_operations.tsx` : Fixed polygon operation requests failing silently on network errors.
+- `SiaWrapper.tsx` : Fixed polygon operations and open filter options being available when the edit action is toggled off.
 ## [4.1.0] - 2026-10-02
 ### Added
 - Added [AGENTS](./AGENTS.md) for agentic software development
 - Added [AGENTS](./backend/tests/AGENTS.md) domain reference for the golden-snapshot harness
 - Added [AGENTS](./backend/AGENTS.md) scoped instructions for the backend
 - Added [AGENTS](./frontend/AGENTS.md) scoped instructions for the frontend
-
-## [4.1.0] - 2026-10-02
-### Added
 - `tests/architecture/test_layering.py` : Added layering guard test (to test the CCB split)
 - `controllers/Dependencies.py` : contains all changes that were previously in `controllers/auth/dependencies.py` (all endpoint layer wiring: `get_current_user`/`require_role`)
 - `controllers/AuthorizationService.py` : resource level authorization util

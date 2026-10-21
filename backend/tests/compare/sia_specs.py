@@ -19,7 +19,7 @@ from tests.helpers.recorder import RequestSpec
 from tests.helpers.specs import RouteSpec
 from tests.compare.migration_status import target_for
 from datetime import datetime
-from tests.helpers.seed import TEST_PREFIX, cleanup_test_user, unique_suffix
+from tests.helpers.seed import TEST_PREFIX, cleanup_test_user, create_test_user, unique_suffix
 
 _TARGET = target_for("sia")
 
@@ -219,6 +219,32 @@ def _cleanup_roleless_user(dbm, context) -> None:
     """Delete the role-less test user (idempotent, rollback-first)."""
     if "user_obj" in context:
         cleanup_test_user(dbm, context["user_obj"])
+
+
+def _setup_fresh_annotator(dbm) -> dict:
+    """Fresh annotator token — has the Annotator role but NO chosen annotask."""
+    from lost.controllers.user.login_manager import LoginManager
+
+    user = create_test_user(dbm)
+    lm = LoginManager(dbm, user.user_name, "")
+    fresh_token, _ = lm.create_jwt_pyjwt(user.idx, user.user_name, user.roles)
+    return {"fresh_token": fresh_token, "user_obj": user, "skip": False}
+
+
+def _setup_pure_designer_with_image(dbm) -> dict:
+    """Fresh user holding ONLY the Designer role + the compare_test_sia image id."""
+    ctx = _setup_sia_image_id(dbm)
+    if ctx.get("skip"):
+        return ctx
+
+    from lost.controllers.user.login_manager import LoginManager
+    from lost.db import roles as db_roles
+
+    user = create_test_user(dbm, role=db_roles.DESIGNER)
+    lm = LoginManager(dbm, user.user_name, "")
+    fresh_token, _ = lm.create_jwt_pyjwt(user.idx, user.user_name, user.roles)
+    ctx.update({"fresh_token": fresh_token, "user_obj": user})
+    return ctx
 
 
 # ---------------------------------------------------------------------------
@@ -453,6 +479,34 @@ def get_sia_specs() -> list[RouteSpec]:
         cleanup=_cleanup_roleless_user,
         target=_TARGET,
         # role check fires before any image access — image_id is never touched
+    ))
+
+    # 20. PATCH /api/sia as a fresh annotator (no chosen annotask) → 404 (structural)
+    specs.append(RouteSpec(
+        name="PATCH_sia_partial_update_no_annotask",
+        request=RequestSpec(
+            method="PATCH", path="/api/sia",
+            json={"action": "imgJunkUpdate", "img": {"imgId": 999999, "annoTime": 1.0, "isJunk": True}},
+            mode="structural",
+        ),
+        setup=_setup_fresh_annotator,
+        cleanup=_cleanup_roleless_user,
+        target=_TARGET,
+        # SiaNoAnnoTaskError replaces the former NoneType 500; the error body embeds
+        # the runtime user idx — structural compares the string body by type only
+        # (comparator.py scalar branch), the 404 status is still compared exactly
+    ))
+
+    # 21. GET /api/sia/image/{id}/name as a pure designer (no annotator role) → 200
+    specs.append(RouteSpec(
+        name="GET_sia_image_name_designer",
+        request=RequestSpec(
+            method="GET", path="/api/sia/image/{image_id}/name", mode="structural",
+        ),
+        setup=_setup_pure_designer_with_image,
+        cleanup=_cleanup_roleless_user,
+        target=_TARGET,
+        # proves the designer-review guard widening on the image-name route
     ))
 
     return specs

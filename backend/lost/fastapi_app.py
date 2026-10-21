@@ -23,11 +23,12 @@ from lost.logic import dask_session
 
 logger = logging.getLogger("lost")
 
+logging.basicConfig(level=logging.INFO)
+
 # Attach Graylog handler once at module load (replaces app.py:38-45)
 if settings.LOST_CONFIG.use_graylog:
     from pygelf import GelfUdpHandler
 
-    logging.basicConfig(level=logging.INFO)
     logger.addHandler(
         GelfUdpHandler(host="graylog", port=12201, _type="lost-api", include_extra_fields=True)
     )

@@ -95,7 +95,7 @@ def require_role(*allowed_roles: str):
     """Dependency factory: require the authenticated user to have one of the given roles."""
 
     def dependency(user: DBUser = Depends(get_current_user)) -> DBUser:
-        if not user.has_role(*allowed_roles):
+        if not any(user.has_role(role) for role in allowed_roles):
             raise HTTPException(
                 status_code=403,
                 detail=f"You need to be one of {allowed_roles} in order to perform this request.",

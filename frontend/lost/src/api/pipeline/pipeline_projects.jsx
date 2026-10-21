@@ -38,15 +38,18 @@ export const useSubmitNewPipelineProject = () => {
         },
       })
       setState({
-        isSuccess: response.data === 'success',
-        errorMessage: response.data,
+        idle: true,
+        isSuccess: response.data?.status === 'success',
+        result: response.data,
+        errorMessage: response.data?.message,
       })
     } catch (error) {
-      setState({ error })
+      setState({
+        idle: true,
+        error,
+        errorMessage: error.response?.data?.message,
+      })
     }
-    setState({
-      idle: true,
-    })
   })
   return [state, mutate, breakUpload]
 }

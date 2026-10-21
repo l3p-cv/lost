@@ -8,6 +8,7 @@ import {
   ImageData,
   ImageLabelData,
 } from '../sia'
+import type { ImageJunkData } from '../sia'
 import { LegacyAnnotationResponse } from '../../containers/Annotation/SIA/legacyHelper'
 import { Label } from 'lost-sia'
 
@@ -47,6 +48,16 @@ export const useReview = (annotationRequestData: ReviewData) => {
       refetchOnWindowFocus: false,
       cacheTime: 0,
       staleTime: 0,
+      // fail fast instead of retrying — the review page shows an error state
+      retry: false,
+      onError: (error: any) => {
+        const detail = error?.response?.data
+        showError(
+          typeof detail === 'string' && detail
+            ? `Review navigation failed: ${detail}`
+            : 'Review navigation failed.',
+        )
+      },
     },
   )
 }
@@ -243,10 +254,34 @@ export const useUpdateImageLabel = () => {
   )
 }
 
+export const useImageJunk = () => {
+  return useMutation(
+    ({ imageJunkData, annoTaskId }: { imageJunkData: ImageJunkData; annoTaskId: number }) => {
+      const requestData = {
+        action: 'imgJunkUpdate',
+        img: {
+          imgId: imageJunkData.imgId,
+          annoTime: imageJunkData.annoTime,
+          isJunk: imageJunkData.isJunk,
+          imgLabelChanged: false, // required: SiaUpdate._update_img_labels reads it unconditionally
+        },
+      }
+
+      return axios
+        .put(API_URL + `/pipeline/element/${annoTaskId}/review`, requestData)
+        .then((res) => res.data)
+    },
+    {
+      onError: () => showError('Failed to update junk status.'),
+    },
+  )
+}
+
 export default {
   useCreateAnnotation,
   useEditAnnotation,
   useDeleteAnnotation,
   useGetPossibleLabels,
   useUpdateImageLabel,
+  useImageJunk,
 }

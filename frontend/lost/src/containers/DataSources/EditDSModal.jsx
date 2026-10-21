@@ -1,4 +1,5 @@
 import {
+  CAlert,
   CButton,
   CCol,
   CForm,
@@ -42,6 +43,8 @@ const EditDSModal = ({
 
   const [browseOpen, setBrowseOpen] = useState(false)
   const [browsePath, setBrowsePath] = useState(fs.rootPath)
+  const [isTested, setIsTested] = useState(false)
+  const [testError, setTestError] = useState(null)
   const { mutate: getFullFs, data: fullFs } = fbAPI.useGetFullFs()
   const { mutate: saveFs, status: saveFsStatus, error: saveFsError } = fbAPI.useSaveFs()
   const { data: ownUser, isLoading } = useOwnUser()
@@ -52,7 +55,10 @@ const EditDSModal = ({
   // }
 
   useEffect(() => {
-    if (fullFs) setFs({ ...fullFs, connection: JSON.stringify(fullFs.connection) })
+    if (fullFs) {
+      const conn = typeof fullFs.connection === 'string' ? fullFs.connection : JSON.stringify(fullFs.connection)
+      setFs({ ...fullFs, connection: conn })
+    }
   }, [fullFs])
 
   useEffect(() => {
@@ -97,7 +103,22 @@ const EditDSModal = ({
     setBrowseOpen(false)
   }
 
+  const handleTest = async () => {
+    setTestError(null)
+    try {
+      await fbAPI.lsTest(fs, fs.rootPath)
+      setIsTested(true)
+      setBrowseOpen(true)
+    } catch (err) {
+      const msg = err?.response?.data?.message || 'Failed to test connection'
+      setTestError(msg)
+      Notification.showError(msg)
+    }
+  }
+
   const loadPreset = (type) => {
+    setIsTested(false)
+    setTestError(null)
     setFs({ ...fs, fsType: type })
     switch (type) {
       case 'file':
@@ -240,6 +261,11 @@ const EditDSModal = ({
           fs={fs}
           onPathSelected={(path) => setBrowsePath(path)}
           mode="lsTest"
+          onLsSuccess={() => {
+            setIsTested(true)
+            setTestError(null)
+          }}
+          onLsError={(msg) => setTestError(msg)}
         />
       </BaseModal>
     )
@@ -256,7 +282,7 @@ const EditDSModal = ({
           isShowCancelButton
           footer={
             <CoreIconButton
-              disabled={fs.name === '' || fs.rootPath === ''}
+              disabled={fs.name === '' || fs.rootPath === '' || !isTested}
               icon={faSave}
               color="success"
               text="Save"
@@ -291,6 +317,8 @@ const EditDSModal = ({
                 // defaultValue={''}
                 placeholder={'Root path'}
                 onChange={(e) => {
+                  setIsTested(false)
+                  setTestError(null)
                   setFs({ ...fs, rootPath: e.target.value })
                 }}
                 value={fs.rootPath}
@@ -298,15 +326,14 @@ const EditDSModal = ({
               <CButton
                 style={{ height: '100%' }}
                 color="primary"
-                onClick={() => {
-                  setBrowseOpen(true)
-                }}
+                onClick={handleTest}
               >
                 Test
               </CButton>
               {/* <CFormText>Example help text that remains unchanged.</CFormText> */}
               {/* <FormFeedback>You will not be able to see this</FormFeedback> */}
             </CInputGroup>
+            {testError && <CAlert color="danger" className="mt-1 mb-2">{testError}</CAlert>}
             <CFormLabel htmlFor="name">Datasource Type</CFormLabel>
             <CInputGroup>
               <CFormSelect
@@ -314,6 +341,8 @@ const EditDSModal = ({
                 name="dsType"
                 id="dsType"
                 onChange={(e) => {
+                  setIsTested(false)
+                  setTestError(null)
                   setFs({ ...fs, fsType: e.target.value })
                 }}
                 // defaultValue={fs.fsType}
@@ -336,6 +365,8 @@ const EditDSModal = ({
                 name="connection"
                 id="connection"
                 onChange={(e) => {
+                  setIsTested(false)
+                  setTestError(null)
                   setFs({ ...fs, connection: e.target.value })
                 }}
                 // defaultValue={fs.connection}

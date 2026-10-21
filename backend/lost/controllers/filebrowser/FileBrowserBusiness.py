@@ -48,6 +48,21 @@ class DatasourceValidationError(DomainError):
         super().__init__(exc)
 
 
+class LsTestInvalidConnectionError(DomainError):
+    """lsTest got an unparseable connection string."""
+
+
+class LsTestPathNotFoundError(DomainError):
+    """lsTest target path does not exist; carries the path (arg 0)."""
+
+
+class LsTestAccessError(DomainError):
+    """lsTest cannot access the path; carries the cause (arg 0)."""
+
+    def __init__(self, exc: Exception) -> None:
+        super().__init__(exc)
+
+
 class FileBrowserBusiness:
     """Filebrowser business service — filesystem CRUD, browsing, uploads."""
 
@@ -109,28 +124,35 @@ class FileBrowserBusiness:
 
     def ls_test(self, req) -> list:
         """Test an arbitrary filesystem connection."""
-        connection_dict = ast.literal_eval(req.fs["connection"])
-        db_fs = model.FileSystem(
-            connection=json.dumps(connection_dict),
-            root_path=req.fs["rootPath"],
-            fs_type=req.fs["fsType"],
-        )
-        fm = FileMan(fs_db=db_fs, decrypt=False)
-        path = req.path
-        res = fm.ls(path, detail=True)
+        try:
+            connection_dict = ast.literal_eval(req.fs["connection"])
+        except (ValueError, SyntaxError) as e:
+            raise LsTestInvalidConnectionError from e
+        try:
+            db_fs = model.FileSystem(
+                connection=json.dumps(connection_dict),
+                root_path=req.fs["rootPath"],
+                fs_type=req.fs["fsType"],
+            )
+            fm = FileMan(fs_db=db_fs, decrypt=False)
+            path = req.path
+            res = fm.ls(path, detail=True)
+        except (FileNotFoundError, NotADirectoryError) as e:
+            raise LsTestPathNotFoundError(req.path) from e
+        except Exception as e:
+            raise LsTestAccessError(e) from e
         return chonkyfy(res, path, fm)
 
     # --- filesystem CRUD ---
 
     def delete_fs(self, req) -> dict:
         """Delete a filesystem entry (soft-delete fallback)."""
-        print(f"Deleting filesystem entry id: {req.fs['row']['original']['id']}")
-        fs_db = self.dbm.get_fs(fs_id=req.fs['row']['original']['id'])
+        fs_db = self.dbm.get_fs(fs_id=req.fs["id"])
         try:
             self.dbm.delete(fs_db)
             self.dbm.commit()
         except Exception:
-            fs_db = self.dbm.get_fs(fs_id=req.fs['row']['original']['id'])
+            fs_db = self.dbm.get_fs(fs_id=req.fs["id"])
             fs_db.deleted = True
             self.dbm.add(fs_db)
             self.dbm.commit()

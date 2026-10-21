@@ -10,32 +10,42 @@
   "response": {
     "body": {
       "created_at": "<TS>",
-      "finished": 6,
+      "finished": 1,
       "group": "admin",
       "id": "<ID>",
       "instruction_id": null,
-      "last_activity": "2026-09-21T10:27:40.000Z",
+      "last_activity": "2026-10-07T10:13:17.000Z",
       "last_annotator": "admin",
-      "locked_img_count": 1,
-      "name": "SIA test",
+      "locked_img_count": 0,
+      "name": "compare_test_sia",
       "pipeline_creator": "admin",
-      "pipeline_name": "newpprecreate",
+      "pipeline_name": "compare_test_sia_pipe",
       "progress": "<REDACTED>",
-      "size": 35,
+      "size": 3,
       "statistic": {
         "amount_per_label": [
           {
-            "amount": 1,
+            "amount": 2,
             "color": "#46aed7",
-            "label": "Plane"
+            "label": "Aeroplane"
           },
           {
             "amount": 1,
-            "color": "#a55046",
-            "label": "Car"
+            "color": "#e28f81",
+            "label": "Bicycle"
+          },
+          {
+            "amount": 1,
+            "color": "#88712f",
+            "label": "Boat"
+          },
+          {
+            "amount": 1,
+            "color": "#d44da4",
+            "label": "Potted plant"
           }
         ],
-        "seconds_per_anno": "0.00"
+        "seconds_per_anno": "1.60"
       },
       "status": "inProgress",
       "type": "SIA"

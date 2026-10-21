@@ -59,10 +59,10 @@ export const InferenceModalConfigModal: React.FC<ModelModalProps> = ({
   const [modelsFetched, setModelsFetched] = useState(false)
 
   const isFormValid = (): boolean => {
-    const { name, displayName, serverUrl, taskType, modelType } = formData
+    const { displayName, serverUrl, taskType, modelType } = formData
     const isGrpcValid = isValidGrpcUrl(serverUrl)
     const hasBasicFields =
-      name.trim() && displayName.trim() && modelType && taskType !== undefined
+      displayName.trim() && modelType && taskType !== undefined
     return isGrpcValid && !!hasBasicFields
   }
 
@@ -76,7 +76,7 @@ export const InferenceModalConfigModal: React.FC<ModelModalProps> = ({
   const updateMutation = useUpdateInferenceModel()
 
   useEffect(() => {
-    if (modelData) {
+    if (isOpen && modelData) {
       const m = modelData
       setFormData({
         name: m.name,
@@ -87,7 +87,7 @@ export const InferenceModalConfigModal: React.FC<ModelModalProps> = ({
         description: m.description || '',
       })
     }
-  }, [modelData])
+  }, [isOpen, modelData])
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -96,14 +96,18 @@ export const InferenceModalConfigModal: React.FC<ModelModalProps> = ({
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleSelectChange = <T,>(field: keyof CreateInferenceModelRequest) => {
-    return (option: { value: T }) => {
-      setFormData((prev) => ({ ...prev, [field]: option.value }))
+  const handleSelectChange =
+    (field: 'taskType' | 'modelType') =>
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      const raw = e.target.value
+      setFormData((prev) => ({
+        ...prev,
+        [field]: field === 'taskType' ? parseInt(raw, 10) : raw,
+      }))
     }
-  }
 
-  const handleModelSelect = (option: { value: string }) => {
-    setFormData((prev) => ({ ...prev, name: option.value }))
+  const handleModelSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setFormData((prev) => ({ ...prev, name: e.target.value }))
   }
 
   const handleFetchModels = async () => {
@@ -159,13 +163,18 @@ export const InferenceModalConfigModal: React.FC<ModelModalProps> = ({
         isOpen = false
       }}
       footer={
-        <CoreIconButton
-          color="success"
-          type="submit"
-          icon={faSave}
-          // disabled={submitting || !isFormValid()}
-          text={submitting ? 'Saving...' : isEditMode ? 'Update' : 'Create'}
-        />
+          <CoreIconButton
+            color="success"
+            type="submit"
+            icon={faSave}
+            disabled={submitting || !isFormValid()}
+            toolTip={
+              !isFormValid()
+                ? 'Display name and a valid Triton Server URL (host:port) are required'
+                : undefined
+            }
+            text={submitting ? 'Saving...' : isEditMode ? 'Update' : 'Create'}
+          />
       }
     >
       <CForm>
@@ -202,9 +211,8 @@ export const InferenceModalConfigModal: React.FC<ModelModalProps> = ({
             <CInputGroup>
               <CFormSelect
                 options={modelOptions}
-                // @ts-expect-error using custom form data
                 onChange={handleModelSelect}
-                value={modelOptions.find((opt) => opt.value === formData.name)}
+                value={formData.name}
                 placeholder="Select a model"
               />
             </CInputGroup>
@@ -223,18 +231,16 @@ export const InferenceModalConfigModal: React.FC<ModelModalProps> = ({
         <CInputGroup>
           <CFormSelect
             options={taskTypeOptions}
-            value={taskTypeOptions.find((opt) => opt.value === formData.taskType)}
-            // @ts-expect-error using custom form data
-            onChange={handleSelectChange<number>('taskType')}
+            value={String(formData.taskType)}
+            onChange={handleSelectChange('taskType')}
           />
         </CInputGroup>
         <CFormLabel>Model Type</CFormLabel>
         <CInputGroup>
           <CFormSelect
             options={modelTypeOptions}
-            value={modelTypeOptions.find((opt) => opt.value === formData.modelType)}
-            // @ts-expect-error using custom form data
-            onChange={handleSelectChange<string>('modelType')}
+            value={formData.modelType}
+            onChange={handleSelectChange('modelType')}
           />
         </CInputGroup>
 

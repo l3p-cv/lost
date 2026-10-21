@@ -36,6 +36,8 @@ from pydantic import BaseModel
 
 from lost.controllers.annotasks.AnnotasksBusiness import (
     AnnotaskInstructionNotFoundError,
+    AnnotaskReviewNoAnnotationError,
+    SiaNoAnnoTaskError,
     WorkingTaskNotFoundError,
 )
 from lost.controllers.annotasks.AnnotasksCoordination import AnnotasksCoordination
@@ -69,7 +71,6 @@ class UpdateGroupRequest(BaseModel):
 
 
 class UpdateConfigRequest(BaseModel):
-    id: int
     configuration: dict | None = None
 
 
@@ -195,7 +196,7 @@ def get_annotask_by_id(
     annotask_id: int,
     statistics: str | None = Query(None, description="Return statistics too"),
     config: str | None = Query(None, description="Return config too"),
-    user: DBUser = Depends(require_role(roles.ANNOTATOR)),
+    user: DBUser = Depends(require_role(roles.ANNOTATOR, roles.DESIGNER)),
     coord: AnnotasksCoordination = Depends(get_annotasks_coordination)
 ):
     """Get details for an annotation task with the given id."""
@@ -327,11 +328,14 @@ def get_review_labels(
 def update_one_thing(
     annotask_id: int,
     req: PatchAnnotationRequest,
-    user: DBUser = Depends(require_role(roles.ANNOTATOR)),
+    user: DBUser = Depends(require_role(roles.ANNOTATOR, roles.DESIGNER)),
     coord: AnnotasksCoordination = Depends(get_annotasks_coordination)
 ):
     """Update image annotation time, junk status, or image label."""
-    return coord.update_one_thing(user, annotask_id, req)
+    try:
+        return coord.update_one_thing(user, annotask_id, req)
+    except SiaNoAnnoTaskError as e:
+        return Responses.not_found(str(e))
 
 @router.get("/{annotask_id}/review/options")
 def get_review_options(
@@ -351,4 +355,7 @@ def annotask_review(
     coord: AnnotasksCoordination = Depends(get_annotasks_coordination)
 ):
     """Get data for the next annotask review image."""
-    return coord.annotask_review(user, annotask_id, req.model_dump())
+    try:
+        return coord.annotask_review(user, annotask_id, req.model_dump())
+    except AnnotaskReviewNoAnnotationError:
+        return Responses.bad_request("no annotation found")

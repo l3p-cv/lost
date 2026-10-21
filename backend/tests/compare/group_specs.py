@@ -1,11 +1,12 @@
 """Group namespace request specs for golden-snapshot testing.
 
-7 routes: 7 active.
+8 routes: 8 active.
 - 2 GETs (list, by_id)
 - 1 POST (create test group → GET verify → cleanup)
 - 1 DELETE (create test group → delete via API → GET verify 404)
 - 3 error-path specs (D2 pilot — exact mode, byte-exact legacy bodies):
   duplicate create → 409, empty name → 400, missing-id delete → 400
+- 1 empty-response spec (exact mode): nonexistent-id GET → 200 with empty schema
 """
 
 from __future__ import annotations
@@ -143,6 +144,16 @@ def get_group_specs() -> list[RouteSpec]:
         name="DELETE_group_not_found",
         request=RequestSpec(
             method="DELETE", path="/api/group/999999", mode="exact",
+        ),
+        target=_TARGET,
+    ))
+
+    # 8. GET /api/group/{id} — nonexistent id → 200 with empty schema (exact;
+    #    hardcoded implausible id for determinism — no setup, no cleanup)
+    specs.append(RouteSpec(
+        name="GET_group_not_found",
+        request=RequestSpec(
+            method="GET", path="/api/group/999999", mode="exact",
         ),
         target=_TARGET,
     ))

@@ -1,13 +1,14 @@
 import { useParams } from 'react-router-dom'
 import SiaWrapper from '../Annotation/SIA/SiaWrapper'
 import { CSSProperties, useEffect, useState } from 'react'
+import { CAlert } from '@coreui/react'
 import siaApi, { ReviewData, useReview, useGetReviewImageList } from '../../api/dataset/dataset_review'
 import { ImageSwitchData } from '../../api/sia'
 import { useAnnotask } from '../../api/anno_task'
 import AnnotationTop from '../Annotation/AnnoTask/AnnotationTop'
 import SiaPreviewSidebar from '../Annotation/SIA/SiaPreviewSidebar'
 import CoreIconButton from '../../components/CoreIconButton'
-import { faFilm } from '@fortawesome/free-solid-svg-icons'
+import { faFilm, faRotateRight } from '@fortawesome/free-solid-svg-icons'
 
 const DatasetsReviewComponent = () => {
   const { datasetId } = useParams()
@@ -27,7 +28,7 @@ const DatasetsReviewComponent = () => {
     },
   })
 
-  const { data: annoData, refetch: refetchReview } = useReview(annotationRequestData)
+  const { data: annoData, isError: isReviewError, refetch: refetchReview } = useReview(annotationRequestData)
   const { data: imageList, refetch: refetchImageList } = useGetReviewImageList(currentAnnotaskId > 0 ? currentAnnotaskId : undefined)
 
   const handleRefresh = async () => {
@@ -48,6 +49,21 @@ const DatasetsReviewComponent = () => {
 
   if (datasetId === undefined || isNaN(parseInt(datasetId)))
     return <h2>Incorrect Dataset Id</h2>
+
+  if (isReviewError) {
+    return (
+      <CAlert color="danger" className="m-3" style={{ fontSize: '1.1rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <strong>Review navigation failed. Please try again.</strong>
+          <CoreIconButton
+            icon={faRotateRight}
+            toolTip="Retry"
+            onClick={() => refetchReview()}
+          />
+        </div>
+      </CAlert>
+    )
+  }
 
   const nDatasetId: number = parseInt(datasetId)
 

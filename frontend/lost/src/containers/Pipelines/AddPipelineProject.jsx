@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { useQueryClient } from 'react-query'
 import {
   faPlus,
   faUpload,
@@ -16,6 +17,7 @@ import TableHeader from '../../components/TableHeader'
 import InfoText from '../../components/InfoText'
 const AddPipelineProject = ({ visLevel, projectNames = [], refetch }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const queryClient = useQueryClient()
 
   const { acceptedFiles, getRootProps, getInputProps, isDragReject, isFocused } =
     useDropzone({
@@ -31,6 +33,7 @@ const AddPipelineProject = ({ visLevel, projectNames = [], refetch }) => {
 
   const {
     data: importPipelineProjectGitData,
+    error: importGitError,
     mutate: importPipelineGit,
     status: pipelineImportGitStatus,
   } = pipelinedProjectsApi.useImportPipelineProjectGit()
@@ -58,9 +61,24 @@ const AddPipelineProject = ({ visLevel, projectNames = [], refetch }) => {
   }, [acceptedFiles])
   useEffect(() => {
     if (submitNewPipelineProjectData.isSuccess) {
-      Notification.showSuccess('Import succeeded.')
+      const { created = [], updated = [] } = submitNewPipelineProjectData.result || {}
+      if (updated.length > 0) {
+        Notification.showSuccess(
+          `Import succeeded — updated: ${updated.join(', ')}` +
+            (created.length ? ` · new: ${created.join(', ')}` : ''),
+          7500,
+        )
+      } else {
+        Notification.showSuccess(
+          created.length
+            ? `Import succeeded — added: ${created.join(', ')}`
+            : 'Import succeeded.',
+        )
+      }
       setUploadZipfile(undefined)
       setIsModalOpen(false)
+      refetch()
+      queryClient.invalidateQueries('templates')
     }
     if (submitNewPipelineProjectData.isSuccess === false) {
       setUploadZipfile(undefined)
@@ -73,28 +91,49 @@ const AddPipelineProject = ({ visLevel, projectNames = [], refetch }) => {
         Notification.showError('Import failed.')
       }
     }
+    if (
+      submitNewPipelineProjectData.error &&
+      submitNewPipelineProjectData.error.code !== 'ERR_CANCELED'
+    ) {
+      setUploadZipfile(undefined)
+      Notification.showError('Import failed — server error.', 7500)
+    }
   }, [submitNewPipelineProjectData])
 
   useEffect(() => {
     if (pipelineImportGitStatus === 'success') {
-      if (importPipelineProjectGitData !== 'success') {
+      const { status, created = [], updated = [], message } = importPipelineProjectGitData || {}
+      if (status !== 'success') {
         setGitUrl('')
         setGitBranch('main')
-        Notification.showError(`Import failed: ${importPipelineProjectGitData}`, 7500)
+        Notification.showError(`Import failed: ${message || 'unknown error'}`, 7500)
       } else {
         setGitUrl('')
         setGitBranch('main')
+        if (updated.length > 0) {
+          Notification.showSuccess(
+            `Import succeeded — updated: ${updated.join(', ')}` +
+              (created.length ? ` · new: ${created.join(', ')}` : ''),
+            7500,
+          )
+        } else {
+          Notification.showSuccess(
+            created.length
+              ? `Import succeeded — added: ${created.join(', ')}`
+              : 'Import succeeded.',
+          )
+        }
         setIsModalOpen(false)
         refetch()
-        Notification.showSuccess('Import succeeded.')
+        queryClient.invalidateQueries('templates')
       }
     }
     if (pipelineImportGitStatus === 'error') {
       setGitUrl('')
       setGitBranch('main')
-      Notification.showError('Import failed.')
+      Notification.showError(importGitError?.response?.data?.message || 'Import failed.', 7500)
     }
-  }, [pipelineImportGitStatus])
+  }, [pipelineImportGitStatus, importPipelineProjectGitData])
 
   const onImportZipFile = () => {
     if (uploadZipfile) {

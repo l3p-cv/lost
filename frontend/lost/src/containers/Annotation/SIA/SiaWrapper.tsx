@@ -7,7 +7,8 @@ import type {
   SiaResponse,
   ImageEditData,
 } from '../../../api/sia'
-import { useGetSiaImage, useFinishAnnotask, useImageJunk } from '../../../api/sia'
+import { useAnnotask } from '../../../api/anno_task'
+import { useGetSiaImage, useFinishAnnotask } from '../../../api/sia'
 import polygonOperationApi from '../../../api/polygon_operation'
 
 import type {
@@ -112,6 +113,37 @@ const SiaWrapper = ({
   const [polygonEditMode, setPolygonEditMode] = useState<PolygonEditMode>(
     PolygonEditMode.NONE,
   )
+
+  // fetch the annotask configuration (annotation mode only — review and dataset
+  // contexts must not gain a minArea floor)
+  const { data: annotaskConfig } = useAnnotask(
+    !isReview && !isDatasetMode ? annoTaskId : undefined,
+  )
+  const siaConfiguration = annotaskConfig?.configuration
+  const minimalArea = Number(siaConfiguration?.annos?.minArea) || 0
+
+  const allowedTools = {
+    point: siaConfiguration?.tools?.point !== false,
+    line: siaConfiguration?.tools?.line !== false,
+    polygon: siaConfiguration?.tools?.polygon !== false,
+    bbox: siaConfiguration?.tools?.bbox !== false,
+    junk: siaConfiguration?.tools?.junk !== false,
+    imageLabel: siaConfiguration?.img?.actions?.label !== false,
+  }
+  const annotationSettings = {
+    minimalArea,
+    canCreate: siaConfiguration?.annos?.actions?.draw !== false,
+    canEdit: siaConfiguration?.annos?.actions?.edit !== false,
+    canLabel: siaConfiguration?.annos?.actions?.label !== false,
+    canHaveMultipleLabels: siaConfiguration?.annos?.multilabels === true,
+  }
+
+  const defaultAnnotationTool =
+    allowedTools.point ? AnnotationTool.Point
+    : allowedTools.bbox ? AnnotationTool.BBox
+    : allowedTools.polygon ? AnnotationTool.Polygon
+    : allowedTools.line ? AnnotationTool.Line
+    : AnnotationTool.Point
 
   // image search state
   const [isImageSearchActive, setIsImageSearchActive] = useState(false)
@@ -225,7 +257,7 @@ const SiaWrapper = ({
     siaApi.useDeleteAnnotation()
   const { data: updateImageLabelResponse, mutate: sendUpdateImageLabel } =
     siaApi.useUpdateImageLabel()
-  const { data: imageJunkResponse, mutate: sendJunkImage } = useImageJunk()
+  const { data: imageJunkResponse, mutate: sendJunkImage } = siaApi.useImageJunk()
 
   const { data: finishAnnotaskResponse, mutate: sindFinishAnnotask } = useFinishAnnotask()
 
@@ -395,6 +427,14 @@ const SiaWrapper = ({
 
     if (isImageSearchActive && imageBlob) setIsImageSearchButtonTooltipOpen(true)
   }, [isImageSearchActive, imageBlob])
+
+
+  const resetPolygonOperationState = useCallback(() => {
+     setIsSiaLoading(false)
+    setPolygonEditMode(PolygonEditMode.NONE)
+    setCurrentlySelectedAnnotation(undefined)
+    pendingPolygonLabelIds.current = undefined
+  }, [])
 
   const calculatePolygonOperation = (
     firstAnnotation: Annotation,
@@ -707,7 +747,11 @@ const SiaWrapper = ({
       annoTime: newAnnoTime,
       isJunk: newJunkState,
     }
-    sendJunkImage(imageData)
+    if (isReview) {
+      sendJunkImage({ imageJunkData: imageData, annoTaskId })
+    } else {
+      sendJunkImage(imageData)
+    }
     setCurrentlySelectedAnnotation(undefined)
   }
 
@@ -920,49 +964,53 @@ const SiaWrapper = ({
     }
   }
 
-  const handleBBoxReponse = useCallback((response) => {
-    // show errors to user
-    if (response?.error) {
-      handleNotification({
-        title: 'Invalid selection',
-        message: response.error,
-        type: NotificationType.ERROR,
-      })
-      setIsSiaLoading(false)
-      setPolygonEditMode(PolygonEditMode.NONE)
-      return
-    } else if (response?.errors) {
-      // the response can contain multiple errors at once
-      Object.keys(response.errors).forEach((errorTitle) =>
+  const handleBBoxReponse = useCallback(
+    (response) => {
+      // show errors to users
+      if (response?.error) {
         handleNotification({
-          title: errorTitle,
-          message: response.errors[errorTitle],
+          title: 'Invalid selection',
+          message: response.error,
           type: NotificationType.ERROR,
-        }),
+        })
+        resetPolygonOperationState()
+        return
+      } else if (response?.errors) {
+        // the response can contain multiple errors at once
+        Object.keys(response.errors).forEach((errorTitle) =>
+          handleNotification({
+            title: errorTitle,
+            message: response.errors[errorTitle],
+            type: NotificationType.ERROR,
+          }),
+        )
+        resetPolygonOperationState()
+        return
+      }
+
+      // unexpected response shape — reset so the operation mode never gets stuck
+      if (response?.data === undefined) return resetPolygonOperationState()
+
+      const newBoxesInOldFormat: LegacyBboxData[] = response!.data
+      const toolCoordinates: ToolCoordinates[] = newBoxesInOldFormat.map(
+        (legacyBox: LegacyBboxData) => {
+          return {
+            type: AnnotationTool.BBox,
+            coordinates: legacyHelper.convertBboxFormat(legacyBox),
+          }
+        },
       )
-      return
-    }
 
-    if (response?.data === undefined) return
+      const newPolygonOperationResult: PolygonOperationResult = {
+        polygonsToCreate: toolCoordinates,
+        annotationsToDelete: [],
+      }
 
-    const newBoxesInOldFormat: LegacyBboxData[] = response!.data
-    const toolCoordinates: ToolCoordinates[] = newBoxesInOldFormat.map(
-      (legacyBox: LegacyBboxData) => {
-        return {
-          type: AnnotationTool.BBox,
-          coordinates: legacyHelper.convertBboxFormat(legacyBox),
-        }
-      },
-    )
-
-    const newPolygonOperationResult: PolygonOperationResult = {
-      polygonsToCreate: toolCoordinates,
-      annotationsToDelete: [],
-    }
-
-    setPolygonOperationResult(newPolygonOperationResult)
-    setIsSiaLoading(false)
-  }, [])
+      setPolygonOperationResult(newPolygonOperationResult)
+      setIsSiaLoading(false)
+    },
+    [resetPolygonOperationState],
+  )
 
   // handles response after we did a polygon operation (HTTP request)
   const handlePolygonOperationResponse = (response) => {
@@ -973,8 +1021,7 @@ const SiaWrapper = ({
         message: response.error,
         type: NotificationType.ERROR,
       })
-      setIsSiaLoading(false)
-      setPolygonEditMode(PolygonEditMode.NONE)
+      resetPolygonOperationState()
       return
     } else if (response?.errors) {
       // the response can contain multiple errors at once
@@ -985,12 +1032,14 @@ const SiaWrapper = ({
           type: NotificationType.ERROR,
         }),
       )
+      resetPolygonOperationState()
       return
     }
 
-    if (response?.resultantPolygon === undefined) return
+    // unexpected response shape — reset so the operation mode never gets stuck
+    if (response?.resultantPolygon === undefined) return resetPolygonOperationState()
 
-    if (response?.type !== 'polygon') return
+    if (response?.type !== 'polygon') return resetPolygonOperationState()
 
     const { resultantPolygon } = response
 
@@ -1176,6 +1225,7 @@ const SiaWrapper = ({
     return (
       <>
         <CCol xs="auto">
+         {annotationSettings.canEdit && (
           <PolygonEditButtons
             polygonEditMode={polygonEditMode}
             onPolygonEditModeChanged={(polygonEditMode: PolygonEditMode) => {
@@ -1201,9 +1251,11 @@ const SiaWrapper = ({
               setPolygonEditMode(polygonEditMode)
             }}
           />
+         )}
         </CCol>
         <CCol xs="2">
           <CButtonGroup>
+           {annotationSettings.canEdit && (
             <ImageFilterButton
               isDisabled={isSiaLoading || noImagesLeft}
               appliedFilters={appliedImageFilters}
@@ -1212,6 +1264,7 @@ const SiaWrapper = ({
               imageIsLoading={imageIsLoading}
               imageId={imageId}
             />
+           )}
             <CoreIconButton
               toolTip="Open image search"
               color="primary"
@@ -1339,6 +1392,9 @@ const SiaWrapper = ({
           tabIndex={0}
         >
           <Sia
+            allowedTools={allowedTools}
+            annotationSettings={annotationSettings}
+            defaultAnnotationTool={defaultAnnotationTool}
             defaultLabelId={defaultLabelId}
             image={imageBlob}
             uiConfig={{ imageCentered: true }}
@@ -1356,6 +1412,8 @@ const SiaWrapper = ({
               // @TODO adapt backend to support partly-finished annotations
             }}
             onAnnoCreationFinished={createAnnotation}
+            onAnnoCreationRejected={() => resetPolygonOperationState()}
+            onPolygonOperationInterrupted={resetPolygonOperationState}
             onAnnoDeleted={deleteAnnotation}
             onImageLabelsChanged={handleImageLabelsChanged}
             onIsImageJunk={junkImage}

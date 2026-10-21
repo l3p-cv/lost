@@ -17,6 +17,8 @@ Routes:
 
 from __future__ import annotations
 
+import os
+
 from fastapi import APIRouter, Depends, File, Form, UploadFile
 from pydantic import BaseModel
 
@@ -26,6 +28,9 @@ from lost.controllers.filebrowser.FileBrowserBusiness import (
     CheckPathError,
     DatasourceValidationError,
     LocalFsAdminRequiredError,
+    LsTestAccessError,
+    LsTestInvalidConnectionError,
+    LsTestPathNotFoundError,
     UploadNotPermittedError,
 )
 from lost.controllers.filebrowser.FileBrowserCoordination import FileBrowserCoordination
@@ -83,7 +88,7 @@ class DeleteFsRequest(BaseModel):
 
 class SaveFsRequest(BaseModel):
     id: int | None = None
-    visLevel: str
+    visLevel: str | None = None
     fsType: str
     connection: str
     rootPath: str
@@ -128,9 +133,25 @@ def ls_test(
     coord: FileBrowserCoordination = Depends(get_filebrowser_coordination),
 ):
     """Test an arbitrary filesystem connection (local 'file' type requires admin)."""
-    if req.fs["fsType"] == "file" and not user.has_role(roles.ADMINISTRATOR):
-        return Responses.forbidden(f"You need to be {roles.ADMINISTRATOR} in order to perform this request.")
-    return coord.ls_test(req)
+    if req.fs["fsType"] == "file":
+        if not user.has_role(roles.ADMINISTRATOR):
+            return Responses.forbidden(f"You need to be {roles.ADMINISTRATOR} in order to perform this request.")
+        if not os.path.isabs(req.path) or not os.path.isabs(req.fs["rootPath"]):
+            return Responses.bad_request({
+                "message": (
+                    f"Paths must be absolute for file datasources "
+                    f"(path: '{req.path}', root: '{req.fs['rootPath']}') — "
+                    "relative paths resolve against the server's working directory."
+                ),
+            })
+    try:
+        return coord.ls_test(req)
+    except LsTestInvalidConnectionError:
+        return Responses.bad_request({"message": "Invalid connection string."})
+    except LsTestPathNotFoundError as e:
+        return Responses.not_found({"message": f"Path not found: '{e.args[0]}'"})
+    except LsTestAccessError as e:
+        return Responses.bad_request({"message": f"Cannot access '{req.path}': {e.args[0]}"})
 
 
 @router.post("/rm")

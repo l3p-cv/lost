@@ -292,6 +292,38 @@ def get_total_image_amount(db_man, anno_task, iteration=None):
     return total_image_amount
 
 
+def get_review_image_progress(db_man, anno_task, img_id, iteration=None):
+    """Get image progress within an annotation task in review mode.
+
+    In contrast to get_image_progress only reviewable (LABELED or JUNK)
+    images are considered, mirroring the review navigation queries
+    (see DBMan.get_sia_review_*). Boundary checks in review navigation
+    must use this function: get_image_progress counts all images, so
+    the "last image" boundary would never trigger for annotasks with
+    trailing unlabeled images.
+
+    Args:
+        db_man (access.DBMan): Database manager
+        anno_task (model.AnnoTask): Annotation task
+        img_id (int): Id of the current image
+        iteration (int): int or None. If None all iterations will be considered
+
+    Returns:
+        (int, int): 1-based position of img_id among the reviewable images
+            and total number of reviewable images.
+    """
+    current_image_number = db_man.get_count_review_image_annos(
+        anno_task.idx, max_idx=img_id, iteration=iteration
+    )
+    total_image_amount = db_man.get_count_review_image_annos(anno_task.idx, iteration=iteration)
+    return current_image_number, total_image_amount
+
+
+def get_total_review_image_amount(db_man, anno_task, iteration=None):
+    """Get the total number of reviewable (LABELED or JUNK) images of an anno_task."""
+    return db_man.get_count_review_image_annos(anno_task.idx, iteration=iteration)
+
+
 def __is_last_image__(db_man, user_id, at_id, iteration, img_id):
     """
     :type db_man: lost.db.access.DBMan
@@ -325,6 +357,8 @@ def update(db_man, data, user_id, auto_save=False):
     :type db_man: lost.db.access.DBMan
     """
     anno_task = get_sia_anno_task(db_man, user_id)
+    if anno_task is None:
+        raise SiaNoAnnoTaskError(f"No active SIA annotask found for user {user_id}")
     sia_update = SiaUpdate(db_man, data, user_id, anno_task)
     return sia_update.update(auto_save)
 
@@ -334,6 +368,8 @@ def update_one_thing(db_man, data, user_id):
     :type db_man: lost.db.access.DBMan
     """
     anno_task = get_sia_anno_task(db_man, user_id)
+    if anno_task is None:
+        raise SiaNoAnnoTaskError(f"No active SIA annotask found for user {user_id}")
     sia_update = SiaUpdateOneThing(db_man, data, user_id, anno_task)
     return sia_update.update()
 
@@ -1013,7 +1049,7 @@ def review(dbm, data, user_id, media_url):
         # if iteration:
         #     all_iterations = False
 
-        current_image_number, total_image_amount = get_image_progress(dbm, at, image_anno.idx, iteration)
+        current_image_number, total_image_amount = get_review_image_progress(dbm, at, image_anno.idx, iteration)
 
         is_first_image = False
         if first_anno.idx == image_anno.idx:
@@ -1053,6 +1089,13 @@ def reviewoptions_annotask(dbm, at_id, user_id):
 
 class PolygonOperationError(DomainError):
     """A polygon-operation payload failed validation."""
+
+    def __init__(self, message):
+        super().__init__(message)
+        self.message = message
+
+class SiaNoAnnoTaskError(DomainError):
+    """Raised when the acting user has no active SIA annotask."""
 
     def __init__(self, message):
         super().__init__(message)

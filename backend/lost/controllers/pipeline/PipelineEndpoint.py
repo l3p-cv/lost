@@ -30,6 +30,7 @@ from pydantic import BaseModel
 from lost.controllers.base import ProfilingRoute
 from lost.controllers.Dependencies import get_current_user, get_pipeline_coordination, require_role
 from lost.controllers.pipeline.PipelineBusiness import (
+    PipeImportInvalidError,
     PipeImportJSONError,
     StartNoDefaultGroupError,
     TemplateNotFoundError,
@@ -150,6 +151,8 @@ async def import_zip(
         result = coord.import_zip(user, zip_file.filename, contents)
     except PipeImportJSONError as e:
         return Responses.internal(e.args[0])
+    except PipeImportInvalidError as e:
+        return Responses.bad_request({"status": "error", "message": str(e)})
     else:
         return result
 
@@ -165,6 +168,8 @@ def import_git(
         result = coord.import_git(user, req.gitUrl, req.gitBranch)
     except PipeImportJSONError as e:
         return Responses.internal(e.args[0])
+    except PipeImportInvalidError as e:
+        return Responses.bad_request({"status": "error", "message": str(e)})
     else:
         return result
 
