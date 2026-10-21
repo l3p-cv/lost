@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 ### Added
+
+## [4.1.1] - 2026-10-21
+### Added
 - `.opencode/command/golden-tests.md` + `.opencode/skills/golden-tests/` : Added the `/golden-tests` command and `golden-tests` skill — generates golden-snapshot test coverage for new API endpoints (appends RouteSpec entries to the existing specs file) and new namespaces (creates specs file, runner, golden dir, and MIGRATED registration), with harness references (harness map, namespace flow, spec patterns) and record/verify hand-off commands.
 - SIA annotations: reintroduced the `minArea` annotask configuration — annotations (bbox/polygon) smaller than the configured minimum are rejected with a warning toast. Requires lost-sia >= 3.4.1; enforcement is active in annotation mode only.
 - `logic/pipeline/service.py` : Annotasks without an instruction are stored as NULL so added guard to `create_anno_task` so instruction_id set to -1 is normalized.
@@ -36,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `SiaWrapper.tsx` : fixed polygon operations staying applied when they fail issue or when their result is rejected. new callbacks now added to lost-sia to reset the operation mode.
 - `api/polygon_operations.tsx` : Fixed polygon operation requests failing silently on network errors.
 - `SiaWrapper.tsx` : Fixed polygon operations and open filter options being available when the edit action is toggled off.
+
 ## [4.1.0] - 2026-10-02
 ### Added
 - Added [AGENTS](./AGENTS.md) for agentic software development
