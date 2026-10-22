@@ -8,7 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 ### Fixed
 - `inout.py` : fixed `mia_request_again` with CSV dataset exports now parses stringified list cells and skips image-only rows, treats NaN `img_is_junk` as missing instead of -1.
-- `script.py` - `report_script_err` rolls back the session before commiting the error state so pending objects no longer mask the real script error.
+- `script.py` : `report_script_err` rolls back the session before commiting the error state so pending objects no longer mask the real script error.
+- `DataBusiness.py` : fixed MIA `annoBased` image config serving dtype aware crops now work for (point and BBox annos too),
+and annotask config is now evaluated server-side for `drawAnno` (even visible for point annotations) and `addContext` works now.Both of these were dead features previously.
 ## [4.1.2] - 2026-10-21
 ### Added
 - `.opencode/command/golden-tests.md` + `.opencode/skills/golden-tests/` : Added the `/golden-tests` command and `golden-tests` skill — generates golden-snapshot test coverage for new API endpoints (appends RouteSpec entries to the existing specs file) and new namespaces (creates specs file, runner, golden dir, and MIGRATED registration), with harness references (harness map, namespace flow, spec patterns) and record/verify hand-off commands.
