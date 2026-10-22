@@ -30,6 +30,7 @@ def report_script_err(pipe_element, task, dbm, msg):
         You can call this method multiple times if you like. All messages
         will be concatenated and sent to the portal.
     """
+    dbm.session.rollback()
     if pipe_element.error_msg is None:
         pipe_element.error_msg = str(msg)
     else:

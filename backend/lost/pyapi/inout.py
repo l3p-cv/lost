@@ -1,3 +1,4 @@
+import ast
 import io
 import json
 import traceback
@@ -20,6 +21,33 @@ def _json_default(obj):
         return obj.tolist()
     raise TypeError("Type %s not serializable" % type(obj))
 
+def _parse_str_list(value: object) -> object:
+    """Parse a stringified list cell (CSV round trip) back into a Python object.
+
+    Also de-mangles char arrays produced by LOSTDataset._parse_data for CSV
+    string cells (np.vstack splits strings into single-character arrays).
+    """
+    if isinstance(value, np.ndarray) and value.dtype.kind in ("U", "S"):
+        value = "".join(value.tolist())
+    if not isinstance(value, str):
+        return value
+    for candidate in (value, value.replace("nan", "None")):
+        try:
+            return ast.literal_eval(candidate)
+        except (ValueError, SyntaxError):
+            continue
+    return value
+
+
+def _parse_str_anno_data(value: object) -> object:
+    """Parse a stringified anno_data cell to the shape typed cells have after LOSTDataset._parse_data."""
+    parsed = _parse_str_list(value)
+    if isinstance(parsed, list):
+        try:
+            return np.vstack(parsed).squeeze()
+        except (TypeError, ValueError):
+            return parsed
+    return parsed
 
 class Input:
     """Class that represants an input of a pipeline element.
@@ -457,8 +485,14 @@ class ScriptOutput(Output):
             dataset.
         """
         dfo = lds.df.copy()
+        if "anno_data" in dfo.columns:
+            dfo["anno_data"] = dfo["anno_data"].map(_parse_str_anno_data)
+        for col in ("anno_lbl", "anno_lbl_id", "img_lbl", "img_lbl_id"):
+            if col in dfo.columns:
+                dfo[col] = dfo[col].map(_parse_str_list)
         # None can only be assgined to object type columns
-        dfo = dfo.apply(lambda x: x.where(pd.notna(x), None) if x.dtype == object else x.fillna(-1), axis=0)
+        no_fillna_cols = {"img_is_junk", "anno_sim_class", "img_sim_class"}
+        dfo = dfo.apply(lambda x: x.where(pd.notna(x), None) if x.dtype == object else (x if x.name in no_fillna_cols else x.fillna(-1)), axis=0)
         if "anno_format" in dfo and "anno_data" in dfo:
             invalid_rows = dfo[(dfo["anno_format"] != "rel") & (dfo["anno_data"].notna())]
             if not invalid_rows.empty:
@@ -484,9 +518,9 @@ class ScriptOutput(Output):
                 lbl_id_col = f"{pre}_lbl_id"
                 lbl_col = f"{pre}_lbl"
                 if sim_class_col in df:
-                    if df[sim_class_col].values[0]:
-                        sim_class = df[sim_class_col].values[0]
-                        return sim_class
+                    sim_val = df[sim_class_col].values[0]
+                    if sim_val is not None and not pd.isna(sim_val):
+                        return sim_val
                 # if lbl_id_col in df:
                 #     if len(df[lbl_id_col].values[0]) > 0:
                 #         sim_class = df[lbl_id_col].values[0][0]
@@ -514,10 +548,13 @@ class ScriptOutput(Output):
             # else:
             #     img_sim_class = 1
             img_sim_class = calc_sim_class(df, "img")
+            is_junk = None
             if "img_is_junk" in df:
-                is_junk = df["img_is_junk"].values[0]
-            else:
-                is_junk = None
+                raw_junk = df["img_is_junk"].values[0]
+                if isinstance(raw_junk, str):
+                    is_junk = raw_junk.strip().lower() == "true"
+                elif not pd.isna(raw_junk):
+                    is_junk = raw_junk
             # rel_img_path = fm.make_path_relative(img_path)
             anno_task_id = pe.anno_task.idx
             img_anno = model.ImageAnno(
@@ -546,6 +583,8 @@ class ScriptOutput(Output):
                     self._update_labels(img_lbls, img_anno, lbl_map)
             if "anno_data" in df:
                 anno_df = df[~df["anno_data"].isnull()]
+                if "anno_dtype" in df:
+                    anno_df = anno_df[anno_df["anno_dtype"].notna()]
                 if len(anno_df) > 0:
                     # for i, vec in enumerate(annos):
                     for idx, row in anno_df.iterrows():
@@ -586,10 +625,11 @@ class ScriptOutput(Output):
                                 # label_leaf_ids = anno_labels[i]
                                 self._update_labels(row["anno_lbl"], anno, lbl_map)
                         if "anno_sim_class" in row:
-                            if row["anno_sim_class"]:
+                            asc = row["anno_sim_class"]
+                            if asc is not None and not pd.isna(asc):
                                 # if len(anno_sim_classes) != len(annos):
                                 #     raise ValueError('*anno_sim_classes* and *annos* need to have same size!')
-                                anno.sim_class = row["anno_sim_class"]
+                                anno.sim_class = asc
                         else:
                             anno.sim_class = 1
                         img_anno.twod_annos.append(anno)
