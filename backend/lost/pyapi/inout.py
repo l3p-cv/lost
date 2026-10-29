@@ -517,6 +517,12 @@ class ScriptOutput(Output):
                 sim_class_col = f"{pre}_sim_class"
                 lbl_id_col = f"{pre}_lbl_id"
                 lbl_col = f"{pre}_lbl"
+                if img_label_first and pre == "img" and lbl_col in df:
+                    # imageBased: chunk by image label, ignore a stamped sim_class column
+                    if len(df[lbl_col].values[0]) > 0:
+                        sim_class = self._lbl_name_to_id(df[lbl_col].values[0][0], lbl_map)
+                        if sim_class is not None:
+                            return sim_class
                 if sim_class_col in df:
                     sim_val = df[sim_class_col].values[0]
                     if sim_val is not None and not pd.isna(sim_val):
@@ -535,6 +541,9 @@ class ScriptOutput(Output):
             except:
                 self._script.logger.warning(f"Could not calculate sim class: {traceback.format_exc()}")
                 return 1
+
+        config = json.loads(pe.anno_task.configuration) if pe.anno_task.configuration else {}
+        img_label_first = config.get("type") == "imageBased"
 
         for img_path, df in dfo.groupby(img_path_key, sort=False):
             fs = self._get_lds_fm(df, fs_cache, fs)
