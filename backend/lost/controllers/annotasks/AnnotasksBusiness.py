@@ -45,6 +45,9 @@ class AnnotaskInstructionNotFoundError(DomainError):
 class AnnotaskReviewNoAnnotationError(DomainError):
     """Review navigation found no annotation (carries the legacy message)."""
 
+class AnnotaskConfigEmptyError(DomainError):
+    """Target annotation type has no annotations to annotate."""
+
 
 def update_anno_task(dbm, anno_task_id, user_id=None):
     remaining = None
@@ -500,6 +503,23 @@ class AnnotasksBusiness:
 
     def update_annotask_config(self, annotask_id: int, configuration) -> str:
         anno_task = self.dbm.get_anno_task(annotask_id)
+        if anno_task.dtype == dtype.AnnoTask.MIA:
+            config = configuration if isinstance(configuration, dict) else {}
+            pipe_element = self.dbm.get_pipe_element(pipe_e_id=anno_task.pipe_element_id)
+            if config.get("type") == "annoBased":
+                available = self.dbm.count_all_two_d_annos(
+                    anno_task_id=annotask_id, iteration=pipe_element.iteration
+                )[0][0]
+                anno_type = "2D annotations"
+            else:
+                available = self.dbm.count_all_image_annos(
+                    anno_task_id=annotask_id, iteration=pipe_element.iteration
+                )[0][0]
+                anno_type = "images"
+            if not available:
+                raise AnnotaskConfigEmptyError(
+                    f"Cannot use this annotation type: the task has no {anno_type} to annotate."
+                )
         anno_task.configuration = json.dumps(configuration)
         self.dbm.save_obj(anno_task)
         return "Success"

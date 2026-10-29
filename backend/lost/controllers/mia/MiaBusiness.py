@@ -70,12 +70,13 @@ def get_first(db_man, default_user_id):
             model_anno = model.TwoDAnno
         elif config["type"] == "imageBased":
             model_anno = model.ImageAnno
-        annos = db_man.get_whole_chunk(default_user_id, at.idx, model_anno, chunk_id=1)
+        first_chunk_id = db_man.get_first_chunk_id(default_user_id, at.idx, model_anno)
+        if first_chunk_id in (None, -1):
+            return __empty_mia_response()
+        annos = db_man.get_whole_chunk(default_user_id, at.idx, model_anno, chunk_id=first_chunk_id)
         return __serialize_annos(db_man, annos, default_user_id, False, at)
 
-    images = dict()
-    images["images"] = list()
-    return images
+    return __empty_mia_response()
 
 
 def get_latest(db_man, default_user_id):
@@ -87,13 +88,13 @@ def get_latest(db_man, default_user_id):
         elif config["type"] == "imageBased":
             model_anno = model.ImageAnno
         chunk_id = db_man.get_latest_chunk_id(default_user_id, at.idx, model_anno=model_anno)
+        if chunk_id in (None, -1):
+            return __empty_mia_response()
         update_id, other_ids = __get_latest_update_id(db_man, default_user_id, at, chunk_id, model_anno)
         annos = db_man.get_mia_update_chunk(model_anno, at.idx, chunk_id, [update_id], default_user_id)
         return __serialize_annos(db_man, annos, default_user_id, (chunk_id != 1 or len(other_ids) > 0), at)
 
-    images = dict()
-    images["images"] = list()
-    return images
+    return __empty_mia_response()
 
 
 class ImageSerialize:
@@ -122,6 +123,7 @@ class ImageSerialize:
             image = dict()
             image["id"] = anno.idx
             image["updateId"] = anno.update_id
+            image["labelIds"] = [lbl.label_leaf_id for lbl in anno.labels if lbl.annotator_id == self.user_id]
             # image['path'] = anno.img_path
             image["type"] = "imageBased"
             if anno.img_actions is not None:
@@ -154,7 +156,7 @@ class TwoDSerialize:
             image_json = dict()
             image_json["updateId"] = anno.update_id
             image_json["id"] = anno.idx
-            image_json["labelIds"] = [lbl.label_leaf_id for lbl in anno.labels]
+            image_json["labelIds"] = [lbl.label_leaf_id for lbl in anno.labels if lbl.annotator_id == self.user_id]
             image_json["type"] = "annoBased"
             try:
                 image_json["drawAnno"] = self.config["drawAnno"]
@@ -219,6 +221,10 @@ def get_label_trees(db_man, user_id):
         return label_trees
 
 
+def __empty_mia_response(has_prev: bool = False) -> dict:
+    return {"images": [], "chunk": {"id": -1, "hasPrev": has_prev}, "updateIds": []}
+
+
 def __get_mia_anno_task(db_man, user_id):
     for cat in db_man.get_choosen_annotask(user_id):
         if cat.anno_task.dtype == dtype.AnnoTask.MIA:
@@ -245,6 +251,8 @@ def __get_new_chunk_id(db_man, user_id, at, model_anno):
 def __get_latest_update_id(db_man, user_id, at, chunk_id, model_anno):
     update_ids = db_man.get_chunk_update_ids(user_id, at.idx, model_anno, chunk_id)
     flat_update_ids = [int(x[0]) for x in update_ids]
+    if not flat_update_ids:
+        return -1, []
     latest_update_id = -1 if -1 in flat_update_ids else max(flat_update_ids)
     flat_update_ids.remove(latest_update_id)
     return latest_update_id, flat_update_ids
@@ -310,11 +318,7 @@ def __get_next_two_d_anno(db_man, user_id, at, max_amount):
     if sim_class:
         sim_class = sim_class.sim_class
     else:
-        images = dict()
-        images["images"] = list()
-        images["chunk"] = {"hasPrev": True, "id": -1}
-        images["updateIds"] = []
-        return images
+        return  __empty_mia_response(db_man.get_latest_chunk_id(user_id, at.idx, model_anno) not in (None, -1))
     annos = __get_filtered_sim_class_annos(db_man, at, sim_class, max_amount, model_anno)
     new_chunk_id = __get_new_chunk_id(db_man, user_id, at, model_anno=model.TwoDAnno)
     if len(annos) > 0:
@@ -381,11 +385,7 @@ def __get_next_image_anno(db_man, user_id, at, max_amount):
     if sim_class:
         sim_class = sim_class.sim_class
     else:
-        images = dict()
-        images["images"] = list()
-        images["chunk"] = {"hasPrev": True, "id": -1}
-        images["updateIds"] = []
-        return images
+        return __empty_mia_response(db_man.get_latest_chunk_id(user_id, at.idx, model_anno) not in (None, -1))
     annos = __get_filtered_sim_class_annos(db_man, at, sim_class, max_amount, model_anno)
     if len(annos) > 0:
         new_chunk_id = __get_new_chunk_id(db_man, user_id, at, model_anno=model_anno)
@@ -458,6 +458,20 @@ def __get_prev_annos(db_man, user_id, at, model_anno, chunk_id, update_ids):
         raw_prev_update_ids = db_man.get_chunk_update_ids(user_id, at.idx, model_anno, prev_chunk)
         # prev_update_ids = [int(x[0] if isinstance(x, (tuple, list)) else x) for x in raw_prev_update_ids]
         prev_update_ids = [to_int(x) for x in raw_prev_update_ids]
+        while not prev_update_ids and prev_chunk >= 1:
+            prev_chunk -= 1
+            prev_update_ids = [ to_int(x) for x in db_man.get_chunk_update_ids(user_id,at.idx,model_anno,prev_chunk)]
+        if not prev_update_ids:
+            annos = db_man.get_mia_update_chunk(
+                model_anno=model_anno,
+                anno_task_id=at.idx,
+                user_id=user_id,
+                chunk_id=chunk_id,
+                update_ids=clean_update_ids,
+            )
+            if not annos:
+                return __empty_mia_response()
+            return __serialize_annos(db_man, annos, user_id, False, at)
         update_ids = [max(prev_update_ids)] if prev_update_ids else []
         has_prev = True if len(prev_update_ids) > 1 or (prev_chunk > 1) else False
 
@@ -470,7 +484,7 @@ def __get_prev_annos(db_man, user_id, at, model_anno, chunk_id, update_ids):
 
 def __serialize_annos(db_man, annos, user_id, has_prev, at):
     if not annos:
-        return {"images": []}
+        return __empty_mia_response()
 
     annos = sorted(annos, key=lambda a: a.idx)
     if isinstance(annos[0], model.ImageAnno):

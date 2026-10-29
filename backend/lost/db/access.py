@@ -418,6 +418,26 @@ class DBMan:
             .scalar()
         )
 
+    def get_first_chunk_id(self, user_id, anno_task_id, model_anno):
+        """Get lowest chunk_id in task for user"""
+        return (
+            self.session.query(model_anno.chunk_id)
+            .filter(
+                model_anno.anno_task_id == anno_task_id,
+                model_anno.user_id == user_id,
+                model_anno.chunk_id != -1,
+                model_anno.state.in_([
+                    state.Anno.LABELED,
+                    state.Anno.LOCKED,
+                    state.Anno.LOCKED_PRIORITY,
+                    state.Anno.LABELED_LOCKED,
+                ]),
+            )
+            .order_by(model_anno.chunk_id.asc())
+            .limit(1)
+            .scalar()
+        )
+
     def get_chunk_update_ids(self, user_id, anno_task_id, model_anno, chunk_id):
         return (
             self.session.query(model_anno.update_id)

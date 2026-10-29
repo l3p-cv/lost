@@ -44,9 +44,9 @@ export const SelectMIAConfiguration = ({ ...props }) => {
       default:
         break
     }
-
+    const previous = configuration
     setConfiguration(newConfiguration)
-    props.onUpdate(newConfiguration)
+    props.onUpdate(newConfiguration, {onError: () => setConfiguration(previous) })
   }
   return (
     <>

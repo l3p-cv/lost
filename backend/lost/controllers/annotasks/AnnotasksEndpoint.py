@@ -37,6 +37,7 @@ from pydantic import BaseModel
 from lost.controllers.annotasks.AnnotasksBusiness import (
     AnnotaskInstructionNotFoundError,
     AnnotaskReviewNoAnnotationError,
+    AnnotaskConfigEmptyError,
     SiaNoAnnoTaskError,
     WorkingTaskNotFoundError,
 )
@@ -234,7 +235,10 @@ def update_annotask_config(
     coord: AnnotasksCoordination = Depends(get_annotasks_coordination)
 ):
     """Update the config of the annotation task."""
-    return coord.update_annotask_config(annotask_id, req.configuration)
+    try: 
+        return coord.update_annotask_config(annotask_id, req.configuration)
+    except AnnotaskConfigEmptyError as e:
+        return Responses.bad_request({"message": str(e)})
 
 
 @router.get("/{annotask_id}/storage_settings")

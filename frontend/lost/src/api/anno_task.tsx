@@ -16,8 +16,9 @@ export const useUpdateConfig = () => {
         showSuccess('Configuration successfully saved!')
         queryClient.invalidateQueries('pipeline')
       },
-      onError: () => {
-        showError('An error occurred while saving the configuration.')
+      onError: (err) => {
+        if (err?.response?.status === 400) return
+        showError(err?.response?.data?.message ?? 'An error occurred while saving the configuration.')
       },
     },
   )

@@ -9,12 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Control.tsx` : Mia control preselcts the label actually used in the current chunk (fallsback to proposed label), adds a reset-to-prposed label button, hide zoom/label controls when no images are shown.
 - `MiaTypes.ts` : MiaImage an the optional labelIds field matching the serialized per-image labels added.
 - `inout.py` : mia_request_again for imageBased annotasks now chunks by img_lbl column of the dataset export and not by sim_class ,images now are grouped by sameimage label and created Mia proposes this label.
+- `db/access.py` : Added get_first_chunk_id mirrors get_latest_chunk_id with ascending order used by MIA "go to first" to resolve the annotator's earliest exisitng chunk instead of hard coding.
 ### Fixed
 - `inout.py` : fixed `mia_request_again` with CSV dataset exports now parses stringified list cells and skips image-only rows, treats NaN `img_is_junk` as missing instead of -1.
 - `script.py` : `report_script_err` rolls back the session before commiting the error state so pending objects no longer mask the real script error.
 - `DataBusiness.py` : fixed MIA `annoBased` image config serving dtype aware crops now work for (point and BBox annos too),
 and annotask config is now evaluated server-side for `drawAnno` (even visible for point annotations) and `addContext` works now.Both of these were dead features previously.
 - `MiaBusiness.py` : Fixed MIA annoBased back-navigation now prev/first/latest no longer crashes.
+- `MiaBusiness.py` : Fixed MIA back-navigation edge cases — `mia/prev?currentChunkId=-1` no longer 500s for annotators without own annotations, back-navigation skips empty chunk ids (gaps, e.g. after stale-lock release) to the nearest earlier chunk instead of blanking, empty responses always carry the full `chunk` payload, and the finish-screen response only reports `hasPrev` when the annotator actually has previous chunks.
+- `AnnotasksBusiness.py` : MIA annotask config updates are validated saving a configuration whose annotation type has no items to annotate (e.g. `annoBased` on a task with only image labels) is rejected before anything is persisted.
+- `AnnotasksEndpoint.py` : `PUT /api/annotasks/{id}/config` returns a 400 with the rejection message when a configuration update is rejected.
+- `anno_task.tsx` : `useUpdateConfig` no longer fires the error toast for validation rejections (400) those show inline in the modal and other failures now include the server message.
+- `TabAdaptConfiguration.jsx` : Adapt Configuration shows a dismissible inline error when a configuration change is rejected, and clears it on the next successful save.
+- `SelectMIAConfiguration.jsx` : A failed configuration change is reverted in the modal, so the dropdown no longer shows an unsaved selection after a rejected save.
 ## [4.1.2] - 2026-10-21
 ### Added
 - `.opencode/command/golden-tests.md` + `.opencode/skills/golden-tests/` : Added the `/golden-tests` command and `golden-tests` skill — generates golden-snapshot test coverage for new API endpoints (appends RouteSpec entries to the existing specs file) and new namespaces (creates specs file, runner, golden dir, and MIGRATED registration), with harness references (harness map, namespace flow, spec patterns) and record/verify hand-off commands.
