@@ -18,13 +18,12 @@ import {
   faArrowsAltH,
   faLock,
   faLockOpen,
+  faRotateLeft,
   faSearchMinus,
   faSearchPlus,
   faTag,
 } from '@fortawesome/free-solid-svg-icons'
 import CoreIconButton from '../../../components/CoreIconButton'
-import TagLabel from '../../../components/TagLabel'
-import './Tag.scss'
 import {
   useUpdateMia,
   useGetSpecialMiaAnnos,
@@ -39,9 +38,10 @@ type ControlProps = {
   maxAmountState: StateManager<number>
   labels: Record<number, boolean>
   selectedLabelState: StateManager<{
-    labelProps: { label: string | undefined; id: number | undefined } | undefined
-    color: string
-  }>
+    id: number
+    label: string | undefined
+    color: string | undefined
+  } | undefined>
   miaAnnos: MiaAnnosResponse
   imageActiveStates: {
     value: Record<number, boolean>
@@ -84,6 +84,7 @@ const Control = ({
   const { mutate: goToFirstMia, isLoading: goFirstLoading } = useGoToFirstMIA()
   const { mutate: goToLatestMia, isLoading: goLatestLoading } = useGoToLatestMIA()
   const anySelected = Object.values(imageActiveStates.value).some(Boolean)
+  const hasImages = miaAnnos.images.length > 0
 
   const { data, refetch } = useGetSpecialMiaAnnos(undefined, {
     enabled: false,
@@ -115,6 +116,14 @@ const Control = ({
     selectedLabelState.set(label)
   }
 
+  const applyProposedLabel = () => {
+    if (!proposedLabel) return
+    const lbl = labels.find((value) => value.id === proposedLabel)
+    if (!lbl) return
+    handleAddLabel(lbl)
+    setSelectedLblIdStr(String(proposedLabel))
+  }
+
   const handlePermaReverse = () => {
     permaReverseState.set(!permaReverseState.value)
     handleReverse()
@@ -142,7 +151,6 @@ const Control = ({
     updateMia(updateData, {
       onSuccess: async () => {
         selectedLabelState.set(undefined)
-        setNewProposedLbl(true)
         setSelectedLblIdStr('')
       },
     })
@@ -174,23 +182,27 @@ const Control = ({
   }, [proposedLabel, labels])
 
   useEffect(() => {
-    if (!proposedLabel) return
-    if (!newProposedLbl) return
-
-    handleAddLabel(labels.find((value) => value.id === proposedLabel))
-    setNewProposedLbl(false)
-  }, [miaAnnos.images])
-
-  const renderSelectedLabel = () => {
-    if (selectedLabelState.value) {
-      return (
-        <TagLabel
-          label={selectedLabelState.value.labelProps?.label}
-          color={selectedLabelState.value.color}
-        />
-      )
+    // prefer the label actually used in this chunk; fall back to the proposed label
+    const counts = new Map<number, number>()
+    miaAnnos.images.forEach((img) =>
+      (img.labelIds ?? []).forEach((id) => counts.set(id, (counts.get(id) ?? 0) + 1)),
+    )
+    let usedId: number | undefined
+    let max = 0
+    counts.forEach((count, id) => {
+      if (count > max) {
+        max = count
+        usedId = id
+      }
+    })
+    const used = labels.find((l) => l.id === usedId)
+    if (used) {
+      handleAddLabel(used)
+      setSelectedLblIdStr(String(used.id))
+    } else {
+      applyProposedLabel()
     }
-  }
+  }, [miaAnnos.chunk.id])
 
   return (
     <CRow
@@ -199,6 +211,8 @@ const Control = ({
         padding: '0px 0px 25px 0px',
       }}
     >
+      {hasImages && (
+        <>
       <CCol xs="4" sm="4" lg="4" className="d-flex justify-content-center">
         {/* TODO: INCLUDE JUNK BUTTON!!! */}
         <CButtonGroup>
@@ -271,10 +285,25 @@ const Control = ({
                 </option>
               ))}
             </CFormSelect>
-            {renderSelectedLabel()}
           </CInputGroup>
+          <CoreIconButton
+            icon={faRotateLeft}
+            isOutline={true}
+            color="primary"
+            toolTip="Reset to proposed label"
+            disabled={!proposedLabel || selectedLabelState.value?.id === proposedLabel}
+            onClick={applyProposedLabel}
+          />
         </CButtonGroup>
       </CCol>
+        </>
+        )}
+      {!hasImages && (
+        <>
+          <CCol xs="4" sm="4" lg="4" />
+          <CCol xs="4" sm="4" lg="4" />
+        </>
+      )}
       <CCol xs="1" sm="1" lg="1" className="d-flex justify-content-start">
         <CButtonGroup>
           <CoreIconButton

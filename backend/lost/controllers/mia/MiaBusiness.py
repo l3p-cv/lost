@@ -71,7 +71,7 @@ def get_first(db_man, default_user_id):
         elif config["type"] == "imageBased":
             model_anno = model.ImageAnno
         annos = db_man.get_whole_chunk(default_user_id, at.idx, model_anno, chunk_id=1)
-        return __serialize_annos(db_man, annos, default_user_id, False)
+        return __serialize_annos(db_man, annos, default_user_id, False, at)
 
     images = dict()
     images["images"] = list()
@@ -89,7 +89,7 @@ def get_latest(db_man, default_user_id):
         chunk_id = db_man.get_latest_chunk_id(default_user_id, at.idx, model_anno=model_anno)
         update_id, other_ids = __get_latest_update_id(db_man, default_user_id, at, chunk_id, model_anno)
         annos = db_man.get_mia_update_chunk(model_anno, at.idx, chunk_id, [update_id], default_user_id)
-        return __serialize_annos(db_man, annos, default_user_id, (chunk_id != 1 or len(other_ids) > 0))
+        return __serialize_annos(db_man, annos, default_user_id, (chunk_id != 1 or len(other_ids) > 0), at)
 
     images = dict()
     images["images"] = list()
@@ -152,8 +152,9 @@ class TwoDSerialize:
             self.mia_json["proposedLabel"] = get_proposed_label(self.db_man, self.annos[0], self.user_id)
         for anno in self.annos:
             image_json = dict()
-            image_json["update_id"] = anno.update_id
+            image_json["updateId"] = anno.update_id
             image_json["id"] = anno.idx
+            image_json["labelIds"] = [lbl.label_leaf_id for lbl in anno.labels]
             image_json["type"] = "annoBased"
             try:
                 image_json["drawAnno"] = self.config["drawAnno"]
@@ -464,15 +465,18 @@ def __get_prev_annos(db_man, user_id, at, model_anno, chunk_id, update_ids):
         model_anno=model_anno, anno_task_id=at.idx, user_id=user_id, chunk_id=prev_chunk, update_ids=update_ids
     )
 
-    return __serialize_annos(db_man, annos, user_id, has_prev)
+    return __serialize_annos(db_man, annos, user_id, has_prev, at)
 
 
-def __serialize_annos(db_man, annos, user_id, has_prev):
+def __serialize_annos(db_man, annos, user_id, has_prev, at):
     if not annos:
         return {"images": []}
 
     annos = sorted(annos, key=lambda a: a.idx)
-    image_serialize = ImageSerialize(db_man, annos, user_id, has_prev)
+    if isinstance(annos[0], model.ImageAnno):
+        image_serialize = ImageSerialize(db_man, annos, user_id, has_prev)
+    else:
+        image_serialize = TwoDSerialize(db_man, annos, user_id, at.idx, has_prev)
     image_serialize.serialize()
 
     return image_serialize.mia_json

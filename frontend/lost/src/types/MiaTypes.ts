@@ -43,4 +43,5 @@ export type MiaImage = {
   type: 'imageBased' | 'twodBased'
   imgActions: []
   updateId: number
+  labelIds?: number[]
 }
