@@ -41,7 +41,7 @@ dependencies = [
     "tritonclient[all]>=2.71.0",
     "urllib3>=2.7.0",
     "uvicorn[standard]>=0.34.0",
-    "werkzeug>=3.1.8",
+    "werkzeug>=3.1.9",
     "redis>=6.4.0,<7.0.0",
     "itsdangerous", # SessionMiddleware (OpenID signed cookies)
     "pyjwt",
