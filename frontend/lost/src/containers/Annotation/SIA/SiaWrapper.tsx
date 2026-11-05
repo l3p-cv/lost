@@ -67,6 +67,10 @@ type SiaWrapperProps = {
   siaApi: SiaApi
   isReview: boolean
   onSetAnnotationRequestData: (changeRequest: ImageSwitchData) => void
+  onImageSearchModeChanged?: (
+    isActive: boolean,
+    filteredImageIds: number[],
+  ) => void
   lockedImgCount?: number
   onRefresh?: () => Promise<void>
 }
@@ -99,6 +103,7 @@ const SiaWrapper = ({
   siaApi,
   isReview = false,
   onSetAnnotationRequestData,
+  onImageSearchModeChanged,
   lockedImgCount = 0,
   onRefresh,
 }: SiaWrapperProps) => {
@@ -210,6 +215,28 @@ const SiaWrapper = ({
     imageId,
     appliedFilters: appliedImageFilters,
   }
+
+  // image search navigation is only active while the current image is part of the
+  // filtered results. Navigating outside the filter (e.g. via the image sidebar)
+  // falls back to normal navigation instead of breaking SIA.
+  const isImageSearchActiveForCurrentImage =
+    isImageSearchActive &&
+    filteredImageIds.some(
+      (result: ImageSearchResult) => result.imageId === imageId,
+    )
+
+  // inform the parent about the image search state (e.g. to restrict the image
+  // sidebar to the filtered images while the search is active)
+  useEffect(() => {
+    if (onImageSearchModeChanged === undefined) return
+
+    const isActive = isImageSearchActive && filteredImageIds.length > 0
+    onImageSearchModeChanged(
+      isActive,
+      filteredImageIds.map((result: ImageSearchResult) => result.imageId),
+    )
+  }, [isImageSearchActive, filteredImageIds])
+
   const { data: possibleLabels } = siaApi.useGetPossibleLabels(annoTaskId)
 
   // request will automatically refetch when its state (parameter) changes
@@ -781,31 +808,6 @@ const SiaWrapper = ({
     setImageBlob(undefined)
   }
 
-  const getSearchImageId = (
-    currentId: number,
-    isDirectionNext: boolean,
-  ): ImageSearchResult => {
-    // get position in list to determine if its the first or last entry
-    const currentIndex: number = filteredImageIds.findIndex(
-      (result: ImageSearchResult) => result.imageId === currentId,
-    )
-
-    // next image
-    if (isDirectionNext) {
-      // catch last image
-      if (currentIndex === filteredImageIds.length - 1)
-        return { imageId: -1, annotaskId: -1 }
-
-      return filteredImageIds[currentIndex + 1]
-    }
-
-    // previous image
-    // catch first image
-    if (currentIndex === 0) return { imageId: -1, annotaskId: -1 }
-
-    return filteredImageIds[currentIndex - 1]
-  }
-
   const getSpecificImage = (imageId: number) => {
     resetWrapper()
 
@@ -827,33 +829,44 @@ const SiaWrapper = ({
     }
     if (!isForward && isFirst) return
 
-    resetWrapper()
-
     const currentImageId: number = imageRequestData!.imageId
     let newAnnotationRequestData: ImageSwitchData
 
-    // stay in image search filter (if applied)
-    if (isImageSearchActive) {
+    // stay inside the image search filter — but only while the current image is
+    // actually part of it (the image sidebar is restricted to the filter, still
+    // this can go stale e.g. when a new search returns no results)
+    if (isImageSearchActiveForCurrentImage) {
+      const nextImageInFilter: ImageSearchResult = imageSearch.getSearchImageId(
+        currentImageId,
+        isForward,
+        filteredImageIds,
+      )
+
+      // filter boundary reached or current image left the filter — nothing to navigate to
+      if (nextImageInFilter.imageId === -1) return
+
       // quickly hide tooltip - it gets visible again when the next image is loaded
       // otherwise the label button moved the toolbar in a way that the tooltip gets displaced
       setIsImageSearchButtonTooltipOpen(false)
 
-      const nextImageIdInFilter: ImageSearchResult = getSearchImageId(
-        currentImageId,
-        isForward,
-      )
-
       newAnnotationRequestData = {
         direction: 'current',
-        imageId: nextImageIdInFilter.imageId,
+        imageId: nextImageInFilter.imageId,
       }
     } else {
+      // search mode is stale (current image is not part of the filtered results) — end it
+      if (isImageSearchActive) {
+        setIsImageSearchActive(false)
+        setIsImageSearchButtonTooltipOpen(false)
+      }
+
       newAnnotationRequestData = {
         direction: isForward ? 'next' : 'prev',
         imageId: currentImageId,
       }
     }
 
+    resetWrapper()
     onSetAnnotationRequestData(newAnnotationRequestData as ImageSwitchData)
 
     // handleClearSamHelperAnnos()
@@ -1206,7 +1219,7 @@ const SiaWrapper = ({
     let isLast: boolean = annoData?.image?.isLast || false
 
     // check first and last for the restricted image selection if in search mode
-    if (isImageSearchActive) {
+    if (isImageSearchActiveForCurrentImage) {
       const firstLastResult: FirstLastResult = imageSearch.checkFirstLastImage(
         imageId,
         filteredImageIds,
@@ -1274,10 +1287,10 @@ const SiaWrapper = ({
                 setIsImgSearchModalVisible(true)
               }}
             />
-            {isImageSearchActive && (
+            {isImageSearchActiveForCurrentImage && (
               <CoreIconButton
                 toolTip={
-                  isImageSearchActive
+                  isImageSearchActiveForCurrentImage
                     ? 'Image search mode - click to exit'
                     : 'Open image search'
                 }
@@ -1296,7 +1309,7 @@ const SiaWrapper = ({
           <NavigationButtons
             isFirstImage={isFirst || noImagesLeft}
             isLastImage={isLast || noImagesLeft}
-            isImageSearchActive={isImageSearchActive}
+            isImageSearchActive={isImageSearchActiveForCurrentImage}
             isReview={isReview}
             onNextImagePressed={getNextImage}
             onPreviousImagePressed={getPreviousImage}

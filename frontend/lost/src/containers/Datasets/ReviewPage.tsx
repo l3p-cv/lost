@@ -7,6 +7,7 @@ import { ImageSwitchData } from '../../api/sia'
 import { useAnnotask } from '../../api/anno_task'
 import AnnotationTop from '../Annotation/AnnoTask/AnnotationTop'
 import SiaPreviewSidebar from '../Annotation/SIA/SiaPreviewSidebar'
+import imageSearch from '../Annotation/SIA/imageSearch'
 import CoreIconButton from '../../components/CoreIconButton'
 import { faFilm, faRotateRight } from '@fortawesome/free-solid-svg-icons'
 
@@ -14,6 +15,10 @@ const DatasetsReviewComponent = () => {
   const { datasetId } = useParams()
   const [currentAnnotaskId, setCurrentAnnotaskId] = useState<number>(-1)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  // image ids of an active image search — restricts the image sidebar to the filtered images
+  const [imageSearchFilterIds, setImageSearchFilterIds] = useState<
+    number[] | null
+  >(null)
   const { data: currentAnnotask } = useAnnotask(currentAnnotaskId)
   console.log('Annotask: ', currentAnnotask)
   
@@ -123,6 +128,9 @@ const DatasetsReviewComponent = () => {
             siaApi={siaApi}
             isReview={true}
             onSetAnnotationRequestData={handleImageSwitch}
+            onImageSearchModeChanged={(isActive, filteredImageIds) => {
+              setImageSearchFilterIds(isActive ? filteredImageIds : null)
+            }}
             onRefresh={handleRefresh}
           />
         </div>
@@ -151,7 +159,10 @@ const DatasetsReviewComponent = () => {
           )}
           {isSidebarOpen && (
             <SiaPreviewSidebar
-              imageList={imageList ?? []}
+              imageList={imageSearch.restrictImageListToFilter(
+                imageList ?? [],
+                imageSearchFilterIds,
+              )}
               currentImageId={annoData?.image?.id ?? -1}
               onSelect={(id) =>
                 handleImageSwitch({ direction: 'specificImage', imageId: id })

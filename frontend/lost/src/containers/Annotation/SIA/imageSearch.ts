@@ -1,4 +1,5 @@
 import { ImageSearchResult } from '../../Datasets/SIAImageSearchModal'
+import { SiaImageListItem } from './SiaPreviewSidebar'
 
 export type FirstLastResult = {
   isFirst: boolean
@@ -13,6 +14,8 @@ const checkFirstLastImage = (
   const currentIndex: number = filteredImageIds.findIndex(
     (result: ImageSearchResult) => result.imageId === currentId,
   )
+
+  if (currentIndex === -1) return { isFirst: true, isLast: true }
 
   return {
     isFirst: currentIndex === 0,
@@ -30,6 +33,8 @@ const getSearchImageId = (
     (result: ImageSearchResult) => result.imageId === currentId,
   )
 
+  if (currentIndex === -1) return { imageId: -1, annotaskId: -1 }
+
   // next image
   if (isDirectionNext) {
     // catch last image
@@ -46,7 +51,25 @@ const getSearchImageId = (
   return filteredImageIds[currentIndex - 1]
 }
 
+// restrict an image sidebar list to the images of an active image search filter
+// (numbers and total are recomputed so the strip badges stay consistent)
+const restrictImageListToFilter = (
+  imageList: SiaImageListItem[],
+  filterIds: number[] | null,
+): SiaImageListItem[] => {
+  const restricted = filterIds
+    ? imageList.filter((item) => filterIds.includes(item.imageId))
+    : imageList
+
+  return restricted.map((item, index) => ({
+    ...item,
+    number: index + 1,
+    total: restricted.length,
+  }))
+}
+
 export default {
   getSearchImageId,
   checkFirstLastImage,
+  restrictImageListToFilter,
 }
