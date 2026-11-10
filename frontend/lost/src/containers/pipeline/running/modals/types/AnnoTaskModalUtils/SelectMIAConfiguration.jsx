@@ -14,9 +14,15 @@ import InfoText from '../../../../../../components/InfoText'
 export const SelectMIAConfiguration = ({ ...props }) => {
   const [configuration, setConfiguration] = useState(props.configuration)
   const configurationProp = props.configuration
+  const upStreamRule = props.upstreamRule ?? { typeLocked: false, proposedLabelApplicable: true }
 
   useEffect(() => {
     setConfiguration(configurationProp)
+    if (configurationProp && !upStreamRule.proposedLabelApplicable && configurationProp.showProposedLabel === true) {
+      const corrected = { ...configurationProp, showProposedLabel: false }
+      setConfiguration(corrected)
+      props.onUpdate(corrected, {})
+    }
   }, [configurationProp])
 
   const changeValue = (key, value) => {
@@ -54,18 +60,14 @@ export const SelectMIAConfiguration = ({ ...props }) => {
         <>
           <CRow style={{ margin: '5px' }}>
             <CCol sm="12">
-              <InfoText
-                text={'MIA Configuration:'}
-                style={{ fontSize: 20, marginBottom: '15px' }}
-              />
               <CRow
                 style={{ marginLeft: '5px', marginBottom: '15px' }}
                 className="align-content-center"
               >
                 <CCol sm="4" className="align-self-center">
                   <InfoText
-                    text={'-Show proposed label:'}
-                    toolTip={'Show proposed label (if given)'}
+                    text={'Show proposed label:'}
+                    toolTip={upStreamRule.proposedLabelApplicable ?'Show proposed label (if given)' : 'Show proposed label is not applicable for this template'}
                     id="show-proposed-label"
                     style={{ fontSize: 20 }}
                   />
@@ -80,17 +82,20 @@ export const SelectMIAConfiguration = ({ ...props }) => {
                     onChange={(e) =>
                       changeValue('show-proposed-label', !configuration.showProposedLabel)
                     }
+                    disabled={!upStreamRule.proposedLabelApplicable}
                   />
                 </CCol>
               </CRow>
+              <hr />
               <CRow>
                 <CCol sm="12">
                   <CRow style={{ marginLeft: '5px' }}>
                     <InfoText
-                      text={'-Annotation Type:'}
+                      text={'Annotation Type:'}
                       tTipPlacement="right"
                       toolTip={
-                        'Wether annotation requests are based on whole images or two_d annotations (in example from a previous SIA annotation step)'
+                        upStreamRule.typeLocked ? 'The annotation type is not applicable to change for this template used' 
+                        : 'Wether annotation requests are based on whole images or two_d annotations (in example from a previous SIA annotation step)'
                       }
                       style={{ fontSize: 20, marginBottom: '15px' }}
                     />
@@ -130,7 +135,7 @@ export const SelectMIAConfiguration = ({ ...props }) => {
                         className="align-self-center"
                       >
                         <InfoText
-                          text={'-Draw Anno:'}
+                          text={'Draw Anno:'}
                           id="draw-anno"
                           toolTip={'Wether to draw two_d annnotations into the image'}
                           style={{ fontSize: 20, marginBottom: '15px' }}
@@ -156,7 +161,7 @@ export const SelectMIAConfiguration = ({ ...props }) => {
                         className="align-self-center"
                       >
                         <InfoText
-                          text={'-Add Context:'}
+                          text={'Add Context:'}
                           id="add-context"
                           toolTip={`Add some amount of pixels will be added around the annotation when the
                                                         annotation is cropped.

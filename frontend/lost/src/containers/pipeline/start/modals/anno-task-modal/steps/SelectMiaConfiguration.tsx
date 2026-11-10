@@ -18,7 +18,9 @@ interface SelectMiaConfigurationProps {
 
 export const SelectMiaConfiguration = ({ nodeId }: SelectMiaConfigurationProps) => {
   const nodeData = useNodesData(nodeId)
-  const { configuration } = nodeData?.data as AnnoTaskNodeData
+  const { configuration, miaUpstreamRule } = nodeData?.data as AnnoTaskNodeData
+  const proposedLabelApplicable = miaUpstreamRule?.proposedLabelApplicable ?? false
+  const typeLocked = miaUpstreamRule?.typeLocked ?? false
 
   const { updateNodeData } = useReactFlow()
 
@@ -46,14 +48,13 @@ export const SelectMiaConfiguration = ({ nodeId }: SelectMiaConfigurationProps) 
     <>
       {configuration ? (
         <div id="mia-configuration-heading">
-          <h4 className="mb-3 text-center">MIA Configuration</h4>
           <CRow style={{ margin: '5px', marginLeft: '5px' }}>
             <CCol sm="12" className="align-self-center">
               <CRow>
                 <CCol sm="4" className="align-self-center">
                   <InfoText
-                    text={'-Show proposed label:'}
-                    toolTip={'Show proposed label (if given)'}
+                    text={'Show proposed label:'}
+                    toolTip={proposedLabelApplicable ? 'Show proposed label (if given)' : 'Show proposed label is not applicable for this template'}
                     style={{ fontSize: 20 }}
                   />
                 </CCol>
@@ -65,6 +66,7 @@ export const SelectMiaConfiguration = ({ nodeId }: SelectMiaConfigurationProps) 
                     onChange={() =>
                       changeValue('show-proposed-label', !configuration.showProposedLabel)
                     }
+                    disabled={!proposedLabelApplicable}
                   />
                 </CCol>
               </CRow>
@@ -75,14 +77,16 @@ export const SelectMiaConfiguration = ({ nodeId }: SelectMiaConfigurationProps) 
           <CRow style={{ margin: '5px' }}>
             <InfoText
               text={'Annotation Type:'}
-              toolTip={
+              toolTip={typeLocked ? 'The annotation type is not editable for this template' :
                 'If annotation requests are based on whole images or two_d annotations (in example from a previous SIA annotation step)'
               }
               style={{ fontSize: 20, marginBottom: '15px' }}
             />
             <CRow style={{ marginLeft: '5px' }}>
               <CDropdown>
-                <CDropdownToggle color="primary">{configuration.type}</CDropdownToggle>
+                <CDropdownToggle color="primary" disabled={typeLocked}>
+                  {configuration.type}
+                </CDropdownToggle>
                 <CDropdownMenu>
                   <CDropdownItem
                     href="#"
@@ -105,7 +109,7 @@ export const SelectMiaConfiguration = ({ nodeId }: SelectMiaConfigurationProps) 
                   <CRow className="align-items-center" style={{ marginTop: '15px' }}>
                     <CCol sm="4" className="align-self-center">
                       <InfoText
-                        text={'-Draw Anno:'}
+                        text={'Draw Anno:'}
                         toolTip={'Draw 2D annotations on the image'}
                         style={{ fontSize: 20 }}
                         id="draw-anno"
@@ -124,7 +128,7 @@ export const SelectMiaConfiguration = ({ nodeId }: SelectMiaConfigurationProps) 
                   <CRow style={{ marginTop: '10px' }}>
                     <CCol sm="4" className="align-self-center">
                       <InfoText
-                        text={'-Add Context:'}
+                        text={'Add Context:'}
                         toolTip={`A margin of pixels is added around the annotation when it is cropped. The number of pixels is calculated relative to the image size. For example, setting addContext to 0.1 adds 10% of the image size to the crop. This helps provide the annotator with more visual context during annotation.`}
                         style={{ fontSize: 20 }}
                       />

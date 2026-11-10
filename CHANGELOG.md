@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `MiaTypes.ts` : MiaImage an the optional labelIds field matching the serialized per-image labels added.
 - `inout.py` : mia_request_again for imageBased annotasks now chunks by img_lbl column of the dataset export and not by sim_class ,images now are grouped by sameimage label and created Mia proposes this label.
 - `db/access.py` : Added get_first_chunk_id mirrors get_latest_chunk_id with ascending order used by MIA "go to first" to resolve the annotator's earliest exisitng chunk instead of hard coding.
+- `miaUpstreamRules.ts` : Added MIA upstream-template rules — resolves the MIA annotask's feeding pipeline script (`request_annos.py` / `request_annos_again.py` / `cluster_using_prev_stage.py`) to `typeLocked` / `proposedLabelApplicable` gating (default: unlocked / applicable).
+- `pipeline_util.tsx` , `AnnoTaskModal.tsx` , `AnnoTaskTabs.tsx` , `TabAdaptConfiguration.jsx` , `SelectMiaConfiguration.tsx` , `SelectMIAConfiguration.jsx` : MIA annotask configuration is now gated by the upstream template — the "Show proposed label" toggle is disabled with an explanatory tooltip where the template can't propose a label (stale `showProposedLabel: true` configs are auto-corrected to false), and the annotation type dropdown is locked where the template fixes it; MIA config texts cleaned up (no leading dashes / duplicate headings).
 ### Fixed
 - `inout.py` : fixed `mia_request_again` with CSV dataset exports now parses stringified list cells and skips image-only rows, treats NaN `img_is_junk` as missing instead of -1.
 - `script.py` : `report_script_err` rolls back the session before commiting the error state so pending objects no longer mask the real script error.

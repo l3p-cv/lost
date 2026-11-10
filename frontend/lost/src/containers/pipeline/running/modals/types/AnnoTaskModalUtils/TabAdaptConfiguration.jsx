@@ -4,7 +4,7 @@ import { useState } from 'react'
 import SelectMIAConfiguration from './SelectMIAConfiguration'
 import SelectSIAConfiguration from './SelectSIAConfiguration'
 
-const TabAdaptConfiguration = ({ id, type, configuration }) => {
+const TabAdaptConfiguration = ({ id, type, configuration, miaUpstreamRule }) => {
   const [configError, setConfigError] = useState(null)
   const { data: annoTaskConfigUpdateDate, mutate: updateAnnoTaskConfig } =
     annoTaskApi.useUpdateConfig()
@@ -41,6 +41,7 @@ const TabAdaptConfiguration = ({ id, type, configuration }) => {
           peN={undefined}
           configuration={configuration}
           onUpdate={onAnnoTaskConfigUpdate}
+          upstreamRule={miaUpstreamRule}
         ></SelectMIAConfiguration>
       )}
     </>

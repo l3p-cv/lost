@@ -31,6 +31,7 @@ type AnnoTaskTabsProps = {
   active: number
   setActive: () => void
   mergeExports?: boolean
+  miaUpstreamRule?: { typeLocked: boolean, proposedLabelApplicable: boolean}
 }
 
 const AnnoTaskTabs = ({
@@ -44,6 +45,7 @@ const AnnoTaskTabs = ({
   active = 0,
   setActive,
   mergeExports = false,
+  miaUpstreamRule,
 }: AnnoTaskTabsProps) => {
   // const [active, setActive] = useState(0) // now given from the parent
   const [internalActive, internalSetActive] = useState(0)
@@ -297,6 +299,7 @@ const AnnoTaskTabs = ({
               id={annotask.id}
               type={annotask.type}
               configuration={annotask.configuration}
+              miaUpstreamRule={miaUpstreamRule}
             />
           </CTabPane>
         )}

@@ -62,6 +62,7 @@ export const PipelineView = () => {
               />
               <PipeElementBaseModal
                 data={modalData}
+                elements={data?.elements}
                 modalOpened={isModalOpen}
                 toggleModal={toggleModal}
               />

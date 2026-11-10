@@ -18,6 +18,10 @@ export type AnnoTaskNodeData = {
     value: string
     label: string
   }
+  miaUpstreamRule?: {
+    typeLocked: boolean
+    proposedLabelApplicable: boolean
+  }
   configuration: Configuration
   selectedLabelTree?: AvailableLabelTree
   labelTreeGraph: {

@@ -10,6 +10,7 @@ import {
   PipelineTemplateElement,
   PipelineTemplateResponse,
 } from '../../types/pipelines/pipeline-template-response'
+import { resolveMiaUpstreamRule } from './miaUpstreamRules'
 
 const getReactFlowEdges = (
   elements: PipelineResponseElement[] | PipelineTemplateElement[],
@@ -120,12 +121,19 @@ export const parseTemplateElementsToReactFlow = (elements: PipelineTemplateEleme
       } as ScriptNodeData
     } else if (el.annoTask) {
       type = 'annoTaskNode'
+      const isMia = el.annoTask.type === 'mia'
+      const miaUpstreamRule = isMia ? resolveMiaUpstreamRule(elements, el.peN) : undefined
+      const configuration =
+        isMia && miaUpstreamRule && !miaUpstreamRule.proposedLabelApplicable
+          ? { ...el.annoTask.configuration, showProposedLabel: false }
+          : el.annoTask.configuration
       data = {
         name: el.annoTask.name,
         type: el.annoTask.type,
         verified: false,
         instructionId: el.annoTask.instructionId,
-        configuration: el.annoTask.configuration,
+        configuration,
+        miaUpstreamRule,
         labelTreeGraph: {
           nodes: [],
           edges: [],

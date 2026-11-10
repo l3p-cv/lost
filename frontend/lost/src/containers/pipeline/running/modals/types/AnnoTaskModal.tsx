@@ -8,10 +8,13 @@ import BaseModal from '../../../../../components/BaseModal'
 import CoreDataTable from '../../../../../components/CoreDataTable'
 import { createColumnHelper } from '@tanstack/react-table'
 import { changeUser, forceAnnotationRelease } from '../../../../../api/anno_task'
+import { PipelineResponseElement } from '../../../../../types/pipelines/pipeline-response'
+import { resolveMiaUpstreamRule } from '../../../../../api/pipeline/miaUpstreamRules'
 
 type AnnoTaskModalProps = {
   modalOpened: boolean
   annoTask: { name: string; id: number | string; type: string; annotatedImgCount?: number; lockedImgCount?: number }
+  elements?: PipelineResponseElement[]
   id: number | string
   state: string
   onClose: () => void
@@ -20,6 +23,7 @@ type AnnoTaskModalProps = {
 const AnnoTaskModal = ({
   modalOpened,
   annoTask,
+  elements,
   id,
   state,
   onClose,
@@ -32,6 +36,7 @@ const AnnoTaskModal = ({
     forceAnnotationRelease(annoTask.id, annotationReleaseSuccessful)
   }
   const navigate = useNavigate()
+  const miaUpstreamRule = resolveMiaUpstreamRule(elements, Number(id))
 
   const columnHelper = createColumnHelper()
   const columns = [
@@ -92,6 +97,7 @@ const AnnoTaskModal = ({
         hasShowLabels={true}
         hasAdaptConfiguration={true}
         mergeExports={true}
+        miaUpstreamRule={miaUpstreamRule}
       />
       <CRow className="justify-content-end">
         <CCol sm="auto">

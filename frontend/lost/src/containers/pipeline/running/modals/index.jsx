@@ -40,6 +40,7 @@ const PipeElementBaseModal = (props) => {
             modalOpened={true}
             state={props.data.state}
             annoTask={props.data.annoTask}
+            elements={props.elements}
             onClose={() => onClose(props.modalOpened)}
           />
         )
