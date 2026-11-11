@@ -16,6 +16,7 @@ import {
   faArrowLeft,
   faArrowRight,
   faArrowsAltH,
+  faPaperclip,
   faLock,
   faLockOpen,
   faRotateLeft,
@@ -181,8 +182,7 @@ const Control = ({
     selectedLabelState.set({ value: undefined, color: '' })
   }, [proposedLabel, labels])
 
-  useEffect(() => {
-    // prefer the label actually used in this chunk; fall back to the proposed label
+  const getChunkSavedLabel = () => {
     const counts = new Map<number, number>()
     miaAnnos.images.forEach((img) =>
       (img.labelIds ?? []).forEach((id) => counts.set(id, (counts.get(id) ?? 0) + 1)),
@@ -195,7 +195,22 @@ const Control = ({
         usedId = id
       }
     })
-    const used = labels.find((l) => l.id === usedId)
+    return labels.find((l) => l.id === usedId)
+  }
+
+  const handleUndoLabelSelection = () => {
+    const saved = getChunkSavedLabel()
+    if (!saved) return
+    handleAddLabel(saved)
+    setSelectedLblIdStr(String(saved.id))
+  }
+
+  const savedLabel = getChunkSavedLabel()
+  const undoDisabled = !savedLabel || selectedLabelState.value?.id === savedLabel.id
+
+  useEffect(() => {
+    // prefer the label actually used in this chunk; fall back to the proposed label
+    const used = getChunkSavedLabel()
     if (used) {
       handleAddLabel(used)
       setSelectedLblIdStr(String(used.id))
@@ -290,10 +305,20 @@ const Control = ({
             icon={faRotateLeft}
             isOutline={true}
             color="primary"
-            toolTip="Reset to proposed label"
-            disabled={!proposedLabel || selectedLabelState.value?.id === proposedLabel}
-            onClick={applyProposedLabel}
+            toolTip="Undo to saved label"
+            disabled={undoDisabled}
+            onClick={handleUndoLabelSelection}
           />
+          {proposedLabel && (
+            <CoreIconButton
+              icon={faPaperclip}
+              isOutline={true}
+              color="primary"
+              toolTip="Reset to proposed label"
+              disabled={selectedLabelState.value?.id === proposedLabel}
+              onClick={applyProposedLabel}
+            />
+          )}
         </CButtonGroup>
       </CCol>
         </>
