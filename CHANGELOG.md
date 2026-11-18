@@ -29,6 +29,8 @@ and annotask config is now evaluated server-side for `drawAnno` (even visible fo
 - `SiaWrapper.tsx` , `imageSearch.ts` , `AnnoTask/ReviewPage.tsx` , `Datasets/ReviewPage.tsx` : Fixed SIA breaking in annotation/dataset review when leaving the active image-search filter via the image sidebar and then navigating with arrow keys (TypeError → endless spinner). Search-mode navigation is only active while the current image is part of the filtered results (falls back to normal navigation otherwise), the image sidebar is restricted to the filtered images while the search is active, and the search helpers handle out-of-filter lookups safely (also fixes the silent ArrowRight jump to the first search result).
 - `SiaWrapper.tsx` : Fixed the endless SIA spinner after "Create BBox of annotation" IS CLICKED.
 - `SiaWrapper.tsx` : Fixed redundant fire of polygonOperations request( lost-sia used to autoselect the just created result annotation of polygon operation and fire same polygon operation with this resulatnt polygon as second operand) now using ref this auto-selection is detected and ignored.
+### Changed
+- `MIAGalleryModal.tsx` : Changed the junk button position.
 ## [4.1.2] - 2026-10-21
 ### Added
 - `.opencode/command/golden-tests.md` + `.opencode/skills/golden-tests/` : Added the `/golden-tests` command and `golden-tests` skill — generates golden-snapshot test coverage for new API endpoints (appends RouteSpec entries to the existing specs file) and new namespaces (creates specs file, runner, golden dir, and MIGRATED registration), with harness references (harness map, namespace flow, spec patterns) and record/verify hand-off commands.

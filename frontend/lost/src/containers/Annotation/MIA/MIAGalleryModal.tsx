@@ -152,20 +152,6 @@ const MIAGalleryModal = ({
           </span>
         </CCol>
         <CCol className="d-flex justify-content-end align-items-center">
-          {isImageBased && (
-            <CoreIconButton
-              className="mx-1"
-              icon={faBan}
-              color="primary"
-              isOutline={!isJunk}
-              toolTip={isJunk ? 'Unjunk image' : 'Junk image'}
-              onClick={() =>
-                onJunkImages({
-                  images: [{ id: currentImage.id, isJunk: !isJunk }],
-                })
-              }
-            />
-          )}
           <CFormSwitch
             className="mx-1"
             size="xl"
@@ -189,6 +175,20 @@ const MIAGalleryModal = ({
               icon={faTimes}
               inverse
               onClick={() => imageActiveStates.set(currentImage.id, true)}
+            />
+          )}
+          {isImageBased && (
+            <CoreIconButton
+              className="mx-1"
+              icon={faBan}
+              color="primary"
+              isOutline={!isJunk}
+              toolTip={isJunk ? 'Unjunk image' : 'Junk image'}
+              onClick={() =>
+                onJunkImages({
+                  images: [{ id: currentImage.id, isJunk: !isJunk }],
+                })
+              }
             />
           )}
         </CCol>
