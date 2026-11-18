@@ -8,7 +8,8 @@ import type {
   ImageEditData,
 } from '../../../api/sia'
 import { useAnnotask } from '../../../api/anno_task'
-import { useGetSiaImage, useFinishAnnotask } from '../../../api/sia'
+import { useGetSiaImage, useFinishAnnotask, useGetSiaImageList} from '../../../api/sia'
+import { useGetReviewImageList } from '../../../api/dataset/dataset_review'
 import polygonOperationApi from '../../../api/polygon_operation'
 
 import type {
@@ -248,7 +249,16 @@ const SiaWrapper = ({
   // request will automatically refetch when its state (parameter) changes
   const { data: imageBlobRequest, isLoading: imageIsLoading } =
     useGetSiaImage(imageRequestData)
+
+  const { data: siaImageList } = useGetSiaImageList(
+    !isReview && !isDatasetMode,
+    imageId > 0 ? imageId : undefined,
+  )
+  const { data: reviewImageList } = useGetReviewImageList(
+    isReview && annoTaskId > 0 ? annoTaskId : undefined,
+  )
   const [imageBlob, setImageBlob] = useState<string | undefined>()
+
 
   const [isImageSearchButtonTooltipOpen, setIsImageSearchButtonTooltipOpen] =
     useState<boolean>()
@@ -827,6 +837,41 @@ const SiaWrapper = ({
     // handleClearSamHelperAnnos()
   }
 
+  const handleJumpToImage = (toFirst: boolean) => {
+    // image search is only active while the current image is part of the filtered results
+    const boundaryList: { imageId: number }[] = isImageSearchActiveForCurrentImage
+      ? filteredImageIds
+      : isReview
+      ? reviewImageList ?? []
+      : siaImageList ?? []
+    
+      // list not loaded yet
+    if (boundaryList.length === 0) return
+
+    const targetImageId = toFirst
+      ? boundaryList[0].imageId
+      : boundaryList[boundaryList.length - 1].imageId
+
+    // already on the target image — nothing to do
+    if (targetImageId === imageId) return
+
+    // search mode us stale (current image is not part of the filtered results) — end it
+    if (isImageSearchActive && !isImageSearchActiveForCurrentImage) {
+      setIsImageSearchActive(false)
+    }
+    
+    setIsImageSearchButtonTooltipOpen(false)
+
+    resetWrapper()
+    onSetAnnotationRequestData({
+      direction: 'current',
+      imageId: targetImageId,
+    })
+  }
+
+  const getFirstImage = () => {handleJumpToImage(true)}
+  const getLastImage = () => {handleJumpToImage(false)}
+
   const handleNewImage = (isForward: boolean) => {
     // abort when going out of available image scope
     const { isFirst, isLast } = checkNavigationConstraints()
@@ -1327,6 +1372,8 @@ const SiaWrapper = ({
             isLastImage={isLast || noImagesLeft}
             isImageSearchActive={isImageSearchActiveForCurrentImage}
             isReview={isReview}
+            onFirstImagePressed={getFirstImage}
+            onLastImagePressed={getLastImage}
             onNextImagePressed={getNextImage}
             onPreviousImagePressed={getPreviousImage}
             onSubmitAnnotask={submitAnnotask}
