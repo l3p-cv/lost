@@ -6,12 +6,15 @@ import {
   faArrowRight,
   faCheck,
   faTimes,
+  faBan,
 } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import BaseModal from '../../../components/BaseModal'
 import CoreIconButton from '../../../components/CoreIconButton'
 import CenteredSpinner from '../../../components/CenteredSpinner'
 import { useGetMiaImage } from '../../../api/mia'
 import { useGetSiaImageName } from '../../../api/sia'
+import { MiaJunkPayload } from '../../../types/MiaTypes'
 
 type MIAGalleryModalProps = {
   images: { id: number; type: string }[]
@@ -23,9 +26,18 @@ type MIAGalleryModalProps = {
   }
   onNavigate: (direction: 'prev' | 'next') => void
   onClose: () => void
+  imageJunkStates: {
+    value: Record<number, boolean>
+    set: (id: number, junk: boolean) => void
+  }
+  onJunkImages: (payload: MiaJunkPayload) => void
+  isImageBased: boolean
 }
 
-const GalleryImage = ({ imageBase }: { imageBase: { id: number; type: string } }) => {
+const GalleryImage = ({ imageBase, isJunk,}: {
+ imageBase: { id: number; type: string }
+  isJunk?: boolean
+}) => {
   const miaImage = useGetMiaImage({
     addContext: -1,
     imageId: imageBase.id,
@@ -51,23 +63,46 @@ const GalleryImage = ({ imageBase }: { imageBase: { id: number; type: string } }
   }
 
   return (
-    <TransformWrapper>
-      <TransformComponent
-        wrapperStyle={{ width: '100%' }}
-        contentStyle={{ width: '100%' }}
-      >
-        <img
+    <div style={{ position: 'relative', background: 'black' }}>
+      <TransformWrapper>
+        <TransformComponent
+          wrapperStyle={{ width: '100%' }}
+          contentStyle={{ width: '100%' }}
+        >
+          <img
+            style={{
+              width: '100%',
+              height: '70vh',
+              objectFit: 'contain',
+              background: 'black',
+            }}
+            src={miaImage.data}
+            alt=""
+            className={isJunk ? 'mia-image-junk' : undefined}
+          />
+        </TransformComponent>
+      </TransformWrapper>
+      {isJunk && (
+        <div
           style={{
-            width: '100%',
-            height: '70vh',
-            objectFit: 'contain',
-            background: 'black',
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            textAlign: 'center',
+            color: 'white',
+            background: 'rgba(0, 0, 0, 0.6)',
+            borderRadius: 8,
+            padding: '24px 48px',
+            pointerEvents: 'none',
+            zIndex: 5,
           }}
-          src={miaImage.data}
-          alt=""
-        />
-      </TransformComponent>
-    </TransformWrapper>
+        >
+          <FontAwesomeIcon icon={faBan} size="5x" style={{ marginBottom: 15 }} />
+          <h2>Marked as Junk</h2>
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -76,6 +111,9 @@ const MIAGalleryModal = ({
   openIndex,
   totalCount,
   imageActiveStates,
+  imageJunkStates,
+  onJunkImages,
+  isImageBased,
   onNavigate,
   onClose,
 }: MIAGalleryModalProps) => {
@@ -99,6 +137,7 @@ const MIAGalleryModal = ({
   const renderFooter = () => {
     if (!currentImage) return null
     const isActive = imageActiveStates.value[currentImage.id]
+    const isJunk = imageJunkStates.value[currentImage.id]
     return (
       <CRow className="w-100 align-items-center">
         <CCol />
@@ -113,6 +152,20 @@ const MIAGalleryModal = ({
           </span>
         </CCol>
         <CCol className="d-flex justify-content-end align-items-center">
+          {isImageBased && (
+            <CoreIconButton
+              className="mx-1"
+              icon={faBan}
+              color="primary"
+              isOutline={!isJunk}
+              toolTip={isJunk ? 'Unjunk image' : 'Junk image'}
+              onClick={() =>
+                onJunkImages({
+                  images: [{ id: currentImage.id, isJunk: !isJunk }],
+                })
+              }
+            />
+          )}
           <CFormSwitch
             className="mx-1"
             size="xl"
@@ -169,7 +222,12 @@ const MIAGalleryModal = ({
             zIndex: 10,
           }}
         />
-        {currentImage && <GalleryImage imageBase={currentImage} />}
+        {currentImage && (
+          <GalleryImage
+            imageBase={currentImage}
+            isJunk={imageJunkStates.value[currentImage.id]}
+          />
+        )}
 
         <CoreIconButton
           icon={faArrowLeft}

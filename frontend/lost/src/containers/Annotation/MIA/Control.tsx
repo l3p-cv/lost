@@ -23,6 +23,7 @@ import {
   faSearchMinus,
   faSearchPlus,
   faTag,
+  faBan,
 } from '@fortawesome/free-solid-svg-icons'
 import CoreIconButton from '../../../components/CoreIconButton'
 import {
@@ -32,7 +33,7 @@ import {
   useGoToFirstMIA,
   useGoToLatestMIA,
 } from '../../../api/mia'
-import { MiaAnnosResponse, StateManager } from '../../../types/MiaTypes'
+import { MiaAnnosResponse, StateManager, MiaJunkPayload } from '../../../types/MiaTypes'
 
 type ControlProps = {
   zoomState: StateManager<number>
@@ -50,6 +51,12 @@ type ControlProps = {
   }
   annotaskFinishedLbls: number
   permaReverseState: StateManager<boolean>
+  imageJunkStates: {
+    value: Record<number, boolean>
+    set: (id: number, junk: boolean) => void
+  }
+  onJunkImages: (payload: MiaJunkPayload) => void
+  isImageBased: boolean
 }
 
 const Control = ({
@@ -61,6 +68,9 @@ const Control = ({
   imageActiveStates,
   annotaskFinishedLbls,
   permaReverseState,
+  imageJunkStates,
+  onJunkImages,
+  isImageBased,
 }: ControlProps) => {
   const selectStyle = {
     width: '250px',
@@ -219,6 +229,18 @@ const Control = ({
     }
   }, [miaAnnos.chunk.id])
 
+  const includedImages = miaAnnos.images.filter((img) => imageActiveStates.value[img.id])
+  const allIncludedJunked =
+    includedImages.length > 0 &&
+    includedImages.every((img) => imageJunkStates.value[img.id])
+
+  const handleJunkChunk = () => {
+    if (includedImages.length === 0) return
+    onJunkImages({
+      images: includedImages.map((img) => ({ id: img.id, isJunk: !allIncludedJunked })),
+    })
+  }
+
   return (
     <CRow
       className="align-items-center"
@@ -229,7 +251,6 @@ const Control = ({
       {hasImages && (
         <>
       <CCol xs="4" sm="4" lg="4" className="d-flex justify-content-center">
-        {/* TODO: INCLUDE JUNK BUTTON!!! */}
         <CButtonGroup>
           <CoreIconButton
             onClick={zoomIn}
@@ -245,14 +266,15 @@ const Control = ({
             isOutline={true}
             toolTip="Zoom Out"
           />
-          {/* <CoreIconButton
-              onClick={this.handleJunking}
+          {isImageBased && (
+            <CoreIconButton
+              onClick={handleJunkChunk}
               color="primary"
               icon={faBan}
-              text=""
-              isOutline={true}
+              isOutline={!allIncludedJunked}
+              disabled={includedImages.length === 0}
               toolTip="Junk selected Images"
-            /> */}
+            />)}
           <CoreIconButton
             onClick={handleReverse}
             color="primary"

@@ -7,7 +7,7 @@ import {
   LegacyAnnotationResponse,
 } from '../containers/Annotation/SIA/legacyHelper'
 import { useQueryClient } from 'react-query'
-import { UpdateMiaPayload, GoBackPayload } from '../types/MiaTypes'
+import { UpdateMiaPayload, GoBackPayload, MiaJunkPayload } from '../types/MiaTypes'
 
 export type MiaApi = {
   useGetPossibleLabels: (annoTaskId: number) => UseQueryResult
@@ -229,5 +229,14 @@ export const useGoToLatestMIA = () => {
     onSuccess: (data, maxAmount) => {
       queryClient.setQueryData(['miaAnnos', maxAmount], data)
     },
+  })
+}
+
+export const useJunkMiaImages = () => {
+  return useMutation<void, Error, MiaJunkPayload>({
+    mutationFn: async (data) => {
+      await axios.patch(`${API_URL}/mia/junk`, data)
+    },
+    onError: () => showError('Failed to update junk status.'),
   })
 }

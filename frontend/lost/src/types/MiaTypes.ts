@@ -28,6 +28,15 @@ export type GoBackPayload = {
   maxAmount: number
 }
 
+export type MiaJunkImage = {
+  id: number
+  isJunk: boolean
+}
+
+export type MiaJunkPayload = {
+  images: MiaJunkImage[]
+}
+
 export type MiaAnnosResponse = {
   proposedLabel?: string
   chunk: {
@@ -44,4 +53,5 @@ export type MiaImage = {
   imgActions: []
   updateId: number
   labelIds?: number[]
+  isJunk?: boolean
 }

@@ -1082,6 +1082,11 @@ const SiaWrapper = ({
       polygonEditMode != PolygonEditMode.NONE &&
       currentlySelectedAnnotation !== undefined
     ) {
+      if (polygonEditMode === PolygonEditMode.BBOX) {
+        setPolygonEditMode(PolygonEditMode.NONE)
+        setCurrentlySelectedAnnotation(annotation)
+        return
+      }
       calculatePolygonOperation(currentlySelectedAnnotation, annotation)
     } else {
       setCurrentlySelectedAnnotation(annotation)

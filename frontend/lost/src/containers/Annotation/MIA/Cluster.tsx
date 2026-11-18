@@ -6,6 +6,7 @@ import { useFinishMia } from '../../../api/mia'
 import { CAlert, CButton, CCol, CRow } from '@coreui/react'
 import './Cluster.scss'
 import CenteredSpinner from '../../../components/CenteredSpinner'
+import { MiaJunkPayload } from '../../../types/MiaTypes'
 
 type ClusterProps = {
   images: [{ id: number; type: string }]
@@ -16,6 +17,12 @@ type ClusterProps = {
     value: Record<number, boolean>
     set: (id: number, active: boolean) => void
   }
+  imageJunkStates: {
+    value: Record<number, boolean>
+    set: (id: number, junk: boolean) => void
+  }
+  onJunkImages: (payload: MiaJunkPayload) => void
+  isImageBased: boolean
 }
 
 const Cluster = ({
@@ -24,6 +31,9 @@ const Cluster = ({
   imagesLoading,
   workingOnAnnoTask,
   imageActiveStates,
+  imageJunkStates,
+  onJunkImages,
+  isImageBased,
 }: ClusterProps) => {
   const navigate = useNavigate()
   const { mutate: finishMia } = useFinishMia()
@@ -32,7 +42,8 @@ const Cluster = ({
   const handleNavigate = (direction: 'prev' | 'next') => {
     if (openModalIndex === null) return
     if (direction === 'prev' && openModalIndex > 0) setOpenModalIndex(openModalIndex - 1)
-    if (direction === 'next' && openModalIndex < images.length - 1) setOpenModalIndex(openModalIndex + 1)
+    if (direction === 'next' && openModalIndex < images.length - 1)
+      setOpenModalIndex(openModalIndex + 1)
   }
 
   const handleFinish = () => {
@@ -97,6 +108,9 @@ const Cluster = ({
           openIndex={openModalIndex}
           totalCount={images.length}
           imageActiveStates={imageActiveStates}
+          imageJunkStates={imageJunkStates}
+          onJunkImages={onJunkImages}
+          isImageBased={isImageBased}
           onNavigate={handleNavigate}
           onClose={() => setOpenModalIndex(null)}
         />
@@ -112,6 +126,7 @@ const Cluster = ({
                 imageBase={imageData}
                 height={zoom}
                 imageActiveState={imageActiveState}
+                isJunk={imageJunkStates.value[imageData.id]}
                 onOpenModal={() => setOpenModalIndex(index)}
               />
             )

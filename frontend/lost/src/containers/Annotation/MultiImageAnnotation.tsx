@@ -5,10 +5,11 @@ import { useState } from 'react'
 import { CCol, CRow } from '@coreui/react'
 import CenteredSpinner from '../../components/CenteredSpinner'
 import * as annotaskApi from '../../api/anno_task'
-import { useGetMiaAnnos, useGetMiaLabel } from '../../api/mia'
+import { useGetMiaAnnos, useGetMiaLabel, useJunkMiaImages } from '../../api/mia'
 // import { MiaImageRequest } from '../../types/MiaTypes'
 import Control from './MIA/Control'
 import Cluster from './MIA/Cluster'
+import { MiaJunkPayload } from '../../types/MiaTypes'
 
 const MultiImageAnnotation = () => {
   const [selectedLabel, setSelectedLabel] = useState(null)
@@ -42,6 +43,7 @@ const MultiImageAnnotation = () => {
   }
 
   const [imagesActive, setImagesActive] = React.useState({})
+  const [imagesJunk, setImagesJunk] = React.useState<Record<number, boolean>>({})
 
   useEffect(() => {
     if (!annoData?.images) return
@@ -49,6 +51,12 @@ const MultiImageAnnotation = () => {
     setImagesActive(
       annoData.images.reduce((acc, img) => {
         acc[img.id] = !permaReverse
+        return acc
+      }, {}),
+    )
+    setImagesJunk(
+      annoData.images.reduce((acc: Record<number, boolean>, img) => {
+        acc[img.id] = !!img.isJunk
         return acc
       }, {}),
     )
@@ -65,6 +73,27 @@ const MultiImageAnnotation = () => {
     value: imagesActive,
     set: setImageActive,
   }
+
+  const setImageJunk = (id: number, junk: boolean) => {
+    setImagesJunk((prev) => ({ ...prev, [id]: junk }))
+  }
+
+  const { mutate: junkMiaImages } = useJunkMiaImages()
+
+  const handleJunkImages = (payload: MiaJunkPayload) => {
+    const previous = { ...imagesJunk }
+    payload.images.forEach((img) => setImageJunk(img.id, img.isJunk)) // optimistic
+    junkMiaImages(payload, {
+      onError: () => setImagesJunk(previous), // toast comes from the hook
+    })
+  }
+
+  const imageJunkStates = {
+    value: imagesJunk,
+    set: setImageJunk,
+  }
+
+  const isImageBased = annoData?.images?.[0]?.type === 'imageBased'
 
   // reload annotation task data after switching images
   if (taskIsLoading || annoIsLoading || lblIsLoading) return <CenteredSpinner />
@@ -85,6 +114,9 @@ const MultiImageAnnotation = () => {
             imageActiveStates={imageActiveStates}
             annotaskFinishedLbls={currentAnnotask.finished}
             permaReverseState={permaReverseState}
+            imageJunkStates={imageJunkStates}
+            onJunkImages={handleJunkImages}
+            isImageBased={isImageBased}
           />
           <Cluster
             images={annoData.images}
@@ -92,6 +124,9 @@ const MultiImageAnnotation = () => {
             zoom={zoom}
             workingOnAnnoTask={currentAnnotask}
             imageActiveStates={imageActiveStates}
+            imageJunkStates={imageJunkStates}
+            onJunkImages={handleJunkImages}
+            isImageBased={isImageBased}
           />
         </div>
       </CCol>

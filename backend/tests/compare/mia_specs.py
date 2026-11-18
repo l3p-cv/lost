@@ -150,6 +150,14 @@ def get_mia_specs() -> list[RouteSpec]:
         skip_reason="Needs miaIds from prior MIA calls — complex setup. Verified manually in P1.2.",
     ))
 
+    # 9. PATCH /api/mia/junk — update MIA task (junk) (mutation)
+    specs.append(RouteSpec(
+        name="PATCH_mia_junk",
+        request=RequestSpec(method="PATCH", path="/api/mia/junk"),
+        skip=True,
+        skip_reason="flips is_junk flag",
+    ))
+
     return specs
 
 

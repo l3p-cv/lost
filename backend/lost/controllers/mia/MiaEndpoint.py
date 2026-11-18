@@ -12,6 +12,7 @@ Routes:
     GET    /api/mia/prev               — get previous MIA annotations (annotator)
     GET    /api/mia/first              — get first MIA annotation (annotator)
     GET    /api/mia/latest             — get latest MIA annotation (annotator)
+    PATCH  /api/mia/junk               — update MIA task (junk) (annotator)
 """
 from __future__ import annotations
 
@@ -31,6 +32,13 @@ router = APIRouter(tags=["mia"], route_class=ProfilingRoute)
 
 class SpecialRequest(BaseModel):
     miaIds: list[int]
+
+class MiaJunkImage(BaseModel):
+    id: int
+    isJunk: bool
+
+class MiaJunkUpdateRequest(BaseModel):
+    images: list[MiaJunkImage]
 
 
 # --- Routes ---
@@ -110,3 +118,12 @@ def get_latest_mia(
 ):
     """Get latest MIA annotation."""
     return coord.get_latest_mia(user)
+
+@router.patch("/junk")
+def update_mia_junk(
+    req: MiaJunkUpdateRequest,
+    user: DBUser = Depends(require_role(roles.ANNOTATOR)),
+    coord: MiaCoordination = Depends(get_mia_coordination),
+):
+    """Update MIA task (junk)."""
+    return coord.update_junk(user, req.model_dump())

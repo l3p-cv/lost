@@ -46,3 +46,7 @@ class MiaCoordination:
     def get_latest_mia(self, user):
         """Latest MIA annotation. Delegates to MiaBusiness.get_latest."""
         return self._business.get_latest(user.idx)
+
+    def update_junk(self, user, data):
+        """Junk/unjunk MIA images. Delegates to MiaBusiness.update_junk."""
+        return self._business.update_junk(user.idx, data)

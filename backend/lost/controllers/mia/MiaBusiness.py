@@ -123,6 +123,7 @@ class ImageSerialize:
             image = dict()
             image["id"] = anno.idx
             image["updateId"] = anno.update_id
+            image["isJunk"] = anno.is_junk
             image["labelIds"] = [lbl.label_leaf_id for lbl in anno.labels if lbl.annotator_id == self.user_id]
             # image['path'] = anno.img_path
             image["type"] = "imageBased"
@@ -188,6 +189,23 @@ def update(db_man, user_id, data):
     # update anno task progress
     return "error"
 
+def update_junk(db_man, user_id: int, data: dict) -> str:
+    """Junk/unjunk MIA images of the user's active MIA annotask.
+
+    Flag-only update: label/submit flow owns all state transitions
+    (LABELED / LOCKED_PRIORITY / LOCKED).
+    """
+    at = __get_mia_anno_task(db_man, user_id)
+    if at and at.pipe_element.pipe.state != state.Pipe.PAUSED:
+        for img in data["images"]:
+            image = db_man.get_image_annotation(img_anno_id=img["id"])
+            if image is None or image.anno_task_id != at.idx:
+                continue
+            image.is_junk = img["isJunk"]
+            db_man.add(image)
+        db_man.commit()
+        return "success"
+    return "error"
 
 def finish(db_man, user_id):
     at = __get_mia_anno_task(db_man, user_id)
@@ -661,6 +679,10 @@ class MiaBusiness:
     def update(self, user_id, data):
         """Update the user's MIA annotations."""
         return update(self.dbm, user_id, data)
+
+    def update_junk(self, user_id: int, data: dict) -> str:
+        """Junk/unjunk MIA images."""
+        return update_junk(self.dbm, user_id, data)
 
     def get_next(self, user_id, max_amount: int):
         """Next MIA annotations."""
