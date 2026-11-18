@@ -207,6 +207,12 @@ const SiaWrapper = ({
   // Set in calculatePolygonOperation, cleared in handlePolygonOperationResponse.
   // undefined means no polygon operation is pending (normal annotation creation).
   const pendingPolygonLabelIds = useRef<number[] | undefined>(undefined)
+  // Set while a polygon operation result is applied. The freshly created result
+  // annotation is auto-selected by lost-sia BEFORE onAnnoCreationFinished resets the
+  // edit mode — that programmatic selection would re-enter handleSelectAnnotation as
+  // a "second operand" and fire a redundant second polygonOperations request.
+  // Consumed by handleSelectAnnotation, cleared by resetPolygonOperationState.
+  const isApplyingPolygonOperationResultRef = useRef<boolean>(false)
 
   // image id in filesystem
   const [appliedImageFilters, setAppliedImageFilters] = useState<ImageFilter[]>([])
@@ -461,6 +467,7 @@ const SiaWrapper = ({
     setPolygonEditMode(PolygonEditMode.NONE)
     setCurrentlySelectedAnnotation(undefined)
     pendingPolygonLabelIds.current = undefined
+    isApplyingPolygonOperationResultRef.current = false
   }, [])
 
   const calculatePolygonOperation = (
@@ -1018,7 +1025,7 @@ const SiaWrapper = ({
         polygonsToCreate: toolCoordinates,
         annotationsToDelete: [],
       }
-
+      isApplyingPolygonOperationResultRef.current = true
       setPolygonOperationResult(newPolygonOperationResult)
       setIsSiaLoading(false)
     },
@@ -1071,14 +1078,18 @@ const SiaWrapper = ({
     }
 
     // write update to SIA
+    isApplyingPolygonOperationResultRef.current = true
     setPolygonOperationResult(newPolygonOperationResult)
     pendingPolygonLabelIds.current = undefined
     setIsSiaLoading(false)
   }
 
   const handleSelectAnnotation = (annotation: Annotation) => {
+    const isPolygonOperationAutoSelection = isApplyingPolygonOperationResultRef.current
+    isApplyingPolygonOperationResultRef.current = false
     // if we have a polygon edit mode selected we are currently searching for the second polygon to calculate
     if (
+      !isPolygonOperationAutoSelection &&
       polygonEditMode != PolygonEditMode.NONE &&
       currentlySelectedAnnotation !== undefined
     ) {
