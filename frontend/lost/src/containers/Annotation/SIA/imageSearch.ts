@@ -53,10 +53,10 @@ const getSearchImageId = (
 
 // restrict an image sidebar list to the images of an active image search filter
 // (numbers and total are recomputed so the strip badges stay consistent)
-const restrictImageListToFilter = (
-  imageList: SiaImageListItem[],
+const restrictImageListToFilter = <T extends SiaImageListItem>(
+  imageList: T[],
   filterIds: number[] | null,
-): SiaImageListItem[] => {
+): T[] => {
   const restricted = filterIds
     ? imageList.filter((item) => filterIds.includes(item.imageId))
     : imageList

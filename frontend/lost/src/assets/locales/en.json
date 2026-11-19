@@ -33,6 +33,19 @@
     "pleaseConfirmNewPassword": "Please confirm new Password",
     "submit": "Submit"
   },
+  "review": {
+    "noAnnotatedImages": "No annotated images found yet.",
+    "checkForNewAnnotations": "Check for new annotations",
+    "imageSearch": "Open image search",
+    "clearFilter": "Clear image filter",
+    "showing": "Showing {{shown}} of {{total}} images",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "markedAsJunk": "Marked as Junk",
+    "reviewImageFailed": "Review image failed to load. Please try again.",
+    "imageView": "Image view",
+    "gridView": "Grid view"
+  },
   "users": {
     "groupname": "groupname",
     "group": "Group",

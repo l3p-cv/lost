@@ -66,6 +66,8 @@ export type ReviewImageListItem = {
   imageId: number
   number: number
   total: number
+  isJunk: boolean
+  imageName: string
 }
 
 export const useGetReviewImageList = (annotaskId: number | undefined) => {
@@ -78,13 +80,15 @@ export const useGetReviewImageList = (annotaskId: number | undefined) => {
         })
         .then((res) => {
           // console.log('review/images response:', res.data)
-          const images: { imageId: number }[] = res.data.images ?? []
+          const images: { imageId: number; imageName?: string; isJunk?: boolean }[] = res.data.images ?? []
           const total = images.length
 
           return images.map((img, i) => ({
             imageId: img.imageId,
             number: i + 1,
             total,
+            isJunk: !!img.isJunk,
+            imageName: img.imageName ?? '',
           }))
         }),
     {

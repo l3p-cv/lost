@@ -74,6 +74,8 @@ type SiaWrapperProps = {
   ) => void
   lockedImgCount?: number
   onRefresh?: () => Promise<void>
+  isSingleImageReview?: boolean
+  extraToolbarButtons?: React.ReactNode
 }
 
 // type SamBBox = {
@@ -107,6 +109,8 @@ const SiaWrapper = ({
   onImageSearchModeChanged,
   lockedImgCount = 0,
   onRefresh,
+  isSingleImageReview = false,
+  extraToolbarButtons = null,
 }: SiaWrapperProps) => {
   const navigate = useNavigate()
 
@@ -1339,6 +1343,7 @@ const SiaWrapper = ({
               imageId={imageId}
             />
            )}
+           {!isSingleImageReview && (
             <CoreIconButton
               toolTip="Open image search"
               color="primary"
@@ -1348,7 +1353,8 @@ const SiaWrapper = ({
                 setIsImgSearchModalVisible(true)
               }}
             />
-            {isImageSearchActiveForCurrentImage && (
+          )}
+            {isImageSearchActiveForCurrentImage && !isSingleImageReview &&(
               <CoreIconButton
                 toolTip={
                   isImageSearchActiveForCurrentImage
@@ -1366,6 +1372,7 @@ const SiaWrapper = ({
             )}
           </CButtonGroup>
         </CCol>
+        {!isSingleImageReview && (
         <CCol xs="2">
           <NavigationButtons
             isFirstImage={isFirst || noImagesLeft}
@@ -1379,6 +1386,10 @@ const SiaWrapper = ({
             onSubmitAnnotask={submitAnnotask}
           />
         </CCol>
+        )}
+        {extraToolbarButtons && (
+          <CCol xs="auto" className="ms-auto">{extraToolbarButtons}</CCol>
+        )}
 
         {/* {siaConfiguration?.inferenceModel?.id && (
                     <CCol>

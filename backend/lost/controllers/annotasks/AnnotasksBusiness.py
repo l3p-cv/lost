@@ -568,6 +568,7 @@ class AnnotasksBusiness:
             found_images.append({
                 "imageId": entry.idx, "imageName": entry.img_path,
                 "annotationId": entry.anno_task_id, "annotationName": entry.name,
+                "isJunk": bool(entry.is_junk),
             })
         if labels is not None:
             if labels == "":
@@ -578,7 +579,7 @@ class AnnotasksBusiness:
                 db_result = self.dbm.get_images_without_annotations([annotask_id], search_str, annotated_only=annotated_only_bool)
                 found_images = [
                     {"imageId": entry.idx, "imageName": entry.img_path,
-                     "annotationId": entry.anno_task_id, "annotationName": entry.name}
+                     "annotationId": entry.anno_task_id, "annotationName": entry.name, "isJunk": bool(entry.is_junk)}
                     for entry in db_result
                 ]
             else:

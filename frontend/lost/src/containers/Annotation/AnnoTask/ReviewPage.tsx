@@ -1,21 +1,27 @@
 import { useParams } from 'react-router-dom'
+import {useTranslation} from 'react-i18next'
 import SiaWrapper from '../SIA/SiaWrapper'
 
 import { CSSProperties, useEffect, useState } from 'react'
-import { CAlert } from '@coreui/react'
+import { CAlert, CButton, CButtonGroup, CTooltip } from '@coreui/react'
 import siaApi, { ReviewData, useReview, useGetReviewImageList } from '../../../api/dataset/dataset_review'
 import { useAnnotask } from '../../../api/anno_task'
 import { ImageSwitchData } from '../../../api/sia'
 import AnnotationTop from './AnnotationTop'
 import SiaPreviewSidebar from '../SIA/SiaPreviewSidebar'
 import imageSearch from '../SIA/imageSearch'
+import ReviewRiA from './RiA/ReviewRiA'
 import CoreIconButton from '../../../components/CoreIconButton'
-import { faFilm, faRotateRight } from '@fortawesome/free-solid-svg-icons'
+import { faFilm, faRotateRight, faImage, faTableCells } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 const AnnotaskReviewComponent = () => {
   const { annotaskId } = useParams()
   const { data: currentAnnotask } = useAnnotask(annotaskId)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const { t } = useTranslation()
+  // per-visit review mode ( single image review (default) vs. grid review (not persisted))
+  const [viewMode, setViewMode] = useState<'sia' | 'ria'>('sia')
   // image ids of an active image search — restricts the image sidebar to the filtered images
   const [imageSearchFilterIds, setImageSearchFilterIds] = useState<
     number[] | null
@@ -101,10 +107,39 @@ const AnnotaskReviewComponent = () => {
       },
     })
   }
+  // view-mode switch (Image|Grid) injected by review page into SIA toolbar
+  const viewSwitch = (
+    <CButtonGroup>
+      <CTooltip content={t('review.imageView')}>
+        <CButton
+          color={viewMode === 'sia' ? 'primary' : 'secondary'}
+          variant={viewMode !== 'sia' ? 'outline' : undefined}
+          onClick={() => {
+            if (viewMode === 'ria') {
+              void handleRefresh()
+              setViewMode('sia')
+            }
+          }}
+        >
+          <FontAwesomeIcon icon={faImage} size="1x" />
+        </CButton>
+      </CTooltip>
+      <CTooltip content={t('review.gridView')}>
+        <CButton
+          color={viewMode === 'ria' ? 'primary' : 'secondary'}
+          variant={viewMode !== 'ria' ? 'outline' : undefined}
+          onClick={() => setViewMode('ria')}
+        >
+          <FontAwesomeIcon icon={faTableCells} size="1x" />
+        </CButton>
+      </CTooltip>
+    </CButtonGroup>
+  )
 
   return (
     <div style={forwardFlex}>
       <AnnotationTop annoTask={currentAnnotask} annoData={annoData} isReview={true} />
+      {viewMode === 'sia' && (
       <div style={{ ...rowFlex, position: 'relative' }}>
         {/* SiaWrapper always takes full row width — canvas size never changes */}
         <div style={{ ...forwardFlex, paddingLeft: 120 }}>
@@ -120,6 +155,7 @@ const AnnotaskReviewComponent = () => {
               setImageSearchFilterIds(isActive ? filteredImageIds : null)
             }}
             onRefresh={handleRefresh}
+            extraToolbarButtons={viewSwitch}
           />
         </div>
         {/* Sidebar column — absolutely positioned, never affects layout or canvas size */}
@@ -159,6 +195,8 @@ const AnnotaskReviewComponent = () => {
           )}
         </div>
       </div>
+      )}
+      {viewMode === 'ria' && <ReviewRiA annotaskId={nAnnotaskId} viewSwitch={viewSwitch} />}
     </div>
   )
 }

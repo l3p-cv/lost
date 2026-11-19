@@ -33,6 +33,19 @@
     "pleaseConfirmNewPassword": "Bitte wiederholen Sie das Password",
     "submit": "Bestätigen"
   },
+  "review": {
+    "noAnnotatedImages": "Noch keine annotierten Bilder vorhanden.",
+    "checkForNewAnnotations": "Auf neue Annotationen prüfen",
+    "imageSearch": "Bildersuche öffnen",
+    "clearFilter": "Bildfilter zurücksetzen",
+    "showing": "Zeige {{shown}} von {{total}} Bildern",
+    "zoomIn": "Vergrößern",
+    "zoomOut": "Verkleinern",
+    "markedAsJunk": "Als Junk markiert",
+    "reviewImageFailed": "Bild konnte nicht geladen werden. Bitte erneut versuchen.",
+    "imageView": "Bildansicht",
+    "gridView": "Rasteransicht"
+  },
   "users": {
     "groupname": "Gruppenname",
     "group": "Gruppe",
