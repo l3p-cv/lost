@@ -9,17 +9,21 @@ import siaApi, { ReviewData, useReview } from '../../../../api/dataset/dataset_r
 import SiaWrapper from '../../SIA/SiaWrapper'
 
 type ReviewImageModalProps = {
-  annotaskId: number
+  annotaskId?: number
+  datasetId?: number
   imageId: number
   onClose: () => void
 }
 
-const ReviewImageModal = ({ annotaskId, imageId, onClose }: ReviewImageModalProps) => {
+const ReviewImageModal = ({ annotaskId, datasetId, imageId, onClose }: ReviewImageModalProps) => {
   const { t } = useTranslation()
 
+  const isDatasetMode = datasetId !== undefined
+  const taskId = (isDatasetMode ? datasetId : annotaskId) ?? -1
+
   const annotationRequestData: ReviewData = {
-    isAnnotaskReview: true,
-    taskId: annotaskId,
+    isAnnotaskReview: !isDatasetMode,
+    taskId,
     data: {
       direction: 'current',
       imageAnnoId: imageId,
@@ -32,6 +36,12 @@ const ReviewImageModal = ({ annotaskId, imageId, onClose }: ReviewImageModalProp
     isError: isReviewError,
     refetch: refetchReview,
   } = useReview(annotationRequestData)
+
+  // dataset scope: the review response carries the annotask the image belongs to
+  // (snake_case key, typed on SiaDatasetResponse — no backend change needed)
+  const resolvedAnnoTaskId = isDatasetMode
+    ? (annoData?.current_annotask_idx ?? -1)
+    : (annotaskId ?? -1)
 
   // close on escape — same pattern as the MIA gallery modal
   useEffect(() => {
@@ -102,8 +112,9 @@ const ReviewImageModal = ({ annotaskId, imageId, onClose }: ReviewImageModalProp
             ) : (
               <SiaWrapper
                 annoData={annoData}
-                annoTaskId={annotaskId}
-                isDatasetMode={false}
+                annoTaskId={resolvedAnnoTaskId}
+                datasetId={datasetId}
+                isDatasetMode={isDatasetMode}
                 isImageSearchEnabled={false}
                 siaApi={siaApi}
                 isReview={true}

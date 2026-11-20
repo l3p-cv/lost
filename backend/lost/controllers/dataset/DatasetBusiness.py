@@ -401,6 +401,7 @@ class DatasetBusiness:
                 "imageName": entry.img_path,
                 "annotationId": entry.anno_task_id,
                 "annotationName": entry.name,
+                "isJunk": bool(entry.is_junk),
             })
         if labels is not None:
             if labels == "":
@@ -415,6 +416,7 @@ class DatasetBusiness:
                         "imageName": entry.img_path,
                         "annotationId": entry.anno_task_id,
                         "annotationName": entry.name,
+                        "isJunk": bool(entry.is_junk),
                     }
                     for entry in db_result
                 ]

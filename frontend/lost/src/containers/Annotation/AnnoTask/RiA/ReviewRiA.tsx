@@ -10,7 +10,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import CenteredSpinner from '../../../../components/CenteredSpinner'
 import CoreIconButton from '../../../../components/CoreIconButton'
-import siaApi, { useGetReviewImageList } from '../../../../api/dataset/dataset_review'
+import siaApi, { DatasetReviewImageListItem, ReviewImageListItem, useGetDatasetReviewImageList, useGetReviewImageList } from '../../../../api/dataset/dataset_review'
 import imageSearch from '../../SIA/imageSearch'
 import SIAImageSearchModal from '../../../Datasets/SIAImageSearchModal'
 import RiAGridImage from './RiAGridImage'
@@ -20,13 +20,37 @@ import './RiA.scss'
 const MIN_ZOOM = 20
 const MAX_ZOOM = 1920
 
+// group a dataset-scoped image list per annotask — insertion order keeps the backend's annotask order
+const groupByAnnotask = (items: DatasetReviewImageListItem[]) => {
+  const groups = new Map<
+    number,
+    {
+      annotaskId: number
+      annotaskName: string
+      items: DatasetReviewImageListItem[]
+    }
+  >()
+  for (const item of items) {
+    const group = groups.get(item.annotaskId)
+    if (group) group.items.push(item)
+    else
+      groups.set(item.annotaskId, {
+        annotaskId: item.annotaskId,
+        annotaskName: item.annotaskName,
+        items: [item],
+      })
+  }
+  return [...groups.values()]
+}
+
 type ReviewRiAProps = {
-  annotaskId: number
+  annotaskId?: number
+  datasetId?: number
   // view-mode switch (Image|Grid) injected by review page
   viewSwitch?: ReactNode
 }
 
-const ReviewRiA = ({ annotaskId, viewSwitch }: ReviewRiAProps) => {
+const ReviewRiA = ({ annotaskId, datasetId, viewSwitch }: ReviewRiAProps) => {
   const { t } = useTranslation()
   const [zoom, setZoom] = useState(200)
   // image ids of an active image search — restricts the grid to the filtered images
@@ -34,8 +58,18 @@ const ReviewRiA = ({ annotaskId, viewSwitch }: ReviewRiAProps) => {
   const [isSearchModalVisible, setIsSearchModalVisible] = useState(false)
   const [openImageId, setOpenImageId] = useState<number | null>(null)
 
-  const { data: imageList, isLoading, refetch: refetchImageList } =
-    useGetReviewImageList(annotaskId)
+  const isDatasetMode = datasetId !== undefined
+
+  const {data: annotaskImageList,isLoading: annotaskIsLoading,refetch: refetchAnnotaskList,} = useGetReviewImageList(annotaskId)
+
+  const {data: datasetImageList,isLoading: datasetIsLoading,refetch: refetchDatasetList,} = useGetDatasetReviewImageList(datasetId)
+
+  const imageList = (
+    isDatasetMode ? datasetImageList : annotaskImageList
+  ) as DatasetReviewImageListItem[] | undefined // superset — sections code reads annotask fields only in dataset scope
+  const isLoading = isDatasetMode ? datasetIsLoading : annotaskIsLoading
+  const refetchImageList = isDatasetMode ? refetchDatasetList : refetchAnnotaskList
+
   const { data: possibleLabels } = siaApi.useGetPossibleLabels(annotaskId)
 
   const zoomIn = () => setZoom((z) => Math.min(z * 1.2, MAX_ZOOM))
@@ -59,6 +93,15 @@ const ReviewRiA = ({ annotaskId, viewSwitch }: ReviewRiAProps) => {
   }, [imageList?.length])
 
   const filtered = imageSearch.restrictImageListToFilter(imageList ?? [], filterIds)
+
+  const renderCell = (item: ReviewImageListItem) => (
+    <RiAGridImage
+      key={item.imageId}
+      item={item}
+      height={zoom}
+      onOpen={() => setOpenImageId(item.imageId)}
+    />
+  )
 
   const closeModal = () => {
     setOpenImageId(null)
@@ -86,11 +129,11 @@ const ReviewRiA = ({ annotaskId, viewSwitch }: ReviewRiAProps) => {
   return (
     <>
       <SIAImageSearchModal
-        isAnnotaskReview={true}
-        id={annotaskId}
+        isAnnotaskReview={!isDatasetMode}
+        id={annotaskId ?? datasetId ?? -1}
         isVisible={isSearchModalVisible}
         setIsVisible={setIsSearchModalVisible}
-        possibleAnnotaskLabels={possibleLabels}
+        possibleAnnotaskLabels={isDatasetMode ? [] : possibleLabels}
         onChooseImage={(imageId) => {
           setIsSearchModalVisible(false)
           setOpenImageId(imageId)
@@ -102,7 +145,8 @@ const ReviewRiA = ({ annotaskId, viewSwitch }: ReviewRiAProps) => {
       />
       {openImageId !== null && (
         <ReviewImageModal
-          annotaskId={annotaskId}
+          annotaskId={isDatasetMode ? undefined : annotaskId}
+          datasetId={datasetId}
           imageId={openImageId}
           onClose={closeModal}
         />
@@ -129,15 +173,19 @@ const ReviewRiA = ({ annotaskId, viewSwitch }: ReviewRiAProps) => {
         <CoreIconButton icon={faSearchPlus} toolTip={t('review.zoomIn')} onClick={zoomIn} />
         {viewSwitch}
       </div>
-      <div className="ria-images" ref={gridRef}>
-        {filtered.map((item) => (
-          <RiAGridImage
-            key={item.imageId}
-            item={item}
-            height={zoom}
-            onOpen={() => setOpenImageId(item.imageId)}
-          />
-        ))}
+      <div ref={gridRef}>
+        {isDatasetMode ? (
+          groupByAnnotask(filtered).map((group) => (
+            <div className="ria-section" key={group.annotaskId}>
+              <div className="ria-section-header">
+                {group.annotaskName} <span>({group.items.length})</span>
+              </div>
+              <div className="ria-images">{group.items.map(renderCell)}</div>
+            </div>
+          ))
+        ) : (
+          <div className="ria-images">{filtered.map(renderCell)}</div>
+        )}
       </div>
     </>
   )

@@ -9,12 +9,16 @@ import AnnotationTop from '../Annotation/AnnoTask/AnnotationTop'
 import SiaPreviewSidebar from '../Annotation/SIA/SiaPreviewSidebar'
 import imageSearch from '../Annotation/SIA/imageSearch'
 import CoreIconButton from '../../components/CoreIconButton'
+import ViewModeSwitch, { ReviewViewMode } from '../../components/ViewModeSwitch'
+import ReviewRiA from '../Annotation/AnnoTask/RiA/ReviewRiA'
 import { faFilm, faRotateRight } from '@fortawesome/free-solid-svg-icons'
 
 const DatasetsReviewComponent = () => {
   const { datasetId } = useParams()
   const [currentAnnotaskId, setCurrentAnnotaskId] = useState<number>(-1)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  // per-visit review mode ( single image review (default) vs. grid review (not persisted))
+  const [viewMode, setViewMode] = useState<ReviewViewMode>('sia')
   // image ids of an active image search — restricts the image sidebar to the filtered images
   const [imageSearchFilterIds, setImageSearchFilterIds] = useState<
     number[] | null
@@ -38,6 +42,12 @@ const DatasetsReviewComponent = () => {
 
   const handleRefresh = async () => {
     await Promise.all([refetchReview(), refetchImageList()])
+  }
+
+  const handleViewModeChange = (mode: ReviewViewMode) => {
+    // switching back from the grid refetches so the single-image view sees RiA edits
+    if (viewMode === 'ria' && mode === 'sia') void handleRefresh()
+    setViewMode(mode)
   }
 
   useEffect(() => {
@@ -116,6 +126,7 @@ const DatasetsReviewComponent = () => {
         datasetId={nDatasetId}
         isReview={true}
       />
+      {viewMode === 'sia' && (
       <div style={{ ...rowFlex, position: 'relative' }}>
         {/* SiaWrapper always takes full row width — canvas size never changes */}
         <div style={{ ...forwardFlex, paddingLeft: 120 }}>
@@ -132,6 +143,7 @@ const DatasetsReviewComponent = () => {
               setImageSearchFilterIds(isActive ? filteredImageIds : null)
             }}
             onRefresh={handleRefresh}
+            extraToolbarButtons={<ViewModeSwitch value={viewMode} onChange={handleViewModeChange} />}
           />
         </div>
         {/* Sidebar column — absolutely positioned, never affects layout or canvas size */}
@@ -171,6 +183,13 @@ const DatasetsReviewComponent = () => {
           )}
         </div>
       </div>
+      )}
+      {viewMode === 'ria' && (
+        <ReviewRiA
+          datasetId={nDatasetId}
+          viewSwitch={<ViewModeSwitch value={viewMode} onChange={handleViewModeChange} />}
+        />
+      )}
     </div>
   )
 }

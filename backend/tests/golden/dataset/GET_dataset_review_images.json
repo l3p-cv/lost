@@ -5,27 +5,56 @@
       "Authorization": "<AUTH>"
     },
     "method": "GET",
-    "path": "/api/datasets/56/review/images"
+    "path": "/api/datasets/228/review/images"
   },
   "response": {
     "body": {
       "images": [
         {
-          "annotationId": 127,
+          "annotationId": 179,
           "annotationName": "compare_test_sia",
-          "imageId": 1747,
-          "imageName": "/home/lost/data/1/media/images/10_voc2012/2007_008547.jpg"
+          "imageId": 2620,
+          "imageName": "/home/lost/data/1/media/images/10_voc2012/2008_002597.jpg",
+          "isJunk": false
         },
         {
-          "annotationId": 127,
-          "annotationName": "compare_test_sia",
-          "imageId": 1751,
-          "imageName": "/home/lost/data/1/media/images/10_voc2012/2008_002597.jpg"
+          "annotationId": 330,
+          "annotationName": "Single Image Annotation Task",
+          "imageId": 4172,
+          "imageName": "/home/lost/data/1/media/images/numbers/number-1-flashcard.jpg",
+          "isJunk": false
+        },
+        {
+          "annotationId": 330,
+          "annotationName": "Single Image Annotation Task",
+          "imageId": 4173,
+          "imageName": "/home/lost/data/1/media/images/numbers/number-10-flashcard.jpg",
+          "isJunk": false
+        },
+        {
+          "annotationId": 330,
+          "annotationName": "Single Image Annotation Task",
+          "imageId": 4174,
+          "imageName": "/home/lost/data/1/media/images/numbers/number-2-flashcard.jpg",
+          "isJunk": false
+        },
+        {
+          "annotationId": 330,
+          "annotationName": "Single Image Annotation Task",
+          "imageId": 4175,
+          "imageName": "/home/lost/data/1/media/images/numbers/number-3-flashcard.jpg",
+          "isJunk": false
+        },
+        {
+          "annotationId": 330,
+          "annotationName": "Single Image Annotation Task",
+          "imageId": 4176,
+          "imageName": "/home/lost/data/1/media/images/numbers/number-4-flashcard.jpg",
+          "isJunk": false
         }
       ]
     },
     "headers": {
-      "access-control-allow-origin": "*",
       "content-type": "application/json"
     },
     "status": 200

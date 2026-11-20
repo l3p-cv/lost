@@ -99,6 +99,52 @@ export const useGetReviewImageList = (annotaskId: number | undefined) => {
   )
 }
 
+export type DatasetReviewImageListItem = {
+  imageId: number
+  number: number
+  total: number
+  isJunk: boolean
+  imageName: string
+  annotaskId: number
+  annotaskName: string
+}
+
+export const useGetDatasetReviewImageList = (datasetId: number | undefined) => {
+  return useQuery<DatasetReviewImageListItem[]>(
+    ['datasetreviewimagelist', datasetId],
+    () =>
+      axios
+        .get(`${API_URL}/datasets/${datasetId}/review/images`, {
+          params: { annotated_only: true },
+        })
+        .then((res) => {
+          const images: {
+            imageId: number
+            imageName?: string
+            isJunk?: boolean
+            annotationId?: number
+            annotationName?: string
+          }[] = res.data.images ?? []
+          const total = images.length
+
+          return images.map((img, i) => ({
+            imageId: img.imageId,
+            number: i + 1,
+            total,
+            isJunk: !!img.isJunk,
+            imageName: img.imageName ?? '',
+            annotaskId: img.annotationId ?? -1,
+            annotaskName: img.annotationName ?? '',
+          }))
+        }),
+    {
+      enabled: datasetId !== undefined && datasetId > 0,
+      refetchOnWindowFocus: true,
+      staleTime: 0,
+    },
+  )
+}
+
 export const useReviewOptions = () => {
   return useMutation((annotaskId) => {
     return axios

@@ -1749,7 +1749,7 @@ class DBMan:
     def get_search_images_in_annotask_list(self, anno_task_ids, search_str="", annotated_only=False):
         anno_task_list = ",".join([str(x) for x in anno_task_ids])
         state_filter = "AND i.state IN (4, 6)" if annotated_only else ""
-        sql = f"SELECT i.idx, i.anno_task_id, i.img_path, a.name FROM anno_task a\
+        sql = f"SELECT i.idx, i.anno_task_id, i.img_path, a.name, i.is_junk FROM anno_task a\
             JOIN image_anno i ON a.idx=i.anno_task_id\
             WHERE a.idx in ({anno_task_list}) \
             AND i.img_path LIKE '%{search_str}%' \
