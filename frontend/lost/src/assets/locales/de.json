@@ -46,7 +46,8 @@
     "imageView": "Bildansicht",
     "gridView": "Rasteransicht",
     "showAnnos": "Annotationen anzeigen",
-    "hideAnnos": "Annotationen ausblenden"
+    "hideAnnos": "Annotationen ausblenden",
+    "showingRanged": "Zeige {{from}}-{{to}} von {{total}} Bildern"
   },
   "users": {
     "groupname": "Gruppenname",

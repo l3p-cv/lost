@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { CAlert } from '@coreui/react'
+import { CAlert, CDropdown, CDropdownItem, CDropdownMenu, CDropdownToggle } from '@coreui/react'
 import {
   faEye,
   faEyeSlash,
@@ -17,6 +17,7 @@ import imageSearch from '../../SIA/imageSearch'
 import SIAImageSearchModal from '../../../Datasets/SIAImageSearchModal'
 import RiAGridImage from './RiAGridImage'
 import ReviewImageModal from './ReviewImageModal'
+import RiAPagination from './RiAPagination'
 import './RiA.scss'
 
 const MIN_ZOOM = 20
@@ -45,22 +46,42 @@ const groupByAnnotask = (items: DatasetReviewImageListItem[]) => {
   return [...groups.values()]
 }
 
+export type RiAPreference<T> = {
+  value: T
+  // accepts functional updaters so the grid keeps its setZoom((z) => …) style unchanged
+  set: (value: T | ((prev: T) => T)) => void
+}
+
 type ReviewRiAProps = {
   annotaskId?: number
   datasetId?: number
   // view-mode switch (Image|Grid) injected by review page
   viewSwitch?: ReactNode
+  // switch back to same image (grid -> single image review)
+  onActiveImageChange?: (imageId: number) => void
+  // current image that's being viewed
+  activeImageId?: number
+  zoomState: RiAPreference<number>
+  pageSizeState: RiAPreference<number>
+  showAnnosState: RiAPreference<boolean>
 }
 
-const ReviewRiA = ({ annotaskId, datasetId, viewSwitch }: ReviewRiAProps) => {
+const ReviewRiA = ({ annotaskId, datasetId, viewSwitch, onActiveImageChange, activeImageId, zoomState, pageSizeState, showAnnosState}: ReviewRiAProps) => {
   const { t } = useTranslation()
-  const [zoom, setZoom] = useState(200)
+  // preferences come from the review page (survive toggling) — aliases keep every call site unchanged
+  const { value: zoom, set: setZoom } = zoomState
+  const { value: pageSize, set: setPageSize } = pageSizeState
+  const { value: showAnnos, set: setShowAnnos } = showAnnosState
   // image ids of an active image search — restricts the grid to the filtered images
   const [filterIds, setFilterIds] = useState<number[] | null>(null)
   const [isSearchModalVisible, setIsSearchModalVisible] = useState(false)
   const [openImageId, setOpenImageId] = useState<number | null>(null)
+  const openImage = (id: number) => {
+    setOpenImageId(id)
+    onActiveImageChange?.(id)
+  }
   // draw all 2D annos on the grid thumbnails (default on — review is about seeing what was drawn)
-  const [showAnnos, setShowAnnos] = useState(true)
+  const [page, setPage] = useState(0)
 
   const isDatasetMode = datasetId !== undefined
 
@@ -80,23 +101,36 @@ const ReviewRiA = ({ annotaskId, datasetId, viewSwitch }: ReviewRiAProps) => {
   const zoomOut = () => setZoom((z) => Math.max(z * 0.8, MIN_ZOOM))
   const gridRef = useRef<HTMLDivElement>(null)
 
-  // ctrl+wheel over the grid 
+  // ctrl+wheel zoom — window-level so the listener can never miss its attach,
+  // but only applied while the cursor is over the grid and never with the modal open
   useEffect(() => {
-    const el = gridRef.current
-    if (!el) return
     const onWheel = (e: WheelEvent) => {
       if (!e.ctrlKey) return // plain wheel keeps scrolling the page
+      if (openImageId !== null) return // modal open — the modal canvas owns the wheel
+      const el = gridRef.current
+      if (!el || !el.contains(e.target as Node)) return // outside the grid — browser keeps its zoom
       e.preventDefault()
       setZoom((z) => {
         const factor = e.deltaY < 0 ? 1.1 : 0.9
         return Math.min(Math.max(z * factor, MIN_ZOOM), MAX_ZOOM)
       })
     }
-    el.addEventListener('wheel', onWheel, { passive: false })
-    return () => el.removeEventListener('wheel', onWheel)
-  }, [imageList?.length])
+    window.addEventListener('wheel', onWheel, { passive: false })
+    return () => window.removeEventListener('wheel', onWheel)
+  }, [openImageId])
 
   const filtered = imageSearch.restrictImageListToFilter(imageList ?? [], filterIds)
+  const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize))
+  const safePage = Math.min(page, pageCount - 1)
+  const paged = filtered.slice(safePage * pageSize, (safePage + 1) * pageSize)
+
+  // page-sync — jump to the page containing the reviewed image.
+  // deps are deliberately [activeImageId] only so manual paging and Amount changes are never fought
+  useEffect(() => {
+    if (activeImageId == null) return
+    const idx = filtered.findIndex((item) => item.imageId === activeImageId)
+    if (idx >= 0) setPage(Math.floor(idx / pageSize))
+  }, [activeImageId])
 
   const renderCell = (item: ReviewImageListItem) => (
     <RiAGridImage
@@ -104,7 +138,8 @@ const ReviewRiA = ({ annotaskId, datasetId, viewSwitch }: ReviewRiAProps) => {
       item={item}
       height={zoom}
       showAnnos={showAnnos}
-      onOpen={() => setOpenImageId(item.imageId)}
+      isActive={item.imageId === activeImageId}
+      onOpen={() => openImage(item.imageId)}
     />
   )
 
@@ -141,11 +176,12 @@ const ReviewRiA = ({ annotaskId, datasetId, viewSwitch }: ReviewRiAProps) => {
         possibleAnnotaskLabels={isDatasetMode ? [] : possibleLabels}
         onChooseImage={(imageId) => {
           setIsSearchModalVisible(false)
-          setOpenImageId(imageId)
+          openImage(imageId)
         }}
-        onSearchResult={(results) =>
+        onSearchResult={(results) => {
           setFilterIds(results.map((result) => result.imageId))
-        }
+          setPage(0)
+        }}
         currentImageId={-1}
       />
       {openImageId !== null && (
@@ -154,7 +190,12 @@ const ReviewRiA = ({ annotaskId, datasetId, viewSwitch }: ReviewRiAProps) => {
           datasetId={datasetId}
           imageId={openImageId}
           imageIds={filtered.map((item) => item.imageId)}
-          onNavigate={(id) => setOpenImageId(id)}
+          onNavigate={(id) => { 
+            openImage(id)
+            const idx = filtered.findIndex((item) => item.imageId === id)
+            if (idx >= 0) setPage(Math.floor(idx / pageSize))
+            }
+          }
           onClose={closeModal}
         />
       )}
@@ -170,7 +211,10 @@ const ReviewRiA = ({ annotaskId, datasetId, viewSwitch }: ReviewRiAProps) => {
             color="danger"
             isOutline={false}
             toolTip={t('review.clearFilter')}
-            onClick={() => setFilterIds(null)}
+            onClick={() => {
+              setFilterIds(null)
+              setPage(0)
+            }}
           />
         )}
         <CoreIconButton
@@ -181,15 +225,27 @@ const ReviewRiA = ({ annotaskId, datasetId, viewSwitch }: ReviewRiAProps) => {
           onClick={() => setShowAnnos((s) => !s)}
         />
         <span className="ria-toolbar-count">
-          {t('review.showing', { shown: filtered.length, total: imageList.length })}
+          {t('review.showingRanged', {
+              from: safePage * pageSize + 1,
+              to: safePage * pageSize + paged.length,
+              total: filtered.length,
+           })}
         </span>
         <CoreIconButton icon={faSearchMinus} toolTip={t('review.zoomOut')} onClick={zoomOut} />
         <CoreIconButton icon={faSearchPlus} toolTip={t('review.zoomIn')} onClick={zoomIn} />
+        <CDropdown>
+          <CDropdownToggle color='primary' variant='outline' caret>Amount</CDropdownToggle>
+          <CDropdownMenu>
+            {[1,5,10,20,50,100,150,200].map((n) => (
+              <CDropdownItem key={n} onClick={() => {setPageSize(n); setPage(0) }}>{n}</CDropdownItem>
+            ))}
+          </CDropdownMenu>
+        </CDropdown>
         {viewSwitch}
       </div>
       <div ref={gridRef}>
         {isDatasetMode ? (
-          groupByAnnotask(filtered).map((group) => (
+          groupByAnnotask(paged).map((group) => (
             <div className="ria-section" key={group.annotaskId}>
               <div className="ria-section-header">
                 {group.annotaskName} <span>({group.items.length})</span>
@@ -198,9 +254,10 @@ const ReviewRiA = ({ annotaskId, datasetId, viewSwitch }: ReviewRiAProps) => {
             </div>
           ))
         ) : (
-          <div className="ria-images">{filtered.map(renderCell)}</div>
+          <div className="ria-images">{paged.map(renderCell)}</div>
         )}
       </div>
+      <RiAPagination page={safePage} pageCount={pageCount} onChange={setPage} />
     </>
   )
 }

@@ -19,6 +19,9 @@ const DatasetsReviewComponent = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   // per-visit review mode ( single image review (default) vs. grid review (not persisted))
   const [viewMode, setViewMode] = useState<ReviewViewMode>('sia')
+  const [zoom, setZoom] = useState(200)
+  const [pageSize, setPageSize] = useState(10)
+  const [showAnnos, setShowAnnos] = useState(true)
   // image ids of an active image search — restricts the image sidebar to the filtered images
   const [imageSearchFilterIds, setImageSearchFilterIds] = useState<
     number[] | null
@@ -188,6 +191,13 @@ const DatasetsReviewComponent = () => {
         <ReviewRiA
           datasetId={nDatasetId}
           viewSwitch={<ViewModeSwitch value={viewMode} onChange={handleViewModeChange} />}
+          onActiveImageChange={(imageId) =>
+            handleImageSwitch({direction:'current', imageId, iteration: null})
+          }
+          activeImageId={annoData?.image?.id}
+          zoomState={{ value: zoom, set: setZoom }}
+          pageSizeState={{ value: pageSize, set: setPageSize }}
+          showAnnosState={{ value: showAnnos, set: setShowAnnos }}
         />
       )}
     </div>

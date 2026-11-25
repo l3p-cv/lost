@@ -1,4 +1,4 @@
-import { CSSProperties } from 'react'
+import { CSSProperties, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { faBan } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -10,6 +10,7 @@ type RiAGridImageProps = {
   item: ReviewImageListItem
   height: number
   showAnnos: boolean
+  isActive?: boolean
   onOpen: () => void
 }
 
@@ -26,7 +27,9 @@ const badgeStyle: CSSProperties = {
   pointerEvents: 'none',
 }
 
-const RiAGridImage = ({ item, height, showAnnos, onOpen }: RiAGridImageProps) => {
+const RiAGridImage = ({ item, height, showAnnos, isActive, onOpen }: RiAGridImageProps) => {
+  const cellRef = useRef<HTMLDivElement>(null)
+  const scrolledForActive = useRef(false)
   const { t } = useTranslation()
   const { data: image, isLoading } = useGetMiaImage({
     imageId: item.imageId,
@@ -35,15 +38,26 @@ const RiAGridImage = ({ item, height, showAnnos, onOpen }: RiAGridImageProps) =>
     type: 'imageBased',
   })
 
+  useEffect(() => {
+    if (!isActive) {
+      scrolledForActive.current = false
+      return
+    }
+    if (isLoading || scrolledForActive.current) return
+    scrolledForActive.current = true
+    cellRef.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+  }, [isActive, isLoading])
+
   if (isLoading) return <ImageLoading />
 
   return (
     <div
-      className={`ria-image ${item.isJunk ? 'ria-image-junk' : ''}`}
+      ref={cellRef}
+      className={`ria-image ${isActive ? 'ria-image-active' : ''}`}
       onClick={onOpen}
       title={item.imageName}
     >
-      <img src={image} alt={item.imageName} height={height} style={{ display: 'block' }} />
+      <img src={image} alt={item.imageName} height={height} className={item.isJunk ? 'ria-image-junk' : undefined} style={{ display: 'block' }} />
       {item.isJunk && (
         <div
           style={{

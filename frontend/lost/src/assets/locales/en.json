@@ -46,7 +46,8 @@
     "imageView": "Image view",
     "gridView": "Grid view",
     "showAnnos": "Show annotations",
-    "hideAnnos": "Hide annotations"
+    "hideAnnos": "Hide annotations",
+    "showingRanged": "Showing {{from}}-{{to}} of {{total}} images"
   },
   "users": {
     "groupname": "groupname",
