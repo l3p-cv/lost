@@ -20,6 +20,9 @@ from lost.logic.file_access import UserFileAccess
 from lost.logic.file_man import FileMan
 from lost.settings import LOST_CONFIG
 
+# lost-sia getDefaultColor — the modal's default for unlabeled annotations
+DEFAULT_LBL_COLOR = "#46aed7"
+
 
 class UnknownMiaImageTypeError(DomainError):
     """The mia image type is neither imageBased nor annoBased."""
@@ -122,17 +125,43 @@ class DataBusiness:
                 label_color = {}
                 for anno in db_img.twod_annos:
                     leafs = [lbl.label_leaf for lbl in anno.labels if lbl.label_leaf is not None]
-                    label_color[anno.idx] = self._lbl_hex_to_bgr(leafs[0].color) if leafs and leafs[0].color else (0, 0, 255)
-                df['anno_lbl_color'] = [label_color.get(uid, (0, 0, 255)) for uid in df['anno_uid']]
+                    label_color[anno.idx] = self._lbl_hex_to_bgr(leafs[0].color) if leafs and leafs[0].color else self._lbl_hex_to_bgr(DEFAULT_LBL_COLOR)
+                df['anno_lbl_color'] = [label_color.get(uid, self._lbl_hex_to_bgr(DEFAULT_LBL_COLOR)) for uid in df['anno_uid']]
                 # red fallback + explicit text for unlabeled shapes — get_text skips None/[] entries
                 df['anno_lbl'] = [lbl if lbl else ['no label'] for lbl in df['anno_lbl']]
                 ds = lds.LOSTDataset(df, filesystem=ufa.fs)
+
+                # fill pass — filled shapes blended at 30% (the modal's fillOpacity 0.3), no label text
+                overlay = img.copy()
+                img_h, img_w = img.shape[:2]
+                for anno in db_img.twod_annos:
+                    c = label_color.get(anno.idx, self._lbl_hex_to_bgr(DEFAULT_LBL_COLOR))
+                    if anno.dtype == dtype.TwoDAnno.BBOX:
+                        xc, yc, w, h = anno.bbox
+                        cv2.rectangle(
+                            overlay,
+                            (int((xc - w / 2) * img_w), int((yc - h / 2) * img_h)),
+                            (int((xc + w / 2) * img_w), int((yc + h / 2) * img_h)),
+                            c, cv2.FILLED,
+                        )
+                    elif anno.dtype == dtype.TwoDAnno.POLYGON:
+                        pts = (
+                            np.asarray(anno.get_anno_serialization_format(), dtype=float)
+                            * [img_w, img_h]
+                        ).astype(np.int32)
+                        cv2.fillPoly(overlay, [pts], c)
+                    elif anno.dtype == dtype.TwoDAnno.POINT:
+                        x, y = anno.point
+                        cv2.circle(overlay, (int(x * img_w), int(y * img_h)), max(4, img_h // 100), c, cv2.FILLED)
+                img = cv2.addWeighted(overlay, 0.3, img, 0.7, 0)
+                # outline + label pass on top — plain int thickness (2),
+                # safe through vis_sample's max(1, t) clamp that rejected the dict
                 img = lds.vis_sample(
                     img, ds.df,
                     lbl_col='anno_lbl',
                     color='anno_lbl_color',
                     line_thickness=2,
-                    radius=max(4, img.shape[0] // 100),
+                    radius=max(4, img_h // 100),
                     fontscale='auto',
                 )
         elif type == "annoBased":

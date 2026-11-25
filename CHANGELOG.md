@@ -48,6 +48,7 @@ and annotask config is now evaluated server-side for `drawAnno` (even visible fo
 ### Changed
 - `MIAGalleryModal.tsx` : Changed the junk button position.
 - `RiA.scss` : Made the position of review toolbar sticky.
+- `DataBusiness.py` : Added label colored fills to the drawn 2D annos on the RiA grid thumbnails, unlabeled annos fall back to the lost-sia default color (#46aed7) like the modal instead of red.
 ## [4.1.2] - 2026-10-21
 ### Added
 - `.opencode/command/golden-tests.md` + `.opencode/skills/golden-tests/` : Added the `/golden-tests` command and `golden-tests` skill — generates golden-snapshot test coverage for new API endpoints (appends RouteSpec entries to the existing specs file) and new namespaces (creates specs file, runner, golden dir, and MIGRATED registration), with harness references (harness map, namespace flow, spec patterns) and record/verify hand-off commands.
