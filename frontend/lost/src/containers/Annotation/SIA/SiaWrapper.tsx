@@ -74,6 +74,7 @@ type SiaWrapperProps = {
   ) => void
   lockedImgCount?: number
   onRefresh?: () => Promise<void>
+  onAnnoDataChanged?: () => void
   isSingleImageReview?: boolean
   extraToolbarButtons?: React.ReactNode
 }
@@ -109,6 +110,7 @@ const SiaWrapper = ({
   onImageSearchModeChanged,
   lockedImgCount = 0,
   onRefresh,
+  onAnnoDataChanged,
   isSingleImageReview = false,
   extraToolbarButtons = null,
 }: SiaWrapperProps) => {
@@ -291,6 +293,9 @@ const SiaWrapper = ({
     (response: { tempId: string; dbId: number | null; newStatus: string }) => void
   >(() => {})
 
+  const onAnnoDataChangedRef = useRef<(() => void) | undefined>(undefined)
+    onAnnoDataChangedRef.current = onAnnoDataChanged
+
     // @TODO check if request worked
   // Hook-level onSuccess fires for every mutation — call-site onSuccess only fires for the last in React Query v3.
   const { mutate: sendCreateAnnotation } =
@@ -388,6 +393,7 @@ const SiaWrapper = ({
     // Write to ref immediately — visible to handleTimeTravel before React re-renders.
     annotationIdMappingRef.current[siaInternalAnnoId] = response.dbId
     inFlightCreatesRef.current.delete(siaInternalAnnoId)
+    onAnnoDataChangedRef.current?.()
 
     // Pending delete supersedes pending edit — flush it with the now-known DB id.
     const pendingDelete = pendingDeletesRef.current[siaInternalAnnoId]
@@ -433,29 +439,38 @@ const SiaWrapper = ({
   useEffect(() => {
     if (editAnnotationResponse === undefined || editAnnotationResponse === null) return
 
-    handleResponse(editAnnotationResponse)
+    if (handleResponse(editAnnotationResponse)) {
+      onAnnoDataChangedRef.current?.()
+    }
   }, [editAnnotationResponse, handleResponse])
 
   useEffect(() => {
     if (deleteAnnotationResponse === undefined || deleteAnnotationResponse === null)
       return
 
-    handleResponse(deleteAnnotationResponse)
+    if (handleResponse(deleteAnnotationResponse)) {
+      onAnnoDataChangedRef.current?.()
+    }
   }, [deleteAnnotationResponse, handleResponse])
 
   useEffect(() => {
     if (imageJunkResponse === undefined) return
 
-    handleResponse(imageJunkResponse)
+    if (handleResponse(imageJunkResponse)){
+      onAnnoDataChangedRef.current?.()
+    }
   }, [imageJunkResponse, handleResponse])
 
   useEffect(() => {
     if (
       updateImageLabelResponse === undefined ||
-      updateImageLabelResponse === null ||
-      updateImageLabelResponse === 'success'
+      updateImageLabelResponse === null
     )
       return
+    if (updateImageLabelResponse === 'success') {
+      onAnnoDataChangedRef.current?.()
+      return
+    }
     handleNotification({
       title: 'Error updating image label',
       message: 'Error updating image label',

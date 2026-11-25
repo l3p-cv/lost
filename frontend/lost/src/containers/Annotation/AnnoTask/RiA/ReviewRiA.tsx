@@ -1,4 +1,5 @@
-import { ReactNode, useEffect, useRef, useState } from 'react'
+import { ReactNode, useEffect, useReducer, useRef, useState } from 'react'
+import { useQueryClient } from 'react-query'
 import { useTranslation } from 'react-i18next'
 import { CAlert, CDropdown, CDropdownItem, CDropdownMenu, CDropdownToggle } from '@coreui/react'
 import {
@@ -68,6 +69,7 @@ type ReviewRiAProps = {
 
 const ReviewRiA = ({ annotaskId, datasetId, viewSwitch, onActiveImageChange, activeImageId, zoomState, pageSizeState, showAnnosState}: ReviewRiAProps) => {
   const { t } = useTranslation()
+  const queryClient = useQueryClient()
   // preferences come from the review page (survive toggling) — aliases keep every call site unchanged
   const { value: zoom, set: setZoom } = zoomState
   const { value: pageSize, set: setPageSize } = pageSizeState
@@ -147,6 +149,24 @@ const ReviewRiA = ({ annotaskId, datasetId, viewSwitch, onActiveImageChange, act
     setOpenImageId(null)
     // refresh junk/label state shown in the grid
     void refetchImageList()
+    queryClient.invalidateQueries(['miaimage']) // thumbnail queries marked invalid
+    queryClient.invalidateQueries(['getsiareviewannos']) // active review refetches
+  }
+
+  const editRefreshTimer = useRef<number | undefined>(undefined)
+
+  const handleModalEdit = () => {
+      window.clearTimeout(editRefreshTimer.current)
+      editRefreshTimer.current = window.setTimeout(() => {
+        if (openImageId === null) return
+        queryClient.invalidateQueries(['miaimage', {
+          imageId: openImageId,
+          addContext: -1,
+          drawAnno: showAnnos,
+          type: 'imageBased',
+        }])
+        void refetchImageList()
+      }, 500)
   }
 
   if (isLoading) return <CenteredSpinner />
@@ -196,6 +216,7 @@ const ReviewRiA = ({ annotaskId, datasetId, viewSwitch, onActiveImageChange, act
             if (idx >= 0) setPage(Math.floor(idx / pageSize))
             }
           }
+          onAnnoDataChanged={handleModalEdit}
           onClose={closeModal}
         />
       )}

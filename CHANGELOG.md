@@ -24,9 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `RiA/RiAPagination.tsx` , `RiA/ReviewRiA.tsx` : Added pagination with an Amount dropdown to the RiA grid.
 - `AnnoTask/ReviewPage.tsx` , `Datasets/ReviewPage.tsx` , `RiA/ReviewRiA.tsx` : Added staying on the same image when switching between image and grid review in both directions.Added keeping the grid preferences (Amount, zoom, annotations toggle) when toggling views.
 - `RiA/RiAGridImage.tsx`: Added highlighting the reviewed image and scrolling it into view in the grid.
+- `SiaWrapper.tsx` , `RiA/ReviewImageModal.tsx` , `RiA/ReviewRiA.tsx` : Added onAnnoDataChanged fired from SiaWrapper any mutation response invalidates the edited image's miaImage thumbnail query for a live RiA grid.
 ### Fixed
 - `RiA/RiAGridImage.tsx` : Fixed the active outline turning grey on junked grid cells.
-### Fixed
 - `inout.py` : fixed `mia_request_again` with CSV dataset exports now parses stringified list cells and skips image-only rows, treats NaN `img_is_junk` as missing instead of -1.
 - `script.py` : `report_script_err` rolls back the session before commiting the error state so pending objects no longer mask the real script error.
 - `DataBusiness.py` : fixed MIA `annoBased` image config serving dtype aware crops now work for (point and BBox annos too),
@@ -44,6 +44,7 @@ and annotask config is now evaluated server-side for `drawAnno` (even visible fo
 - `Datasets/ReviewPage.tsx` , `RiA/ReviewRiA.tsx` , `RiA/ReviewImageModal.tsx` , `RiA/RiA.scss` , `ViewModeSwitch.tsx` , `dataset_review.tsx` : Added RiA grid review mode for dataset reviews all annotated images of the dataset in per-annotask sections, the single-image modal resolves the image's own annotask, the image search filters the whole dataset and the Image/Grid switch now lives in a shared ViewModeSwitch used by both review pages.
 - `db/access.py` , `DatasetBusiness.py` : `GET /api/datasets/{id}/review/images` now returns per-image `isJunk` for the RiA grid junk overlays (golden re-recorded).
 - `RiA/RiAGridImage.tsx` : Fixed the active outline turning grey on junked grid cells.
+- `ReviewRiA.tsx` : Fixed stale thumbnails and review data after editing an image,closeModal now invalidates the miaimage and getsiareviewannos caches so the grid refetches immediately.
 ### Changed
 - `MIAGalleryModal.tsx` : Changed the junk button position.
 - `RiA.scss` : Made the position of review toolbar sticky.

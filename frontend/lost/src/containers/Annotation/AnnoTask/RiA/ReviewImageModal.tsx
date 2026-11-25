@@ -16,9 +16,10 @@ type ReviewImageModalProps = {
   imageIds: number[]
   onNavigate: (imageId: number) => void
   onClose: () => void
+  onAnnoDataChanged?: () => void
 }
 
-const ReviewImageModal = ({ annotaskId, datasetId, imageId, imageIds, onNavigate, onClose }: ReviewImageModalProps) => {
+const ReviewImageModal = ({ annotaskId, datasetId, imageId, imageIds, onNavigate, onClose, onAnnoDataChanged }: ReviewImageModalProps) => {
   const { t } = useTranslation()
 
   const isDatasetMode = datasetId !== undefined
@@ -185,6 +186,7 @@ const ReviewImageModal = ({ annotaskId, datasetId, imageId, imageIds, onNavigate
                 onRefresh={async () => {
                   await refetchReview()
                 }}
+                onAnnoDataChanged={onAnnoDataChanged}
               />
             )}
           </div>
