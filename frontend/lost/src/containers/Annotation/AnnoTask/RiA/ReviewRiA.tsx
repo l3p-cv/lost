@@ -153,6 +153,8 @@ const ReviewRiA = ({ annotaskId, datasetId, viewSwitch }: ReviewRiAProps) => {
           annotaskId={isDatasetMode ? undefined : annotaskId}
           datasetId={datasetId}
           imageId={openImageId}
+          imageIds={filtered.map((item) => item.imageId)}
+          onNavigate={(id) => setOpenImageId(id)}
           onClose={closeModal}
         />
       )}

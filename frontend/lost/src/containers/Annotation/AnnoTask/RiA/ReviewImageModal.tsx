@@ -1,21 +1,24 @@
 import { CSSProperties, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CAlert , CCloseButton} from '@coreui/react'
-import { faRotateRight, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { faRotateRight, faArrowRight, faArrowLeft} from '@fortawesome/free-solid-svg-icons'
 import BaseModal from '../../../../components/BaseModal'
 import CenteredSpinner from '../../../../components/CenteredSpinner'
 import CoreIconButton from '../../../../components/CoreIconButton'
 import siaApi, { ReviewData, useReview } from '../../../../api/dataset/dataset_review'
 import SiaWrapper from '../../SIA/SiaWrapper'
+import { showInfo } from '../../../../components/Notification'
 
 type ReviewImageModalProps = {
   annotaskId?: number
   datasetId?: number
   imageId: number
+  imageIds: number[]
+  onNavigate: (imageId: number) => void
   onClose: () => void
 }
 
-const ReviewImageModal = ({ annotaskId, datasetId, imageId, onClose }: ReviewImageModalProps) => {
+const ReviewImageModal = ({ annotaskId, datasetId, imageId, imageIds, onNavigate, onClose }: ReviewImageModalProps) => {
   const { t } = useTranslation()
 
   const isDatasetMode = datasetId !== undefined
@@ -43,14 +46,33 @@ const ReviewImageModal = ({ annotaskId, datasetId, imageId, onClose }: ReviewIma
     ? (annoData?.current_annotask_idx ?? -1)
     : (annotaskId ?? -1)
 
+  const index = imageIds.indexOf(imageId)
+  const hasPrev = index > 0
+  const hasNext = index >= 0 && index < imageIds.length - 1
+
+  const goPrev = () => {
+    if (!hasPrev) return
+    onNavigate(imageIds[index - 1])
+  }
+
+  const goNext = () => {
+    if (!hasNext) {
+      showInfo('End of annotated images.')
+      return
+    }
+    onNavigate(imageIds[index + 1])
+  }
+
   // close on escape — same pattern as the MIA gallery modal
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') goPrev()
+      if (e.key === 'ArrowRight') goNext()
       if (e.key === 'Escape') onClose()
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [onClose])
+  }, [index, imageIds, onNavigate, onClose])
 
   /**
    * do not use a CContainer here
@@ -106,6 +128,46 @@ const ReviewImageModal = ({ annotaskId, datasetId, imageId, onClose }: ReviewIma
         />
         <div style={rowFlex}>
           {/* SiaWrapper always takes full row width — canvas size never changes */}
+          <CoreIconButton
+            icon={faArrowLeft}
+            color='light'
+            inverse
+            disabled={!hasPrev}
+            onClick={goPrev}
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '8px',
+              transform: 'translateY(-50%)',
+              background: 'rgba(0,0,0,0.65)',
+              border: 'none',
+              borderRadius: '50%',
+              width: '44px',
+              height: '44px',
+              opacity: hasPrev ? 1 : 0.2,
+              zIndex: 10,
+            }}
+          />
+          <CoreIconButton
+            icon={faArrowRight}
+            color='light'
+            inverse
+            disabled={!hasNext}
+            onClick={goNext}
+            style={{
+              position: 'absolute',
+              top: '50%',
+              right: '8px',
+              transform: 'translateY(-50%)',
+              background: 'rgba(0,0,0,0.65)',
+              border: 'none',
+              borderRadius: '50%',
+              width: '44px',
+              height: '44px',
+              opacity: hasNext ? 1 : 0.2,
+              zIndex: 10,
+            }}
+          />
           <div style={forwardFlex}>
             {annoData === undefined ? (
               <CenteredSpinner />

@@ -1474,7 +1474,7 @@ const SiaWrapper = ({
         <div
           style={{ ...wrapperStyle, position: 'relative' }}
           onKeyDown={(e) => {
-            if (!e.repeat) handleWrapperKeydown(e.key)
+            if (!e.repeat && !isSingleImageReview) handleWrapperKeydown(e.key)
           }}
           tabIndex={0}
         >
