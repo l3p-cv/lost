@@ -4,6 +4,10 @@
   align-items: center;
   gap: 14px;
   padding: 8px 24px 8px 8px;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: rgba(var(--cui-light-rgb, 248, 249, 250), 1);
 }
 
 .ria-toolbar-count {
