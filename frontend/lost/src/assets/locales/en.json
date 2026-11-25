@@ -44,7 +44,9 @@
     "markedAsJunk": "Marked as Junk",
     "reviewImageFailed": "Review image failed to load. Please try again.",
     "imageView": "Image view",
-    "gridView": "Grid view"
+    "gridView": "Grid view",
+    "showAnnos": "Show annotations",
+    "hideAnnos": "Hide annotations"
   },
   "users": {
     "groupname": "groupname",

@@ -66,6 +66,13 @@ class DataBusiness:
         except (TypeError, ValueError):
             return 0.0
 
+    @staticmethod
+    def _lbl_hex_to_bgr(hex_color: str) -> tuple[int, int, int]:
+        """Convert a hex label color (``#rrggbb``) to a BGR tuple for cv2."""
+        h = hex_color.lstrip('#')
+        r, g, b = int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
+        return (b, g, r)
+
     def read_export(self, deid: int) -> bytes:
         """Read the parquet export for *deid* as bytes."""
         de = self.dbm.get_data_export(deid)
@@ -110,6 +117,24 @@ class DataBusiness:
             db_img = self.dbm.get_image_anno(image_id)
             ufa = UserFileAccess(self.dbm, user, db_img.fs)
             img = self._load_img(db_img, ufa, user)
+            if draw_anno:
+                df = db_img.to_df()
+                label_color = {}
+                for anno in db_img.twod_annos:
+                    leafs = [lbl.label_leaf for lbl in anno.labels if lbl.label_leaf is not None]
+                    label_color[anno.idx] = self._lbl_hex_to_bgr(leafs[0].color) if leafs and leafs[0].color else (0, 0, 255)
+                df['anno_lbl_color'] = [label_color.get(uid, (0, 0, 255)) for uid in df['anno_uid']]
+                # red fallback + explicit text for unlabeled shapes — get_text skips None/[] entries
+                df['anno_lbl'] = [lbl if lbl else ['no label'] for lbl in df['anno_lbl']]
+                ds = lds.LOSTDataset(df, filesystem=ufa.fs)
+                img = lds.vis_sample(
+                    img, ds.df,
+                    lbl_col='anno_lbl',
+                    color='anno_lbl_color',
+                    line_thickness=2,
+                    radius=max(4, img.shape[0] // 100),
+                    fontscale='auto',
+                )
         elif type == "annoBased":
             db_anno = self.dbm.get_two_d_anno(two_d_anno_id=image_id)
             db_img = self.dbm.get_image_anno(db_anno.img_anno_id)

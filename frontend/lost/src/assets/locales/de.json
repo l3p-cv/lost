@@ -44,7 +44,9 @@
     "markedAsJunk": "Als Junk markiert",
     "reviewImageFailed": "Bild konnte nicht geladen werden. Bitte erneut versuchen.",
     "imageView": "Bildansicht",
-    "gridView": "Rasteransicht"
+    "gridView": "Rasteransicht",
+    "showAnnos": "Annotationen anzeigen",
+    "hideAnnos": "Annotationen ausblenden"
   },
   "users": {
     "groupname": "Gruppenname",

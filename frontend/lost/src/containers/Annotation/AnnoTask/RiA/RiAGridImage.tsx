@@ -9,6 +9,7 @@ import ImageLoading from '../../MIA/ImageLoading'
 type RiAGridImageProps = {
   item: ReviewImageListItem
   height: number
+  showAnnos: boolean
   onOpen: () => void
 }
 
@@ -25,12 +26,12 @@ const badgeStyle: CSSProperties = {
   pointerEvents: 'none',
 }
 
-const RiAGridImage = ({ item, height, onOpen }: RiAGridImageProps) => {
+const RiAGridImage = ({ item, height, showAnnos, onOpen }: RiAGridImageProps) => {
   const { t } = useTranslation()
   const { data: image, isLoading } = useGetMiaImage({
     imageId: item.imageId,
     addContext: -1,
-    drawAnno: false,
+    drawAnno: showAnnos,
     type: 'imageBased',
   })
 

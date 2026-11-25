@@ -2,6 +2,8 @@ import { ReactNode, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CAlert } from '@coreui/react'
 import {
+  faEye,
+  faEyeSlash,
   faMagnifyingGlassMinus,
   faRotateRight,
   faSearch,
@@ -57,6 +59,8 @@ const ReviewRiA = ({ annotaskId, datasetId, viewSwitch }: ReviewRiAProps) => {
   const [filterIds, setFilterIds] = useState<number[] | null>(null)
   const [isSearchModalVisible, setIsSearchModalVisible] = useState(false)
   const [openImageId, setOpenImageId] = useState<number | null>(null)
+  // draw all 2D annos on the grid thumbnails (default on — review is about seeing what was drawn)
+  const [showAnnos, setShowAnnos] = useState(true)
 
   const isDatasetMode = datasetId !== undefined
 
@@ -99,6 +103,7 @@ const ReviewRiA = ({ annotaskId, datasetId, viewSwitch }: ReviewRiAProps) => {
       key={item.imageId}
       item={item}
       height={zoom}
+      showAnnos={showAnnos}
       onOpen={() => setOpenImageId(item.imageId)}
     />
   )
@@ -166,6 +171,13 @@ const ReviewRiA = ({ annotaskId, datasetId, viewSwitch }: ReviewRiAProps) => {
             onClick={() => setFilterIds(null)}
           />
         )}
+        <CoreIconButton
+          icon={showAnnos ? faEye : faEyeSlash}
+          color={showAnnos ? 'primary' : 'secondary'}
+          isOutline={!showAnnos}
+          toolTip={showAnnos ? t('review.hideAnnos') : t('review.showAnnos')}
+          onClick={() => setShowAnnos((s) => !s)}
+        />
         <span className="ria-toolbar-count">
           {t('review.showing', { shown: filtered.length, total: imageList.length })}
         </span>

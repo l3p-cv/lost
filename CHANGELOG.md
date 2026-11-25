@@ -36,6 +36,7 @@ and annotask config is now evaluated server-side for `drawAnno` (even visible fo
 - `SiaWrapper.tsx` : Fixed redundant fire of polygonOperations request( lost-sia used to autoselect the just created result annotation of polygon operation and fire same polygon operation with this resulatnt polygon as second operand) now using ref this auto-selection is detected and ignored.
 - `Datasets/ReviewPage.tsx` , `RiA/ReviewRiA.tsx` , `RiA/ReviewImageModal.tsx` , `RiA/RiA.scss` , `ViewModeSwitch.tsx` , `dataset_review.tsx` : Added RiA grid review mode for dataset reviews all annotated images of the dataset in per-annotask sections, the single-image modal resolves the image's own annotask, the image search filters the whole dataset and the Image/Grid switch now lives in a shared ViewModeSwitch used by both review pages.
 - `db/access.py` , `DatasetBusiness.py` : `GET /api/datasets/{id}/review/images` now returns per-image `isJunk` for the RiA grid junk overlays (golden re-recorded).
+- `DataBusiness.py` , `RiA/RiAGridImage.tsx` , `RiA/ReviewRiA.tsx` : Added helper to convert hex label colors, `drawAnno=true` now returns 2D annotations drawn in their label colors with label names (unlabeled in red with "no label") and an eye-toggle in the RiA grid toolbar to switch them on/off (default on).
 ### Changed
 - `MIAGalleryModal.tsx` : Changed the junk button position.
 ## [4.1.2] - 2026-10-21
